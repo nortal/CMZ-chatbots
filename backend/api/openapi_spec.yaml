@@ -1,0 +1,1483 @@
+openapi: 3.0.3
+info:
+  title: CMZ API
+  description: API for the Cougar Mountain Zoo digital ambassador platform
+  version: 1.0.2
+servers:
+- url: https://api.cmz.example.com
+  description: Production
+- url: https://staging.api.cmz.example.com
+  description: Staging
+tags:
+- name: UI
+- name: Auth
+- name: Users
+- name: Conversation
+- name: Animals
+- name: Knowledge
+- name: Analytics
+- name: Admin
+- name: System
+- name: Media
+- name: Later
+  description: Backlog endpoints (not in v1)
+paths:
+  /:
+    get:
+      tags:
+      - UI
+      summary: Public homepage
+      responses:
+        '200':
+          description: Health/info banner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicHome'
+              example:
+                message: Welcome to CMZ API
+                status: ok
+  /admin:
+    get:
+      tags:
+      - UI
+      summary: Admin dashboard shell data
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Admin shell data/widgets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminShell'
+              example:
+                widgets:
+                - activeUsers
+                - latency
+                - errors
+  /member:
+    get:
+      tags:
+      - UI
+      summary: User portal shell data
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Portal shell data/widgets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberShell'
+              example:
+                preferences: {}
+                alerts: []
+  /auth:
+    post:
+      tags:
+      - Auth
+      summary: Login or register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Auth token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                token: eyJhbGciOi...
+                expiresIn: 3600
+                user:
+                  id: user_1
+                  email: user1@cmz.org
+                  displayName: User 1
+                  role: admin
+                  created: &id002
+                    at: '2025-08-11T09:00:00Z'
+                    by: &id001
+                      id: user_1
+                      email: system@cmz.org
+                      displayName: System
+                  modified: &id003
+                    at: '2025-08-11T09:00:00Z'
+                    by: *id001
+                  softDelete: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/refresh:
+    post:
+      tags:
+      - Auth
+      summary: Refresh access token
+      responses:
+        '200':
+          description: New token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                token: eyJhbGciOi...
+                expiresIn: 3600
+                user:
+                  id: user_1
+                  email: user1@cmz.org
+                  displayName: User 1
+                  role: admin
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+  /auth/logout:
+    post:
+      tags:
+      - Auth
+      summary: Logout current user (invalidate token/session)
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: Logged out
+  /auth/reset_password:
+    post:
+      tags:
+      - Auth
+      summary: Initiate password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '204':
+          description: Email sent if account exists
+  /me:
+    get:
+      tags:
+      - Users
+      summary: Current authenticated user
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: user_2
+                email: user2@cmz.org
+                displayName: User 2
+                role: member
+                created: *id002
+                modified: *id003
+                softDelete: false
+  /userlist:
+    get:
+      tags:
+      - Admin
+      summary: List users
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: details
+        schema:
+          type: boolean
+          default: false
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum:
+          - visitor
+          - member
+          - editor
+          - admin
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - in: query
+        name: pageSize
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 50
+      responses:
+        '200':
+          description: Paged user list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedUsers'
+              example:
+                items:
+                - id: user_1
+                  email: user1@cmz.org
+                  displayName: User 1
+                  role: admin
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+                - id: user_2
+                  email: user2@cmz.org
+                  displayName: User 2
+                  role: member
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+                page: 1
+                pageSize: 50
+                total: 2
+  /userdetails:
+    get:
+      tags:
+      - Admin
+      summary: Fetch specific user details
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+              example:
+                id: user_2
+                email: user2@cmz.org
+                displayName: User 2
+                role: member
+                created: *id002
+                modified: *id003
+                softDelete: false
+                usage:
+                  userid: user_2
+                  totalSessions: 5
+                  totalTurns: 42
+                  lastActive: '2025-08-11T09:00:00Z'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /userrole:
+    patch:
+      tags:
+      - Admin
+      summary: Change user role
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - userId
+              - role
+              properties:
+                userId:
+                  type: string
+                role:
+                  type: string
+                  enum:
+                  - visitor
+                  - member
+                  - editor
+                  - admin
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: user_2
+                email: user2@cmz.org
+                displayName: User 2
+                role: editor
+                created: *id002
+                modified: *id003
+                softDelete: false
+  /user:
+    delete:
+      tags:
+      - Admin
+      summary: Delete user
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /convo_turn:
+    post:
+      tags:
+      - Conversation
+      summary: Send a conversation turn and get AI reply
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConvoTurnRequest'
+      responses:
+        '200':
+          description: AI response and turn metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvoTurnResponse'
+              example:
+                reply: Hi there! I'm Pokey. Want to hear a porcupine fact?
+                turn:
+                  id: turn_001
+                  timestamp: '2025-08-11T09:00:00Z'
+                  tokensPrompt: 120
+                  tokensCompletion: 35
+                  latencyMs: 420
+  /convo_history:
+    get:
+      tags:
+      - Conversation
+      - Later
+      x-phase: later
+      summary: Get conversation history (backlog)
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: animalid
+        schema:
+          type: string
+      - in: query
+        name: userid
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 100
+      responses:
+        '200':
+          description: Conversation turns
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvoHistory'
+              example:
+                sessionId: sess_123
+                animalid: animal_1
+                userid: user_2
+                turns:
+                - role: user
+                  content: Hi Pokey
+                  timestamp: '2025-08-11T09:00:00Z'
+                - role: assistant
+                  content: Hello!
+                  timestamp: '2025-08-11T09:00:00Z'
+    delete:
+      tags:
+      - Conversation
+      - Later
+      x-phase: later
+      summary: Delete conversation history (GDPR) (backlog)
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: id
+        description: Conversation/session id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /summarize_convo:
+    post:
+      tags:
+      - Conversation
+      - Later
+      x-phase: later
+      summary: Summarize conversation for personalization/cost control (backlog)
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SummarizeRequest'
+      responses:
+        '200':
+          description: Summary created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Summary'
+  /animal_list:
+    get:
+      tags:
+      - Animals
+      summary: List animals
+      responses:
+        '200':
+          description: List of animals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Animal'
+              example:
+              - id: animal_1
+                name: Pokey
+                species: Coendou prehensilis
+                status: active
+                created: *id002
+                modified: *id003
+                softDelete: false
+              - id: animal_2
+                name: Animal 2
+                species: Speciesus exampleus
+                status: hidden
+                created: *id002
+                modified: *id003
+                softDelete: false
+  /animal_details:
+    get:
+      tags:
+      - Animals
+      summary: Fetch animal details
+      parameters:
+      - in: query
+        name: animalid
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Animal details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimalDetails'
+              example:
+                id: animal_1
+                name: Pokey
+                species: Coendou prehensilis
+                status: active
+                created: *id002
+                modified: *id003
+                softDelete: false
+                description: A friendly prehensile-tailed porcupine ambassador.
+                habitat: Tropical forests
+                imageUrl: https://example.com/pokey.jpg
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal_config:
+    get:
+      tags:
+      - Animals
+      summary: Get animal configuration
+      parameters:
+      - in: query
+        name: animalid
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Animal config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimalConfig'
+              example:
+                voice: pokey_v1
+                personality: goofy-friendly
+                aiModel: gpt-5o-mini
+                temperature: 0.7
+                topP: 1
+                toolsEnabled:
+                - facts
+                - media_lookup
+                guardrails:
+                  safe_mode: true
+                created: *id002
+                modified: *id003
+                softDelete: false
+    patch:
+      tags:
+      - Animals
+      summary: Update animal configuration
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: animalid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalConfigUpdate'
+      responses:
+        '200':
+          description: Updated config
+          content:
+            application/json:
+              schema: {}
+              example:
+                voice: pokey_v1
+                personality: goofy-friendly
+                aiModel: gpt-5o-mini
+                temperature: 0.7
+                topP: 1
+                toolsEnabled:
+                - facts
+                - media_lookup
+                guardrails:
+                  safe_mode: true
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '400':
+          description: Invalid config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /knowledge_article:
+    post:
+      tags:
+      - Knowledge
+      summary: Create knowledge article
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeArticle'
+              example:
+                id: ka_123
+                title: Porcupine Diet
+                body: Porcupines are herbivores that enjoy leaves, herbs, twigs, and
+                  bark.
+                tags:
+                - diet
+                - porcupine
+                visibility: public
+                animalid: animal_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+    get:
+      tags:
+      - Knowledge
+      summary: Get article by id
+      parameters:
+      - in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeArticle'
+              example:
+                id: ka_123
+                title: Porcupine Diet
+                body: Porcupines are herbivores that enjoy leaves, herbs, twigs, and
+                  bark.
+                tags:
+                - diet
+                - porcupine
+                visibility: public
+                animalid: animal_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Knowledge
+      summary: Delete knowledge article
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted
+  /upload_media:
+    post:
+      tags:
+      - Media
+      - Later
+      x-phase: later
+      summary: Upload media (image/audio/video) (backlog)
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                title:
+                  type: string
+                animalid:
+                  type: string
+      responses:
+        '201':
+          description: Media created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+              example:
+                id: m_001
+                title: Pokey portrait
+                url: https://cdn.example.com/m_001.jpg
+                kind: image
+                animalid: animal_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+  /media:
+    get:
+      tags:
+      - Media
+      - Later
+      x-phase: later
+      summary: Fetch media by id (backlog)
+      parameters:
+      - in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Media metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+              example:
+                id: m_001
+                title: Pokey portrait
+                url: https://cdn.example.com/m_001.jpg
+                kind: image
+                animalid: animal_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Media
+      - Later
+      x-phase: later
+      summary: Delete media by id (backlog)
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted
+  /performance_metrics:
+    get:
+      tags:
+      - Analytics
+      summary: Performance metrics between dates
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: start
+        required: true
+        description: ISO8601 start (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: end
+        required: true
+        description: ISO8601 end (exclusive)
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Metrics payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+              example:
+                window:
+                  start: '2025-08-11T09:00:00Z'
+                  end: '2025-08-11T09:00:00Z'
+                totals:
+                  requests: 1240
+                  tokensPrompt: 221000
+                  tokensCompletion: 78000
+                  costUsd: 37.55
+                perAnimal:
+                - animalid: animal_1
+                  requests: 800
+                  avgLatencyMs: 380
+                - animalid: animal_2
+                  requests: 440
+                  avgLatencyMs: 410
+  /logs:
+    get:
+      tags:
+      - Analytics
+      summary: Application logs (paged/filtered)
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - debug
+          - info
+          - warn
+          - error
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - in: query
+        name: pageSize
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 200
+      responses:
+        '200':
+          description: Paged logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedLogs'
+              example:
+                items:
+                - ts: '2025-08-11T09:00:00Z'
+                  level: info
+                  msg: startup complete
+                  meta:
+                    service: api
+                - ts: '2025-08-11T09:00:00Z'
+                  level: error
+                  msg: LLM timeout
+                  meta:
+                    service: ai
+                    requestId: req_9
+                page: 1
+                pageSize: 200
+                total: 2
+  /billing:
+    get:
+      tags:
+      - Analytics
+      summary: Billing summary
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: period
+        description: Billing period (e.g., 2025-08)
+        schema:
+          type: string
+          pattern: ^[0-9]{4}-[0-9]{2}$
+      responses:
+        '200':
+          description: Billing breakdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingSummary'
+              example:
+                period: 2025-08
+                totalUsd: 123.45
+                byService:
+                - service: OpenAI
+                  usd: 77.3
+                - service: Storage
+                  usd: 12.1
+  /system_health:
+    get:
+      tags:
+      - System
+      summary: System/health check for status page
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Health details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemHealth'
+              example:
+                status: ok
+                checks:
+                - name: db
+                  status: ok
+                - name: ai
+                  status: ok
+  /feature_flags:
+    get:
+      tags:
+      - System
+      summary: Get feature flags
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: All flags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagsDocument'
+              example:
+                flags:
+                  betaAudio:
+                    enabled: true
+                    rollout: 0.2
+                created: *id002
+                modified: *id003
+                softDelete: false
+    patch:
+      tags:
+      - System
+      summary: Update feature flags
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureFlagsUpdate'
+      responses:
+        '200':
+          description: Updated flags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagsDocument'
+              example:
+                flags:
+                  betaAudio:
+                    enabled: true
+                    rollout: 0.2
+                created: *id002
+                modified: *id003
+                softDelete: false
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            unauthorized:
+              value:
+                code: unauthorized
+                message: Missing or invalid token
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            notFound:
+              value:
+                code: not_found
+                message: Resource not found
+  schemas:
+    ActorRef:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+    AuditStamp:
+      type: object
+      properties:
+        at:
+          type: string
+          format: date-time
+        by:
+          $ref: '#/components/schemas/ActorRef'
+    AuditFields:
+      type: object
+      properties:
+        created:
+          $ref: '#/components/schemas/AuditStamp'
+        modified:
+          $ref: '#/components/schemas/AuditStamp'
+        deleted:
+          $ref: '#/components/schemas/AuditStamp'
+        softDelete:
+          type: boolean
+          default: false
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+    PublicHome:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+          enum:
+          - ok
+          - maintenance
+    AdminShell:
+      type: object
+      properties:
+        widgets:
+          type: array
+          items:
+            type: string
+    MemberShell:
+      type: object
+      properties:
+        preferences:
+          type: object
+          additionalProperties: true
+        alerts:
+          type: array
+          items:
+            type: string
+    AuthRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        register:
+          type: boolean
+          description: If true, create account if not found
+      required:
+      - username
+      - password
+    AuthResponse:
+      type: object
+      required:
+      - token
+      - expiresIn
+      - user
+      properties:
+        token:
+          type: string
+        expiresIn:
+          type: integer
+          description: Seconds until expiry
+        user:
+          $ref: '#/components/schemas/User'
+    PasswordResetRequest:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+    User:
+      allOf:
+      - type: object
+        required:
+        - id
+        - email
+        - role
+        properties:
+          id:
+            type: string
+          email:
+            type: string
+            format: email
+          displayName:
+            type: string
+          role:
+            type: string
+            enum:
+            - visitor
+            - member
+            - editor
+            - admin
+      - $ref: '#/components/schemas/AuditFields'
+    UserDetails:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - type: object
+        properties:
+          usage:
+            $ref: '#/components/schemas/UsageSummary'
+    PagedUsers:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+    ConvoTurnRequest:
+      type: object
+      required:
+      - animalid
+      - message
+      properties:
+        animalid:
+          type: string
+        message:
+          type: string
+        sessionId:
+          type: string
+        contextSummary:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties: true
+    ConvoTurnResponse:
+      type: object
+      required:
+      - reply
+      - turn
+      properties:
+        reply:
+          type: string
+        turn:
+          type: object
+          properties:
+            id:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+            tokensPrompt:
+              type: integer
+            tokensCompletion:
+              type: integer
+            latencyMs:
+              type: integer
+    ConvoHistory:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        animalid:
+          type: string
+        userid:
+          type: string
+        turns:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum:
+                - user
+                - assistant
+                - system
+              content:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+    SummarizeRequest:
+      type: object
+      required:
+      - sessionId
+      properties:
+        sessionId:
+          type: string
+        maxChars:
+          type: integer
+          default: 2000
+    Summary:
+      allOf:
+      - type: object
+        properties:
+          sessionId:
+            type: string
+          summary:
+            type: string
+      - $ref: '#/components/schemas/AuditFields'
+    Animal:
+      allOf:
+      - type: object
+        required:
+        - id
+        - name
+        - species
+        properties:
+          id:
+            type: string
+          name:
+            type: string
+          species:
+            type: string
+          status:
+            type: string
+            enum:
+            - active
+            - hidden
+      - $ref: '#/components/schemas/AuditFields'
+    AnimalDetails:
+      allOf:
+      - $ref: '#/components/schemas/Animal'
+      - type: object
+        properties:
+          description:
+            type: string
+          habitat:
+            type: string
+          imageUrl:
+            type: string
+            format: uri
+    AnimalConfig:
+      allOf:
+      - type: object
+        properties:
+          voice:
+            type: string
+          personality:
+            type: string
+          aiModel:
+            type: string
+          temperature:
+            type: number
+            minimum: 0
+            maximum: 2
+            default: 0.7
+          topP:
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 1
+          toolsEnabled:
+            type: array
+            items:
+              type: string
+          guardrails:
+            type: object
+            additionalProperties: true
+      - $ref: '#/components/schemas/AuditFields'
+    AnimalConfigUpdate:
+      allOf:
+      - $ref: '#/components/schemas/AnimalConfig'
+    KnowledgeCreate:
+      type: object
+      required:
+      - title
+      - body
+      - visibility
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        visibility:
+          type: string
+          enum:
+          - public
+          - staff
+          - internal
+        animalid:
+          type: string
+          nullable: true
+    KnowledgeArticle:
+      allOf:
+      - $ref: '#/components/schemas/KnowledgeCreate'
+      - $ref: '#/components/schemas/AuditFields'
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            type: string
+    Media:
+      allOf:
+      - type: object
+        required:
+        - id
+        - url
+        - kind
+        properties:
+          id:
+            type: string
+          title:
+            type: string
+          url:
+            type: string
+            format: uri
+          kind:
+            type: string
+            enum:
+            - image
+            - audio
+            - video
+          animalid:
+            type: string
+            nullable: true
+      - $ref: '#/components/schemas/AuditFields'
+    PerformanceMetrics:
+      type: object
+      properties:
+        window:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        totals:
+          type: object
+          properties:
+            requests:
+              type: integer
+            tokensPrompt:
+              type: integer
+            tokensCompletion:
+              type: integer
+            costUsd:
+              type: number
+        perAnimal:
+          type: array
+          items:
+            type: object
+            properties:
+              animalid:
+                type: string
+              requests:
+                type: integer
+              avgLatencyMs:
+                type: integer
+    LogEntry:
+      type: object
+      properties:
+        ts:
+          type: string
+          format: date-time
+        level:
+          type: string
+        msg:
+          type: string
+        meta:
+          type: object
+          additionalProperties: true
+    PagedLogs:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogEntry'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+    BillingSummary:
+      type: object
+      properties:
+        period:
+          type: string
+        totalUsd:
+          type: number
+        byService:
+          type: array
+          items:
+            type: object
+            properties:
+              service:
+                type: string
+              usd:
+                type: number
+    UsageSummary:
+      type: object
+      properties:
+        userid:
+          type: string
+        totalSessions:
+          type: integer
+        totalTurns:
+          type: integer
+        lastActive:
+          type: string
+          format: date-time
+    SystemHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ok
+          - degraded
+          - down
+        checks:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+                enum:
+                - ok
+                - warn
+                - fail
+              detail:
+                type: string
+    FeatureFlags:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          rollout:
+            type: number
+            minimum: 0
+            maximum: 1
+    FeatureFlagsDocument:
+      allOf:
+      - type: object
+        properties:
+          flags:
+            $ref: '#/components/schemas/FeatureFlags'
+      - $ref: '#/components/schemas/AuditFields'
+    FeatureFlagsUpdate:
+      type: object
+      properties:
+        flags:
+          $ref: '#/components/schemas/FeatureFlags'
