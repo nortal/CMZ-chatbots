@@ -679,7 +679,7 @@ Resources:
       Name: !Ref FrontendDomainName
       Type: A
       AliasTarget:
-        DNSName: !GetAtt FrontendS3Bucket.WebsiteURL
+        DNSName: !GetAtt FrontendS3Bucket.RegionalDomainName
         HostedZoneId: !FindInMap [S3WebsiteHostedZoneIdMap, !Ref "AWS::Region", HostedZoneId]
 
 Mappings:
