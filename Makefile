@@ -8,7 +8,7 @@ CONTAINER_NAME ?= $(IMAGE_NAME)-dev
 
 # OpenAPI spec and app paths (relative to repo root)
 OPENAPI_SPEC ?= backend/api/openapi_spec.yaml
-APP_DIR ?= backend/api/app
+APP_DIR ?= backend/api/generated/app
 REQUIREMENTS_FILE ?= $(APP_DIR)/requirements.txt
 
 # Where to stash backups of existing code before regeneration

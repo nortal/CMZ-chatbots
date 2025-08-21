@@ -884,6 +884,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/MemberShell"
           description: Portal shell data/widgets
+      security:
+      - bearerAuth: []
       summary: User portal shell data
       tags:
       - UI
