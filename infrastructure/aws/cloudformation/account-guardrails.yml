@@ -1,0 +1,562 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Account Guardrails - IAM, Tag Enforcement, Budget Alerts, CloudTrail, and Cost Notification
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "IAM Group & User Management"
+        Parameters:
+          - GroupName
+          - UserEmails
+          - ExemptPrincipalArn
+      - Label:
+          default: "Tag and Region Enforcement"
+        Parameters:
+          - ApplicationTag
+          - TeamTag
+          - AllowedRegion
+      - Label:
+          default: "Tag and Region Enforcement"
+        Parameters:
+          - EnableCloudTrail
+      - Label:
+          default: "Budget & Notifications"
+        Parameters:
+          - ProvisionCostMonitors
+          - EnableWeeklyCostNotification
+          - BudgetCap
+          - TeamNotificationEmail
+    ParameterLabels:
+      GroupName:
+        default: "IAM Group Name"
+      UserEmails:
+        default: "User Email Addresses"
+      ExemptPrincipalArn:
+        default: "Breakglass Admin ARN"
+      ApplicationTag:
+        default: "cmz:application Tag Value"
+      TeamTag:
+        default: "cmz:team Tag Value"
+      AllowedRegion:
+        default: "CloudTrail and Services Region"
+      EnableCloudTrail:
+        default: "Enable CloudTrail Logging"
+      BudgetCap:
+        default: "Budget Cap (USD)"
+      EnableWeeklyCostNotification:
+        default: "Enable Weekly Cost Notification"
+      TeamNotificationEmail:
+        default: "Notification Email Address"
+      ProvisionCostMonitors:
+        default: "Enable provisioning of budget alarms and cost monitoring resources"
+
+
+Parameters:
+  # IAM Group & User Management
+  GroupName:
+    Type: String
+    Description: IAM group name.
+  UserEmails:
+    Type: List<String>
+    Description: List of user email addresses to add to IAM group.
+  ExemptPrincipalArn:
+    Type: String
+    Default: ''
+    Description: ARN of breakglass admin exempted from IAM deny policies.
+
+  # Tag and Region Enforcement
+  ApplicationTag:
+    Type: String
+    Description: Required value for cmz:application.
+  TeamTag:
+    Type: String
+    Description: Required value for cmz:team.
+  AllowedRegion:
+    Type: String
+    Description: Region for CloudTrail logging and allowed actions.
+    Default: 'us-west-2'
+
+  # Budget & Notifications
+  ProvisionCostMonitors:
+    Type: String
+    AllowedValues: ['true', 'false']
+    Description: Enable provisioning of budget alarms and cost monitoring resources.
+  EnableWeeklyCostNotification:
+    Type: String
+    AllowedValues: ['true', 'false']
+    Description: Enable weekly cost summary notifications.
+  BudgetCap:
+    Type: Number
+    Description: Amount in USD to alert on.
+  TeamNotificationEmail:
+    Type: String
+    Description: Email address to receive budget and cost summary notifications.
+
+  # CloudTrail
+  EnableCloudTrail:
+    Type: String
+    AllowedValues: ['true', 'false']
+    Description: Enable CloudTrail logging and resources.
+
+Conditions:
+  EnableWeeklyNotification: !Equals [!Ref EnableWeeklyCostNotification, 'true']
+  HasPrincipalExemptArn: !Not [!Equals [!Ref ExemptPrincipalArn, '']]
+  CloudTrailInRegion: !Equals [!Ref "AWS::Region", !Ref AllowedRegion]
+  EnableCloudTrailCondition: !Equals [!Ref EnableCloudTrail, 'true']
+  ProvisionCloudTrail: !And
+    - !Condition CloudTrailInRegion
+    - !Condition EnableCloudTrailCondition
+  ProvisionCostMonitorsCondition: !Equals [!Ref ProvisionCostMonitors, 'true']
+  ProvisionCostMonitorResources: !And
+    - !Condition EnableWeeklyNotification
+    - !Condition ProvisionCostMonitorsCondition
+
+Resources:
+
+  # IAM Group
+  # Use multiple groups due to limits on number of managed policies per group
+  # https://repost.aws/knowledge-center/iam-increase-policy-size
+  SupplementaryGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Join 
+        - '-'
+        - - !Ref GroupName
+          - Supplementary
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+        - arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess
+        - arn:aws:iam::aws:policy/AmazonEventBridgeSchedulerFullAccess
+        - arn:aws:iam::aws:policy/AWSCloudTrail_FullAccess
+        - arn:aws:iam::aws:policy/CloudWatchFullAccess
+        - arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess
+        - arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser
+
+  GuardrailsGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Ref GroupName
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator
+        - arn:aws:iam::aws:policy/AmazonCognitoPowerUser
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess_v2
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+        - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+        - arn:aws:iam::aws:policy/AmazonVPCFullAccess
+        - arn:aws:iam::aws:policy/AWSLambda_FullAccess
+
+  # Add Users to Group
+  GuardrailsGroupUsers:
+    Type: AWS::IAM::UserToGroupAddition
+    Properties:
+      GroupName: !Ref GuardrailsGroup
+      Users: 
+        !Split [",", !Join [",", !Ref UserEmails]]
+
+  SupplementaryGroupUsers:
+    Type: AWS::IAM::UserToGroupAddition
+    Properties:
+      GroupName: !Ref SupplementaryGroup
+      Users: 
+        !Split [",", !Join [",", !Ref UserEmails]]
+
+  # Tag Enforcement Policy
+  TagEnforcementPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: TagEnforcementPolicy
+      Groups: [!Ref GuardrailsGroup]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyCreateWithoutTags
+            Effect: Deny
+            Action:
+              - apigateway:Create*
+              - apigateway:POST
+              - cloudformation:CreateStack
+              - cloudtrail:Create*
+              - cloudwatch:Put*
+              - cognito-identity:CreateIdentityPool
+              - cognito-idp:CreateUserPool
+              - dynamodb:CreateTable
+              - ec2:Create*
+              - kms:CreateKey
+              - events:PutRule
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - s3:CreateBucket
+              - sns:CreateTopic
+              - tag:TagResources
+            Resource: '*'
+            Condition:
+              StringNotEqualsIfExists:
+                "aws:RequestTag/cmz:application": !Ref ApplicationTag
+                "aws:RequestTag/cmz:team": !Ref TeamTag
+              ArnNotEquals:
+                "aws:PrincipalArn": !If [HasPrincipalExemptArn, !Ref ExemptPrincipalArn, !Ref "AWS::NoValue"]
+
+          - Sid: DenyModifyDeleteWithoutTags
+            Effect: Deny
+            Action:
+              - apigateway:Update*
+              - apigateway:Delete*
+              - apigateway:Put*
+              - cloudformation:Delete*
+              - cloudformation:Update*
+              - cloudformation:CreateChangeSet
+              - cloudformation:ExecuteChangeSet
+              - cloudtrail:Delete*
+              - cloudtrail:Update*
+              - cloudtrail:PutEventSelectors
+              - cloudwatch:Delete*
+              - cloudwatch:Put*
+              - cloudwatch:Update*
+              - cloudwatch:Modify*
+              - cognito-identity:Delete*
+              - cognito-identity:Update*
+              - cognito-identity:Put*
+              - cognito-sync:Delete*
+              - cognito-sync:Update*
+              - cognito-sync:Put*
+              - cognito-idp:Delete*
+              - cognito-idp:Update*
+              - cognito-idp:Put*
+              - dynamodb:Delete*
+              - dynamodb:Update*
+              - dynamodb:Put*
+              - ec2:TerminateInstances
+              - ec2:Modify*
+              - ec2:Update*
+              - ec2:Delete*
+              - ec2:Put*
+              - kms:ScheduleKeyDeletion
+              - kms:Update*
+              - kms:Put*
+              - events:Delete*
+              - events:Put*
+              - events:Update*
+              - logs:Delete*
+              - logs:Put*
+              - logs:Update*
+              - logs:Modify*
+              - s3:Delete*
+              - s3:Update*
+              - sns:Delete*
+              - sns:Set*
+              - sns:Put*
+              - sns:Update*
+              - tag:Untag*
+              - tag:TagResources
+            Resource: '*'
+            Condition:
+              StringNotEqualsIfExists:
+                "aws:ResourceTag/cmz:application": !Ref ApplicationTag
+                "aws:ResourceTag/cmz:team": !Ref TeamTag
+              ArnNotEquals:
+                "aws:PrincipalArn": !If [HasPrincipalExemptArn, !Ref ExemptPrincipalArn, !Ref "AWS::NoValue"]
+
+          - Sid: DenyOutsideRegion
+            Effect: Deny
+            Action:
+              - apigateway:*
+              - cloudformation:*
+              - cloudtrail:*
+              - cloudwatch:*
+              - cognito-identity:*
+              - cognito-idp:*
+              - dynamodb:*
+              - ec2:*
+              - events:*
+              - kms:*
+              - logs:*
+              - s3:*
+              - sns:*
+              - tag:*
+            Resource: '*'
+            Condition:
+              StringNotEquals:
+                "aws:RequestedRegion": !Ref AllowedRegion
+              ArnNotEquals:
+                "aws:PrincipalArn": !If [HasPrincipalExemptArn, !Ref ExemptPrincipalArn, !Ref "AWS::NoValue"]
+
+
+  # Cost Explorer Policy
+  CostExplorerPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CostExplorerPolicy
+      Groups: [!Ref GuardrailsGroup]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ce:GetCostAndUsage
+              - ce:GetCostForecast
+              - ce:GetReservationUtilization
+              - ce:GetSavingsPlansUtilization
+              - budgets:ViewBudget
+            Resource: '*'
+
+
+  # Sensitive Account/Billing Info Deny Policy
+  BillingDenyPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: BillingDenyPolicy
+      Groups: [!Ref GuardrailsGroup]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Deny
+            Action:
+              - aws-portal:*
+              - account:*
+            Resource: '*'
+
+  # CloudTrail (only in specified region and if enabled)
+  CloudTrail:
+    Type: AWS::CloudTrail::Trail
+    Condition: ProvisionCloudTrail
+    Properties:
+      TrailName: cmz-guardrails-trail
+      S3BucketName: !Ref CloudTrailBucket
+      IsLogging: true
+      IncludeGlobalServiceEvents: true
+      IsMultiRegionTrail: false
+      EnableLogFileValidation: true
+      KMSKeyId: !Ref "AWS::NoValue"
+      Tags:
+        - Key: cmz:application
+          Value: !Ref ApplicationTag
+        - Key: cmz:team
+          Value: !Ref TeamTag
+
+  # S3 Bucket for CloudTrail logs (only if enabled)
+  CloudTrailBucket:
+    Type: AWS::S3::Bucket
+    Condition: ProvisionCloudTrail
+    Properties:
+      BucketName: !Sub cmz-guardrails-trail-${AWS::AccountId}-${AWS::StackName}
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: cmz:application
+          Value: !Ref ApplicationTag
+        - Key: cmz:team
+          Value: !Ref TeamTag
+
+  # Budget
+  AccountBudget:
+    Type: AWS::Budgets::Budget
+    Condition: ProvisionCostMonitorsCondition
+    Properties:
+      Budget:
+        BudgetName: cmz-guardrails-budget
+        BudgetLimit:
+          Amount: !Ref BudgetCap
+          Unit: USD
+        TimeUnit: MONTHLY
+        BudgetType: COST
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref TeamNotificationEmail
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref TeamNotificationEmail
+
+  # SNS Topic for Cost Notification
+  CostSummaryTopic:
+    Type: AWS::SNS::Topic
+    Condition: ProvisionCostMonitorResources
+    Properties:
+      TopicName: cmz-cost-summary
+      Subscription:
+        - Fn::If:
+          - EnableWeeklyNotification
+          - 
+            Endpoint: !Ref TeamNotificationEmail
+            Protocol: email
+          - !Ref "AWS::NoValue"
+      Tags:
+        - Key: cmz:application
+          Value: !Ref ApplicationTag
+        - Key: cmz:team
+          Value: !Ref TeamTag
+
+  # Lambda Function for Cost Summary
+  CostSummaryLambda:
+    Type: AWS::Lambda::Function
+    Condition: ProvisionCostMonitorResources
+    Properties:
+      FunctionName: cmz-cost-summary
+      Handler: index.handler
+      Runtime: python3.12
+      Role: !GetAtt CostSummaryLambdaRole.Arn
+      Environment:
+        Variables:
+          APPLICATION_TAG: !Ref ApplicationTag
+          TEAM_TAG: !Ref TeamTag
+          COST_SUMMARY_TOPIC_ARN: !Ref CostSummaryTopic
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          from datetime import datetime
+          import logging
+
+          def handler(event, context):
+              logger = logging.getLogger()
+              logger.setLevel(logging.INFO)
+              try:
+                  ce = boto3.client('ce')
+                  sns = boto3.client('sns')
+                  today = datetime.utcnow()
+                  start = today.replace(day=1).strftime('%Y-%m-%d')
+                  end = today.strftime('%Y-%m-%d')
+                  application_tag = os.environ.get('APPLICATION_TAG')
+                  team_tag = os.environ.get('TEAM_TAG')
+                  topic_arn = os.environ.get('COST_SUMMARY_TOPIC_ARN')
+
+                  # Filter by tags
+                  filter_obj = {
+                      "And": [
+                          {"Tags": {"Key": "cmz:application", "Values": [application_tag]}},
+                          {"Tags": {"Key": "cmz:team", "Values": [team_tag]}}
+                      ]
+                  }
+
+                  result = ce.get_cost_and_usage(
+                      TimePeriod={'Start': start, 'End': end},
+                      Granularity='MONTHLY',
+                      Metrics=['UnblendedCost'],
+                      Filter=filter_obj
+                  )
+
+                  amount = result['ResultsByTime'][0]['Total']['UnblendedCost']['Amount']
+                  currency = result['ResultsByTime'][0]['Total']['UnblendedCost']['Unit']
+                  message = (
+                      f"Month-to-date cost for resources tagged with "
+                      f"cmz:application={application_tag} and cmz:team={team_tag}: {amount} {currency}"
+                  )
+
+                  logger.info(message)
+                  sns.publish(
+                      TopicArn=topic_arn,
+                      Subject="AWS Monthly Cost Summary",
+                      Message=message
+                  )
+                  return {"status": "sent", "message": message}
+              except Exception as e:
+                  logger.error(f"Error: {str(e)}")
+                  raise
+      Tags:
+        - Key: cmz:application
+          Value: !Ref ApplicationTag
+        - Key: cmz:team
+          Value: !Ref TeamTag
+
+  CostSummaryLogGroup:
+    Type: AWS::Logs::LogGroup
+    Condition: ProvisionCostMonitorResources
+    Properties:
+      LogGroupName: /aws/lambda/cmz-cost-summary
+      RetentionInDays: 30
+      Tags:
+        - Key: cmz:application
+          Value: !Ref ApplicationTag
+        - Key: cmz:team
+          Value: !Ref TeamTag
+
+  CostSummaryLambdaRole:
+    Type: AWS::IAM::Role
+    Condition: ProvisionCostMonitorResources
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CostSummaryLambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ce:GetCostAndUsage
+                  - sns:Publish
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+      Tags:
+        - Key: cmz:application
+          Value: !Ref ApplicationTag
+        - Key: cmz:team
+          Value: !Ref TeamTag
+
+  # CloudWatch Event Rule for Weekly Trigger
+  WeeklyCostSummaryRule:
+    Type: AWS::Events::Rule
+    Condition: ProvisionCostMonitorResources
+    Properties:
+      ScheduleExpression: 'rate(7 days)'
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt CostSummaryLambda.Arn
+          Id: CostSummaryLambda
+
+  CostSummaryLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Condition: ProvisionCostMonitorResources
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CostSummaryLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt WeeklyCostSummaryRule.Arn
+
+Outputs:
+  GuardrailsGroupName:
+    Description: Name of the IAM group created.
+    Value: !Ref GuardrailsGroup
+  CostSummaryTopicArn:
+    Condition: ProvisionCostMonitorResources
+    Description: SNS Topic ARN for cost summary notifications.
+    Value: !Ref CostSummaryTopic
+  CostSummaryLambdaArn:
+    Condition: ProvisionCostMonitorResources
+    Description: Lambda ARN for cost summary.
+    Value: !GetAtt CostSummaryLambda.Arn
+  CloudTrailArn:
+    Condition: EnableCloudTrailCondition
+    Description: CloudTrail ARN.
+    Value: !Ref CloudTrail
+  CloudTrailBucketName:
+    Condition: EnableCloudTrailCondition
+    Description: CloudTrail S3 bucket name.
+    Value: !Ref CloudTrailBucket
