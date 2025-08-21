@@ -21,6 +21,8 @@ tags:
 - name: Media
 - name: Later
   description: Backlog endpoints (not in v1)
+- name: Family
+  description: Manage parent-student family groups
 paths:
   /:
     get:
@@ -1097,29 +1099,41 @@ components:
         email:
           type: string
           format: email
+
     User:
       allOf:
-      - type: object
-        required:
-        - id
-        - email
-        - role
-        properties:
-          id:
-            type: string
-          email:
-            type: string
-            format: email
-          displayName:
-            type: string
-          role:
-            type: string
-            enum:
-            - visitor
-            - member
-            - editor
-            - admin
-      - $ref: '#/components/schemas/AuditFields'
+        - type: object
+          required:
+            - id
+            - email
+            - role
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+              format: email
+            displayName:
+              type: string
+            role:
+              type: string
+              enum:
+                - visitor
+                - user
+                - editor
+                - admin
+            userType:
+              type: string
+              enum:
+                - none
+                - parent
+                - student
+              default: none
+            familyId:
+              type: string
+              nullable: true
+        - $ref: '#/components/schemas/AuditFields'
+
     UserDetails:
       allOf:
       - $ref: '#/components/schemas/User'
@@ -1422,6 +1436,28 @@ components:
                 type: string
               usd:
                 type: number
+
+    Family:
+      type: object
+      required:
+        - id
+        - parents
+        - students
+      properties:
+        id:
+          type: string
+          description: Unique family ID
+        parents:
+          type: array
+          items:
+            type: string
+            description: User ID of a parent
+        students:
+          type: array
+          items:
+            type: string
+            description: User ID of a student
+
     UsageSummary:
       type: object
       properties:
@@ -1481,3 +1517,111 @@ components:
       properties:
         flags:
           $ref: '#/components/schemas/FeatureFlags'
+
+
+  /family:
+    get:
+      tags:
+        - Family
+      summary: Get list of all families
+      operationId: listFamilies
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of families
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Family'
+
+    post:
+      tags:
+        - Family
+      summary: Create a new family
+      operationId: createFamily
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Family'
+      responses:
+        '201':
+          description: Family created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+
+  /family/{id}:
+    get:
+      tags:
+        - Family
+      summary: Get specific family by ID
+      operationId: getFamily
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Family details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+        - Family
+      summary: Update an existing family
+      operationId: updateFamily
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Family'
+      responses:
+        '200':
+          description: Family updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+
+    delete:
+      tags:
+        - Family
+      summary: Delete a family
+      operationId: deleteFamily
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Family deleted
