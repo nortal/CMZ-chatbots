@@ -350,7 +350,13 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:GetObject
-                Resource: !Sub arn:aws:s3:::${OpenApiS3Bucket}/${OpenApiS3Key}
+              - Fn::If:
+                  - HasOpenApiS3Bucket
+                  - Effect: Allow
+                    Action:
+                      - s3:GetObject
+                    Resource: !Sub arn:aws:s3:::${OpenApiS3Bucket}/${OpenApiS3Key}
+                  - !Ref "AWS::NoValue"
               # Conditionally include Cognito permissions
               - Fn::If:
                   - HasCognito
