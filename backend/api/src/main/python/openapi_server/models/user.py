@@ -14,7 +14,7 @@ class User(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, id=None, email=None, display_name=None, role=None):  # noqa: E501
+    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, id=None, email=None, display_name=None, role=None, user_type='none', family_id=None):  # noqa: E501
         """User - a model defined in OpenAPI
 
         :param created: The created of this User.  # noqa: E501
@@ -33,6 +33,10 @@ class User(Model):
         :type display_name: str
         :param role: The role of this User.  # noqa: E501
         :type role: str
+        :param user_type: The user_type of this User.  # noqa: E501
+        :type user_type: str
+        :param family_id: The family_id of this User.  # noqa: E501
+        :type family_id: str
         """
         self.openapi_types = {
             'created': AuditStamp,
@@ -42,7 +46,9 @@ class User(Model):
             'id': str,
             'email': str,
             'display_name': str,
-            'role': str
+            'role': str,
+            'user_type': str,
+            'family_id': str
         }
 
         self.attribute_map = {
@@ -53,7 +59,9 @@ class User(Model):
             'id': 'id',
             'email': 'email',
             'display_name': 'displayName',
-            'role': 'role'
+            'role': 'role',
+            'user_type': 'userType',
+            'family_id': 'familyId'
         }
 
         self._created = created
@@ -64,6 +72,8 @@ class User(Model):
         self._email = email
         self._display_name = display_name
         self._role = role
+        self._user_type = user_type
+        self._family_id = family_id
 
     @classmethod
     def from_dict(cls, dikt) -> 'User':
@@ -245,7 +255,7 @@ class User(Model):
         :param role: The role of this User.
         :type role: str
         """
-        allowed_values = ["visitor", "member", "editor", "admin"]  # noqa: E501
+        allowed_values = ["visitor", "user", "editor", "admin"]  # noqa: E501
         if role not in allowed_values:
             raise ValueError(
                 "Invalid value for `role` ({0}), must be one of {1}"
@@ -253,3 +263,51 @@ class User(Model):
             )
 
         self._role = role
+
+    @property
+    def user_type(self) -> str:
+        """Gets the user_type of this User.
+
+
+        :return: The user_type of this User.
+        :rtype: str
+        """
+        return self._user_type
+
+    @user_type.setter
+    def user_type(self, user_type: str):
+        """Sets the user_type of this User.
+
+
+        :param user_type: The user_type of this User.
+        :type user_type: str
+        """
+        allowed_values = ["none", "parent", "student"]  # noqa: E501
+        if user_type not in allowed_values:
+            raise ValueError(
+                "Invalid value for `user_type` ({0}), must be one of {1}"
+                .format(user_type, allowed_values)
+            )
+
+        self._user_type = user_type
+
+    @property
+    def family_id(self) -> str:
+        """Gets the family_id of this User.
+
+
+        :return: The family_id of this User.
+        :rtype: str
+        """
+        return self._family_id
+
+    @family_id.setter
+    def family_id(self, family_id: str):
+        """Sets the family_id of this User.
+
+
+        :param family_id: The family_id of this User.
+        :type family_id: str
+        """
+
+        self._family_id = family_id

@@ -16,7 +16,7 @@ class UserDetails(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, email=None, display_name=None, role=None, created=None, modified=None, deleted=None, soft_delete=False, usage=None):  # noqa: E501
+    def __init__(self, id=None, email=None, display_name=None, role=None, user_type='none', family_id=None, created=None, modified=None, deleted=None, soft_delete=False, usage=None):  # noqa: E501
         """UserDetails - a model defined in OpenAPI
 
         :param id: The id of this UserDetails.  # noqa: E501
@@ -27,6 +27,10 @@ class UserDetails(Model):
         :type display_name: str
         :param role: The role of this UserDetails.  # noqa: E501
         :type role: str
+        :param user_type: The user_type of this UserDetails.  # noqa: E501
+        :type user_type: str
+        :param family_id: The family_id of this UserDetails.  # noqa: E501
+        :type family_id: str
         :param created: The created of this UserDetails.  # noqa: E501
         :type created: AuditStamp
         :param modified: The modified of this UserDetails.  # noqa: E501
@@ -43,6 +47,8 @@ class UserDetails(Model):
             'email': str,
             'display_name': str,
             'role': str,
+            'user_type': str,
+            'family_id': str,
             'created': AuditStamp,
             'modified': AuditStamp,
             'deleted': AuditStamp,
@@ -55,6 +61,8 @@ class UserDetails(Model):
             'email': 'email',
             'display_name': 'displayName',
             'role': 'role',
+            'user_type': 'userType',
+            'family_id': 'familyId',
             'created': 'created',
             'modified': 'modified',
             'deleted': 'deleted',
@@ -66,6 +74,8 @@ class UserDetails(Model):
         self._email = email
         self._display_name = display_name
         self._role = role
+        self._user_type = user_type
+        self._family_id = family_id
         self._created = created
         self._modified = modified
         self._deleted = deleted
@@ -168,7 +178,7 @@ class UserDetails(Model):
         :param role: The role of this UserDetails.
         :type role: str
         """
-        allowed_values = ["visitor", "member", "editor", "admin"]  # noqa: E501
+        allowed_values = ["visitor", "user", "editor", "admin"]  # noqa: E501
         if role not in allowed_values:
             raise ValueError(
                 "Invalid value for `role` ({0}), must be one of {1}"
@@ -176,6 +186,54 @@ class UserDetails(Model):
             )
 
         self._role = role
+
+    @property
+    def user_type(self) -> str:
+        """Gets the user_type of this UserDetails.
+
+
+        :return: The user_type of this UserDetails.
+        :rtype: str
+        """
+        return self._user_type
+
+    @user_type.setter
+    def user_type(self, user_type: str):
+        """Sets the user_type of this UserDetails.
+
+
+        :param user_type: The user_type of this UserDetails.
+        :type user_type: str
+        """
+        allowed_values = ["none", "parent", "student"]  # noqa: E501
+        if user_type not in allowed_values:
+            raise ValueError(
+                "Invalid value for `user_type` ({0}), must be one of {1}"
+                .format(user_type, allowed_values)
+            )
+
+        self._user_type = user_type
+
+    @property
+    def family_id(self) -> str:
+        """Gets the family_id of this UserDetails.
+
+
+        :return: The family_id of this UserDetails.
+        :rtype: str
+        """
+        return self._family_id
+
+    @family_id.setter
+    def family_id(self, family_id: str):
+        """Sets the family_id of this UserDetails.
+
+
+        :param family_id: The family_id of this UserDetails.
+        :type family_id: str
+        """
+
+        self._family_id = family_id
 
     @property
     def created(self) -> AuditStamp:
