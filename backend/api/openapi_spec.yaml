@@ -337,6 +337,31 @@ paths:
           description: Deleted
         '404':
           $ref: '#/components/responses/NotFound'
+    post:
+      summary: Create a new user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/User'
+              required:
+                - email
+                - role
+              properties:
+                id:
+                  readOnly: true
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      tags:
+        - User
   /convo_turn:
     post:
       tags:
