@@ -21,6 +21,8 @@ tags:
 - name: Media
 - description: Backlog endpoints (not in v1)
   name: Later
+- description: Manage parent-student family groups
+  name: Family
 paths:
   /:
     get:
@@ -508,6 +510,119 @@ paths:
       tags:
       - Conversation
       x-openapi-router-controller: openapi_server.controllers.conversation_controller
+  /family:
+    get:
+      operationId: list_families
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Family"
+                type: array
+          description: List of families
+      security:
+      - bearerAuth: []
+      summary: Get list of all families
+      tags:
+      - Family
+      x-openapi-router-controller: openapi_server.controllers.family_controller
+    post:
+      operationId: create_family
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Family"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Family"
+          description: Family created
+      security:
+      - bearerAuth: []
+      summary: Create a new family
+      tags:
+      - Family
+      x-openapi-router-controller: openapi_server.controllers.family_controller
+  /family/{id}:
+    delete:
+      operationId: delete_family
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Family deleted
+      security:
+      - bearerAuth: []
+      summary: Delete a family
+      tags:
+      - Family
+      x-openapi-router-controller: openapi_server.controllers.family_controller
+    get:
+      operationId: get_family
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Family"
+          description: Family details
+        "404":
+          $ref: "#/components/responses/NotFound"
+      security:
+      - bearerAuth: []
+      summary: Get specific family by ID
+      tags:
+      - Family
+      x-openapi-router-controller: openapi_server.controllers.family_controller
+    patch:
+      operationId: update_family
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Family"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Family"
+          description: Family updated
+      security:
+      - bearerAuth: []
+      summary: Update an existing family
+      tags:
+      - Family
+      x-openapi-router-controller: openapi_server.controllers.family_controller
   /feature_flags:
     get:
       operationId: feature_flags_get
@@ -1407,6 +1522,7 @@ components:
       example:
         expiresIn: 0
         user:
+          familyId: familyId
           role: visitor
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
@@ -1429,6 +1545,7 @@ components:
               id: id
               email: email
           id: id
+          userType: none
           email: email
         token: token
       properties:
@@ -1472,9 +1589,19 @@ components:
           role:
             enum:
             - visitor
-            - member
+            - user
             - editor
             - admin
+            type: string
+          userType:
+            default: none
+            enum:
+            - none
+            - parent
+            - student
+            type: string
+          familyId:
+            nullable: true
             type: string
         required:
         - email
@@ -1483,6 +1610,7 @@ components:
         type: object
       - $ref: "#/components/schemas/AuditFields"
       example:
+        familyId: familyId
         role: visitor
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
@@ -1505,6 +1633,7 @@ components:
             id: id
             email: email
         id: id
+        userType: none
         email: email
       title: User
     UserDetails:
@@ -1515,6 +1644,7 @@ components:
             $ref: "#/components/schemas/UsageSummary"
         type: object
       example:
+        familyId: familyId
         role: visitor
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
@@ -1542,6 +1672,7 @@ components:
             id: id
             email: email
         id: id
+        userType: none
         email: email
       title: UserDetails
     PagedUsers:
@@ -1550,7 +1681,8 @@ components:
         pageSize: 6
         page: 0
         items:
-        - role: visitor
+        - familyId: familyId
+          role: visitor
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
             by:
@@ -1572,8 +1704,10 @@ components:
               id: id
               email: email
           id: id
+          userType: none
           email: email
-        - role: visitor
+        - familyId: familyId
+          role: visitor
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
             by:
@@ -1595,6 +1729,7 @@ components:
               id: id
               email: email
           id: id
+          userType: none
           email: email
       properties:
         items:
@@ -2155,6 +2290,38 @@ components:
           title: byService
           type: array
       title: BillingSummary
+      type: object
+    Family:
+      example:
+        students:
+        - students
+        - students
+        id: id
+        parents:
+        - parents
+        - parents
+      properties:
+        id:
+          description: Unique family ID
+          title: id
+          type: string
+        parents:
+          items:
+            description: User ID of a parent
+            type: string
+          title: parents
+          type: array
+        students:
+          items:
+            description: User ID of a student
+            type: string
+          title: students
+          type: array
+      required:
+      - id
+      - parents
+      - students
+      title: Family
       type: object
     UsageSummary:
       example:
