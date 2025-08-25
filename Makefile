@@ -8,8 +8,9 @@ CONTAINER_NAME ?= $(IMAGE_NAME)-dev
 
 # OpenAPI spec and app paths (relative to repo root)
 OPENAPI_SPEC ?= backend/api/openapi_spec.yaml
-APP_DIR ?= backend/api/generated/app
-REQUIREMENTS_FILE ?= $(APP_DIR)/requirements.txt
+SRC_APP_DIR ?= backend/api/src/main/python
+GEN_APP_DIR ?= backend/api/generated/app
+REQUIREMENTS_FILE ?= $(SRC_APP_DIR)/requirements.txt
 
 # Where to stash backups of existing code before regeneration
 GEN_TMP_BASE ?= tmp
@@ -48,9 +49,9 @@ $(GEN_TMP_BASE):
 .PHONY: help
 help:
 	@echo "Targets (API-specific):"
-	@echo "  generate-api     Backup $(APP_DIR) to tmp/api_<timestamp> and regenerate Flask code from $(OPENAPI_SPEC)"
-	@echo "  build-api        Build Docker image $(IMAGE_NAME) from generated Dockerfile in $(APP_DIR)"
-	@echo "  run-api          Run container $(CONTAINER_NAME) with $(APP_DIR) mounted; port $(PORT)->$(CONTAINER_PORT)"
+	@echo "  generate-api     Backup $(GEN_APP_DIR) to tmp/api_<timestamp> and regenerate Flask code from $(OPENAPI_SPEC)"
+	@echo "  build-api        Build Docker image $(IMAGE_NAME) from generated Dockerfile in $(SRC_APP_DIR)"
+	@echo "  run-api          Run container $(CONTAINER_NAME) with $(SRC_APP_DIR) mounted; port $(PORT)->$(CONTAINER_PORT)"
 	@echo "  stop-api         Stop container $(CONTAINER_NAME) if running"
 	@echo "  logs-api         Tail logs from $(CONTAINER_NAME)"
 	@echo "  clean-api        Remove ONLY containers/images labeled $(API_LABEL) (and image named $(IMAGE_NAME))"
@@ -61,7 +62,7 @@ help:
 	@echo "  install-api      Install pip requirements from $(REQUIREMENTS_FILE) into $(VENV_DIR)"
 	@echo ""
 	@echo "Variables (override like VAR=value make <target>):"
-	@echo "  IMAGE_NAME, CONTAINER_NAME, OPENAPI_SPEC, APP_DIR, GEN_TMP_BASE, PORT, CONTAINER_PORT"
+	@echo "  IMAGE_NAME, CONTAINER_NAME, OPENAPI_SPEC, GEN_APP_DIR, SRC_APP_DIR, GEN_TMP_BASE, PORT, CONTAINER_PORT"
 	@echo "  OPENAPI_GEN_IMAGE, OPENAPI_GENERATOR, OPENAPI_GEN_OPTS, UV, PYTHON_VERSION, VENV_DIR"
 
 # =========================
@@ -74,20 +75,20 @@ generate-api: $(GEN_TMP_BASE)
 	TS=$$(date +%Y%m%d_%H%M%S); \
 	BACKUP_DIR="$(GEN_TMP_BASE)/api_$${TS}"; \
 	mkdir -p "$${BACKUP_DIR}"; \
-	if [ -d "$(APP_DIR)" ]; then \
-		echo "   - Copying '$(APP_DIR)' -> '$${BACKUP_DIR}/app'"; \
-		cp -a "$(APP_DIR)" "$${BACKUP_DIR}/app"; \
+	if [ -d "$(GEN_APP_DIR)" ]; then \
+		echo "   - Copying '$(GEN_APP_DIR)' -> '$${BACKUP_DIR}/app'"; \
+		cp -a "$(GEN_APP_DIR)" "$${BACKUP_DIR}/app"; \
 	else \
-		echo "   - No existing '$(APP_DIR)' directory found; skipping copy"; \
+		echo "   - No existing '$(GEN_APP_DIR)' directory found; skipping copy"; \
 	fi; \
-	echo ">> Generating code from '$(OPENAPI_SPEC)' into '$(APP_DIR)' using generator '$(OPENAPI_GENERATOR)'"; \
-	mkdir -p "$(APP_DIR)"; \
+	echo ">> Generating code from '$(OPENAPI_SPEC)' into '$(GEN_APP_DIR)' using generator '$(OPENAPI_GENERATOR)'"; \
+	mkdir -p "$(GEN_APP_DIR)"; \
 	docker run --rm \
 		-v "$(ROOT_DIR)":/local \
 		"$(OPENAPI_GEN_IMAGE)" generate \
 		-g "$(OPENAPI_GENERATOR)" \
 		-i "/local/$(OPENAPI_SPEC)" \
-		-o "/local/$(APP_DIR)" \
+		-o "/local/$(GEN_APP_DIR)" \
 		$(OPENAPI_GEN_OPTS); \
 	echo ">> Generation complete."
 
@@ -97,15 +98,15 @@ generate-api: $(GEN_TMP_BASE)
 .PHONY: build-api
 build-api:
 	@set -e; \
-	if [ ! -f "$(APP_DIR)/Dockerfile" ]; then \
-		echo "ERROR: Dockerfile not found at '$(APP_DIR)/Dockerfile'. Run 'make generate-api' first."; \
+	if [ ! -f "$(SRC_APP_DIR)/Dockerfile" ]; then \
+		echo "ERROR: Dockerfile not found at '$(SRC_APP_DIR)/Dockerfile'. Run 'make generate-api' first."; \
 		exit 1; \
 	fi; \
-	echo ">> Building Docker image '$(IMAGE_NAME)' from '$(APP_DIR)'"; \
+	echo ">> Building Docker image '$(IMAGE_NAME)' from '$(SRC_APP_DIR)'"; \
 	docker build \
 		--label "$(API_LABEL)" \
 		-t "$(IMAGE_NAME)" \
-		"$(APP_DIR)"
+		"$(SRC_APP_DIR)"
 
 # =========================
 # 3) Run Docker container (with live bind mount)
@@ -114,13 +115,26 @@ build-api:
 run-api:
 	@set -e; \
 	echo ">> Starting container '$(CONTAINER_NAME)' from image '$(IMAGE_NAME)'"; \
-	docker run --rm -d \
-		--label "$(API_LABEL)" \
-		--name "$(CONTAINER_NAME)" \
-		-p "$(PORT):$(CONTAINER_PORT)" \
-		-v "$(ROOT_DIR)/$(APP_DIR)":/app \
-		"$(IMAGE_NAME)"; \
-	echo ">> Container running: http://localhost:$(PORT)"
+	if [ "$(DEBUG)" = "1" ]; then \
+		echo ">> Running in DEBUG mode (interactive, Flask debug enabled)"; \
+		docker run --rm -it \
+			--label "$(API_LABEL)" \
+			--name "$(CONTAINER_NAME)" \
+			-p "$(PORT):$(CONTAINER_PORT)" \
+			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
+			-v $$HOME/.aws:/root/.aws:ro \
+			-e FLASK_ENV=development \
+			"$(IMAGE_NAME)"; \
+	else \
+		docker run --rm -d \
+			--label "$(API_LABEL)" \
+			--name "$(CONTAINER_NAME)" \
+			-p "$(PORT):$(CONTAINER_PORT)" \
+			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
+			-v $$HOME/.aws:/root/.aws:ro \
+			"$(IMAGE_NAME)"; \
+		echo ">> Container running: http://localhost:$(PORT)"; \
+	fi
 
 .PHONY: stop-api
 stop-api:
