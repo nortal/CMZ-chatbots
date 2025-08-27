@@ -155,15 +155,13 @@ Resources:
     Type: AWS::IAM::UserToGroupAddition
     Properties:
       GroupName: !Ref GuardrailsGroup
-      Users: 
-        !Split [",", !Join [",", !Ref UserEmails]]
+      Users: !Ref UserEmails
 
   SupplementaryGroupUsers:
     Type: AWS::IAM::UserToGroupAddition
     Properties:
       GroupName: !Ref SupplementaryGroup
-      Users: 
-        !Split [",", !Join [",", !Ref UserEmails]]
+      Users: !Ref UserEmails
 
   # Tag Enforcement Policy
   TagEnforcementPolicy:
@@ -217,16 +215,15 @@ Resources:
               - cloudwatch:Delete*
               - cloudwatch:Put*
               - cloudwatch:Update*
-              - cloudwatch:Modify*
               - cognito-identity:Delete*
               - cognito-identity:Update*
-              - cognito-identity:Put*
+              - cognito-identity:Set*
               - cognito-sync:Delete*
               - cognito-sync:Update*
-              - cognito-sync:Put*
+              - cognito-sync:Set*
               - cognito-idp:Delete*
               - cognito-idp:Update*
-              - cognito-idp:Put*
+              - cognito-idp:Set*
               - dynamodb:Delete*
               - dynamodb:Update*
               - dynamodb:Put*
@@ -244,13 +241,12 @@ Resources:
               - logs:Delete*
               - logs:Put*
               - logs:Update*
-              - logs:Modify*
               - s3:Delete*
               - s3:Update*
               - sns:Delete*
               - sns:Set*
               - sns:Put*
-              - sns:Update*
+              - sns:Remove*
               - tag:Untag*
               - tag:TagResources
             Resource: '*'
@@ -390,7 +386,7 @@ Resources:
   # SNS Topic for Cost Notification
   CostSummaryTopic:
     Type: AWS::SNS::Topic
-    Condition: ProvisionCostMonitorResources
+    Condition: ProvisionCostMonitorsCondition
     Properties:
       TopicName: cmz-cost-summary
       Subscription:
@@ -553,10 +549,10 @@ Outputs:
     Description: Lambda ARN for cost summary.
     Value: !GetAtt CostSummaryLambda.Arn
   CloudTrailArn:
-    Condition: EnableCloudTrailCondition
+    Condition: ProvisionCloudTrail
     Description: CloudTrail ARN.
     Value: !Ref CloudTrail
   CloudTrailBucketName:
-    Condition: EnableCloudTrailCondition
+    Condition: ProvisionCloudTrail
     Description: CloudTrail S3 bucket name.
     Value: !Ref CloudTrailBucket

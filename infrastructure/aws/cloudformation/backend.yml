@@ -141,7 +141,9 @@ Parameters:
     Description: Lambda function timeout in seconds
   LambdaMemorySize:
     Type: Number
-    Default: 1024
+    MinValue: 128
+    MaxValue: 1024
+    Default: 128
     Description: Lambda function memory size in MB
 
   DynamoBillingMode:
@@ -195,7 +197,9 @@ Conditions:
   HasFrontendHostedZone: !Not [!Equals [!Ref FrontendHostedZoneId, ""]]
   EnableFrontendCloudFront: !Equals [!Ref EnableFrontendHttps, true]
   EnableApiGatewayWaf: !Equals [!Ref EnableApiWaf, true]
-  HasLambdaS3Bucket: !Not [!Equals [!Ref LambdaS3Bucket, ""]]
+  HasLambdaS3Bucket: !And
+      - !Not [!Equals [!Ref LambdaS3Bucket, ""]]
+      - !Not [!Equals [!Ref LambdaS3Key, ""]]
   HasApiGateway: !And
     - !Not [!Equals [!Ref OpenApiS3Bucket, ""]]
     - !Not [!Equals [!Ref OpenApiS3Key, ""]]
@@ -210,12 +214,20 @@ Conditions:
   CreateCognitoWithDomain: !And
     - !Condition HasCognito
     - !Condition HasCognitoDomain
-  CreateApiGatewayWithCognito: !And
-    - !Condition HasApiGateway
-    - !Condition HasCognito
+  ## Uncomment if authorizer will not be defined in OpenAPI spec
+  # CreateApiGatewayWithCognito: !And
+  #   - !Condition HasApiGateway
+  #   - !Condition HasCognito
   CreateFrontendS3: !And
     - !Condition HasFrontendDomain
     - !Condition HasFrontendHostedZone
+  CreateFrontendS3WithoutCloudFront: !And
+    - !Condition CreateFrontendS3
+    - !Not [!Condition EnableFrontendCloudFront]
+  CreateFrontendCloudFront: !And
+    - !Condition EnableFrontendCloudFront
+    - !Condition CreateFrontendS3
+
 
 Resources:
 
@@ -310,6 +322,60 @@ Resources:
             WriteCapacityUnits: !Ref DynamoWriteCapacity
           - !Ref "AWS::NoValue"
 
+  FamilyTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ProjectName}-${StageName}-family'
+      BillingMode: !Ref DynamoBillingMode
+      AttributeDefinitions:
+        - AttributeName: familyId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: familyId
+          KeyType: HASH
+      ProvisionedThroughput:
+        Fn::If:
+          - IsProvisioned
+          - ReadCapacityUnits: !Ref DynamoReadCapacity
+            WriteCapacityUnits: !Ref DynamoWriteCapacity
+          - !Ref "AWS::NoValue"
+
+  AnimalConfigTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ProjectName}-${StageName}-animal-config'
+      BillingMode: !Ref DynamoBillingMode
+      AttributeDefinitions:
+        - AttributeName: animalConfigId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: animalConfigId
+          KeyType: HASH
+      ProvisionedThroughput:
+        Fn::If:
+          - IsProvisioned
+          - ReadCapacityUnits: !Ref DynamoReadCapacity
+            WriteCapacityUnits: !Ref DynamoWriteCapacity
+          - !Ref "AWS::NoValue"
+
+  AnimalDetailTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ProjectName}-${StageName}-animal-detail'
+      BillingMode: !Ref DynamoBillingMode
+      AttributeDefinitions:
+        - AttributeName: animalDetailId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: animalDetailId
+          KeyType: HASH
+      ProvisionedThroughput:
+        Fn::If:
+          - IsProvisioned
+          - ReadCapacityUnits: !Ref DynamoReadCapacity
+            WriteCapacityUnits: !Ref DynamoWriteCapacity
+          - !Ref "AWS::NoValue"
+
   # Lambda Execution Role
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -341,6 +407,9 @@ Resources:
                   - !GetAtt AnimalTable.Arn
                   - !GetAtt KnowledgeTable.Arn
                   - !GetAtt UserTable.Arn
+                  - !GetAtt FamilyTable.Arn
+                  - !GetAtt AnimalConfigTable.Arn
+                  - !GetAtt AnimalDetailTable.Arn
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -350,13 +419,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:GetObject
-              - Fn::If:
-                  - HasOpenApiS3Bucket
-                  - Effect: Allow
-                    Action:
-                      - s3:GetObject
-                    Resource: !Sub arn:aws:s3:::${OpenApiS3Bucket}/${OpenApiS3Key}
-                  - !Ref "AWS::NoValue"
+                Resource: !Sub arn:aws:s3:::${OpenApiS3Bucket}/${OpenApiS3Key}
               # Conditionally include Cognito permissions
               - Fn::If:
                   - HasCognito
@@ -383,6 +446,9 @@ Resources:
           ANIMAL_TABLE: !Ref AnimalTable
           KNOWLEDGE_TABLE: !Ref KnowledgeTable
           USER_TABLE: !Ref UserTable
+          FAMILY_TABLE: !Ref FamilyTable
+          ANIMAL_CONFIG_TABLE: !Ref AnimalConfigTable
+          ANIMAL_DETAIL_TABLE: !Ref AnimalDetailTable
           USER_POOL_ID: !If [HasCognito, !Ref UserPool, ""]
       Code:
         Fn::If:
@@ -416,17 +482,6 @@ Resources:
         RecoveryMechanisms:
           - Name: verified_email
             Priority: 1
-      LogConfiguration:
-        CloudWatchLogsConfiguration:
-          LogGroupArn: !GetAtt CognitoLogGroup.Arn
-          LogLevel: INFO
-
-  CognitoLogGroup:
-    Condition: HasCognito
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub '/aws/cognito/${ProjectName}-${StageName}-user-pool'
-      RetentionInDays: !Ref CloudwatchRetentionInDays
 
   UserPoolClient:
     Condition: HasCognito
@@ -469,7 +524,6 @@ Resources:
   ApiGatewayDeployment:
     Condition: HasApiGateway
     Type: AWS::ApiGateway::Deployment
-    DependsOn: ApiGateway
     Properties:
       RestApiId: !Ref ApiGateway
       StageName: !Ref ApiGatewayStageName
@@ -516,16 +570,17 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/*
 
-  ApiGatewayCognitoAuthorizer:
-    Condition: CreateApiGatewayWithCognito
-    Type: AWS::ApiGateway::Authorizer
-    Properties:
-      Name: !Sub '${ProjectName}-${StageName}-cognito-authorizer'
-      Type: COGNITO_USER_POOLS
-      IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref ApiGateway
-      ProviderARNs:
-        - !GetAtt UserPool.Arn
+  ## May drift if also defined in the OpenAPI spec
+  # ApiGatewayCognitoAuthorizer:
+  #   Condition: CreateApiGatewayWithCognito
+  #   Type: AWS::ApiGateway::Authorizer
+  #   Properties:
+  #     Name: !Sub '${ProjectName}-${StageName}-cognito-authorizer'
+  #     Type: COGNITO_USER_POOLS
+  #     IdentitySource: method.request.header.Authorization
+  #     RestApiId: !Ref ApiGateway
+  #     ProviderARNs:
+  #       - !GetAtt UserPool.Arn
 
   ApiGatewayCertificate:
     Condition: CreateApiGatewayWithDomain
@@ -627,7 +682,7 @@ Resources:
 
   # CloudFront distribution for S3 static site (HTTPS)
   FrontendCertificate:
-    Condition: EnableFrontendCloudFront
+    Condition: CreateFrontendCloudFront
     Type: AWS::CertificateManager::Certificate
     Properties:
       DomainName: !Ref FrontendDomainName
@@ -637,7 +692,7 @@ Resources:
           HostedZoneId: !Ref FrontendHostedZoneId
 
   FrontendCloudFrontDistribution:
-    Condition: EnableFrontendCloudFront
+    Condition: CreateFrontendCloudFront
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
@@ -666,7 +721,7 @@ Resources:
 
   # Route53 record for frontend CloudFront distribution (HTTPS)
   FrontendCloudFrontDomainRecord:
-    Condition: EnableFrontendCloudFront
+    Condition: CreateFrontendCloudFront
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneId: !Ref FrontendHostedZoneId
@@ -678,14 +733,14 @@ Resources:
 
   # Route53 record for S3 static website (HTTP only, if HTTPS/CloudFront not enabled)
   FrontendS3DomainRecord:
-    Condition: CreateFrontendS3
+    Condition: CreateFrontendS3WithoutCloudFront
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneId: !Ref FrontendHostedZoneId
       Name: !Ref FrontendDomainName
       Type: A
       AliasTarget:
-        DNSName: !GetAtt FrontendS3Bucket.RegionalDomainName
+        DNSName: !GetAtt FrontendS3Bucket.WebsiteURL
         HostedZoneId: !FindInMap [S3WebsiteHostedZoneIdMap, !Ref "AWS::Region", HostedZoneId]
 
 Mappings:
@@ -736,6 +791,15 @@ Outputs:
   UserTableName:
     Description: DynamoDB User Table Name
     Value: !Ref UserTable
+  FamilyTableName:
+    Description: DynamoDB Family Table Name
+    Value: !Ref FamilyTable
+  AnimalConfigTableName:
+    Description: DynamoDB AnimalConfig Table Name
+    Value: !Ref AnimalConfigTable
+  AnimalDetailTableName:
+    Description: DynamoDB AnimalDetail Table Name
+    Value: !Ref AnimalDetailTable
   FrontendS3BucketName:
     Condition: CreateFrontendS3
     Description: S3 bucket name for static frontend hosting
