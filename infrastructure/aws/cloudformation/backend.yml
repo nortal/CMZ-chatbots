@@ -425,9 +425,10 @@ Resources:
                   - !GetAtt AnimalTable.Arn
                   - !GetAtt KnowledgeTable.Arn
                   - !GetAtt UserTable.Arn
+                  - !GetAtt UserDetailsTable.Arn
                   - !GetAtt FamilyTable.Arn
                   - !GetAtt AnimalConfigTable.Arn
-                  - !GetAtt AnimalDetailTable.Arn
+                  - !GetAtt AnimalDetailsTable.Arn
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -464,9 +465,10 @@ Resources:
           ANIMAL_TABLE: !Ref AnimalTable
           KNOWLEDGE_TABLE: !Ref KnowledgeTable
           USER_TABLE: !Ref UserTable
+          USER_DETAILS_TABLE: !Ref UserDetailsTable
           FAMILY_TABLE: !Ref FamilyTable
           ANIMAL_CONFIG_TABLE: !Ref AnimalConfigTable
-          ANIMAL_DETAIL_TABLE: !Ref AnimalDetailTable
+          ANIMAL_DETAILS_TABLE: !Ref AnimalDetailsTable
           USER_POOL_ID: !If [HasCognito, !Ref UserPool, ""]
       Code:
         Fn::If:
@@ -809,15 +811,18 @@ Outputs:
   UserTableName:
     Description: DynamoDB User Table Name
     Value: !Ref UserTable
+  UserDetailsTableName:
+    Description: DynamoDB User Details Table Name
+    Value: !Ref UserTable
   FamilyTableName:
     Description: DynamoDB Family Table Name
     Value: !Ref FamilyTable
   AnimalConfigTableName:
     Description: DynamoDB AnimalConfig Table Name
     Value: !Ref AnimalConfigTable
-  AnimalDetailTableName:
-    Description: DynamoDB AnimalDetail Table Name
-    Value: !Ref AnimalDetailTable
+  AnimalDetailsTableName:
+    Description: DynamoDB AnimalDetails Table Name
+    Value: !Ref AnimalDetailsTable
   FrontendS3BucketName:
     Condition: CreateFrontendS3
     Description: S3 bucket name for static frontend hosting
