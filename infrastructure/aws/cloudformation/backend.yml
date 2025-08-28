@@ -322,6 +322,24 @@ Resources:
             WriteCapacityUnits: !Ref DynamoWriteCapacity
           - !Ref "AWS::NoValue"
 
+  UserDetailsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ProjectName}-${StageName}-user-details'
+      BillingMode: !Ref DynamoBillingMode
+      AttributeDefinitions:
+        - AttributeName: userDetailsId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userDetailsId
+          KeyType: HASH
+      ProvisionedThroughput:
+        Fn::If:
+          - IsProvisioned
+          - ReadCapacityUnits: !Ref DynamoReadCapacity
+            WriteCapacityUnits: !Ref DynamoWriteCapacity
+          - !Ref "AWS::NoValue"
+
   FamilyTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -358,16 +376,16 @@ Resources:
             WriteCapacityUnits: !Ref DynamoWriteCapacity
           - !Ref "AWS::NoValue"
 
-  AnimalDetailTable:
+  AnimalDetailsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-animal-detail'
+      TableName: !Sub '${ProjectName}-${StageName}-animal-details'
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
-        - AttributeName: animalDetailId
+        - AttributeName: animalDetailsId
           AttributeType: S
       KeySchema:
-        - AttributeName: animalDetailId
+        - AttributeName: animalDetailsId
           KeyType: HASH
       ProvisionedThroughput:
         Fn::If:
