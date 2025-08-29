@@ -150,6 +150,7 @@ venv.bak/
 # Project-specific files
 tmp/
 temp/
+backend/api/generated/
 
 # Spyder project settings
 .spyderproject
@@ -212,5 +213,3 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-
-backend/api/generated/

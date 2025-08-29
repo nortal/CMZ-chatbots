@@ -8,6 +8,8 @@ servers:
   url: https://api.cmz.example.com
 - description: Staging
   url: https://staging.api.cmz.example.com
+- description: Local
+  url: http://localhost:8080
 tags:
 - name: UI
 - name: Auth
@@ -56,8 +58,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AdminShell"
           description: Admin shell data/widgets
-      security:
-      - bearerAuth: []
+      security: []
       summary: Admin dashboard shell data
       tags:
       - UI
@@ -68,7 +69,7 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: animalid
+        name: animalId
         required: true
         schema:
           type: string
@@ -91,13 +92,13 @@ paths:
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
@@ -113,7 +114,7 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: animalid
+        name: animalId
         required: true
         schema:
           type: string
@@ -142,13 +143,13 @@ paths:
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
@@ -160,8 +161,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Invalid config
-      security:
-      - bearerAuth: []
+      security: []
       summary: Update animal configuration
       tags:
       - Animals
@@ -172,7 +172,7 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: animalid
+        name: animalId
         required: true
         schema:
           type: string
@@ -182,20 +182,20 @@ paths:
           content:
             application/json:
               example:
-                id: animal_1
+                animalId: animal_1
                 name: Pokey
                 species: Coendou prehensilis
                 status: active
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
@@ -219,37 +219,37 @@ paths:
           content:
             application/json:
               example:
-              - id: animal_1
+              - animalId: animal_1
                 name: Pokey
                 species: Coendou prehensilis
                 status: active
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
-              - id: animal_2
+              - animalId: animal_2
                 name: Animal 2
                 species: Speciesus exampleus
                 status: hidden
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
@@ -279,20 +279,20 @@ paths:
                 token: eyJhbGciOi...
                 expiresIn: 3600
                 user:
-                  id: user_1
+                  userId: user_1
                   email: user1@cmz.org
                   displayName: User 1
                   role: admin
                   created:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   modified:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   softDelete: false
@@ -311,8 +311,7 @@ paths:
       responses:
         "204":
           description: Logged out
-      security:
-      - bearerAuth: []
+      security: []
       summary: Logout current user (invalidate token/session)
       tags:
       - Auth
@@ -328,20 +327,20 @@ paths:
                 token: eyJhbGciOi...
                 expiresIn: 3600
                 user:
-                  id: user_1
+                  userId: user_1
                   email: user1@cmz.org
                   displayName: User 1
                   role: admin
                   created:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   modified:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   softDelete: false
@@ -396,8 +395,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BillingSummary"
           description: Billing breakdown
-      security:
-      - bearerAuth: []
+      security: []
       summary: Billing summary
       tags:
       - Analytics
@@ -419,8 +417,7 @@ paths:
           description: Deleted
         "404":
           $ref: "#/components/responses/NotFound"
-      security:
-      - bearerAuth: []
+      security: []
       summary: Delete conversation history (GDPR) (backlog)
       tags:
       - Conversation
@@ -432,14 +429,14 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: animalid
+        name: animalId
         required: false
         schema:
           type: string
         style: form
       - explode: true
         in: query
-        name: userid
+        name: userId
         required: false
         schema:
           type: string
@@ -460,8 +457,8 @@ paths:
             application/json:
               example:
                 sessionId: sess_123
-                animalid: animal_1
-                userid: user_2
+                animalId: animal_1
+                userId: user_2
                 turns:
                 - role: user
                   content: Hi Pokey
@@ -472,8 +469,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConvoHistory"
           description: Conversation turns
-      security:
-      - bearerAuth: []
+      security: []
       summary: Get conversation history (backlog)
       tags:
       - Conversation
@@ -496,7 +492,7 @@ paths:
               example:
                 reply: Hi there! I'm Pokey. Want to hear a porcupine fact?
                 turn:
-                  id: turn_001
+                  convoTurnId: turn_001
                   timestamp: 2025-08-11T09:00:00Z
                   tokensPrompt: 120
                   tokensCompletion: 35
@@ -504,8 +500,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConvoTurnResponse"
           description: AI response and turn metadata
-      security:
-      - bearerAuth: []
+      security: []
       summary: Send a conversation turn and get AI reply
       tags:
       - Conversation
@@ -522,8 +517,7 @@ paths:
                   $ref: "#/components/schemas/Family"
                 type: array
           description: List of families
-      security:
-      - bearerAuth: []
+      security: []
       summary: Get list of all families
       tags:
       - Family
@@ -543,19 +537,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/Family"
           description: Family created
-      security:
-      - bearerAuth: []
+      security: []
       summary: Create a new family
       tags:
       - Family
       x-openapi-router-controller: openapi_server.controllers.family_controller
-  /family/{id}:
+  /family/{familyId}:
     delete:
       operationId: delete_family
       parameters:
       - explode: false
         in: path
-        name: id
+        name: familyId
         required: true
         schema:
           type: string
@@ -563,8 +556,7 @@ paths:
       responses:
         "204":
           description: Family deleted
-      security:
-      - bearerAuth: []
+      security: []
       summary: Delete a family
       tags:
       - Family
@@ -574,7 +566,7 @@ paths:
       parameters:
       - explode: false
         in: path
-        name: id
+        name: familyId
         required: true
         schema:
           type: string
@@ -588,8 +580,7 @@ paths:
           description: Family details
         "404":
           $ref: "#/components/responses/NotFound"
-      security:
-      - bearerAuth: []
+      security: []
       summary: Get specific family by ID
       tags:
       - Family
@@ -599,7 +590,7 @@ paths:
       parameters:
       - explode: false
         in: path
-        name: id
+        name: familyId
         required: true
         schema:
           type: string
@@ -617,8 +608,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Family"
           description: Family updated
-      security:
-      - bearerAuth: []
+      security: []
       summary: Update an existing family
       tags:
       - Family
@@ -638,21 +628,20 @@ paths:
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/FeatureFlagsDocument"
           description: All flags
-      security:
-      - bearerAuth: []
+      security: []
       summary: Get feature flags
       tags:
       - System
@@ -677,21 +666,20 @@ paths:
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/FeatureFlagsDocument"
           description: Updated flags
-      security:
-      - bearerAuth: []
+      security: []
       summary: Update feature flags
       tags:
       - System
@@ -702,7 +690,7 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: id
+        name: knowledgeId
         required: true
         schema:
           type: string
@@ -710,8 +698,7 @@ paths:
       responses:
         "204":
           description: Deleted
-      security:
-      - bearerAuth: []
+      security: []
       summary: Delete knowledge article
       tags:
       - Knowledge
@@ -721,7 +708,7 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: id
+        name: knowledgeId
         required: true
         schema:
           type: string
@@ -731,7 +718,7 @@ paths:
           content:
             application/json:
               example:
-                id: ka_123
+                knowledgeId: ka_123
                 title: Porcupine Diet
                 body: "Porcupines are herbivores that enjoy leaves, herbs, twigs,\
                   \ and bark."
@@ -739,17 +726,17 @@ paths:
                 - diet
                 - porcupine
                 visibility: public
-                animalid: animal_1
+                animalId: animal_1
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
@@ -775,7 +762,7 @@ paths:
           content:
             application/json:
               example:
-                id: ka_123
+                knowledgeId: ka_123
                 title: Porcupine Diet
                 body: "Porcupines are herbivores that enjoy leaves, herbs, twigs,\
                   \ and bark."
@@ -783,25 +770,24 @@ paths:
                 - diet
                 - porcupine
                 visibility: public
-                animalid: animal_1
+                animalId: animal_1
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/KnowledgeArticle"
           description: Created
-      security:
-      - bearerAuth: []
+      security: []
       summary: Create knowledge article
       tags:
       - Knowledge
@@ -880,8 +866,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PagedLogs"
           description: Paged logs
-      security:
-      - bearerAuth: []
+      security: []
       summary: Application logs (paged/filtered)
       tags:
       - Analytics
@@ -894,28 +879,27 @@ paths:
           content:
             application/json:
               example:
-                id: user_2
+                userId: user_2
                 email: user2@cmz.org
                 displayName: User 2
                 role: member
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/User"
           description: User profile
-      security:
-      - bearerAuth: []
+      security: []
       summary: Current authenticated user
       tags:
       - Users
@@ -926,7 +910,7 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: id
+        name: mediaId
         required: true
         schema:
           type: string
@@ -934,8 +918,7 @@ paths:
       responses:
         "204":
           description: Deleted
-      security:
-      - bearerAuth: []
+      security: []
       summary: Delete media by id (backlog)
       tags:
       - Media
@@ -947,7 +930,7 @@ paths:
       parameters:
       - explode: true
         in: query
-        name: id
+        name: mediaId
         required: true
         schema:
           type: string
@@ -957,21 +940,21 @@ paths:
           content:
             application/json:
               example:
-                id: m_001
+                mediaId: m_001
                 title: Pokey portrait
                 url: https://cdn.example.com/m_001.jpg
                 kind: image
-                animalid: animal_1
+                animalId: animal_1
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
@@ -999,8 +982,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/MemberShell"
           description: Portal shell data/widgets
-      security:
-      - bearerAuth: []
+      security: []
       summary: User portal shell data
       tags:
       - UI
@@ -1041,17 +1023,16 @@ paths:
                   tokensCompletion: 78000
                   costUsd: 37.55
                 perAnimal:
-                - animalid: animal_1
+                - animalId: animal_1
                   requests: 800
                   avgLatencyMs: 380
-                - animalid: animal_2
+                - animalId: animal_2
                   requests: 440
                   avgLatencyMs: 410
               schema:
                 $ref: "#/components/schemas/PerformanceMetrics"
           description: Metrics payload
-      security:
-      - bearerAuth: []
+      security: []
       summary: Performance metrics between dates
       tags:
       - Analytics
@@ -1072,8 +1053,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Summary"
           description: Summary created
-      security:
-      - bearerAuth: []
+      security: []
       summary: Summarize conversation for personalization/cost control (backlog)
       tags:
       - Conversation
@@ -1097,8 +1077,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SystemHealth"
           description: Health details
-      security:
-      - bearerAuth: []
+      security: []
       summary: System/health check for status page
       tags:
       - System
@@ -1117,29 +1096,28 @@ paths:
           content:
             application/json:
               example:
-                id: m_001
+                mediaId: m_001
                 title: Pokey portrait
                 url: https://cdn.example.com/m_001.jpg
                 kind: image
-                animalid: animal_1
+                animalId: animal_1
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/Media"
           description: Media created
-      security:
-      - bearerAuth: []
+      security: []
       summary: Upload media (image/audio/video) (backlog)
       tags:
       - Media
@@ -1168,13 +1146,36 @@ paths:
       tags:
       - Admin
       x-openapi-router-controller: openapi_server.controllers.admin_controller
+    post:
+      operationId: create_user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: "#/components/schemas/User"
+              required:
+              - email
+              - role
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User created successfully
+      summary: Create a new user
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
   /userdetails:
     get:
       operationId: userdetails_get
       parameters:
       - explode: true
         in: query
-        name: id
+        name: userId
         required: true
         schema:
           type: string
@@ -1184,25 +1185,25 @@ paths:
           content:
             application/json:
               example:
-                id: user_2
+                userId: user_2
                 email: user2@cmz.org
                 displayName: User 2
                 role: member
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
                 usage:
-                  userid: user_2
+                  userId: user_2
                   totalSessions: 5
                   totalTurns: 42
                   lastActive: 2025-08-11T09:00:00Z
@@ -1211,8 +1212,7 @@ paths:
           description: User details
         "404":
           $ref: "#/components/responses/NotFound"
-      security:
-      - bearerAuth: []
+      security: []
       summary: Fetch specific user details
       tags:
       - Admin
@@ -1266,37 +1266,37 @@ paths:
             application/json:
               example:
                 items:
-                - id: user_1
+                - userId: user_1
                   email: user1@cmz.org
                   displayName: User 1
                   role: admin
                   created:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   modified:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   softDelete: false
-                - id: user_2
+                - userId: user_2
                   email: user2@cmz.org
                   displayName: User 2
                   role: member
                   created:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   modified:
                     at: 2025-08-11T09:00:00Z
                     by:
-                      id: user_1
+                      userId: user_1
                       email: system@cmz.org
                       displayName: System
                   softDelete: false
@@ -1306,8 +1306,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PagedUsers"
           description: Paged user list
-      security:
-      - bearerAuth: []
+      security: []
       summary: List users
       tags:
       - Admin
@@ -1326,28 +1325,27 @@ paths:
           content:
             application/json:
               example:
-                id: user_2
+                userId: user_2
                 email: user2@cmz.org
                 displayName: User 2
                 role: editor
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 modified:
                   at: 2025-08-11T09:00:00Z
                   by:
-                    id: user_1
+                    userId: user_1
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/User"
           description: Updated user
-      security:
-      - bearerAuth: []
+      security: []
       summary: Change user role
       tags:
       - Admin
@@ -1379,12 +1377,12 @@ components:
   schemas:
     ActorRef:
       example:
+        actorId: actorId
         displayName: displayName
-        id: id
         email: email
       properties:
-        id:
-          title: id
+        actorId:
+          title: actorId
           type: string
         email:
           format: email
@@ -1399,8 +1397,8 @@ components:
       example:
         at: 2000-01-23T04:56:07.000+00:00
         by:
+          actorId: actorId
           displayName: displayName
-          id: id
           email: email
       properties:
         at:
@@ -1527,25 +1525,25 @@ components:
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
           softDelete: false
           displayName: displayName
           created:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
           modified:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
-          id: id
           userType: none
+          userId: userId
           email: email
         token: token
       properties:
@@ -1579,7 +1577,8 @@ components:
     User:
       allOf:
       - properties:
-          id:
+          userId:
+            readOnly: true
             type: string
           email:
             format: email
@@ -1605,7 +1604,6 @@ components:
             type: string
         required:
         - email
-        - id
         - role
         type: object
       - $ref: "#/components/schemas/AuditFields"
@@ -1615,25 +1613,25 @@ components:
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         softDelete: false
         displayName: displayName
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
-        id: id
         userType: none
+        userId: userId
         email: email
       title: User
     UserDetails:
@@ -1649,30 +1647,30 @@ components:
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         softDelete: false
         displayName: displayName
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         usage:
           totalSessions: 0
           lastActive: 2000-01-23T04:56:07.000+00:00
           totalTurns: 6
-          userid: userid
+          userId: userId
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
-        id: id
         userType: none
+        userId: userId
         email: email
       title: UserDetails
     PagedUsers:
@@ -1686,50 +1684,50 @@ components:
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
           softDelete: false
           displayName: displayName
           created:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
           modified:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
-          id: id
           userType: none
+          userId: userId
           email: email
         - familyId: familyId
           role: visitor
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
           softDelete: false
           displayName: displayName
           created:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
           modified:
             at: 2000-01-23T04:56:07.000+00:00
             by:
+              actorId: actorId
               displayName: displayName
-              id: id
               email: email
-          id: id
           userType: none
+          userId: userId
           email: email
       properties:
         items:
@@ -1755,10 +1753,10 @@ components:
         contextSummary: contextSummary
         sessionId: sessionId
         message: message
-        animalid: animalid
+        animalId: animalId
       properties:
-        animalid:
-          title: animalid
+        animalId:
+          title: animalId
           type: string
         message:
           title: message
@@ -1775,7 +1773,7 @@ components:
           title: metadata
           type: object
       required:
-      - animalid
+      - animalId
       - message
       title: ConvoTurnRequest
       type: object
@@ -1784,8 +1782,8 @@ components:
         turn:
           tokensCompletion: 6
           tokensPrompt: 0
-          id: id
           latencyMs: 1
+          convoTurnId: convoTurnId
           timestamp: 2000-01-23T04:56:07.000+00:00
         reply: reply
       properties:
@@ -1802,8 +1800,8 @@ components:
     ConvoHistory:
       example:
         sessionId: sessionId
-        animalid: animalid
-        userid: userid
+        animalId: animalId
+        userId: userId
         turns:
         - role: user
           content: content
@@ -1815,11 +1813,11 @@ components:
         sessionId:
           title: sessionId
           type: string
-        animalid:
-          title: animalid
+        animalId:
+          title: animalId
           type: string
-        userid:
-          title: userid
+        userId:
+          title: userId
           type: string
         turns:
           items:
@@ -1858,28 +1856,28 @@ components:
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         softDelete: false
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         sessionId: sessionId
       title: Summary
     Animal:
       allOf:
       - properties:
-          id:
+          animalId:
             type: string
           name:
             type: string
@@ -1891,7 +1889,7 @@ components:
             - hidden
             type: string
         required:
-        - id
+        - animalId
         - name
         - species
         type: object
@@ -1900,31 +1898,34 @@ components:
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         species: species
         softDelete: false
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         name: name
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
-        id: id
+        animalId: animalId
         status: active
       title: Animal
     AnimalDetails:
       allOf:
       - $ref: "#/components/schemas/Animal"
       - properties:
+          animalDetailId:
+            readOnly: true
+            type: string
           description:
             type: string
           habitat:
@@ -1937,8 +1938,8 @@ components:
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         habitat: habitat
         species: species
@@ -1946,24 +1947,28 @@ components:
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         imageUrl: https://openapi-generator.tech
         name: name
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         description: description
-        id: id
+        animalId: animalId
+        animalDetailId: animalDetailId
         status: active
       title: AnimalDetails
     AnimalConfig:
       allOf:
       - properties:
+          animalConfigId:
+            readOnly: true
+            type: string
           voice:
             type: string
           personality:
@@ -1991,19 +1996,20 @@ components:
       - $ref: "#/components/schemas/AuditFields"
       example:
         voice: voice
+        animalConfigId: animalConfigId
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         personality: personality
         softDelete: false
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         temperature: 0.1601656380922023
         toolsEnabled:
@@ -2014,8 +2020,8 @@ components:
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         aiModel: aiModel
         topP: 0.6027456183070403
@@ -2025,19 +2031,20 @@ components:
       - $ref: "#/components/schemas/AnimalConfig"
       example:
         voice: voice
+        animalConfigId: animalConfigId
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         personality: personality
         softDelete: false
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         temperature: 0.1601656380922023
         toolsEnabled:
@@ -2048,8 +2055,8 @@ components:
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         aiModel: aiModel
         topP: 0.6027456183070403
@@ -2059,7 +2066,7 @@ components:
         visibility: public
         title: title
         body: body
-        animalid: animalid
+        animalId: animalId
         tags:
         - tags
         - tags
@@ -2082,9 +2089,9 @@ components:
           - internal
           title: visibility
           type: string
-        animalid:
+        animalId:
           nullable: true
-          title: animalid
+          title: animalId
           type: string
       required:
       - body
@@ -2097,36 +2104,36 @@ components:
       - $ref: "#/components/schemas/KnowledgeCreate"
       - $ref: "#/components/schemas/AuditFields"
       - properties:
-          id:
+          knowledgeId:
             type: string
         required:
-        - id
+        - knowledgeId
         type: object
       example:
+        knowledgeId: knowledgeId
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         visibility: public
         softDelete: false
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
-        id: id
         title: title
         body: body
-        animalid: animalid
+        animalId: animalId
         tags:
         - tags
         - tags
@@ -2134,7 +2141,7 @@ components:
     Media:
       allOf:
       - properties:
-          id:
+          mediaId:
             type: string
           title:
             type: string
@@ -2147,12 +2154,12 @@ components:
             - audio
             - video
             type: string
-          animalid:
+          animalId:
             nullable: true
             type: string
         required:
-        - id
         - kind
+        - mediaId
         - url
         type: object
       - $ref: "#/components/schemas/AuditFields"
@@ -2160,26 +2167,26 @@ components:
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         softDelete: false
         kind: image
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
-        id: id
+        mediaId: mediaId
         title: title
-        animalid: animalid
+        animalId: animalId
         url: https://openapi-generator.tech
       title: Media
     PerformanceMetrics:
@@ -2187,10 +2194,10 @@ components:
         perAnimal:
         - avgLatencyMs: 2
           requests: 5
-          animalid: animalid
+          animalId: animalId
         - avgLatencyMs: 2
           requests: 5
-          animalid: animalid
+          animalId: animalId
         window:
           start: 2000-01-23T04:56:07.000+00:00
           end: 2000-01-23T04:56:07.000+00:00
@@ -2293,17 +2300,18 @@ components:
       type: object
     Family:
       example:
+        familyId: familyId
         students:
         - students
         - students
-        id: id
         parents:
         - parents
         - parents
       properties:
-        id:
+        familyId:
           description: Unique family ID
-          title: id
+          readOnly: true
+          title: familyId
           type: string
         parents:
           items:
@@ -2318,7 +2326,6 @@ components:
           title: students
           type: array
       required:
-      - id
       - parents
       - students
       title: Family
@@ -2328,10 +2335,10 @@ components:
         totalSessions: 0
         lastActive: 2000-01-23T04:56:07.000+00:00
         totalTurns: 6
-        userid: userid
+        userId: userId
       properties:
-        userid:
-          title: userid
+        userId:
+          title: userId
           type: string
         totalSessions:
           title: totalSessions
@@ -2386,22 +2393,22 @@ components:
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         softDelete: false
         created:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
         flags: null
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
+            actorId: actorId
             displayName: displayName
-            id: id
             email: email
       title: FeatureFlagsDocument
     FeatureFlagsUpdate:
@@ -2443,7 +2450,7 @@ components:
           type: string
         title:
           type: string
-        animalid:
+        animalId:
           type: string
       required:
       - file
@@ -2452,12 +2459,12 @@ components:
       example:
         tokensCompletion: 6
         tokensPrompt: 0
-        id: id
         latencyMs: 1
+        convoTurnId: convoTurnId
         timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
-        id:
-          title: id
+        convoTurnId:
+          title: convoTurnId
           type: string
         timestamp:
           format: date-time
@@ -2536,10 +2543,10 @@ components:
       example:
         avgLatencyMs: 2
         requests: 5
-        animalid: animalid
+        animalId: animalId
       properties:
-        animalid:
-          title: animalid
+        animalId:
+          title: animalId
           type: string
         requests:
           title: requests

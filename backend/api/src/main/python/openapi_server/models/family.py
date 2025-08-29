@@ -12,29 +12,29 @@ class Family(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, parents=None, students=None):  # noqa: E501
+    def __init__(self, family_id=None, parents=None, students=None):  # noqa: E501
         """Family - a model defined in OpenAPI
 
-        :param id: The id of this Family.  # noqa: E501
-        :type id: str
+        :param family_id: The family_id of this Family.  # noqa: E501
+        :type family_id: str
         :param parents: The parents of this Family.  # noqa: E501
         :type parents: List[str]
         :param students: The students of this Family.  # noqa: E501
         :type students: List[str]
         """
         self.openapi_types = {
-            'id': str,
+            'family_id': str,
             'parents': List[str],
             'students': List[str]
         }
 
         self.attribute_map = {
-            'id': 'id',
+            'family_id': 'familyId',
             'parents': 'parents',
             'students': 'students'
         }
 
-        self._id = id
+        self._family_id = family_id
         self._parents = parents
         self._students = students
 
@@ -50,29 +50,27 @@ class Family(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> str:
-        """Gets the id of this Family.
+    def family_id(self) -> str:
+        """Gets the family_id of this Family.
 
         Unique family ID  # noqa: E501
 
-        :return: The id of this Family.
+        :return: The family_id of this Family.
         :rtype: str
         """
-        return self._id
+        return self._family_id
 
-    @id.setter
-    def id(self, id: str):
-        """Sets the id of this Family.
+    @family_id.setter
+    def family_id(self, family_id: str):
+        """Sets the family_id of this Family.
 
         Unique family ID  # noqa: E501
 
-        :param id: The id of this Family.
-        :type id: str
+        :param family_id: The family_id of this Family.
+        :type family_id: str
         """
-        if id is None:
-            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
 
-        self._id = id
+        self._family_id = family_id
 
     @property
     def parents(self) -> List[str]:
