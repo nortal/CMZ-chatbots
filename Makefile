@@ -50,6 +50,7 @@ $(GEN_TMP_BASE):
 help:
 	@echo "Targets (API-specific):"
 	@echo "  generate-api     Backup $(GEN_APP_DIR) to tmp/api_<timestamp> and regenerate Flask code from $(OPENAPI_SPEC)"
+	@echo "  sync-openapi    Sync $(GEN_APP_DIR)/{openapi.yaml,models,test} into $(SRC_APP_DIR)"
 	@echo "  build-api        Build Docker image $(IMAGE_NAME) from generated Dockerfile in $(SRC_APP_DIR)"
 	@echo "  run-api          Run container $(CONTAINER_NAME) with $(SRC_APP_DIR) mounted; port $(PORT)->$(CONTAINER_PORT)"
 	@echo "  stop-api         Stop container $(CONTAINER_NAME) if running"
@@ -91,6 +92,42 @@ generate-api: $(GEN_TMP_BASE)
 		-o "/local/$(GEN_APP_DIR)" \
 		$(OPENAPI_GEN_OPTS); \
 	echo ">> Generation complete."
+
+.PHONY: sync-openapi
+sync-openapi:
+	@echo "=== Syncing OpenAPI spec, models, and tests ==="
+	@echo "GEN_APP_DIR: $(GEN_APP_DIR)"
+	@echo "SRC_APP_DIR: $(SRC_APP_DIR)"
+
+	@echo "--- Copying OpenAPI spec..."
+	cp -v $(GEN_APP_DIR)/openapi_server/openapi/openapi.yaml \
+	      $(SRC_APP_DIR)/openapi_server/openapi/openapi.yaml
+
+	@echo "--- Refreshing models directory..."
+	rm -rfv $(SRC_APP_DIR)/openapi_server/models/*
+	cp -rv $(GEN_APP_DIR)/openapi_server/models/* \
+	       $(SRC_APP_DIR)/openapi_server/models/
+
+	@echo "--- Refreshing test directory..."
+	rm -rfv $(SRC_APP_DIR)/openapi_server/test/*
+	cp -rv $(GEN_APP_DIR)/openapi_server/test/* \
+	       $(SRC_APP_DIR)/openapi_server/test/
+
+	@echo "=== Done: sync-openapi ==="
+
+.PHONY: diff-api
+diff-api:
+	@set -e; \
+	if [ ! -d "$(GEN_APP_DIR)" ]; then \
+		echo "ERROR: Generated app directory not found at '$(GEN_APP_DIR)'. Run 'make generate-api' first."; \
+		exit 1; \
+	fi; \
+	if [ ! -d "$(SRC_APP_DIR)" ]; then \
+		echo "ERROR: Source app directory not found at '$(SRC_APP_DIR)'."; \
+		exit 1; \
+	fi; \
+	echo ">> Diffing generated app '$(GEN_APP_DIR)' vs source app '$(SRC_APP_DIR)'"; \
+	diff -r -q "$(GEN_APP_DIR)" "$(SRC_APP_DIR)" || true
 
 # =========================
 # 2) Build Docker image
