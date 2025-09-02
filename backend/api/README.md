@@ -1,12 +1,7 @@
 # README
 ## TO DO:
-* Create Make utility to copy inner openapi spec file:
-  + `cp backend/api/generated/app/openapi_server/openapi/openapi.yaml backend/api/src/main/python/openapi_server/openapi/openapi.yaml`
-* Create Make utility to copy inner models and tests:
-  + Remove contents from models and tests directories and copy from generated app to implementation
-  + `cp -r backend/api/generated/app/openapi_server/models backend/api/src/main/python/openapi_server/models/`
-  + `cp -r backend/api/generated/app/openapi_server/test backend/api/src/main/python/openapi_server/test`
 * Add runbook documentation for the REST API, possibly under `docs/runbook/api`?
+* Implement a restore endpoint for softDeleted records?
 
 ## Overview
 
