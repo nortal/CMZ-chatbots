@@ -173,85 +173,252 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
               example:
-                userId: user_2
+                userId: 7f2f7e55-40...
                 email: user2@cmz.org
                 displayName: User 2
                 role: member
                 created: *id002
                 modified: *id003
                 softDelete: false
-  /userlist:
+  /user:
     get:
       tags:
       - Admin
-      summary: List users
+      summary: Get list of all users
+      operationId: listUsers
       security: []
-      parameters:
-      - in: query
-        name: details
-        schema:
-          type: boolean
-          default: false
-      - in: query
-        name: role
-        schema:
-          type: string
-          enum:
-          - visitor
-          - member
-          - editor
-          - admin
-      - in: query
-        name: page
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - in: query
-        name: pageSize
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 200
-          default: 50
       responses:
         '200':
-          description: Paged user list
+          description: List of users
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PagedUsers'
               example:
                 items:
-                - userId: user_1
-                  email: user1@cmz.org
-                  displayName: User 1
-                  role: admin
-                  created: *id002
-                  modified: *id003
-                  softDelete: false
-                - userId: user_2
-                  email: user2@cmz.org
-                  displayName: User 2
-                  role: member
-                  created: *id002
-                  modified: *id003
-                  softDelete: false
+                  - userId: 92f3dd74-ed...
+                    email: user1@cmz.org
+                    displayName: User One
+                    role: admin
+                    userType: parent
+                    familyId: family_1
+                    created: *id002
+                    modified: *id003
+                    softDelete: false
+                  - userId: 7f2f7e55-40b...
+                    email: user2@cmz.org
+                    displayName: User Two
+                    role: user
+                    userType: student
+                    familyId: family_1
+                    created: *id002
+                    modified: *id003
+                    softDelete: false
                 page: 1
                 pageSize: 50
                 total: 2
-  /userdetails:
+
+    post:
+      tags:
+      - Admin
+      summary: Create a new user
+      operationId: createUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+            example:
+              email: user3@cmz.org
+              displayName: User Three
+              role: editor
+              userType: none
+              familyId: null
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                userId: 7f2f7e55-40...
+                email: user3@cmz.org
+                displayName: User Three
+                role: editor
+                userType: none
+                familyId: null
+                created: *id002
+                modified: *id003
+
+  /user/{userId}:
     get:
       tags:
       - Admin
-      summary: Fetch specific user details
+      summary: Get user by ID
+      operationId: getUser
       security: []
       parameters:
-      - in: query
-        name: userId
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                userId: 92f3dd74-ed...
+                email: user2@cmz.org
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+      - Admin
+      summary: Update a user
+      operationId: updateUser
+      security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
         required: true
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              displayName: Updated Name
+              role: admin
+              userType: parent
+              familyId: family_1
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                userId: 92f3dd74-ed...
+                email: user2@cmz.org
+                displayName: Updated Name
+                role: admin
+                userType: parent
+                familyId: family_1
+                created: *id002
+                modified: *id003
+    delete:
+      tags:
+        - Admin
+      summary: Delete user
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+  /user_details:
+    get:
+      tags:
+      - Admin
+      summary: Get list of all user details
+      operationId: listUserDetails
+      security: []
+      responses:
+        '200':
+          description: List of user details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetails'
+              example:
+                - userId: 92f3dd74-ed...
+                  email: user2@cmz.org
+                  displayName: User Two
+                  role: user
+                  userType: student
+                  familyId: family_1
+                  created: *id002
+                  modified: *id003
+                  usage:
+                    totalSessions: 5
+                    totalTurns: 42
+                    lastActive: '2025-08-11T12:00:00Z'
+
+    post:
+      tags:
+      - Admin
+      summary: Create user details
+      operationId: createUserDetails
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetailsInput'
+            example:
+              userId: 92f3dd74-ed...
+              usage:
+                totalSessions: 0
+                totalTurns: 0
+                lastActive: null
+      responses:
+        '201':
+          description: UserDetails created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+              example:
+                userId: 92f3dd74-ed...
+                created: *id002
+                modified: *id003
+                usage:
+                  totalSessions: 0
+                  totalTurns: 0
+                  lastActive: null
+
+  /user_details/{userId}:
+    get:
+      tags:
+      - Admin
+      summary: Get user details by ID
+      operationId: getUserDetails
+      security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: User details
@@ -262,98 +429,76 @@ paths:
               example:
                 userId: user_2
                 email: user2@cmz.org
-                displayName: User 2
-                role: member
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
                 created: *id002
                 modified: *id003
                 softDelete: false
                 usage:
-                  userId: user_2
                   totalSessions: 5
                   totalTurns: 42
-                  lastActive: '2025-08-11T09:00:00Z'
+                  lastActive: '2025-08-11T12:00:00Z'
         '404':
           $ref: '#/components/responses/NotFound'
-  /userrole:
+
     patch:
       tags:
       - Admin
-      summary: Change user role
+      summary: Update user details
+      operationId: updateUserDetails
       security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-              - userId
-              - role
-              properties:
-                userId:
-                  type: string
-                role:
-                  type: string
-                  enum:
-                  - visitor
-                  - member
-                  - editor
-                  - admin
+              $ref: '#/components/schemas/UserDetailsInput'
+            example:
+              userId: "userId_2"
+              usage:
+                totalSessions: 6
+                totalTurns: 50
+                lastActive: '2025-08-12T09:00:00Z'
       responses:
         '200':
-          description: Updated user
+          description: UserDetails updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserDetails'
               example:
                 userId: user_2
-                email: user2@cmz.org
-                displayName: User 2
-                role: editor
                 created: *id002
                 modified: *id003
-                softDelete: false
-  /user:
+                usage:
+                  totalSessions: 6
+                  totalTurns: 50
+                  lastActive: '2025-08-12T09:00:00Z'
+
     delete:
       tags:
       - Admin
-      summary: Delete user
-      security:
-      - bearerAuth: []
+      summary: Delete user details
+      operationId: deleteUserDetails
+      security: []
       parameters:
-      - in: query
-        name: id
-        required: true
-        schema:
-          type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
       responses:
         '204':
-          description: Deleted
-        '404':
-          $ref: '#/components/responses/NotFound'
-    post:
-      summary: Create a new user
-      operationId: createUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/User'
-              required:
-                - email
-                - role
-      responses:
-        '201':
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-      tags:
-        - User
+          description: UserDetails deleted
+
   /convo_turn:
     post:
       tags:
@@ -1201,13 +1346,9 @@ components:
     User:
       allOf:
       - type: object
-        required:
-        - email
-        - role
         properties:
           userId:
             type: string
-            readOnly: true
           email:
             type: string
             format: email
@@ -1231,13 +1372,48 @@ components:
             type: string
             nullable: true
       - $ref: '#/components/schemas/AuditFields'
+    UserInput:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required:
+          - email
+          - role
+          properties:
+            userId:
+              type: string
+              readOnly: true
+            email:
+              type: string
+              format: email
+            role:
+              type: string
+              enum:
+              - visitor
+              - user
+              - editor
+              - admin
     UserDetails:
       allOf:
-      - $ref: '#/components/schemas/User'
-      - type: object
-        properties:
-          usage:
-            $ref: '#/components/schemas/UsageSummary'
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            usage:
+              $ref: '#/components/schemas/UsageSummary'
+            userDetailsId:
+              type: string
+              description: Unique identifier for the user details
+
+    UserDetailsInput:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+        usage:
+          $ref: '#/components/schemas/UsageSummary'
+
     PagedUsers:
       type: object
       properties:

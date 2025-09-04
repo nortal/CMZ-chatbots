@@ -1,3 +1,5 @@
-from .family import FamilyModel, Audit
+from .family import FamilyModel
+from .user import UserModel
+from .user_details import UserDetailsModel
 
-__all__ = ["FamilyModel", "Audit"]
+__all__ = ["FamilyModel", "UserModel", "UserDetailsModel"]

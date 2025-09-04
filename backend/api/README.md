@@ -1,7 +1,10 @@
 # README
 ## TO DO:
 * Add runbook documentation for the REST API, possibly under `docs/runbook/api`?
-* Implement a restore endpoint for softDeleted records?
+* Code
+  + Use pagination correctly
+  + Use machine generated models to avoid hardcoding them
+  + Handle limiting queries
 
 ## Overview
 
