@@ -76,11 +76,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           },
           softDelete: false
         },
-        'sarah.johnson@cmz.org': {
+        'zookeeper@cmz.org': {
           userId: '2',
-          email: 'sarah.johnson@cmz.org',
+          email: 'zookeeper@cmz.org',
           role: 'zookeeper' as const,
-          displayName: 'Sarah Johnson',
+          displayName: 'Sarah Johnson (Zookeeper)',
           created: {
             at: '2023-03-01T00:00:00Z',
             by: {
@@ -93,17 +93,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             at: new Date().toISOString(),
             by: {
               userId: '2',
-              email: 'sarah.johnson@cmz.org',
-              displayName: 'Sarah Johnson'
+              email: 'zookeeper@cmz.org',
+              displayName: 'Sarah Johnson (Zookeeper)'
             }
           },
           softDelete: false
         },
-        'maria.rodriguez@cmz.org': {
+        'educator@cmz.org': {
           userId: '3',
-          email: 'maria.rodriguez@cmz.org',
+          email: 'educator@cmz.org',
           role: 'educator' as const,
-          displayName: 'Maria Rodriguez',
+          displayName: 'Maria Rodriguez (Educator)',
           created: {
             at: '2023-05-01T00:00:00Z',
             by: {
@@ -116,8 +116,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             at: new Date().toISOString(),
             by: {
               userId: '3',
-              email: 'maria.rodriguez@cmz.org',
-              displayName: 'Maria Rodriguez'
+              email: 'educator@cmz.org',
+              displayName: 'Maria Rodriguez (Educator)'
             }
           },
           softDelete: false
