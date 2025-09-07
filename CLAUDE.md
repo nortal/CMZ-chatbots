@@ -197,3 +197,32 @@ The API includes these major endpoint groups:
 
 **AWS Spend**: ~$2.15/month (primarily AWS End User Messaging for chatbot interactions)
 **DynamoDB Tables**: 10 active tables with pay-per-request billing
+
+## History Tracking Requirement
+
+**IMPORTANT: All contributors must create session history logs before committing.**
+
+### Process
+1. Create file: `/history/{your_name}_{YYYY-MM-DD}_{start_time}h-{end_time}h.md`
+2. Document your complete development session including:
+   - All user prompts and requests
+   - MCP server usage (Sequential, Context7, Magic, etc.)
+   - Commands executed (make, git, npm, etc.)
+   - Files created, modified, or deleted
+   - Technical decisions and problem-solving steps
+   - Build/deployment actions
+   - Quality checks (lint, test, typecheck)
+
+### Purpose
+- Enable seamless project handoff between team members
+- Preserve context for Claude Code sessions
+- Document decision rationale and problem-solving approaches
+- Track MCP integration patterns and tool usage
+- Maintain architectural decision records
+
+### Session Window
+- Use 4-hour time windows for session tracking
+- Start new files for sessions that extend beyond 4 hours
+- Include cross-references between related session files
+
+**Example**: See `history/kc.stegbauer_2025-09-07_09h-13h.md` for comprehensive session documentation

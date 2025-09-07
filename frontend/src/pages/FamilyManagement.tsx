@@ -311,8 +311,8 @@ const FamilyManagement: React.FC = () => {
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-1">Preferred Programs</p>
           <div className="flex flex-wrap gap-1">
-            {family.preferredPrograms.slice(0, 3).map((program, index) => (
-              <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+            {family.preferredPrograms.slice(0, 3).map((program) => (
+              <span key={program} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
                 {program}
               </span>
             ))}
@@ -389,8 +389,8 @@ const FamilyManagement: React.FC = () => {
                         <div>
                           <strong>Interests:</strong>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {student.interests.map((interest, index) => (
-                              <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            {student.interests.map((interest) => (
+                              <span key={interest} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                 {interest}
                               </span>
                             ))}
@@ -400,8 +400,8 @@ const FamilyManagement: React.FC = () => {
                           <div>
                             <strong className="text-red-600">Allergies:</strong>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {student.allergies.map((allergy, index) => (
-                                <span key={index} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
+                              {student.allergies.map((allergy) => (
+                                <span key={allergy} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
                                   {allergy}
                                 </span>
                               ))}
@@ -492,8 +492,8 @@ const FamilyManagement: React.FC = () => {
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Educational Goals</h4>
                     <div className="space-y-1">
-                      {selectedFamily.educationalGoals.map((goal, index) => (
-                        <p key={index} className="text-sm text-gray-700 flex items-start">
+                      {selectedFamily.educationalGoals.map((goal) => (
+                        <p key={goal} className="text-sm text-gray-700 flex items-start">
                           <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
                           {goal}
                         </p>
@@ -504,8 +504,8 @@ const FamilyManagement: React.FC = () => {
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Preferred Programs</h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedFamily.preferredPrograms.map((program, index) => (
-                        <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      {selectedFamily.preferredPrograms.map((program) => (
+                        <span key={program} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                           {program}
                         </span>
                       ))}
@@ -516,7 +516,7 @@ const FamilyManagement: React.FC = () => {
                     <h4 className="font-medium text-gray-900 mb-2">Visit History</h4>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {selectedFamily.visitHistory.map((visit, index) => (
-                        <div key={index} className="bg-green-50 p-3 rounded-lg">
+                        <div key={`${visit.date}-${visit.program}`} className="bg-green-50 p-3 rounded-lg">
                           <div className="flex justify-between items-start">
                             <div>
                               <p className="text-sm font-medium text-gray-900">{visit.program}</p>
