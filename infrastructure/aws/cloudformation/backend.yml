@@ -330,9 +330,24 @@ Resources:
       AttributeDefinitions:
         - AttributeName: userDetailsId
           AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
       KeySchema:
         - AttributeName: userDetailsId
           KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: userId
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            Fn::If:
+              - IsProvisioned
+              - ReadCapacityUnits: !Ref DynamoReadCapacity
+                WriteCapacityUnits: !Ref DynamoWriteCapacity
+              - !Ref "AWS::NoValue"
       ProvisionedThroughput:
         Fn::If:
           - IsProvisioned
