@@ -2,9 +2,11 @@ import os
 from typing import Any, Dict, List, Optional, Protocol, Tuple, Type
 from pynamodb.models import Model
 from pynamodb.exceptions import PutError, UpdateError, DoesNotExist
+from botocore.exceptions import ClientError
 
 from ..core import now_iso
-from .models import FamilyModel
+from .models import FamilyModel, UserModel, UserDetailsModel
+from pynamodb.exceptions import PutError
 
 class DynamoStore(Protocol):
     def list(self, hide_soft_deleted: bool = True) -> List[Dict[str, Any]]: ...
@@ -35,24 +37,77 @@ class PynamoStore:
             return None
         return m.to_plain_dict() if hasattr(m, "to_plain_dict") else dict(m.attribute_values)
 
-    def create(self, item: Dict[str, Any]) -> None:
-        cond = getattr(self._model, self._pk).does_not_exist()
+    def create(self, item: dict) -> None:
+        pk_name = self._pk
+        pk_val = item.get(pk_name)
+
+        # 1) Validate PK present
+        if pk_val in (None, ""):
+            raise ClientError(
+                {"Error": {"Code": "ValidationException",
+                           "Message": f"Missing required primary key '{pk_name}'"}},
+                "PutItem",
+            )
+
+        # 2) Preflight: does the item already exist?
+        try:
+            # strong read to reduce false negatives
+            self._model.get(pk_val, consistent_read=True)
+        except self._model.DoesNotExist:  # OK, proceed to create
+            pass
+        else:
+            # Found -> treat as duplicate
+            raise ClientError(
+                {"Error": {"Code": "ConditionalCheckFailedException",
+                           "Message": f"Item already exists: {pk_name}={pk_val}"}},
+                "PutItem",
+            )
+
+        # 3) Create with a conditional write to avoid race conditions
+        cond = getattr(self._model, pk_name).does_not_exist()
         try:
             self._model(**item).save(condition=cond)
+        except (TypeError, ValueError) as e:
+            # Bad payload/types -> 400
+            raise ClientError(
+                {"Error": {"Code": "ValidationException", "Message": str(e)}},
+                "PutItem",
+            )
         except PutError as e:
-            # Shim to keep existing handlers' error handling intact
-            from botocore.exceptions import ClientError
-            raise ClientError({"Error": {"Code": "ConditionalCheckFailedException", "Message": str(e)}}, "PutItem")
+            # Another writer slipped in between (or other conditional failure) -> 409
+            raise ClientError(
+                {"Error": {"Code": "ConditionalCheckFailedException", "Message": str(e)}},
+                "PutItem",
+            )
 
-    def update_fields(self, pk: Any, fields: Dict[str, Any]) -> None:
-        actions = [getattr(self._model, k).set(v) for k, v in fields.items()]
-        actions.append(self._model.modified.set({"at": now_iso()}))
-        cond = getattr(self._model, self._pk).exists()
+    def update_fields(self, pk: str, updates: dict, *, require_exists: bool = True):
+        actions = []
+        for key, value in updates.items():
+            if key == self._pk:    # don't build actions for the hash key
+                continue
+            if value is None:
+                continue
+            try:
+                attr = getattr(self._model, key)
+            except AttributeError:
+                raise ClientError(
+                    {"Error": {"Code": "ValidationException", "Message": f"Unknown attribute '{key}'"}},
+                    "UpdateItem",
+                )
+            actions.append(attr.set(value))
+
+        # require the item to exist before updating
+        cond = None
+        if require_exists:
+            cond = getattr(self._model, self._pk).exists()
+
         try:
             self._model(pk).update(actions=actions, condition=cond)
         except UpdateError as e:
-            from botocore.exceptions import ClientError
-            raise ClientError({"Error": {"Code": "ConditionalCheckFailedException", "Message": str(e)}}, "UpdateItem")
+            raise ClientError(
+                {"Error": {"Code": "ConditionalCheckFailedException", "Message": str(e)}},
+                "UpdateItem",
+            )
 
     def soft_delete(self, pk: Any, soft_field: str = "softDelete") -> None:
         cond = getattr(self._model, self._pk).exists()
@@ -63,14 +118,40 @@ class PynamoStore:
                 condition=cond,
             )
         except UpdateError as e:
-            from botocore.exceptions import ClientError
             raise ClientError({"Error": {"Code": "ConditionalCheckFailedException", "Message": str(e)}}, "UpdateItem")
+        
+    def exists_on_gsi(self, index_attr_name: str, value: str, *, hide_soft_deleted: bool = True) -> bool:
+        """
+        Returns True if there's at least one item on the given GSI with the value.
+        If hide_soft_deleted is True, ignores items with softDelete == True.
+        """
+        rows = self.query_gsi(index_attr_name, value, limit=2)  # reuse your fixed query_gsi
+        for m in rows:
+            sd = getattr(m, "softDelete", False)
+            if hide_soft_deleted and sd:
+                continue
+            return True
+        return False
+
+    def query_gsi(self, index_attr_name: str, value: str, *, limit: int = 100):
+        index = getattr(self._model, index_attr_name, None)
+        if index is None or not hasattr(index, "query"):
+            raise ValueError(f"{index_attr_name} is not a GlobalSecondaryIndex on {self._model.__name__}")
+        return list(index.query(value, limit=limit))
+
+    
 
 # --- Factory mapping: add your other models here as you grow ---
 FAMILY_TABLE_NAME = os.getenv("FAMILY_DYNAMO_TABLE_NAME", "quest-dev-family")
+USER_TABLE_NAME = os.getenv("USER_DYNAMO_TABLE_NAME", "quest-dev-user")
+USER_DETAILS_TABLE_NAME = os.getenv("USER_DETAILS_TABLE_NAME", "quest-dev-user-details")
+
 _MODEL_MAP: Dict[str, Tuple[type[Model], str]] = {
-    FAMILY_TABLE_NAME: (FamilyModel, "familyId"),
+    FAMILY_TABLE_NAME:       (FamilyModel, "familyId"),
+    USER_TABLE_NAME:         (UserModel, "userId"),
+    USER_DETAILS_TABLE_NAME: (UserDetailsModel, "userDetailsId"),
 }
+
 
 def get_store(table_name: str, pk_name: str) -> DynamoStore:
     try:

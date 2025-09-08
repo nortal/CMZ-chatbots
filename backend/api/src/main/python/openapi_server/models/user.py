@@ -14,7 +14,7 @@ class User(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, id=None, email=None, display_name=None, role=None, user_type='none', family_id=None):  # noqa: E501
+    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, user_id=None, email=None, display_name=None, role=None, user_type='none', family_id=None):  # noqa: E501
         """User - a model defined in OpenAPI
 
         :param created: The created of this User.  # noqa: E501
@@ -25,8 +25,8 @@ class User(Model):
         :type deleted: AuditStamp
         :param soft_delete: The soft_delete of this User.  # noqa: E501
         :type soft_delete: bool
-        :param id: The id of this User.  # noqa: E501
-        :type id: str
+        :param user_id: The user_id of this User.  # noqa: E501
+        :type user_id: str
         :param email: The email of this User.  # noqa: E501
         :type email: str
         :param display_name: The display_name of this User.  # noqa: E501
@@ -43,7 +43,7 @@ class User(Model):
             'modified': AuditStamp,
             'deleted': AuditStamp,
             'soft_delete': bool,
-            'id': str,
+            'user_id': str,
             'email': str,
             'display_name': str,
             'role': str,
@@ -56,7 +56,7 @@ class User(Model):
             'modified': 'modified',
             'deleted': 'deleted',
             'soft_delete': 'softDelete',
-            'id': 'id',
+            'user_id': 'userId',
             'email': 'email',
             'display_name': 'displayName',
             'role': 'role',
@@ -68,7 +68,7 @@ class User(Model):
         self._modified = modified
         self._deleted = deleted
         self._soft_delete = soft_delete
-        self._id = id
+        self._user_id = user_id
         self._email = email
         self._display_name = display_name
         self._role = role
@@ -171,27 +171,25 @@ class User(Model):
         self._soft_delete = soft_delete
 
     @property
-    def id(self) -> str:
-        """Gets the id of this User.
+    def user_id(self) -> str:
+        """Gets the user_id of this User.
 
 
-        :return: The id of this User.
+        :return: The user_id of this User.
         :rtype: str
         """
-        return self._id
+        return self._user_id
 
-    @id.setter
-    def id(self, id: str):
-        """Sets the id of this User.
+    @user_id.setter
+    def user_id(self, user_id: str):
+        """Sets the user_id of this User.
 
 
-        :param id: The id of this User.
-        :type id: str
+        :param user_id: The user_id of this User.
+        :type user_id: str
         """
-        if id is None:
-            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
 
-        self._id = id
+        self._user_id = user_id
 
     @property
     def email(self) -> str:
@@ -211,8 +209,6 @@ class User(Model):
         :param email: The email of this User.
         :type email: str
         """
-        if email is None:
-            raise ValueError("Invalid value for `email`, must not be `None`")  # noqa: E501
 
         self._email = email
 

@@ -5,6 +5,7 @@ from flask import json
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.paged_users import PagedUsers  # noqa: E501
 from openapi_server.models.user import User  # noqa: E501
+from openapi_server.models.user_create import UserCreate  # noqa: E501
 from openapi_server.models.user_details import UserDetails  # noqa: E501
 from openapi_server.models.userrole_patch_request import UserrolePatchRequest  # noqa: E501
 from openapi_server.test import BaseTestCase
@@ -12,6 +13,25 @@ from openapi_server.test import BaseTestCase
 
 class TestAdminController(BaseTestCase):
     """AdminController integration test stubs"""
+
+    def test_create_user(self):
+        """Test case for create_user
+
+        Create a new user
+        """
+        user_create = {"familyId":"familyId","role":"visitor","displayName":"displayName","userType":"none","email":"email"}
+        headers = { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+        response = self.client.open(
+            '/users',
+            method='POST',
+            headers=headers,
+            data=json.dumps(user_create),
+            content_type='application/json')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
 
     def test_user_delete(self):
         """Test case for user_delete

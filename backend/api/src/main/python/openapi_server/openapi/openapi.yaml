@@ -879,7 +879,7 @@ paths:
           content:
             application/json:
               example:
-                userId: user_2
+                userId: 7f2f7e55-40...
                 email: user2@cmz.org
                 displayName: User 2
                 role: member
@@ -1125,151 +1125,20 @@ paths:
       x-phase: later
       x-openapi-router-controller: openapi_server.controllers.media_controller
   /user:
-    delete:
-      operationId: user_delete
-      parameters:
-      - explode: true
-        in: query
-        name: id
-        required: true
-        schema:
-          type: string
-        style: form
-      responses:
-        "204":
-          description: Deleted
-        "404":
-          $ref: "#/components/responses/NotFound"
-      security:
-      - bearerAuth: []
-      summary: Delete user
-      tags:
-      - Admin
-      x-openapi-router-controller: openapi_server.controllers.admin_controller
-    post:
-      operationId: create_user
-      requestBody:
-        content:
-          application/json:
-            schema:
-              allOf:
-              - $ref: "#/components/schemas/User"
-              required:
-              - email
-              - role
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-          description: User created successfully
-      summary: Create a new user
-      tags:
-      - User
-      x-openapi-router-controller: openapi_server.controllers.user_controller
-  /userdetails:
     get:
-      operationId: userdetails_get
-      parameters:
-      - explode: true
-        in: query
-        name: userId
-        required: true
-        schema:
-          type: string
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              example:
-                userId: user_2
-                email: user2@cmz.org
-                displayName: User 2
-                role: member
-                created:
-                  at: 2025-08-11T09:00:00Z
-                  by:
-                    userId: user_1
-                    email: system@cmz.org
-                    displayName: System
-                modified:
-                  at: 2025-08-11T09:00:00Z
-                  by:
-                    userId: user_1
-                    email: system@cmz.org
-                    displayName: System
-                softDelete: false
-                usage:
-                  userId: user_2
-                  totalSessions: 5
-                  totalTurns: 42
-                  lastActive: 2025-08-11T09:00:00Z
-              schema:
-                $ref: "#/components/schemas/UserDetails"
-          description: User details
-        "404":
-          $ref: "#/components/responses/NotFound"
-      security: []
-      summary: Fetch specific user details
-      tags:
-      - Admin
-      x-openapi-router-controller: openapi_server.controllers.admin_controller
-  /userlist:
-    get:
-      operationId: userlist_get
-      parameters:
-      - explode: true
-        in: query
-        name: details
-        required: false
-        schema:
-          default: false
-          type: boolean
-        style: form
-      - explode: true
-        in: query
-        name: role
-        required: false
-        schema:
-          enum:
-          - visitor
-          - member
-          - editor
-          - admin
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: page
-        required: false
-        schema:
-          default: 1
-          minimum: 1
-          type: integer
-        style: form
-      - explode: true
-        in: query
-        name: pageSize
-        required: false
-        schema:
-          default: 50
-          maximum: 200
-          minimum: 1
-          type: integer
-        style: form
+      operationId: list_users
       responses:
         "200":
           content:
             application/json:
               example:
                 items:
-                - userId: user_1
+                - userId: 92f3dd74-ed...
                   email: user1@cmz.org
-                  displayName: User 1
+                  displayName: User One
                   role: admin
+                  userType: parent
+                  familyId: family_1
                   created:
                     at: 2025-08-11T09:00:00Z
                     by:
@@ -1283,10 +1152,12 @@ paths:
                       email: system@cmz.org
                       displayName: System
                   softDelete: false
-                - userId: user_2
+                - userId: 7f2f7e55-40b...
                   email: user2@cmz.org
-                  displayName: User 2
-                  role: member
+                  displayName: User Two
+                  role: user
+                  userType: student
+                  familyId: family_1
                   created:
                     at: 2025-08-11T09:00:00Z
                     by:
@@ -1305,30 +1176,98 @@ paths:
                 total: 2
               schema:
                 $ref: "#/components/schemas/PagedUsers"
-          description: Paged user list
+          description: List of users
       security: []
-      summary: List users
+      summary: Get list of all users
       tags:
       - Admin
       x-openapi-router-controller: openapi_server.controllers.admin_controller
-  /userrole:
-    patch:
-      operationId: userrole_patch
+    post:
+      operationId: create_user
       requestBody:
         content:
           application/json:
+            example:
+              email: user3@cmz.org
+              displayName: User Three
+              role: editor
+              userType: none
+              familyId: null
             schema:
-              $ref: "#/components/schemas/_userrole_patch_request"
+              $ref: "#/components/schemas/UserInput"
         required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                userId: 7f2f7e55-40...
+                email: user3@cmz.org
+                displayName: User Three
+                role: editor
+                userType: none
+                familyId: null
+                created:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                modified:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User created
+      security: []
+      summary: Create a new user
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+  /user/{userId}:
+    delete:
+      operationId: delete_user
+      parameters:
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: User deleted successfully
+        "404":
+          description: User not found
+      summary: Delete user
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+    get:
+      operationId: get_user
+      parameters:
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
       responses:
         "200":
           content:
             application/json:
               example:
-                userId: user_2
+                userId: 92f3dd74-ed...
                 email: user2@cmz.org
-                displayName: User 2
-                role: editor
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
                 created:
                   at: 2025-08-11T09:00:00Z
                   by:
@@ -1344,9 +1283,266 @@ paths:
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/User"
-          description: Updated user
+          description: User details
+        "404":
+          $ref: "#/components/responses/NotFound"
       security: []
-      summary: Change user role
+      summary: Get user by ID
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+    patch:
+      operationId: update_user
+      parameters:
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            example:
+              displayName: Updated Name
+              role: admin
+              userType: parent
+              familyId: family_1
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                userId: 92f3dd74-ed...
+                email: user2@cmz.org
+                displayName: Updated Name
+                role: admin
+                userType: parent
+                familyId: family_1
+                created:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                modified:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User updated
+      security: []
+      summary: Update a user
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+  /user_details:
+    get:
+      operationId: list_user_details
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+              - userId: 92f3dd74-ed...
+                email: user2@cmz.org
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
+                created:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                modified:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                usage:
+                  totalSessions: 5
+                  totalTurns: 42
+                  lastActive: 2025-08-11T12:00:00Z
+              schema:
+                items:
+                  $ref: "#/components/schemas/UserDetails"
+                type: array
+          description: List of user details
+      security: []
+      summary: Get list of all user details
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+    post:
+      operationId: create_user_details
+      requestBody:
+        content:
+          application/json:
+            example:
+              userId: 92f3dd74-ed...
+              usage:
+                totalSessions: 0
+                totalTurns: 0
+                lastActive: null
+            schema:
+              $ref: "#/components/schemas/UserDetailsInput"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                userId: 92f3dd74-ed...
+                created:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                modified:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                usage:
+                  totalSessions: 0
+                  totalTurns: 0
+                  lastActive: null
+              schema:
+                $ref: "#/components/schemas/UserDetails"
+          description: UserDetails created
+      security: []
+      summary: Create user details
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+  /user_details/{userId}:
+    delete:
+      operationId: delete_user_details
+      parameters:
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: UserDetails deleted
+      security: []
+      summary: Delete user details
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+    get:
+      operationId: get_user_details
+      parameters:
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                userId: user_2
+                email: user2@cmz.org
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
+                created:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                modified:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                softDelete: false
+                usage:
+                  totalSessions: 5
+                  totalTurns: 42
+                  lastActive: 2025-08-11T12:00:00Z
+              schema:
+                $ref: "#/components/schemas/UserDetails"
+          description: User details
+        "404":
+          $ref: "#/components/responses/NotFound"
+      security: []
+      summary: Get user details by ID
+      tags:
+      - Admin
+      x-openapi-router-controller: openapi_server.controllers.admin_controller
+    patch:
+      operationId: update_user_details
+      parameters:
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            example:
+              userId: userId_2
+              usage:
+                totalSessions: 6
+                totalTurns: 50
+                lastActive: 2025-08-12T09:00:00Z
+            schema:
+              $ref: "#/components/schemas/UserDetailsInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                userId: user_2
+                created:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                modified:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                usage:
+                  totalSessions: 6
+                  totalTurns: 50
+                  lastActive: 2025-08-12T09:00:00Z
+              schema:
+                $ref: "#/components/schemas/UserDetails"
+          description: UserDetails updated
+      security: []
+      summary: Update user details
       tags:
       - Admin
       x-openapi-router-controller: openapi_server.controllers.admin_controller
@@ -1578,7 +1774,6 @@ components:
       allOf:
       - properties:
           userId:
-            readOnly: true
             type: string
           email:
             format: email
@@ -1602,9 +1797,6 @@ components:
           familyId:
             nullable: true
             type: string
-        required:
-        - email
-        - role
         type: object
       - $ref: "#/components/schemas/AuditFields"
       example:
@@ -1634,12 +1826,63 @@ components:
         userId: userId
         email: email
       title: User
+    UserInput:
+      allOf:
+      - $ref: "#/components/schemas/User"
+      - properties:
+          userId:
+            readOnly: true
+            type: string
+          email:
+            format: email
+            type: string
+          role:
+            enum:
+            - visitor
+            - user
+            - editor
+            - admin
+            type: string
+        required:
+        - email
+        - role
+        type: object
+      example:
+        familyId: familyId
+        role: visitor
+        deleted:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        softDelete: false
+        displayName: displayName
+        created:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        modified:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        userType: none
+        userId: userId
+        email: email
+      title: UserInput
     UserDetails:
       allOf:
       - $ref: "#/components/schemas/User"
       - properties:
           usage:
             $ref: "#/components/schemas/UsageSummary"
+          userDetailsId:
+            description: Unique identifier for the user details
+            type: string
         type: object
       example:
         familyId: familyId
@@ -1663,6 +1906,7 @@ components:
           lastActive: 2000-01-23T04:56:07.000+00:00
           totalTurns: 6
           userId: userId
+        userDetailsId: userDetailsId
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
@@ -1673,6 +1917,24 @@ components:
         userId: userId
         email: email
       title: UserDetails
+    UserDetailsInput:
+      example:
+        usage:
+          totalSessions: 0
+          lastActive: 2000-01-23T04:56:07.000+00:00
+          totalTurns: 6
+          userId: userId
+        userId: userId
+      properties:
+        userId:
+          title: userId
+          type: string
+        usage:
+          $ref: "#/components/schemas/UsageSummary"
+      required:
+      - userId
+      title: UserDetailsInput
+      type: object
     PagedUsers:
       example:
         total: 1
@@ -2424,24 +2686,6 @@ components:
           title: flags
           type: object
       title: FeatureFlagsUpdate
-      type: object
-    _userrole_patch_request:
-      properties:
-        userId:
-          title: userId
-          type: string
-        role:
-          enum:
-          - visitor
-          - member
-          - editor
-          - admin
-          title: role
-          type: string
-      required:
-      - role
-      - userId
-      title: _userrole_patch_request
       type: object
     _upload_media_post_request:
       properties:
