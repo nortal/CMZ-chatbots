@@ -1,14 +1,8 @@
 import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
 
-from openapi_server.models.animal import Animal  # noqa: E501
 from openapi_server.models.animal_config import AnimalConfig  # noqa: E501
 from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noqa: E501
-from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
-from openapi_server import util
 
 # Import hexagonal architecture handlers
 import os
