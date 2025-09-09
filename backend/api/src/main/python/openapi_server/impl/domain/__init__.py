@@ -1,1 +1,1 @@
-"""Domain module"""
+# Domain layer - Pure business logic (hexagon core)

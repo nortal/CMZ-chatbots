@@ -5,7 +5,7 @@ from pynamodb.exceptions import PutError, UpdateError, DoesNotExist
 from botocore.exceptions import ClientError
 
 from ..core import now_iso
-from .models import FamilyModel, UserModel, UserDetailsModel
+from .models import FamilyModel, UserModel, UserDetailsModel, AnimalModel
 from pynamodb.exceptions import PutError
 
 class DynamoStore(Protocol):
@@ -145,11 +145,13 @@ class PynamoStore:
 FAMILY_TABLE_NAME = os.getenv("FAMILY_DYNAMO_TABLE_NAME", "quest-dev-family")
 USER_TABLE_NAME = os.getenv("USER_DYNAMO_TABLE_NAME", "quest-dev-user")
 USER_DETAILS_TABLE_NAME = os.getenv("USER_DETAILS_TABLE_NAME", "quest-dev-user-details")
+ANIMAL_TABLE_NAME = os.getenv("ANIMAL_DYNAMO_TABLE_NAME", "quest-dev-animal")
 
 _MODEL_MAP: Dict[str, Tuple[type[Model], str]] = {
     FAMILY_TABLE_NAME:       (FamilyModel, "familyId"),
     USER_TABLE_NAME:         (UserModel, "userId"),
     USER_DETAILS_TABLE_NAME: (UserDetailsModel, "userDetailsId"),
+    ANIMAL_TABLE_NAME:       (AnimalModel, "animalId"),
 }
 
 

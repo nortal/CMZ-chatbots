@@ -1,113 +1,193 @@
-"""Flask serializers for converting between domain entities and OpenAPI models"""
-from typing import Dict, Any, Optional
-from datetime import datetime
+"""Flask serializers for OpenAPI model conversion"""
+from typing import Any, Dict
+from ...ports.serialization import UserSerializer, UserDetailsSerializer, FamilySerializer, AnimalSerializer
+from ...domain.common.entities import User, UserDetails, Family, Animal, AnimalConfig
+from ...domain.common.serializers import serialize_user, serialize_user_details, serialize_family, serialize_animal
+from ...utils.core import model_to_json_keyed_dict
+from openapi_server.models.user import User as OpenAPIUser
+from openapi_server.models.user_input import UserInput as OpenAPIUserInput
+from openapi_server.models.user_details import UserDetails as OpenAPIUserDetails
+from openapi_server.models.user_details_input import UserDetailsInput as OpenAPIUserDetailsInput
+from openapi_server.models.animal import Animal as OpenAPIAnimal
+from openapi_server.models.animal_config import AnimalConfig as OpenAPIAnimalConfig
+from openapi_server.models.auth_request import AuthRequest as OpenAPIAuthRequest
+from openapi_server.models.auth_response import AuthResponse as OpenAPIAuthResponse
 
-from ...domain.common.entities import AuthCredentials, AuthToken, AuthenticatedUser
-from openapi_server.models.auth_request import AuthRequest
-from openapi_server.models.auth_response import AuthResponse
-from openapi_server.models.user import User
+
+class FlaskUserSerializer(UserSerializer):
+    """Flask/OpenAPI serializer for User entities"""
+    
+    def from_external(self, data: Any) -> Dict[str, Any]:
+        """Convert external format (OpenAPI model) to business dict"""
+        return self.from_openapi(data)
+    
+    def to_external(self, entity_data: Dict[str, Any]) -> Any:
+        """Convert business dict to external format (OpenAPI model)"""
+        user = User(**entity_data) if not isinstance(entity_data, User) else entity_data
+        return self.to_openapi(user)
+    
+    def from_openapi(self, openapi_model: Any) -> Dict[str, Any]:
+        """Convert OpenAPI UserInput model to business dict"""
+        if hasattr(openapi_model, "attribute_map"):
+            # Use existing utility for OpenAPI model conversion
+            return model_to_json_keyed_dict(openapi_model) or {}
+        elif isinstance(openapi_model, dict):
+            return openapi_model
+        else:
+            return dict(openapi_model or {})
+    
+    def to_openapi(self, user: User) -> OpenAPIUser:
+        """Convert User domain entity to OpenAPI User model"""
+        user_data = serialize_user(user)
+        return OpenAPIUser.from_dict(user_data)
+    
+    def from_lambda_event(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert Lambda event data to business dict"""
+        # For Flask adapter, this would typically not be used
+        # but included for interface completeness
+        return event_data
+    
+    def to_lambda_response(self, user: User) -> Dict[str, Any]:
+        """Convert User domain entity to Lambda response dict"""
+        # For Flask adapter, this would typically not be used
+        # but included for interface completeness
+        return serialize_user(user)
+
+
+class FlaskUserDetailsSerializer(UserDetailsSerializer):
+    """Flask/OpenAPI serializer for UserDetails entities"""
+    
+    def from_external(self, data: Any) -> Dict[str, Any]:
+        """Convert external format (OpenAPI model) to business dict"""
+        return self.from_openapi(data)
+    
+    def to_external(self, entity_data: Dict[str, Any]) -> Any:
+        """Convert business dict to external format (OpenAPI model)"""
+        user_details = UserDetails(**entity_data) if not isinstance(entity_data, UserDetails) else entity_data
+        return self.to_openapi(user_details)
+    
+    def from_openapi(self, openapi_model: Any) -> Dict[str, Any]:
+        """Convert OpenAPI UserDetailsInput model to business dict"""
+        if hasattr(openapi_model, "attribute_map"):
+            # Use existing utility for OpenAPI model conversion
+            return model_to_json_keyed_dict(openapi_model) or {}
+        elif isinstance(openapi_model, dict):
+            return openapi_model
+        else:
+            return dict(openapi_model or {})
+    
+    def to_openapi(self, user_details: UserDetails) -> OpenAPIUserDetails:
+        """Convert UserDetails domain entity to OpenAPI UserDetails model"""
+        details_data = serialize_user_details(user_details)
+        return OpenAPIUserDetails.from_dict(details_data)
+    
+    def from_lambda_event(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert Lambda event data to business dict"""
+        return event_data
+    
+    def to_lambda_response(self, user_details: UserDetails) -> Dict[str, Any]:
+        """Convert UserDetails domain entity to Lambda response dict"""
+        return serialize_user_details(user_details)
+
+
+class FlaskFamilySerializer(FamilySerializer):
+    """Flask/OpenAPI serializer for Family entities"""
+    
+    def from_external(self, data: Any) -> Dict[str, Any]:
+        """Convert external format to business dict"""
+        return self.from_openapi(data)
+    
+    def to_external(self, entity_data: Dict[str, Any]) -> Any:
+        """Convert business dict to external format"""
+        family = Family(**entity_data) if not isinstance(entity_data, Family) else entity_data
+        return self.to_openapi(family)
+    
+    def from_openapi(self, openapi_model: Any) -> Dict[str, Any]:
+        """Convert OpenAPI Family model to business dict"""
+        if hasattr(openapi_model, "attribute_map"):
+            return model_to_json_keyed_dict(openapi_model) or {}
+        elif isinstance(openapi_model, dict):
+            return openapi_model
+        else:
+            return dict(openapi_model or {})
+    
+    def to_openapi(self, family: Family) -> Dict[str, Any]:
+        """Convert Family domain entity to dict (OpenAPI Family model would be imported when available)"""
+        return serialize_family(family)
+    
+    def from_lambda_event(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert Lambda event data to business dict"""
+        return event_data
+    
+    def to_lambda_response(self, family: Family) -> Dict[str, Any]:
+        """Convert Family domain entity to Lambda response dict"""
+        return serialize_family(family)
+
+
+class FlaskAnimalSerializer(AnimalSerializer):
+    """Flask/OpenAPI serializer for Animal entities"""
+    
+    def from_external(self, data: Any) -> Dict[str, Any]:
+        """Convert external format to business dict"""
+        return self.from_openapi(data)
+    
+    def to_external(self, entity_data: Dict[str, Any]) -> Any:
+        """Convert business dict to external format"""
+        animal = Animal(**entity_data) if not isinstance(entity_data, Animal) else entity_data
+        return self.to_openapi(animal)
+    
+    def from_openapi(self, openapi_model: Any) -> Dict[str, Any]:
+        """Convert OpenAPI Animal model to business dict"""
+        if hasattr(openapi_model, "attribute_map"):
+            return model_to_json_keyed_dict(openapi_model) or {}
+        elif isinstance(openapi_model, dict):
+            return openapi_model
+        else:
+            return dict(openapi_model or {})
+    
+    def to_openapi(self, animal: Animal) -> OpenAPIAnimal:
+        """Convert Animal domain entity to OpenAPI Animal model"""
+        animal_data = serialize_animal(animal)
+        return OpenAPIAnimal.from_dict(animal_data)
+    
+    def from_lambda_event(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert Lambda event data to business dict"""
+        return event_data
+    
+    def to_lambda_response(self, animal: Animal) -> Dict[str, Any]:
+        """Convert Animal domain entity to Lambda response dict"""
+        return serialize_animal(animal)
+
+
+class FlaskAnimalConfigSerializer:
+    """Flask/OpenAPI serializer for Animal Configuration"""
+    
+    def from_openapi(self, openapi_model: Any) -> Dict[str, Any]:
+        """Convert OpenAPI AnimalConfig model to business dict"""
+        if hasattr(openapi_model, "attribute_map"):
+            return model_to_json_keyed_dict(openapi_model) or {}
+        elif isinstance(openapi_model, dict):
+            return openapi_model
+        else:
+            return dict(openapi_model or {})
+    
+    def to_openapi(self, config_data: Dict[str, Any]) -> OpenAPIAnimalConfig:
+        """Convert configuration dict to OpenAPI AnimalConfig model"""
+        return OpenAPIAnimalConfig.from_dict(config_data)
 
 
 class FlaskAuthSerializer:
-    """Serializer for authentication data between Flask/OpenAPI and domain entities"""
+    """Flask/OpenAPI serializer for Authentication operations"""
     
-    def to_auth_response(self, user: AuthenticatedUser, token: AuthToken) -> AuthResponse:
-        """
-        Convert domain entities to OpenAPI AuthResponse
-        
-        Args:
-            user: Authenticated user domain entity
-            token: Auth token domain entity
-            
-        Returns:
-            OpenAPI AuthResponse model
-        """
-        # Create User model
-        user_model = User(
-            user_id=user.user_id,
-            email=user.email,
-            display_name=user.display_name or user.username,
-            role=user.roles[0] if user.roles else "member",  # Use first role as primary
-            created={"at": datetime.utcnow().isoformat() + "Z", "by": {"userId": "system", "email": "system@cmz.org"}},
-            modified={"at": datetime.utcnow().isoformat() + "Z", "by": {"userId": "system", "email": "system@cmz.org"}},
-            soft_delete=False
-        )
-        
-        # Create AuthResponse
-        return AuthResponse(
-            token=token.token,
-            expires_in=token.expires_in,
-            user=user_model
-        )
-    
-    def to_token_response(self, token: AuthToken) -> Dict[str, Any]:
-        """
-        Convert AuthToken to token refresh response
-        
-        Args:
-            token: Auth token domain entity
-            
-        Returns:
-            Dictionary with token response data
-        """
-        return {
-            "token": token.token,
-            "expires_in": token.expires_in,
-            "token_type": token.token_type
-        }
-    
-    def from_password_reset_request(self, openapi_data: Any) -> Dict[str, Any]:
-        """
-        Convert OpenAPI PasswordResetRequest to domain data
-        
-        Args:
-            openapi_data: PasswordResetRequest model or dict
-            
-        Returns:
-            Dictionary with domain fields
-        """
-        if hasattr(openapi_data, 'email'):
-            return {"email": openapi_data.email, "username": openapi_data.email}
-        elif isinstance(openapi_data, dict):
-            email = openapi_data.get("email")
-            return {"email": email, "username": email}
+    def from_openapi(self, openapi_model: Any) -> Dict[str, Any]:
+        """Convert OpenAPI AuthRequest model to business dict"""
+        if hasattr(openapi_model, "attribute_map"):
+            return model_to_json_keyed_dict(openapi_model) or {}
+        elif isinstance(openapi_model, dict):
+            return openapi_model
         else:
-            raise ValueError(f"Unsupported data type: {type(openapi_data)}")
+            return dict(openapi_model or {})
     
-    def from_openapi(self, openapi_data: Any) -> Dict[str, Any]:
-        """
-        Convert OpenAPI data to domain entity data (handles multiple request types)
-        
-        Args:
-            openapi_data: AuthRequest model, PasswordResetRequest model, or dict
-            
-        Returns:
-            Dictionary with domain entity fields
-        """
-        # Handle AuthRequest
-        if hasattr(openapi_data, 'username') and hasattr(openapi_data, 'password'):
-            return {
-                "username": openapi_data.username,
-                "password": openapi_data.password,
-                "register_if_new": getattr(openapi_data, 'register', False)
-            }
-        # Handle PasswordResetRequest
-        elif hasattr(openapi_data, 'email'):
-            return {"email": openapi_data.email, "username": openapi_data.email}
-        # Handle dict data
-        elif isinstance(openapi_data, dict):
-            if 'password' in openapi_data:
-                # Auth request
-                return {
-                    "username": openapi_data.get("username"),
-                    "password": openapi_data.get("password"),
-                    "register_if_new": openapi_data.get("register", False)
-                }
-            elif 'email' in openapi_data:
-                # Password reset request
-                email = openapi_data.get("email")
-                return {"email": email, "username": email}
-            else:
-                return openapi_data
-        else:
-            raise ValueError(f"Unsupported data type: {type(openapi_data)}")
+    def to_openapi_response(self, auth_data: Dict[str, Any]) -> OpenAPIAuthResponse:
+        """Convert authentication response dict to OpenAPI AuthResponse model"""
+        return OpenAPIAuthResponse.from_dict(auth_data)

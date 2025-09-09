@@ -1,1 +1,1 @@
-"""Ports module"""
+# Ports - Interfaces for hexagonal architecture
