@@ -221,6 +221,15 @@ frontend/build/
 frontend/.next/
 frontend/.netlify/
 
+# Node.js dependencies (general)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Package lock files (keep yarn.lock, ignore npm lock)  
+package-lock.json
+
 # Development Tools
 .claude/
 .mcp.json

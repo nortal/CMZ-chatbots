@@ -1,1 +1,1 @@
-"""Common domain module"""
+# Common domain utilities and entities

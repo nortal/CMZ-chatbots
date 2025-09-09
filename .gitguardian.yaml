@@ -1,0 +1,27 @@
+# GitGuardian configuration for CMZ chatbots project
+# Excludes demo files and test credentials from secrets scanning
+
+paths-ignore:
+  - DEMO_ACCESS.md
+  - "**/demo/**"
+  - "**/test/**/*password*"
+  - "**/tests/**/*credential*"
+
+# Ignore common test patterns
+secrets-ignore-regex:
+  - "password123"
+  - "test_password"
+  - "demo_secret"
+  - "mock_token"
+  - "test_key_*"
+
+# Allow common demo/test secret patterns in specific contexts
+allow-list:
+  - name: "Demo passwords in documentation"
+    paths:
+      - "DEMO_ACCESS.md"
+      - "README.md"
+      - "docs/**/*.md"
+    patterns:
+      - "password123"
+      - "demo_password"

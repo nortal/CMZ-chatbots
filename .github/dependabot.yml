@@ -1,0 +1,81 @@
+# Dependabot configuration for automated dependency updates
+# Enables automated security vulnerability fixes and dependency updates
+
+version: 2
+updates:
+  # Frontend (React/TypeScript/Vite) dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "kcs"
+    assignees:
+      - "kcs"
+    commit-message:
+      prefix: "security"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+
+  # Backend Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/backend/api/src/main/python"
+    schedule:
+      interval: "weekly"
+      day: "tuesday" 
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "kcs"
+    assignees:
+      - "kcs"
+    commit-message:
+      prefix: "security"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/backend/api/src/main/python"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "kcs"
+    assignees:
+      - "kcs"
+    commit-message:
+      prefix: "security"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+      - "docker"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "kcs"
+    assignees:  
+      - "kcs"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
