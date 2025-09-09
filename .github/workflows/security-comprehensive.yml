@@ -345,7 +345,7 @@ jobs:
             echo "|---------------|---------|------------|"
             echo "| 🔍 SAST | ✅ | Semgrep, CodeQL |"
             echo "| 📦 SCA | ✅ | npm audit, safety |"
-            echo "| 🔑 Secrets | ✅ | TruffleHog, GitGuardian |"
+            echo "| 🔑 Secrets | ✅ | TruffleHog |"
           } >> security-report/README.md
           
           if [[ "$HAS_DOCKERFILE" == "true" ]]; then
