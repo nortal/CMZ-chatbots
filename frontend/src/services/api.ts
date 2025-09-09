@@ -40,7 +40,7 @@ export interface AnimalConfig {
   temperature?: number;
   topP?: number;
   toolsEnabled?: string[];
-  guardrails?: Record<string, any>;
+  guardrails?: Record<string, unknown>;
   created?: {
     at: string;
     by: {
@@ -89,7 +89,10 @@ async function apiRequest<T>(
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error('Network error or API unavailable');
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error('Network error: Unable to connect to API server');
+    }
+    throw new Error('API request failed: Unknown error occurred');
   }
 }
 
@@ -104,9 +107,11 @@ export const animalApi = {
 
   /**
    * Get animal details by ID
-   * Note: Currently has parameter naming issue in backend
    */
   async getAnimalDetails(animalId: string): Promise<Animal> {
+    if (!animalId?.trim()) {
+      throw new Error('Animal ID is required');
+    }
     return apiRequest<Animal>(`/animal_details?animalId=${encodeURIComponent(animalId)}`);
   },
 
@@ -114,6 +119,9 @@ export const animalApi = {
    * Get animal configuration by ID
    */
   async getAnimalConfig(animalId: string): Promise<AnimalConfig> {
+    if (!animalId?.trim()) {
+      throw new Error('Animal ID is required');
+    }
     return apiRequest<AnimalConfig>(`/animal_config?animalId=${encodeURIComponent(animalId)}`);
   },
 
@@ -121,6 +129,12 @@ export const animalApi = {
    * Update animal configuration
    */
   async updateAnimalConfig(animalId: string, config: Partial<AnimalConfig>): Promise<AnimalConfig> {
+    if (!animalId?.trim()) {
+      throw new Error('Animal ID is required');
+    }
+    if (!config || Object.keys(config).length === 0) {
+      throw new Error('Configuration updates are required');
+    }
     return apiRequest<AnimalConfig>(`/animal_config?animalId=${encodeURIComponent(animalId)}`, {
       method: 'PATCH',
       body: JSON.stringify(config),
