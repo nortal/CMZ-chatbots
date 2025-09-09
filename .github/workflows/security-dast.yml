@@ -39,9 +39,9 @@ jobs:
           TARGET_URL: ${{ github.event.inputs.target_url }}
         run: |
           if [ -n "$TARGET_URL" ]; then
-            echo "url=$TARGET_URL" >> $GITHUB_OUTPUT
+            echo "url=$TARGET_URL" >> "$GITHUB_OUTPUT"
           else
-            echo "url=https://cmz-chatbot-demo.netlify.app" >> $GITHUB_OUTPUT
+            echo "url=https://cmz-chatbot-demo.netlify.app" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create ZAP configuration
@@ -113,7 +113,7 @@ jobs:
         run: |
           # Check if OpenAPI spec is accessible
           if curl -f -s "${{ steps.target.outputs.url }}/openapi.json" > /dev/null 2>&1; then
-            docker run --rm -v $(pwd):/zap/wrk/:rw \
+            docker run --rm -v "$(pwd)":/zap/wrk/:rw \
               -t ghcr.io/zaproxy/zaproxy:stable \
               zap-api-scan.py \
               -t "${{ steps.target.outputs.url }}/openapi.json" \
@@ -131,12 +131,17 @@ jobs:
           TARGET_URL: ${{ steps.target.outputs.url }}
           SCAN_TYPE: ${{ github.event.inputs.scan_type || 'baseline' }}
         run: |
-          echo "## 🔍 DAST Security Scan Results" > dast-summary.md
-          echo "" >> dast-summary.md
-          echo "**Target**: $TARGET_URL" >> dast-summary.md
-          echo "**Scan Type**: $SCAN_TYPE" >> dast-summary.md
-          echo "**Date**: $(date -u)" >> dast-summary.md
-          echo "" >> dast-summary.md
+          TARGET_URL="${{ steps.target.outputs.url }}"
+          SCAN_TYPE="${{ github.event.inputs.scan_type || 'baseline' }}"
+          
+          {
+            echo "## 🔍 Dynamic Application Security Testing (DAST)"
+            echo ""
+            echo "**Target**: $TARGET_URL"
+            echo "**Scan Type**: $SCAN_TYPE"
+            echo "**Date**: $(date -u)"
+            echo ""
+          } > dast-summary.md
           
           # Check if ZAP report exists and parse it
           if [ -f "report_html.html" ]; then
@@ -153,15 +158,6 @@ jobs:
               LOW_COUNT=$(grep -o "Low" report_html.html | wc -l || echo "0")
               echo "- 📝 **Low Risk**: $LOW_COUNT issues" >> dast-summary.md
             fi
-          else
-            echo "- ✅ **Scan completed** - Review artifacts for detailed results" >> dast-summary.md
-          fi
-          
-          echo "" >> dast-summary.md
-          echo "📋 **Next Steps:**" >> dast-summary.md
-          echo "1. Review the detailed HTML report in workflow artifacts" >> dast-summary.md
-          echo "2. Prioritize and remediate high/medium risk findings" >> dast-summary.md
-          echo "3. Update application security controls as needed" >> dast-summary.md
 
       - name: Upload DAST results
         uses: actions/upload-artifact@v4

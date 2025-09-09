@@ -112,7 +112,7 @@ jobs:
           echo "📄 Scanning configuration files..."
           
           # Scan YAML files
-          find . -name "*.yml" -o -name "*.yaml" | grep -v node_modules | grep -v .git | while read file; do
+          find . -name "*.yml" -o -name "*.yaml" | grep -v node_modules | grep -v .git | while read -r file; do
             echo "Scanning: $file"
             checkov -f "$file" \
               --framework yaml \
@@ -121,7 +121,7 @@ jobs:
           done
           
           # Scan JSON files (excluding package files and generated files)
-          find . -name "*.json" | grep -v node_modules | grep -v package | grep -v .git | while read file; do
+          find . -name "*.json" | grep -v node_modules | grep -v package | grep -v .git | while read -r file; do
             echo "Scanning: $file"
             checkov -f "$file" \
               --framework json \
@@ -183,13 +183,15 @@ jobs:
       - name: Create IaC security summary
         if: always()
         run: |
-          echo "## 🏗️ Infrastructure as Code Security Scan" > iac-summary.md
-          echo "" >> iac-summary.md
-          echo "**Scan Date**: $(date -u)" >> iac-summary.md
-          echo "**Frameworks Scanned**:" >> iac-summary.md
-          echo "- 🐳 Docker configurations" >> iac-summary.md
-          echo "- ⚙️ GitHub Actions workflows" >> iac-summary.md
-          echo "- 📄 YAML/JSON configuration files" >> iac-summary.md
+          {
+            echo "## 🏗️ Infrastructure as Code Security Scan"
+            echo ""
+            echo "**Scan Date**: $(date -u)"
+            echo "**Frameworks Scanned**:"
+            echo "- 🐳 Docker configurations"
+            echo "- ⚙️ GitHub Actions workflows"
+            echo "- 📄 YAML/JSON configuration files"
+          } > iac-summary.md
           
           if find . -name "*.tf" | grep -q .; then
             echo "- 🏗️ Terraform infrastructure" >> iac-summary.md

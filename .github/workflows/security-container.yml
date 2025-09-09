@@ -55,6 +55,7 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+          category: 'trivy-container'
 
       - name: Run Trivy filesystem scan
         uses: aquasecurity/trivy-action@master
@@ -70,6 +71,7 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-fs-results.sarif'
+          category: 'trivy-filesystem'
 
       - name: Run Trivy config scan
         uses: aquasecurity/trivy-action@master
@@ -82,16 +84,18 @@ jobs:
       - name: Generate security report
         if: always()
         run: |
-          echo "## 🐳 Container Security Scan Results" > security-report.md
-          echo "" >> security-report.md
-          echo "### Image: cmz-api:${{ github.sha }}" >> security-report.md
-          echo "" >> security-report.md
+          {
+            echo "## 🐳 Container Security Scan Results"
+            echo ""
+            echo "### Image: cmz-api:${{ github.sha }}"
+            echo ""
+          } > security-report.md
           
           # Run Trivy with JSON output to parse results
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-            -v $(pwd):/workspace aquasec/trivy:latest \
+            -v "$(pwd)":/workspace aquasec/trivy:latest \
             image --format json --output /workspace/trivy-results.json \
-            cmz-api:${{ github.sha }} || true
+            "cmz-api:${{ github.sha }}" || true
             
           if [ -f trivy-results.json ]; then
             # Parse JSON results (simplified)
@@ -100,16 +104,20 @@ jobs:
             MEDIUM=$(grep -o '"Severity":"MEDIUM"' trivy-results.json | wc -l || echo "0")
             LOW=$(grep -o '"Severity":"LOW"' trivy-results.json | wc -l || echo "0")
             
-            echo "| Severity | Count |" >> security-report.md
-            echo "|----------|-------|" >> security-report.md
-            echo "| 🚨 Critical | $CRITICAL |" >> security-report.md
-            echo "| ⚠️ High | $HIGH |" >> security-report.md
-            echo "| 📋 Medium | $MEDIUM |" >> security-report.md
-            echo "| 📝 Low | $LOW |" >> security-report.md
+            {
+              echo "| Severity | Count |"
+              echo "|----------|-------|"
+              echo "| 🚨 Critical | $CRITICAL |"
+              echo "| ⚠️ High | $HIGH |"
+              echo "| 📋 Medium | $MEDIUM |"
+              echo "| 📝 Low | $LOW |"
+            } >> security-report.md
           fi
           
-          echo "" >> security-report.md
-          echo "📋 View detailed results in the **Security** tab." >> security-report.md
+          {
+            echo ""
+            echo "📋 View detailed results in the **Security** tab."
+          } >> security-report.md
 
       - name: Comment PR with container security results
         if: github.event_name == 'pull_request'
