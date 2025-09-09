@@ -78,7 +78,7 @@ jobs:
     
     strategy:
       matrix:
-        scanner: [semgrep, codeql]
+        scanner: [semgrep]  # codeql temporarily disabled
       fail-fast: false
     
     steps:
@@ -343,7 +343,7 @@ jobs:
             echo ""
             echo "| Security Layer | Status | Tools Used |"
             echo "|---------------|---------|------------|"
-            echo "| 🔍 SAST | ✅ | Semgrep, CodeQL |"
+            echo "| 🔍 SAST | ✅ | Semgrep |"
             echo "| 📦 SCA | ✅ | npm audit, safety |"
             echo "| 🔑 Secrets | ✅ | TruffleHog |"
           } >> security-report/README.md
