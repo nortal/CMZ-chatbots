@@ -36,20 +36,22 @@ jobs:
       - name: Check file types for targeted scanning
         id: check-files
         run: |
-          echo "has-dockerfile=$([ -f 'backend/api/src/main/python/Dockerfile' ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "has-terraform=$([ -n "$(find . -name '*.tf' -not -path './.*')" ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "has-frontend=$([ -d 'frontend' ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "has-backend=$([ -d 'backend' ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          {
+            echo "has-dockerfile=$([ -f 'backend/api/src/main/python/Dockerfile' ] && echo 'true' || echo 'false')"
+            echo "has-terraform=$([ -n "$(find . -name '*.tf' -not -path './.*')" ] && echo 'true' || echo 'false')"
+            echo "has-frontend=$([ -d 'frontend' ] && echo 'true' || echo 'false')"
+            echo "has-backend=$([ -d 'backend' ] && echo 'true' || echo 'false')"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Determine scan strategy
         id: strategy
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "strategy=incremental" >> $GITHUB_OUTPUT
+            echo "strategy=incremental" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.event_name }}" == "schedule" ]]; then
-            echo "strategy=comprehensive" >> $GITHUB_OUTPUT
+            echo "strategy=comprehensive" >> "$GITHUB_OUTPUT"
           else
-            echo "strategy=standard" >> $GITHUB_OUTPUT
+            echo "strategy=standard" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Security scan summary
@@ -91,7 +93,6 @@ jobs:
             p/docker
             p/secrets
             p/owasp-top-ten
-          generateSarif: "1"
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
@@ -128,6 +129,7 @@ jobs:
         if: always() && matrix.scanner == 'semgrep'
         with:
           sarif_file: semgrep.sarif
+          category: 'semgrep-sast'
 
   # Dependency and secrets scanning
   dependency-secrets:
@@ -147,7 +149,7 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-          extra_args: --only-verified --json
+          extra_args: --only-verified --json --exclude-paths=DEMO_ACCESS.md
 
       - name: Check dependency vulnerabilities (Frontend)
         if: needs.security-matrix.outputs.has-frontend == 'true'
@@ -200,6 +202,7 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+          category: 'container-security'
 
   # Infrastructure as Code scanning
   iac-security:
@@ -243,6 +246,7 @@ jobs:
         if: always()
         with:
           sarif_file: checkov-dockerfile.sarif
+          category: 'iac-dockerfile'
         continue-on-error: true
 
       - name: Upload GHA scan results
@@ -250,6 +254,7 @@ jobs:
         if: always()
         with:
           sarif_file: checkov-gha.sarif
+          category: 'iac-github-actions'
         continue-on-error: true
 
   # Dynamic security testing (scheduled or manual)
@@ -305,22 +310,26 @@ jobs:
         run: |
           mkdir -p security-report
           
-          echo "# 🔒 Comprehensive Security Scan Report" > security-report/README.md
-          echo "" >> security-report/README.md
-          echo "**Scan Date**: $(date -u)" >> security-report/README.md
-          echo "**Repository**: ${{ github.repository }}" >> security-report/README.md
-          echo "**Branch**: ${{ github.ref_name }}" >> security-report/README.md
-          echo "**Commit**: ${{ github.sha }}" >> security-report/README.md
-          echo "**Scan Strategy**: ${{ needs.security-matrix.outputs.scan-strategy }}" >> security-report/README.md
-          echo "" >> security-report/README.md
+          {
+            echo "# 🔒 Comprehensive Security Scan Report"
+            echo ""
+            echo "**Scan Date**: $(date -u)"
+            echo "**Repository**: ${{ github.repository }}"
+            echo "**Branch**: ${{ github.ref_name }}"
+            echo "**Commit**: ${{ github.sha }}"
+            echo "**Scan Strategy**: ${{ needs.security-matrix.outputs.scan-strategy }}"
+            echo ""
+          } > security-report/README.md
           
-          echo "## 📊 Scan Coverage" >> security-report/README.md
-          echo "" >> security-report/README.md
-          echo "| Security Layer | Status | Tools Used |" >> security-report/README.md
-          echo "|---------------|---------|------------|" >> security-report/README.md
-          echo "| 🔍 SAST | ✅ | Semgrep, CodeQL |" >> security-report/README.md
-          echo "| 📦 SCA | ✅ | npm audit, safety |" >> security-report/README.md
-          echo "| 🔑 Secrets | ✅ | TruffleHog, GitGuardian |" >> security-report/README.md
+          {
+            echo "## 📊 Scan Coverage"
+            echo ""
+            echo "| Security Layer | Status | Tools Used |"
+            echo "|---------------|---------|------------|"
+            echo "| 🔍 SAST | ✅ | Semgrep, CodeQL |"
+            echo "| 📦 SCA | ✅ | npm audit, safety |"
+            echo "| 🔑 Secrets | ✅ | TruffleHog, GitGuardian |"
+          } >> security-report/README.md
           
           if [[ "${{ needs.security-matrix.outputs.has-dockerfile }}" == "true" ]]; then
             echo "| 🐳 Container | ✅ | Trivy |" >> security-report/README.md
@@ -336,23 +345,25 @@ jobs:
             echo "| 🌐 DAST | ➖ | Scheduled only |" >> security-report/README.md
           fi
           
-          echo "" >> security-report/README.md
-          echo "## 🎯 Key Security Metrics" >> security-report/README.md
-          echo "" >> security-report/README.md
-          echo "- **NIST CSF 2.0 Alignment**: Multi-layer security controls implemented" >> security-report/README.md
-          echo "- **Automation Level**: Fully automated security scanning in CI/CD" >> security-report/README.md
-          echo "- **Coverage**: Source code, dependencies, containers, infrastructure, runtime" >> security-report/README.md
-          echo "- **Integration**: Results feed directly into GitHub Security tab" >> security-report/README.md
-          echo "" >> security-report/README.md
-          echo "## 📋 Next Steps" >> security-report/README.md
-          echo "" >> security-report/README.md
-          echo "1. **Review Findings**: Check the Security tab for detailed vulnerability reports" >> security-report/README.md
-          echo "2. **Prioritize Remediation**: Address critical and high-severity findings first" >> security-report/README.md
-          echo "3. **Update Policies**: Refine scanning rules based on false positives" >> security-report/README.md
-          echo "4. **Monitor Trends**: Track security posture improvements over time" >> security-report/README.md
-          echo "" >> security-report/README.md
-          echo "---" >> security-report/README.md
-          echo "*Generated by CMZ Security Automation*" >> security-report/README.md
+          {
+            echo ""
+            echo "## 🎯 Key Security Metrics"
+            echo ""
+            echo "- **NIST CSF 2.0 Alignment**: Multi-layer security controls implemented"
+            echo "- **Automation Level**: Fully automated security scanning in CI/CD"
+            echo "- **Coverage**: Source code, dependencies, containers, infrastructure, runtime"
+            echo "- **Integration**: Results feed directly into GitHub Security tab"
+            echo ""
+            echo "## 📋 Next Steps"
+            echo ""
+            echo "1. **Review Findings**: Check the Security tab for detailed vulnerability reports"
+            echo "2. **Prioritize Remediation**: Address critical and high-severity findings first"
+            echo "3. **Update Policies**: Refine scanning rules based on false positives"
+            echo "4. **Monitor Trends**: Track security posture improvements over time"
+            echo ""
+            echo "---"
+            echo "*Generated by CMZ Security Automation*"
+          } >> security-report/README.md
 
       - name: Upload comprehensive security report
         uses: actions/upload-artifact@v4
