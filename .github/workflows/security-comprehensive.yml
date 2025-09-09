@@ -45,22 +45,30 @@ jobs:
 
       - name: Determine scan strategy
         id: strategy
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
             echo "strategy=incremental" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+          elif [[ "$EVENT_NAME" == "schedule" ]]; then
             echo "strategy=comprehensive" >> "$GITHUB_OUTPUT"
           else
             echo "strategy=standard" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Security scan summary
+        env:
+          SCAN_STRATEGY: ${{ steps.strategy.outputs.strategy }}
+          HAS_DOCKERFILE: ${{ steps.check-files.outputs.has-dockerfile }}
+          HAS_TERRAFORM: ${{ steps.check-files.outputs.has-terraform }}
+          HAS_FRONTEND: ${{ steps.check-files.outputs.has-frontend }}
+          HAS_BACKEND: ${{ steps.check-files.outputs.has-backend }}
         run: |
-          echo "🔒 **Security Scan Strategy**: ${{ steps.strategy.outputs.strategy }}"
-          echo "🐳 **Dockerfile detected**: ${{ steps.check-files.outputs.has-dockerfile }}"
-          echo "🏗️ **Terraform detected**: ${{ steps.check-files.outputs.has-terraform }}"
-          echo "⚛️ **Frontend detected**: ${{ steps.check-files.outputs.has-frontend }}"
-          echo "🐍 **Backend detected**: ${{ steps.check-files.outputs.has-backend }}"
+          echo "🔒 **Security Scan Strategy**: $SCAN_STRATEGY"
+          echo "� **Dockerfile detected**: $HAS_DOCKERFILE"
+          echo "🏗️ **Terraform detected**: $HAS_TERRAFORM"
+          echo "⚛️ **Frontend detected**: $HAS_FRONTEND"
+          echo "🐍 **Backend detected**: $HAS_BACKEND"
 
   # Run SAST scans in parallel
   sast-parallel:
@@ -187,8 +195,10 @@ jobs:
 
       - name: Build Docker image
         working-directory: backend/api/src/main/python
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
         run: |
-          docker build -t cmz-api:scan-${{ github.run_number }} .
+          docker build -t "cmz-api:scan-$BUILD_NUMBER" .
 
       - name: Run Trivy container scan
         uses: aquasecurity/trivy-action@master
@@ -307,6 +317,13 @@ jobs:
           path: security-artifacts
 
       - name: Generate comprehensive security report
+        env:
+          REPO_NAME: ${{ github.repository }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          SCAN_STRATEGY: ${{ needs.security-matrix.outputs.scan-strategy }}
+          HAS_DOCKERFILE: ${{ needs.security-matrix.outputs.has-dockerfile }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           mkdir -p security-report
           
@@ -314,10 +331,10 @@ jobs:
             echo "# 🔒 Comprehensive Security Scan Report"
             echo ""
             echo "**Scan Date**: $(date -u)"
-            echo "**Repository**: ${{ github.repository }}"
-            echo "**Branch**: ${{ github.ref_name }}"
-            echo "**Commit**: ${{ github.sha }}"
-            echo "**Scan Strategy**: ${{ needs.security-matrix.outputs.scan-strategy }}"
+            echo "**Repository**: $REPO_NAME"
+            echo "**Branch**: $BRANCH_NAME"
+            echo "**Commit**: $COMMIT_SHA"
+            echo "**Scan Strategy**: $SCAN_STRATEGY"
             echo ""
           } > security-report/README.md
           
@@ -331,7 +348,7 @@ jobs:
             echo "| 🔑 Secrets | ✅ | TruffleHog, GitGuardian |"
           } >> security-report/README.md
           
-          if [[ "${{ needs.security-matrix.outputs.has-dockerfile }}" == "true" ]]; then
+          if [[ "$HAS_DOCKERFILE" == "true" ]]; then
             echo "| 🐳 Container | ✅ | Trivy |" >> security-report/README.md
           else
             echo "| 🐳 Container | ➖ | No containers detected |" >> security-report/README.md
@@ -339,7 +356,7 @@ jobs:
           
           echo "| 🏗️ IaC | ✅ | Checkov |" >> security-report/README.md
           
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          if [[ "$EVENT_NAME" == "schedule" ]]; then
             echo "| 🌐 DAST | ✅ | OWASP ZAP |" >> security-report/README.md
           else
             echo "| 🌐 DAST | ➖ | Scheduled only |" >> security-report/README.md

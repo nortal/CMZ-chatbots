@@ -110,13 +110,15 @@ jobs:
 
       - name: Run ZAP API Scan
         if: github.event.inputs.scan_type == 'api'
+        env:
+          TARGET_URL: ${{ steps.target.outputs.url }}
         run: |
           # Check if OpenAPI spec is accessible
-          if curl -f -s "${{ steps.target.outputs.url }}/openapi.json" > /dev/null 2>&1; then
+          if curl -f -s "$TARGET_URL/openapi.json" > /dev/null 2>&1; then
             docker run --rm -v "$(pwd)":/zap/wrk/:rw \
               -t ghcr.io/zaproxy/zaproxy:stable \
               zap-api-scan.py \
-              -t "${{ steps.target.outputs.url }}/openapi.json" \
+              -t "$TARGET_URL/openapi.json" \
               -f openapi \
               -r zap-api-report.html \
               -w zap-api-report.md \

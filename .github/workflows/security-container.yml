@@ -31,8 +31,10 @@ jobs:
 
       - name: Build Docker image
         working-directory: backend/api/src/main/python
+        env:
+          COMMIT_SHA: ${{ github.sha }}
         run: |
-          docker build -t cmz-api:${{ github.sha }} .
+          docker build -t "cmz-api:$COMMIT_SHA" .
           docker build -t cmz-api:latest .
 
       - name: Run Trivy vulnerability scanner (Table format)
@@ -83,11 +85,13 @@ jobs:
 
       - name: Generate security report
         if: always()
+        env:
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           {
             echo "## 🐳 Container Security Scan Results"
             echo ""
-            echo "### Image: cmz-api:${{ github.sha }}"
+            echo "### Image: cmz-api:$COMMIT_SHA"
             echo ""
           } > security-report.md
           
@@ -95,7 +99,7 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             -v "$(pwd)":/workspace aquasec/trivy:latest \
             image --format json --output /workspace/trivy-results.json \
-            "cmz-api:${{ github.sha }}" || true
+            "cmz-api:$COMMIT_SHA" || true
             
           if [ -f trivy-results.json ]; then
             # Parse JSON results (simplified)
