@@ -201,18 +201,20 @@ jobs:
             echo "- ☁️ CloudFormation templates" >> iac-summary.md
           fi
           
-          echo "" >> iac-summary.md
-          echo "📋 **Key Security Areas Checked:**" >> iac-summary.md
-          echo "- Container security configurations" >> iac-summary.md
-          echo "- Secrets management in workflows" >> iac-summary.md
-          echo "- Network security settings" >> iac-summary.md
-          echo "- Access control configurations" >> iac-summary.md
-          echo "- Resource encryption settings" >> iac-summary.md
-          echo "" >> iac-summary.md
-          echo "🔍 **Next Steps:**" >> iac-summary.md
-          echo "1. Review findings in the Security tab" >> iac-summary.md
-          echo "2. Address high/critical severity issues first" >> iac-summary.md
-          echo "3. Consider implementing policy-as-code for ongoing compliance" >> iac-summary.md
+          {
+            echo ""
+            echo "📋 **Key Security Areas Checked:**"
+            echo "- Container security configurations"
+            echo "- Secrets management in workflows"
+            echo "- Network security settings"
+            echo "- Access control configurations"
+            echo "- Resource encryption settings"
+            echo ""
+            echo "🔍 **Next Steps:**"
+            echo "1. Review findings in the Security tab"
+            echo "2. Address high/critical severity issues first"
+            echo "3. Consider implementing policy-as-code for ongoing compliance"
+          } >> iac-summary.md
 
       - name: Comment PR with IaC scan results
         if: github.event_name == 'pull_request'
