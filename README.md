@@ -1,6 +1,16 @@
 # CMZ-chatbots
 A repository for the CMZ chatbot program
 
+## History Tracking Requirement
+
+**All contributors must create a session history log before committing code.**
+
+1. Create a file in the `/history/` directory named: `{your_name}_{YYYY-MM-DD}_{start_time}h-{end_time}h.md`
+2. Include all prompts, MCP server usage, actions, commands, and technical details from your development session
+3. Use 4-hour time windows for session tracking
+4. This ensures project continuity and knowledge transfer across team members
+
+**Example**: `history/kc.stegbauer_2025-09-07_09h-13h.md`
 
 OpenAPI spec:
 TODO:  Change this link after initial checkin

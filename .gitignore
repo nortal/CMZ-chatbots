@@ -213,3 +213,20 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Frontend Dependencies and Build Files
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/.netlify/
+
+# Development Tools
+.claude/
+.mcp.json
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
