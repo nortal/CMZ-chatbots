@@ -4,16 +4,15 @@
 # Demo access documentation
 DEMO_ACCESS.md
 
-# Test and demo directories
-**/demo/**
-**/test/**
-**/tests/**
+# Test and demo directories using simple patterns
+demo/
+test/
+tests/
 
 # Documentation files that may contain example credentials
-docs/**/*.md
+docs/
 README.md
 
 # Configuration files that may have placeholder secrets
 .env.example
 .env.template
-**/config.example.*

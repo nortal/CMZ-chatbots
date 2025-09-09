@@ -126,7 +126,7 @@ jobs:
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && matrix.scanner == 'semgrep'
+        if: always() && matrix.scanner == 'semgrep' && hashFiles('semgrep.sarif') != ''
         with:
           sarif_file: semgrep.sarif
           category: 'semgrep-sast'
