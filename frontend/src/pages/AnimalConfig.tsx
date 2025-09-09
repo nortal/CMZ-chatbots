@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, MessageSquare, Database, AlertTriangle } from 'lucide-react';
+import { useAnimals, useAnimalConfig, useApiHealth } from '../hooks/useAnimals';
+import { Animal as BackendAnimal, AnimalConfig as BackendAnimalConfig } from '../services/api';
+import { utils } from '../services/api';
 
 interface KnowledgeEntry {
   id: string;
@@ -19,25 +22,23 @@ interface Guardrail {
   severity: 'low' | 'medium' | 'high';
 }
 
-interface Animal {
+// Frontend animal interface that extends backend animal with UI-specific fields
+interface Animal extends BackendAnimal {
   id: string;
-  name: string;
-  species: string;
-  active: boolean;
   lastUpdated: string;
   conversations: number;
-  personality: string;
-  systemPrompt: string;
-  knowledgeBase: KnowledgeEntry[];
-  guardrails: Guardrail[];
-  conversationSettings: {
+  personality?: string;
+  systemPrompt?: string;
+  knowledgeBase?: KnowledgeEntry[];
+  guardrails?: Guardrail[];
+  conversationSettings?: {
     maxResponseLength: number;
     educationalFocus: boolean;
     allowPersonalQuestions: boolean;
     scientificAccuracy: 'strict' | 'moderate' | 'flexible';
     ageAppropriate: boolean;
   };
-  voiceSettings: {
+  voiceSettings?: {
     tone: 'playful' | 'wise' | 'energetic' | 'calm' | 'mysterious';
     formality: 'casual' | 'friendly' | 'professional';
     enthusiasm: number; // 1-10
@@ -45,7 +46,22 @@ interface Animal {
 }
 
 const AnimalConfig: React.FC = () => {
-  const [animals] = useState<Animal[]>([
+  // Use our API hooks
+  const { animals: backendAnimals, loading: animalsLoading, error: animalsError, refetch } = useAnimals();
+  const { isHealthy, checkHealth } = useApiHealth();
+  
+  // Transform backend animals to frontend format
+  const [animals, setAnimals] = useState<Animal[]>([]);
+  
+  useEffect(() => {
+    if (backendAnimals) {
+      const transformedAnimals = backendAnimals.map(animal => utils.transformAnimalForFrontend(animal));
+      setAnimals(transformedAnimals);
+    }
+  }, [backendAnimals]);
+  
+  // Fallback to mock data if API is not available
+  const [mockAnimals] = useState<Animal[]>([
     {
       id: 'cheetah-1',
       name: 'Cheetah',
@@ -266,6 +282,34 @@ Share your wisdom about family, memory, and the importance of protecting elephan
   ]);
 
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+  const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
+  
+  // Use the animal config hook for the selected animal
+  const { 
+    config: animalConfig, 
+    loading: configLoading, 
+    error: configError, 
+    updateConfig,
+    saving: configSaving,
+    saveError 
+  } = useAnimalConfig(selectedAnimalId);
+  
+  // Handle animal selection
+  const handleSelectAnimal = (animal: Animal) => {
+    setSelectedAnimal(animal);
+    setSelectedAnimalId(animal.animalId || animal.id);
+  };
+  
+  // Handle configuration save
+  const handleSaveConfig = async (configData: any) => {
+    try {
+      await updateConfig(configData);
+      // Refresh the animals list to get updated data
+      refetch();
+    } catch (error) {
+      console.error('Failed to save configuration:', error);
+    }
+  };
 
   const AnimalCard: React.FC<{ animal: Animal }> = ({ animal }) => (
     <div className="bg-white rounded-lg border hover:shadow-md transition-shadow">
@@ -320,7 +364,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
 
         <div className="flex space-x-2">
           <button 
-            onClick={() => setSelectedAnimal(animal)}
+            onClick={() => handleSelectAnimal(animal)}
             className="flex-1 flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
             <Edit className="w-4 h-4 mr-2" />
@@ -372,9 +416,13 @@ Share your wisdom about family, memory, and the importance of protecting elephan
               <div className="flex items-center">
                 <Brain className="w-6 h-6 text-green-600 mr-3" />
                 <h2 className="text-xl font-semibold">Configure {selectedAnimal.name}</h2>
+                {configLoading && <span className="ml-2 text-sm text-gray-500">Loading...</span>}
               </div>
               <button 
-                onClick={() => setSelectedAnimal(null)}
+                onClick={() => {
+                  setSelectedAnimal(null);
+                  setSelectedAnimalId(null);
+                }}
                 className="text-gray-400 hover:text-gray-600 text-2xl"
               >
                 ×
@@ -441,9 +489,10 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                   </label>
                   <textarea
                     rows={4}
-                    defaultValue={selectedAnimal.personality}
+                    defaultValue={animalConfig?.personality || selectedAnimal.personality}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="Describe the animal's personality, how it should interact with visitors..."
+                    id="personality-textarea"
                   />
                 </div>
 
@@ -692,7 +741,10 @@ Share your wisdom about family, memory, and the importance of protecting elephan
 
           <div className="p-6 border-t bg-gray-50 flex justify-between">
             <button
-              onClick={() => setSelectedAnimal(null)}
+              onClick={() => {
+                setSelectedAnimal(null);
+                setSelectedAnimalId(null);
+              }}
               className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Cancel
@@ -701,9 +753,21 @@ Share your wisdom about family, memory, and the importance of protecting elephan
               <button className="px-6 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
                 Test Chatbot
               </button>
-              <button className="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+              <button 
+                onClick={() => {
+                  // Get form data and save
+                  const personalityEl = document.getElementById('personality-textarea') as HTMLTextAreaElement;
+                  const configData = {
+                    personality: personalityEl?.value || animalConfig?.personality,
+                    // Add other form fields as needed
+                  };
+                  handleSaveConfig(configData);
+                }}
+                disabled={configSaving}
+                className="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <Save className="w-4 h-4 mr-2" />
-                Save Configuration
+                {configSaving ? 'Saving...' : 'Save Configuration'}
               </button>
             </div>
           </div>
@@ -725,11 +789,55 @@ Share your wisdom about family, memory, and the importance of protecting elephan
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {animals.map(animal => (
-          <AnimalCard key={animal.id} animal={animal} />
-        ))}
-      </div>
+      {/* API Status Indicator */}
+      {!isHealthy && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2" />
+            <span className="text-sm text-yellow-800">
+              Backend API unavailable. Using offline mode with limited functionality.
+            </span>
+            <button 
+              onClick={checkHealth}
+              className="ml-auto text-sm text-yellow-600 hover:text-yellow-800 underline"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {/* Error handling */}
+      {animalsError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center">
+            <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+            <span className="text-sm text-red-800">Error loading animals: {animalsError}</span>
+          </div>
+        </div>
+      )}
+      
+      {/* Save error handling */}
+      {saveError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center">
+            <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+            <span className="text-sm text-red-800">Error saving: {saveError}</span>
+          </div>
+        </div>
+      )}
+
+      {animalsLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-gray-500">Loading animals...</div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {(animals.length > 0 ? animals : mockAnimals).map(animal => (
+            <AnimalCard key={animal.id || animal.animalId} animal={animal} />
+          ))}
+        </div>
+      )}
 
       <ConfigurationModal />
     </div>
