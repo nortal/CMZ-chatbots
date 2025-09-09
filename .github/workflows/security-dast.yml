@@ -131,9 +131,6 @@ jobs:
           TARGET_URL: ${{ steps.target.outputs.url }}
           SCAN_TYPE: ${{ github.event.inputs.scan_type || 'baseline' }}
         run: |
-          TARGET_URL="${{ steps.target.outputs.url }}"
-          SCAN_TYPE="${{ github.event.inputs.scan_type || 'baseline' }}"
-          
           {
             echo "## 🔍 Dynamic Application Security Testing (DAST)"
             echo ""
