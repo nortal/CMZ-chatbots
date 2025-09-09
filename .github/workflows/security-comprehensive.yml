@@ -149,7 +149,7 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-          extra_args: --only-verified --json --exclude-paths=DEMO_ACCESS.md
+          extra_args: --only-verified --json --exclude-paths .trufflehogignore
 
       - name: Check dependency vulnerabilities (Frontend)
         if: needs.security-matrix.outputs.has-frontend == 'true'
