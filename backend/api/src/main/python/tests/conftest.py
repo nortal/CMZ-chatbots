@@ -457,8 +457,8 @@ def auth_headers():
         payload = {
             "sub": user_id,
             "role": role, 
-            "exp": datetime.utcnow() + timedelta(hours=1),
-            "iat": datetime.utcnow()
+            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+            "iat": datetime.now(timezone.utc)
         }
         
         token = jwt.encode(payload, "test-secret-key", algorithm="HS256")
