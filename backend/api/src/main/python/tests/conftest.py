@@ -6,17 +6,16 @@ import os
 import pytest
 import boto3
 from moto import mock_aws
-from flask import Flask
 import connexion
-from typing import Dict, Any, Generator
 import json
-import uuid
 import subprocess
 import shlex
 from datetime import datetime, timezone
 
 from openapi_server.encoder import JSONEncoder
-from openapi_server.models import *
+from openapi_server.models import (
+    User, Animal, AuthRequest, AuthResponse, Error
+)
 
 
 # =============================================================================
@@ -140,6 +139,7 @@ class CurlTestClient:
                 try:
                     status_code = int(first_line.split()[1])
                 except (IndexError, ValueError):
+                    # Unable to parse HTTP status code from response headers
                     pass
                     
             # Parse JSON body

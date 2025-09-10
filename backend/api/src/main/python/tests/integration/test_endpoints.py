@@ -2,10 +2,7 @@
 Integration tests for specific CMZ API endpoints
 Tests actual endpoint behavior against Jira ticket requirements
 """
-import pytest
 import json
-import uuid
-from datetime import datetime, timezone
 
 
 class TestAuthenticationEndpoints:

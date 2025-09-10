@@ -5,10 +5,7 @@ Tests requirements from tickets PR003946-66 through PR003946-91
 This test suite validates the comprehensive API hardening requirements
 defined in the Jira tickets.
 """
-import pytest
 import json
-import uuid
-from datetime import datetime, timezone
 
 
 class TestSoftDeleteSemantics:
@@ -20,7 +17,7 @@ class TestSoftDeleteSemantics:
     def test_pr003946_66_soft_delete_flag_consistency(self, client, db_helper, sample_animal):
         """PR003946-66: Soft-delete flag consistency across all entities"""
         # Insert animal
-        animal = db_helper.insert_test_animal(sample_animal)
+        db_helper.insert_test_animal(sample_animal)
         
         # Test GET excludes soft-deleted by default
         response = client.get('/animal_list')
