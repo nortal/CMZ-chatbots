@@ -311,8 +311,9 @@ def test_tables(dynamodb_mock, test_config):
         ],
         AttributeDefinitions=[
             {'AttributeName': 'userId', 'AttributeType': 'S'},
-            {'AttributeName': 'email', 'AttributeType': 'S'},
-            {'AttributeName': 'familyId', 'AttributeType': 'S'}
+            {'AttributeName': 'email', 'AttributeType': 'S'}
+            # Note: familyId removed from AttributeDefinitions as it's nullable 
+            # and cannot be used in GSI due to DynamoDB limitations with null values
         ],
         GlobalSecondaryIndexes=[
             {
@@ -320,13 +321,10 @@ def test_tables(dynamodb_mock, test_config):
                 'KeySchema': [{'AttributeName': 'email', 'KeyType': 'HASH'}],
                 'Projection': {'ProjectionType': 'ALL'},
                 'ProvisionedThroughput': {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5}
-            },
-            {
-                'IndexName': 'family-index', 
-                'KeySchema': [{'AttributeName': 'familyId', 'KeyType': 'HASH'}],
-                'Projection': {'ProjectionType': 'ALL'},
-                'ProvisionedThroughput': {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5}
             }
+            # family-index GSI removed: DynamoDB GSIs cannot index items with null key attributes
+            # Users with familyId: null would cause ValidationException errors
+            # For family-based queries, scan the table with filter expressions or use a different approach
         ],
         BillingMode='PROVISIONED',
         ProvisionedThroughput={'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5}
