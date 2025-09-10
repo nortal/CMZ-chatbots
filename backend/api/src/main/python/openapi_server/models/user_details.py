@@ -179,7 +179,7 @@ class UserDetails(Model):
         :param role: The role of this UserDetails.
         :type role: str
         """
-        allowed_values = ["visitor", "user", "editor", "admin"]  # noqa: E501
+        allowed_values = ["visitor", "user", "member", "editor", "admin"]  # noqa: E501
         if role not in allowed_values:
             raise ValueError(
                 "Invalid value for `role` ({0}), must be one of {1}"

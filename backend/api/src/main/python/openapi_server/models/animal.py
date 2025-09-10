@@ -14,7 +14,7 @@ class Animal(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, id=None, name=None, species=None, status=None):  # noqa: E501
+    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, animal_id=None, name=None, species=None, status=None):  # noqa: E501
         """Animal - a model defined in OpenAPI
 
         :param created: The created of this Animal.  # noqa: E501
@@ -25,8 +25,8 @@ class Animal(Model):
         :type deleted: AuditStamp
         :param soft_delete: The soft_delete of this Animal.  # noqa: E501
         :type soft_delete: bool
-        :param id: The id of this Animal.  # noqa: E501
-        :type id: str
+        :param animal_id: The animal_id of this Animal.  # noqa: E501
+        :type animal_id: str
         :param name: The name of this Animal.  # noqa: E501
         :type name: str
         :param species: The species of this Animal.  # noqa: E501
@@ -39,7 +39,7 @@ class Animal(Model):
             'modified': AuditStamp,
             'deleted': AuditStamp,
             'soft_delete': bool,
-            'id': str,
+            'animal_id': str,
             'name': str,
             'species': str,
             'status': str
@@ -50,7 +50,7 @@ class Animal(Model):
             'modified': 'modified',
             'deleted': 'deleted',
             'soft_delete': 'softDelete',
-            'id': 'id',
+            'animal_id': 'animalId',
             'name': 'name',
             'species': 'species',
             'status': 'status'
@@ -60,7 +60,7 @@ class Animal(Model):
         self._modified = modified
         self._deleted = deleted
         self._soft_delete = soft_delete
-        self._id = id
+        self._animal_id = animal_id
         self._name = name
         self._species = species
         self._status = status
@@ -161,27 +161,27 @@ class Animal(Model):
         self._soft_delete = soft_delete
 
     @property
-    def id(self) -> str:
-        """Gets the id of this Animal.
+    def animal_id(self) -> str:
+        """Gets the animal_id of this Animal.
 
 
-        :return: The id of this Animal.
+        :return: The animal_id of this Animal.
         :rtype: str
         """
-        return self._id
+        return self._animal_id
 
-    @id.setter
-    def id(self, id: str):
-        """Sets the id of this Animal.
+    @animal_id.setter
+    def animal_id(self, animal_id: str):
+        """Sets the animal_id of this Animal.
 
 
-        :param id: The id of this Animal.
-        :type id: str
+        :param animal_id: The animal_id of this Animal.
+        :type animal_id: str
         """
-        if id is None:
-            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
+        if animal_id is None:
+            raise ValueError("Invalid value for `animal_id`, must not be `None`")  # noqa: E501
 
-        self._id = id
+        self._animal_id = animal_id
 
     @property
     def name(self) -> str:

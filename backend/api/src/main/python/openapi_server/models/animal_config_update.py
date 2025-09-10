@@ -14,9 +14,11 @@ class AnimalConfigUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, voice=None, personality=None, ai_model=None, temperature=0.7, top_p=1, tools_enabled=None, guardrails=None, created=None, modified=None, deleted=None, soft_delete=False):  # noqa: E501
+    def __init__(self, animal_config_id=None, voice=None, personality=None, ai_model=None, temperature=0.7, top_p=1, tools_enabled=None, guardrails=None, created=None, modified=None, deleted=None, soft_delete=False):  # noqa: E501
         """AnimalConfigUpdate - a model defined in OpenAPI
 
+        :param animal_config_id: The animal_config_id of this AnimalConfigUpdate.  # noqa: E501
+        :type animal_config_id: str
         :param voice: The voice of this AnimalConfigUpdate.  # noqa: E501
         :type voice: str
         :param personality: The personality of this AnimalConfigUpdate.  # noqa: E501
@@ -41,6 +43,7 @@ class AnimalConfigUpdate(Model):
         :type soft_delete: bool
         """
         self.openapi_types = {
+            'animal_config_id': str,
             'voice': str,
             'personality': str,
             'ai_model': str,
@@ -55,6 +58,7 @@ class AnimalConfigUpdate(Model):
         }
 
         self.attribute_map = {
+            'animal_config_id': 'animalConfigId',
             'voice': 'voice',
             'personality': 'personality',
             'ai_model': 'aiModel',
@@ -68,6 +72,7 @@ class AnimalConfigUpdate(Model):
             'soft_delete': 'softDelete'
         }
 
+        self._animal_config_id = animal_config_id
         self._voice = voice
         self._personality = personality
         self._ai_model = ai_model
@@ -90,6 +95,27 @@ class AnimalConfigUpdate(Model):
         :rtype: AnimalConfigUpdate
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def animal_config_id(self) -> str:
+        """Gets the animal_config_id of this AnimalConfigUpdate.
+
+
+        :return: The animal_config_id of this AnimalConfigUpdate.
+        :rtype: str
+        """
+        return self._animal_config_id
+
+    @animal_config_id.setter
+    def animal_config_id(self, animal_config_id: str):
+        """Sets the animal_config_id of this AnimalConfigUpdate.
+
+
+        :param animal_config_id: The animal_config_id of this AnimalConfigUpdate.
+        :type animal_config_id: str
+        """
+
+        self._animal_config_id = animal_config_id
 
     @property
     def voice(self) -> str:

@@ -1359,6 +1359,7 @@ components:
             enum:
             - visitor
             - user
+            - member
             - editor
             - admin
           userType:
@@ -1391,6 +1392,7 @@ components:
               enum:
               - visitor
               - user
+              - member
               - editor
               - admin
     UserDetails:

@@ -12,11 +12,11 @@ class ConvoTurnResponseTurn(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, timestamp=None, tokens_prompt=None, tokens_completion=None, latency_ms=None):  # noqa: E501
+    def __init__(self, convo_turn_id=None, timestamp=None, tokens_prompt=None, tokens_completion=None, latency_ms=None):  # noqa: E501
         """ConvoTurnResponseTurn - a model defined in OpenAPI
 
-        :param id: The id of this ConvoTurnResponseTurn.  # noqa: E501
-        :type id: str
+        :param convo_turn_id: The convo_turn_id of this ConvoTurnResponseTurn.  # noqa: E501
+        :type convo_turn_id: str
         :param timestamp: The timestamp of this ConvoTurnResponseTurn.  # noqa: E501
         :type timestamp: datetime
         :param tokens_prompt: The tokens_prompt of this ConvoTurnResponseTurn.  # noqa: E501
@@ -27,7 +27,7 @@ class ConvoTurnResponseTurn(Model):
         :type latency_ms: int
         """
         self.openapi_types = {
-            'id': str,
+            'convo_turn_id': str,
             'timestamp': datetime,
             'tokens_prompt': int,
             'tokens_completion': int,
@@ -35,14 +35,14 @@ class ConvoTurnResponseTurn(Model):
         }
 
         self.attribute_map = {
-            'id': 'id',
+            'convo_turn_id': 'convoTurnId',
             'timestamp': 'timestamp',
             'tokens_prompt': 'tokensPrompt',
             'tokens_completion': 'tokensCompletion',
             'latency_ms': 'latencyMs'
         }
 
-        self._id = id
+        self._convo_turn_id = convo_turn_id
         self._timestamp = timestamp
         self._tokens_prompt = tokens_prompt
         self._tokens_completion = tokens_completion
@@ -60,25 +60,25 @@ class ConvoTurnResponseTurn(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> str:
-        """Gets the id of this ConvoTurnResponseTurn.
+    def convo_turn_id(self) -> str:
+        """Gets the convo_turn_id of this ConvoTurnResponseTurn.
 
 
-        :return: The id of this ConvoTurnResponseTurn.
+        :return: The convo_turn_id of this ConvoTurnResponseTurn.
         :rtype: str
         """
-        return self._id
+        return self._convo_turn_id
 
-    @id.setter
-    def id(self, id: str):
-        """Sets the id of this ConvoTurnResponseTurn.
+    @convo_turn_id.setter
+    def convo_turn_id(self, convo_turn_id: str):
+        """Sets the convo_turn_id of this ConvoTurnResponseTurn.
 
 
-        :param id: The id of this ConvoTurnResponseTurn.
-        :type id: str
+        :param convo_turn_id: The convo_turn_id of this ConvoTurnResponseTurn.
+        :type convo_turn_id: str
         """
 
-        self._id = id
+        self._convo_turn_id = convo_turn_id
 
     @property
     def timestamp(self) -> datetime:

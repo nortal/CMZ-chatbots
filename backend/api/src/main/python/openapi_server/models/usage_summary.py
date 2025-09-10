@@ -12,11 +12,11 @@ class UsageSummary(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, userid=None, total_sessions=None, total_turns=None, last_active=None):  # noqa: E501
+    def __init__(self, user_id=None, total_sessions=None, total_turns=None, last_active=None):  # noqa: E501
         """UsageSummary - a model defined in OpenAPI
 
-        :param userid: The userid of this UsageSummary.  # noqa: E501
-        :type userid: str
+        :param user_id: The user_id of this UsageSummary.  # noqa: E501
+        :type user_id: str
         :param total_sessions: The total_sessions of this UsageSummary.  # noqa: E501
         :type total_sessions: int
         :param total_turns: The total_turns of this UsageSummary.  # noqa: E501
@@ -25,20 +25,20 @@ class UsageSummary(Model):
         :type last_active: datetime
         """
         self.openapi_types = {
-            'userid': str,
+            'user_id': str,
             'total_sessions': int,
             'total_turns': int,
             'last_active': datetime
         }
 
         self.attribute_map = {
-            'userid': 'userid',
+            'user_id': 'userId',
             'total_sessions': 'totalSessions',
             'total_turns': 'totalTurns',
             'last_active': 'lastActive'
         }
 
-        self._userid = userid
+        self._user_id = user_id
         self._total_sessions = total_sessions
         self._total_turns = total_turns
         self._last_active = last_active
@@ -55,25 +55,25 @@ class UsageSummary(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def userid(self) -> str:
-        """Gets the userid of this UsageSummary.
+    def user_id(self) -> str:
+        """Gets the user_id of this UsageSummary.
 
 
-        :return: The userid of this UsageSummary.
+        :return: The user_id of this UsageSummary.
         :rtype: str
         """
-        return self._userid
+        return self._user_id
 
-    @userid.setter
-    def userid(self, userid: str):
-        """Sets the userid of this UsageSummary.
+    @user_id.setter
+    def user_id(self, user_id: str):
+        """Sets the user_id of this UsageSummary.
 
 
-        :param userid: The userid of this UsageSummary.
-        :type userid: str
+        :param user_id: The user_id of this UsageSummary.
+        :type user_id: str
         """
 
-        self._userid = userid
+        self._user_id = user_id
 
     @property
     def total_sessions(self) -> int:

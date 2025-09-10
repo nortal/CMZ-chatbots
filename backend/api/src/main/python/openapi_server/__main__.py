@@ -5,6 +5,7 @@ import connexion
 from flask_cors import CORS
 
 from openapi_server import encoder
+from openapi_server.impl.error_handler import register_error_handlers, register_custom_error_handlers
 
 
 def main():
@@ -20,6 +21,10 @@ def main():
     app.add_api('openapi.yaml',
                 arguments={'title': 'CMZ API'},
                 pythonic_params=True)
+
+    # Register consistent error handling (PR003946-90)
+    register_error_handlers(app.app)
+    register_custom_error_handlers(app.app)
 
     app.run(port=8080)
 

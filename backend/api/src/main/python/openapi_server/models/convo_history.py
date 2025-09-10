@@ -14,35 +14,35 @@ class ConvoHistory(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, session_id=None, animalid=None, userid=None, turns=None):  # noqa: E501
+    def __init__(self, session_id=None, animal_id=None, user_id=None, turns=None):  # noqa: E501
         """ConvoHistory - a model defined in OpenAPI
 
         :param session_id: The session_id of this ConvoHistory.  # noqa: E501
         :type session_id: str
-        :param animalid: The animalid of this ConvoHistory.  # noqa: E501
-        :type animalid: str
-        :param userid: The userid of this ConvoHistory.  # noqa: E501
-        :type userid: str
+        :param animal_id: The animal_id of this ConvoHistory.  # noqa: E501
+        :type animal_id: str
+        :param user_id: The user_id of this ConvoHistory.  # noqa: E501
+        :type user_id: str
         :param turns: The turns of this ConvoHistory.  # noqa: E501
         :type turns: List[ConvoHistoryTurnsInner]
         """
         self.openapi_types = {
             'session_id': str,
-            'animalid': str,
-            'userid': str,
+            'animal_id': str,
+            'user_id': str,
             'turns': List[ConvoHistoryTurnsInner]
         }
 
         self.attribute_map = {
             'session_id': 'sessionId',
-            'animalid': 'animalid',
-            'userid': 'userid',
+            'animal_id': 'animalId',
+            'user_id': 'userId',
             'turns': 'turns'
         }
 
         self._session_id = session_id
-        self._animalid = animalid
-        self._userid = userid
+        self._animal_id = animal_id
+        self._user_id = user_id
         self._turns = turns
 
     @classmethod
@@ -78,46 +78,46 @@ class ConvoHistory(Model):
         self._session_id = session_id
 
     @property
-    def animalid(self) -> str:
-        """Gets the animalid of this ConvoHistory.
+    def animal_id(self) -> str:
+        """Gets the animal_id of this ConvoHistory.
 
 
-        :return: The animalid of this ConvoHistory.
+        :return: The animal_id of this ConvoHistory.
         :rtype: str
         """
-        return self._animalid
+        return self._animal_id
 
-    @animalid.setter
-    def animalid(self, animalid: str):
-        """Sets the animalid of this ConvoHistory.
+    @animal_id.setter
+    def animal_id(self, animal_id: str):
+        """Sets the animal_id of this ConvoHistory.
 
 
-        :param animalid: The animalid of this ConvoHistory.
-        :type animalid: str
+        :param animal_id: The animal_id of this ConvoHistory.
+        :type animal_id: str
         """
 
-        self._animalid = animalid
+        self._animal_id = animal_id
 
     @property
-    def userid(self) -> str:
-        """Gets the userid of this ConvoHistory.
+    def user_id(self) -> str:
+        """Gets the user_id of this ConvoHistory.
 
 
-        :return: The userid of this ConvoHistory.
+        :return: The user_id of this ConvoHistory.
         :rtype: str
         """
-        return self._userid
+        return self._user_id
 
-    @userid.setter
-    def userid(self, userid: str):
-        """Sets the userid of this ConvoHistory.
+    @user_id.setter
+    def user_id(self, user_id: str):
+        """Sets the user_id of this ConvoHistory.
 
 
-        :param userid: The userid of this ConvoHistory.
-        :type userid: str
+        :param user_id: The user_id of this ConvoHistory.
+        :type user_id: str
         """
 
-        self._userid = userid
+        self._user_id = user_id
 
     @property
     def turns(self) -> List[ConvoHistoryTurnsInner]:

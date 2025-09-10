@@ -12,29 +12,29 @@ class PerformanceMetricsPerAnimalInner(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, animalid=None, requests=None, avg_latency_ms=None):  # noqa: E501
+    def __init__(self, animal_id=None, requests=None, avg_latency_ms=None):  # noqa: E501
         """PerformanceMetricsPerAnimalInner - a model defined in OpenAPI
 
-        :param animalid: The animalid of this PerformanceMetricsPerAnimalInner.  # noqa: E501
-        :type animalid: str
+        :param animal_id: The animal_id of this PerformanceMetricsPerAnimalInner.  # noqa: E501
+        :type animal_id: str
         :param requests: The requests of this PerformanceMetricsPerAnimalInner.  # noqa: E501
         :type requests: int
         :param avg_latency_ms: The avg_latency_ms of this PerformanceMetricsPerAnimalInner.  # noqa: E501
         :type avg_latency_ms: int
         """
         self.openapi_types = {
-            'animalid': str,
+            'animal_id': str,
             'requests': int,
             'avg_latency_ms': int
         }
 
         self.attribute_map = {
-            'animalid': 'animalid',
+            'animal_id': 'animalId',
             'requests': 'requests',
             'avg_latency_ms': 'avgLatencyMs'
         }
 
-        self._animalid = animalid
+        self._animal_id = animal_id
         self._requests = requests
         self._avg_latency_ms = avg_latency_ms
 
@@ -50,25 +50,25 @@ class PerformanceMetricsPerAnimalInner(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def animalid(self) -> str:
-        """Gets the animalid of this PerformanceMetricsPerAnimalInner.
+    def animal_id(self) -> str:
+        """Gets the animal_id of this PerformanceMetricsPerAnimalInner.
 
 
-        :return: The animalid of this PerformanceMetricsPerAnimalInner.
+        :return: The animal_id of this PerformanceMetricsPerAnimalInner.
         :rtype: str
         """
-        return self._animalid
+        return self._animal_id
 
-    @animalid.setter
-    def animalid(self, animalid: str):
-        """Sets the animalid of this PerformanceMetricsPerAnimalInner.
+    @animal_id.setter
+    def animal_id(self, animal_id: str):
+        """Sets the animal_id of this PerformanceMetricsPerAnimalInner.
 
 
-        :param animalid: The animalid of this PerformanceMetricsPerAnimalInner.
-        :type animalid: str
+        :param animal_id: The animal_id of this PerformanceMetricsPerAnimalInner.
+        :type animal_id: str
         """
 
-        self._animalid = animalid
+        self._animal_id = animal_id
 
     @property
     def requests(self) -> int:

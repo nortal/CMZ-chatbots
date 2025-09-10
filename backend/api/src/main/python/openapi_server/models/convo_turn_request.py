@@ -12,11 +12,11 @@ class ConvoTurnRequest(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, animalid=None, message=None, session_id=None, context_summary=None, metadata=None):  # noqa: E501
+    def __init__(self, animal_id=None, message=None, session_id=None, context_summary=None, metadata=None):  # noqa: E501
         """ConvoTurnRequest - a model defined in OpenAPI
 
-        :param animalid: The animalid of this ConvoTurnRequest.  # noqa: E501
-        :type animalid: str
+        :param animal_id: The animal_id of this ConvoTurnRequest.  # noqa: E501
+        :type animal_id: str
         :param message: The message of this ConvoTurnRequest.  # noqa: E501
         :type message: str
         :param session_id: The session_id of this ConvoTurnRequest.  # noqa: E501
@@ -27,7 +27,7 @@ class ConvoTurnRequest(Model):
         :type metadata: Dict[str, object]
         """
         self.openapi_types = {
-            'animalid': str,
+            'animal_id': str,
             'message': str,
             'session_id': str,
             'context_summary': str,
@@ -35,14 +35,14 @@ class ConvoTurnRequest(Model):
         }
 
         self.attribute_map = {
-            'animalid': 'animalid',
+            'animal_id': 'animalId',
             'message': 'message',
             'session_id': 'sessionId',
             'context_summary': 'contextSummary',
             'metadata': 'metadata'
         }
 
-        self._animalid = animalid
+        self._animal_id = animal_id
         self._message = message
         self._session_id = session_id
         self._context_summary = context_summary
@@ -60,27 +60,27 @@ class ConvoTurnRequest(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def animalid(self) -> str:
-        """Gets the animalid of this ConvoTurnRequest.
+    def animal_id(self) -> str:
+        """Gets the animal_id of this ConvoTurnRequest.
 
 
-        :return: The animalid of this ConvoTurnRequest.
+        :return: The animal_id of this ConvoTurnRequest.
         :rtype: str
         """
-        return self._animalid
+        return self._animal_id
 
-    @animalid.setter
-    def animalid(self, animalid: str):
-        """Sets the animalid of this ConvoTurnRequest.
+    @animal_id.setter
+    def animal_id(self, animal_id: str):
+        """Sets the animal_id of this ConvoTurnRequest.
 
 
-        :param animalid: The animalid of this ConvoTurnRequest.
-        :type animalid: str
+        :param animal_id: The animal_id of this ConvoTurnRequest.
+        :type animal_id: str
         """
-        if animalid is None:
-            raise ValueError("Invalid value for `animalid`, must not be `None`")  # noqa: E501
+        if animal_id is None:
+            raise ValueError("Invalid value for `animal_id`, must not be `None`")  # noqa: E501
 
-        self._animalid = animalid
+        self._animal_id = animal_id
 
     @property
     def message(self) -> str:
