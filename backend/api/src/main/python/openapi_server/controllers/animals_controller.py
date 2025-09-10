@@ -1,14 +1,8 @@
 import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
 
-from openapi_server.models.animal import Animal  # noqa: E501
 from openapi_server.models.animal_config import AnimalConfig  # noqa: E501
 from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noqa: E501
-from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
-from openapi_server import util
 
 # Import hexagonal architecture handlers
 import os
@@ -32,29 +26,29 @@ except ImportError:
     )
 
 
-def animal_config_get(animalid):  # noqa: E501
+def animal_config_get(animal_id):  # noqa: E501
     """Get animal configuration
 
      # noqa: E501
 
-    :param animalid: 
-    :type animalid: str
+    :param animal_id: 
+    :type animal_id: str
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
     try:
-        return handle_get_animal_config(animalid)
+        return handle_get_animal_config(animal_id)
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
 
 
-def animal_config_patch(animalid, body):  # noqa: E501
+def animal_config_patch(animal_id, body):  # noqa: E501
     """Update animal configuration
 
      # noqa: E501
 
-    :param animalid: 
-    :type animalid: str
+    :param animal_id: 
+    :type animal_id: str
     :param animal_config_update: 
     :type animal_config_update: dict | bytes
 
@@ -68,28 +62,28 @@ def animal_config_patch(animalid, body):  # noqa: E501
         # Convert update to full config for handler
         config_data = animal_config_update.to_dict() if hasattr(animal_config_update, 'to_dict') else dict(animal_config_update)
         config = AnimalConfig.from_dict(config_data)
-        return handle_update_animal_config(animalid, config)
+        return handle_update_animal_config(animal_id, config)
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
 
 
-def animal_details_get(animalid):  # noqa: E501
+def animal_details_get(animal_id):  # noqa: E501
     """Fetch animal details
 
      # noqa: E501
 
-    :param animalid: 
-    :type animalid: str
+    :param animal_id: 
+    :type animal_id: str
 
     :rtype: Union[AnimalDetails, Tuple[AnimalDetails, int], Tuple[AnimalDetails, int, Dict[str, str]]
     """
     try:
         # Use get_animal handler and convert to AnimalDetails format
-        animal = handle_get_animal(animalid)
+        animal = handle_get_animal(animal_id)
         # Convert Animal to AnimalDetails (they should be compatible)
         return animal
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
 
 
 def animal_list_get():  # noqa: E501
@@ -103,4 +97,4 @@ def animal_list_get():  # noqa: E501
     try:
         return handle_list_animals()
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
