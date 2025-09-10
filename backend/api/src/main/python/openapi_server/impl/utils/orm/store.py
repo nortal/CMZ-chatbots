@@ -7,6 +7,11 @@ from botocore.exceptions import ClientError
 from ..core import now_iso
 from .models import FamilyModel, UserModel, UserDetailsModel, AnimalModel
 from pynamodb.exceptions import PutError
+# PR003946-69: Server-Generated IDs
+from ..id_generator import (
+    add_audit_timestamps, ensure_user_id, ensure_animal_id, 
+    ensure_family_id, ensure_conversation_id, ensure_knowledge_id
+)
 
 class DynamoStore(Protocol):
     def list(self, hide_soft_deleted: bool = True) -> List[Dict[str, Any]]: ...
@@ -16,15 +21,22 @@ class DynamoStore(Protocol):
     def soft_delete(self, pk: Any, soft_field: str = "softDelete") -> None: ...
 
 class PynamoStore:
-    def __init__(self, model_cls: Type[Model], pk_name: str):
+    def __init__(self, model_cls: Type[Model], pk_name: str, id_generator_func=None):
         self._model = model_cls
         self._pk = pk_name
+        self._id_generator = id_generator_func
         if not self._model.exists():
             self._model.create_table(read_capacity_units=5, write_capacity_units=5, wait=True)
 
     def list(self, hide_soft_deleted: bool = True) -> List[Dict[str, Any]]:
+        """
+        List all entities, optionally filtering soft-deleted ones.
+        
+        PR003946-66: Soft-delete flag consistency across all entities
+        """
         out: List[Dict[str, Any]] = []
         for m in self._model.scan():
+            # PR003946-66: Filter soft-deleted records by default
             if hide_soft_deleted and getattr(m, "softDelete", False):
                 continue
             out.append(m.to_plain_dict() if hasattr(m, "to_plain_dict") else dict(m.attribute_values))
@@ -41,13 +53,20 @@ class PynamoStore:
         pk_name = self._pk
         pk_val = item.get(pk_name)
 
-        # 1) Validate PK present
+        # PR003946-69: Auto-generate ID if not provided
         if pk_val in (None, ""):
-            raise ClientError(
-                {"Error": {"Code": "ValidationException",
-                           "Message": f"Missing required primary key '{pk_name}'"}},
-                "PutItem",
-            )
+            if self._id_generator:
+                item = self._id_generator(item)
+                pk_val = item.get(pk_name)
+            else:
+                raise ClientError(
+                    {"Error": {"Code": "ValidationException",
+                               "Message": f"Missing required primary key '{pk_name}' and no ID generator configured"}},
+                    "PutItem",
+                )
+
+        # Add audit timestamps
+        item = add_audit_timestamps(item)
 
         # 2) Preflight: does the item already exist?
         try:
@@ -110,10 +129,31 @@ class PynamoStore:
             )
 
     def soft_delete(self, pk: Any, soft_field: str = "softDelete") -> None:
+        """
+        Soft delete an entity by setting the soft delete flag.
+        
+        PR003946-66: Consistent soft-delete implementation
+        """
         cond = getattr(self._model, self._pk).exists()
         try:
             self._model(pk).update(
                 actions=[getattr(self._model, soft_field).set(True),
+                         self._model.modified.set({"at": now_iso()})],
+                condition=cond,
+            )
+        except UpdateError as e:
+            raise ClientError({"Error": {"Code": "ConditionalCheckFailedException", "Message": str(e)}}, "UpdateItem")
+
+    def recover_soft_deleted(self, pk: Any, soft_field: str = "softDelete") -> None:
+        """
+        Recover a soft-deleted entity by unsetting the soft delete flag.
+        
+        PR003946-68: Soft-delete recovery functionality
+        """
+        cond = getattr(self._model, self._pk).exists()
+        try:
+            self._model(pk).update(
+                actions=[getattr(self._model, soft_field).set(False),
                          self._model.modified.set({"at": now_iso()})],
                 condition=cond,
             )
@@ -154,6 +194,14 @@ _MODEL_MAP: Dict[str, Tuple[type[Model], str]] = {
     ANIMAL_TABLE_NAME:       (AnimalModel, "animalId"),
 }
 
+# PR003946-69: ID generator mapping
+_ID_GENERATOR_MAP = {
+    FAMILY_TABLE_NAME:       ensure_family_id,
+    USER_TABLE_NAME:         ensure_user_id,
+    USER_DETAILS_TABLE_NAME: ensure_user_id,  # UserDetails uses userId as foreign key
+    ANIMAL_TABLE_NAME:       ensure_animal_id,
+}
+
 
 def get_store(table_name: str, pk_name: str) -> DynamoStore:
     try:
@@ -163,4 +211,8 @@ def get_store(table_name: str, pk_name: str) -> DynamoStore:
                            f"Add it to impl/utils/orm/store.py _MODEL_MAP.")
     if pk_name != expected_pk:
         raise RuntimeError(f"PK mismatch for table '{table_name}': expected '{expected_pk}', got '{pk_name}'.")
-    return PynamoStore(model_cls, expected_pk)
+    
+    # PR003946-69: Get ID generator for this table
+    id_generator = _ID_GENERATOR_MAP.get(table_name)
+    
+    return PynamoStore(model_cls, expected_pk, id_generator)
