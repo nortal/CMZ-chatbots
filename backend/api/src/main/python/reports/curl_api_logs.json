@@ -1,0 +1,50 @@
+[
+  {
+    "test": "GET /invalid_endpoint - Error Format Test",
+    "command": "curl -s -i -X GET -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/invalid_endpoint",
+    "status_code": 404,
+    "response": {
+      "detail": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
+      "status": 404,
+      "title": "Not Found",
+      "type": "about:blank"
+    },
+    "raw_output": "HTTP/1.1 404 NOT FOUND\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 18:48:56 GMT\nContent-Type: application/problem+json\nContent-Length: 205\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\n  \"detail\": \"The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.\",\n  \"status\": 404,\n  \"title\": \"Not Found\",\n  \"type\": \"about:blank\"\n}\n"
+  },
+  {
+    "test": "GET /user/999999 - Error Format Test",
+    "command": "curl -s -i -X GET -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/user/999999",
+    "status_code": 500,
+    "response": {
+      "detail": "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.",
+      "status": 500,
+      "title": "Internal Server Error",
+      "type": "about:blank"
+    },
+    "raw_output": "HTTP/1.1 500 INTERNAL SERVER ERROR\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 18:48:56 GMT\nContent-Type: application/problem+json\nContent-Length: 251\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\n  \"detail\": \"The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.\",\n  \"status\": 500,\n  \"title\": \"Internal Server Error\",\n  \"type\": \"about:blank\"\n}\n"
+  },
+  {
+    "test": "POST /auth - Error Format Test",
+    "command": "curl -s -i -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/auth",
+    "status_code": 400,
+    "response": {
+      "detail": "None is not of type 'object'",
+      "status": 400,
+      "title": "Bad Request",
+      "type": "about:blank"
+    },
+    "raw_output": "HTTP/1.1 400 BAD REQUEST\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 18:48:56 GMT\nContent-Type: application/problem+json\nContent-Length: 115\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\n  \"detail\": \"None is not of type 'object'\",\n  \"status\": 400,\n  \"title\": \"Bad Request\",\n  \"type\": \"about:blank\"\n}\n"
+  },
+  {
+    "test": "DELETE /family - Error Format Test",
+    "command": "curl -s -i -X DELETE -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/family",
+    "status_code": 405,
+    "response": {
+      "detail": "The method is not allowed for the requested URL.",
+      "status": 405,
+      "title": "Method Not Allowed",
+      "type": "about:blank"
+    },
+    "raw_output": "HTTP/1.1 405 METHOD NOT ALLOWED\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 18:48:56 GMT\nContent-Type: application/problem+json\nAllow: GET, HEAD, POST, OPTIONS\nContent-Length: 142\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\n  \"detail\": \"The method is not allowed for the requested URL.\",\n  \"status\": 405,\n  \"title\": \"Method Not Allowed\",\n  \"type\": \"about:blank\"\n}\n"
+  }
+]
