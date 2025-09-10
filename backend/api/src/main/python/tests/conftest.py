@@ -8,6 +8,7 @@ import boto3
 from moto import mock_aws
 import connexion
 import json
+import uuid
 import subprocess
 import shlex
 from datetime import datetime, timezone
