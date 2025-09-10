@@ -5,6 +5,8 @@ import logging
 from openapi_server.impl.utils import (
     get_store, ensure_pk, model_to_json_keyed_dict, now_iso, error_response, not_found
 )
+from openapi_server.impl.error_handler import ValidationError
+from openapi_server.impl.commands.cascade_delete import execute_cascade_delete
 
 # If you use generated models:
 # from openapi_server.models.family import Family
@@ -43,7 +45,6 @@ def handle_create_family(body):
     # PR003946-79: Validate family membership constraints
     validation_errors = _validate_family_members(data)
     if validation_errors:
-        from openapi_server.impl.error_handler import ValidationError
         raise ValidationError(
             "Family member validation failed",
             field_errors=validation_errors,
@@ -175,8 +176,6 @@ def handle_delete_family(family_id: str):
     When a family is deleted, all users in that family are also soft-deleted.
     This uses the cascade delete command following hexagonal architecture.
     """
-    from openapi_server.impl.commands.cascade_delete import execute_cascade_delete
-    
     # Execute cascade delete using the command pattern
     # This ensures the same logic is used by both Flask endpoints and Lambda hooks
     return execute_cascade_delete(

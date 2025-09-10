@@ -6,6 +6,7 @@ This module provides analytics functionality with proper date/time validation.
 
 import os
 import logging
+import re
 from datetime import datetime
 from dateutil.parser import parse, ParserError
 from typing import Tuple, Dict, Any
@@ -145,8 +146,6 @@ def _validate_billing_period(period: str):
     """
     PR003946-86: Validate billing period format (YYYY-MM).
     """
-    import re
-    
     # Check format: YYYY-MM
     if not re.match(r'^\d{4}-\d{2}$', period):
         raise ValidationError(

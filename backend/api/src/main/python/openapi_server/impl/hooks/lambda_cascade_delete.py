@@ -7,8 +7,10 @@ Follows hexagonal architecture by using the same command implementation as Flask
 
 import json
 import logging
+import os
 from typing import Dict, Any
 
+import boto3
 from openapi_server.impl.commands.cascade_delete import execute_cascade_delete
 from openapi_server.impl.error_handler import ValidationError
 
@@ -93,9 +95,10 @@ def trigger_cascade_delete_lambda(entity_type: str, entity_id: str, cascade_enab
     This can be used by external systems that need to trigger cascade deletes
     without going through the REST API.
     """
-    import boto3
-    
     lambda_client = boto3.client('lambda')
+    
+    # Get function name from environment variable with fallback
+    function_name = os.getenv('CASCADE_DELETE_LAMBDA_FUNCTION_NAME', 'cmz-cascade-delete')
     
     payload = {
         "entity_type": entity_type,
@@ -106,7 +109,7 @@ def trigger_cascade_delete_lambda(entity_type: str, entity_id: str, cascade_enab
     
     try:
         response = lambda_client.invoke(
-            FunctionName='cmz-cascade-delete',  # Adjust function name as needed
+            FunctionName=function_name,
             InvocationType='RequestResponse',
             Payload=json.dumps(payload)
         )
