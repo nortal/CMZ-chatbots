@@ -10,14 +10,14 @@ from openapi_server.models.error import Error
 # Mock data for testing
 MOCK_ANIMALS = [
     {
-        "animalId": "animal_1",
+        "id": "animal_1",
         "name": "Simba",
         "species": "Lion", 
         "status": "active",
         "softDelete": False
     },
     {
-        "animalId": "animal_2", 
+        "id": "animal_2", 
         "name": "Koda",
         "species": "Brown Bear",
         "status": "active",
@@ -56,7 +56,7 @@ def handle_list_animals() -> List[Animal]:
 def handle_get_animal(animal_id: str) -> Animal:
     """Test implementation that returns a mock animal"""
     for animal_data in MOCK_ANIMALS:
-        if animal_data["animalId"] == animal_id:
+        if animal_data["id"] == animal_id:
             return Animal.from_dict(animal_data)
     raise Exception(f"Animal {animal_id} not found")
 

@@ -161,12 +161,31 @@ export const utils = {
    */
   transformAnimalForFrontend(backendAnimal: Animal) {
     return {
-      id: backendAnimal.animalId || 'unknown',
+      id: backendAnimal.id || backendAnimal.animalId || 'unknown',
       name: backendAnimal.name,
       species: backendAnimal.species,
       active: backendAnimal.status === 'active',
       lastUpdated: backendAnimal.modified?.at || 'Unknown',
       conversations: 0, // Not available from backend yet
+      status: backendAnimal.status || 'active',
+      softDelete: backendAnimal.softDelete || false,
+      // Add default conversation settings to prevent frontend errors
+      conversationSettings: {
+        maxResponseLength: 300,
+        educationalFocus: true,
+        allowPersonalQuestions: true,
+        scientificAccuracy: 'moderate' as const,
+        ageAppropriate: true
+      },
+      // Add default voice settings
+      voiceSettings: {
+        tone: 'friendly' as const,
+        formality: 'friendly' as const,
+        enthusiasm: 7
+      },
+      // Initialize empty arrays for optional properties
+      knowledgeBase: [],
+      guardrails: []
     };
   },
 

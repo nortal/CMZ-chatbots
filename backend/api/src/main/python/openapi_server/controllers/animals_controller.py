@@ -39,7 +39,7 @@ def animal_config_get(animal_id):  # noqa: E501
     try:
         return handle_get_animal_config(animal_id)
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
 
 
 def animal_config_patch(animal_id, body):  # noqa: E501
@@ -64,7 +64,7 @@ def animal_config_patch(animal_id, body):  # noqa: E501
         config = AnimalConfig.from_dict(config_data)
         return handle_update_animal_config(animal_id, config)
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
 
 
 def animal_details_get(animal_id):  # noqa: E501
@@ -83,7 +83,7 @@ def animal_details_get(animal_id):  # noqa: E501
         # Convert Animal to AnimalDetails (they should be compatible)
         return animal
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
 
 
 def animal_list_get():  # noqa: E501
@@ -97,4 +97,4 @@ def animal_list_get():  # noqa: E501
     try:
         return handle_list_animals()
     except Exception as e:
-        return Error(error=str(e)), 500
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
