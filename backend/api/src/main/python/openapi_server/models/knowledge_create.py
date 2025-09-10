@@ -12,7 +12,7 @@ class KnowledgeCreate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, title=None, body=None, tags=None, visibility=None, animalid=None):  # noqa: E501
+    def __init__(self, title=None, body=None, tags=None, visibility=None, animal_id=None):  # noqa: E501
         """KnowledgeCreate - a model defined in OpenAPI
 
         :param title: The title of this KnowledgeCreate.  # noqa: E501
@@ -23,15 +23,15 @@ class KnowledgeCreate(Model):
         :type tags: List[str]
         :param visibility: The visibility of this KnowledgeCreate.  # noqa: E501
         :type visibility: str
-        :param animalid: The animalid of this KnowledgeCreate.  # noqa: E501
-        :type animalid: str
+        :param animal_id: The animal_id of this KnowledgeCreate.  # noqa: E501
+        :type animal_id: str
         """
         self.openapi_types = {
             'title': str,
             'body': str,
             'tags': List[str],
             'visibility': str,
-            'animalid': str
+            'animal_id': str
         }
 
         self.attribute_map = {
@@ -39,14 +39,14 @@ class KnowledgeCreate(Model):
             'body': 'body',
             'tags': 'tags',
             'visibility': 'visibility',
-            'animalid': 'animalid'
+            'animal_id': 'animalId'
         }
 
         self._title = title
         self._body = body
         self._tags = tags
         self._visibility = visibility
-        self._animalid = animalid
+        self._animal_id = animal_id
 
     @classmethod
     def from_dict(cls, dikt) -> 'KnowledgeCreate':
@@ -154,22 +154,22 @@ class KnowledgeCreate(Model):
         self._visibility = visibility
 
     @property
-    def animalid(self) -> str:
-        """Gets the animalid of this KnowledgeCreate.
+    def animal_id(self) -> str:
+        """Gets the animal_id of this KnowledgeCreate.
 
 
-        :return: The animalid of this KnowledgeCreate.
+        :return: The animal_id of this KnowledgeCreate.
         :rtype: str
         """
-        return self._animalid
+        return self._animal_id
 
-    @animalid.setter
-    def animalid(self, animalid: str):
-        """Sets the animalid of this KnowledgeCreate.
+    @animal_id.setter
+    def animal_id(self, animal_id: str):
+        """Sets the animal_id of this KnowledgeCreate.
 
 
-        :param animalid: The animalid of this KnowledgeCreate.
-        :type animalid: str
+        :param animal_id: The animal_id of this KnowledgeCreate.
+        :type animal_id: str
         """
 
-        self._animalid = animalid
+        self._animal_id = animal_id

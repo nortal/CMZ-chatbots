@@ -12,29 +12,29 @@ class ActorRef(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, email=None, display_name=None):  # noqa: E501
+    def __init__(self, actor_id=None, email=None, display_name=None):  # noqa: E501
         """ActorRef - a model defined in OpenAPI
 
-        :param id: The id of this ActorRef.  # noqa: E501
-        :type id: str
+        :param actor_id: The actor_id of this ActorRef.  # noqa: E501
+        :type actor_id: str
         :param email: The email of this ActorRef.  # noqa: E501
         :type email: str
         :param display_name: The display_name of this ActorRef.  # noqa: E501
         :type display_name: str
         """
         self.openapi_types = {
-            'id': str,
+            'actor_id': str,
             'email': str,
             'display_name': str
         }
 
         self.attribute_map = {
-            'id': 'id',
+            'actor_id': 'actorId',
             'email': 'email',
             'display_name': 'displayName'
         }
 
-        self._id = id
+        self._actor_id = actor_id
         self._email = email
         self._display_name = display_name
 
@@ -50,25 +50,25 @@ class ActorRef(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> str:
-        """Gets the id of this ActorRef.
+    def actor_id(self) -> str:
+        """Gets the actor_id of this ActorRef.
 
 
-        :return: The id of this ActorRef.
+        :return: The actor_id of this ActorRef.
         :rtype: str
         """
-        return self._id
+        return self._actor_id
 
-    @id.setter
-    def id(self, id: str):
-        """Sets the id of this ActorRef.
+    @actor_id.setter
+    def actor_id(self, actor_id: str):
+        """Sets the actor_id of this ActorRef.
 
 
-        :param id: The id of this ActorRef.
-        :type id: str
+        :param actor_id: The actor_id of this ActorRef.
+        :type actor_id: str
         """
 
-        self._id = id
+        self._actor_id = actor_id
 
     @property
     def email(self) -> str:

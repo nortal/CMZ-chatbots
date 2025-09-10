@@ -18,6 +18,7 @@ from openapi_server.models.convo_turn_request import ConvoTurnRequest
 from openapi_server.models.convo_turn_response import ConvoTurnResponse
 from openapi_server.models.convo_turn_response_turn import ConvoTurnResponseTurn
 from openapi_server.models.error import Error
+from openapi_server.models.family import Family
 from openapi_server.models.feature_flags_document import FeatureFlagsDocument
 from openapi_server.models.feature_flags_update import FeatureFlagsUpdate
 from openapi_server.models.feature_flags_value import FeatureFlagsValue
@@ -41,4 +42,5 @@ from openapi_server.models.system_health_checks_inner import SystemHealthChecksI
 from openapi_server.models.usage_summary import UsageSummary
 from openapi_server.models.user import User
 from openapi_server.models.user_details import UserDetails
-from openapi_server.models.userrole_patch_request import UserrolePatchRequest
+from openapi_server.models.user_details_input import UserDetailsInput
+from openapi_server.models.user_input import UserInput

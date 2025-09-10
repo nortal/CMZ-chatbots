@@ -14,7 +14,7 @@ class Media(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, id=None, title=None, url=None, kind=None, animalid=None):  # noqa: E501
+    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, media_id=None, title=None, url=None, kind=None, animal_id=None):  # noqa: E501
         """Media - a model defined in OpenAPI
 
         :param created: The created of this Media.  # noqa: E501
@@ -25,27 +25,27 @@ class Media(Model):
         :type deleted: AuditStamp
         :param soft_delete: The soft_delete of this Media.  # noqa: E501
         :type soft_delete: bool
-        :param id: The id of this Media.  # noqa: E501
-        :type id: str
+        :param media_id: The media_id of this Media.  # noqa: E501
+        :type media_id: str
         :param title: The title of this Media.  # noqa: E501
         :type title: str
         :param url: The url of this Media.  # noqa: E501
         :type url: str
         :param kind: The kind of this Media.  # noqa: E501
         :type kind: str
-        :param animalid: The animalid of this Media.  # noqa: E501
-        :type animalid: str
+        :param animal_id: The animal_id of this Media.  # noqa: E501
+        :type animal_id: str
         """
         self.openapi_types = {
             'created': AuditStamp,
             'modified': AuditStamp,
             'deleted': AuditStamp,
             'soft_delete': bool,
-            'id': str,
+            'media_id': str,
             'title': str,
             'url': str,
             'kind': str,
-            'animalid': str
+            'animal_id': str
         }
 
         self.attribute_map = {
@@ -53,22 +53,22 @@ class Media(Model):
             'modified': 'modified',
             'deleted': 'deleted',
             'soft_delete': 'softDelete',
-            'id': 'id',
+            'media_id': 'mediaId',
             'title': 'title',
             'url': 'url',
             'kind': 'kind',
-            'animalid': 'animalid'
+            'animal_id': 'animalId'
         }
 
         self._created = created
         self._modified = modified
         self._deleted = deleted
         self._soft_delete = soft_delete
-        self._id = id
+        self._media_id = media_id
         self._title = title
         self._url = url
         self._kind = kind
-        self._animalid = animalid
+        self._animal_id = animal_id
 
     @classmethod
     def from_dict(cls, dikt) -> 'Media':
@@ -166,27 +166,27 @@ class Media(Model):
         self._soft_delete = soft_delete
 
     @property
-    def id(self) -> str:
-        """Gets the id of this Media.
+    def media_id(self) -> str:
+        """Gets the media_id of this Media.
 
 
-        :return: The id of this Media.
+        :return: The media_id of this Media.
         :rtype: str
         """
-        return self._id
+        return self._media_id
 
-    @id.setter
-    def id(self, id: str):
-        """Sets the id of this Media.
+    @media_id.setter
+    def media_id(self, media_id: str):
+        """Sets the media_id of this Media.
 
 
-        :param id: The id of this Media.
-        :type id: str
+        :param media_id: The media_id of this Media.
+        :type media_id: str
         """
-        if id is None:
-            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
+        if media_id is None:
+            raise ValueError("Invalid value for `media_id`, must not be `None`")  # noqa: E501
 
-        self._id = id
+        self._media_id = media_id
 
     @property
     def title(self) -> str:
@@ -260,22 +260,22 @@ class Media(Model):
         self._kind = kind
 
     @property
-    def animalid(self) -> str:
-        """Gets the animalid of this Media.
+    def animal_id(self) -> str:
+        """Gets the animal_id of this Media.
 
 
-        :return: The animalid of this Media.
+        :return: The animal_id of this Media.
         :rtype: str
         """
-        return self._animalid
+        return self._animal_id
 
-    @animalid.setter
-    def animalid(self, animalid: str):
-        """Sets the animalid of this Media.
+    @animal_id.setter
+    def animal_id(self, animal_id: str):
+        """Sets the animal_id of this Media.
 
 
-        :param animalid: The animalid of this Media.
-        :type animalid: str
+        :param animal_id: The animal_id of this Media.
+        :type animal_id: str
         """
 
-        self._animalid = animalid
+        self._animal_id = animal_id

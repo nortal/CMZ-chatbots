@@ -14,7 +14,7 @@ class KnowledgeArticle(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, title=None, body=None, tags=None, visibility=None, animalid=None, created=None, modified=None, deleted=None, soft_delete=False, id=None):  # noqa: E501
+    def __init__(self, title=None, body=None, tags=None, visibility=None, animal_id=None, created=None, modified=None, deleted=None, soft_delete=False, knowledge_id=None):  # noqa: E501
         """KnowledgeArticle - a model defined in OpenAPI
 
         :param title: The title of this KnowledgeArticle.  # noqa: E501
@@ -25,8 +25,8 @@ class KnowledgeArticle(Model):
         :type tags: List[str]
         :param visibility: The visibility of this KnowledgeArticle.  # noqa: E501
         :type visibility: str
-        :param animalid: The animalid of this KnowledgeArticle.  # noqa: E501
-        :type animalid: str
+        :param animal_id: The animal_id of this KnowledgeArticle.  # noqa: E501
+        :type animal_id: str
         :param created: The created of this KnowledgeArticle.  # noqa: E501
         :type created: AuditStamp
         :param modified: The modified of this KnowledgeArticle.  # noqa: E501
@@ -35,20 +35,20 @@ class KnowledgeArticle(Model):
         :type deleted: AuditStamp
         :param soft_delete: The soft_delete of this KnowledgeArticle.  # noqa: E501
         :type soft_delete: bool
-        :param id: The id of this KnowledgeArticle.  # noqa: E501
-        :type id: str
+        :param knowledge_id: The knowledge_id of this KnowledgeArticle.  # noqa: E501
+        :type knowledge_id: str
         """
         self.openapi_types = {
             'title': str,
             'body': str,
             'tags': List[str],
             'visibility': str,
-            'animalid': str,
+            'animal_id': str,
             'created': AuditStamp,
             'modified': AuditStamp,
             'deleted': AuditStamp,
             'soft_delete': bool,
-            'id': str
+            'knowledge_id': str
         }
 
         self.attribute_map = {
@@ -56,24 +56,24 @@ class KnowledgeArticle(Model):
             'body': 'body',
             'tags': 'tags',
             'visibility': 'visibility',
-            'animalid': 'animalid',
+            'animal_id': 'animalId',
             'created': 'created',
             'modified': 'modified',
             'deleted': 'deleted',
             'soft_delete': 'softDelete',
-            'id': 'id'
+            'knowledge_id': 'knowledgeId'
         }
 
         self._title = title
         self._body = body
         self._tags = tags
         self._visibility = visibility
-        self._animalid = animalid
+        self._animal_id = animal_id
         self._created = created
         self._modified = modified
         self._deleted = deleted
         self._soft_delete = soft_delete
-        self._id = id
+        self._knowledge_id = knowledge_id
 
     @classmethod
     def from_dict(cls, dikt) -> 'KnowledgeArticle':
@@ -181,25 +181,25 @@ class KnowledgeArticle(Model):
         self._visibility = visibility
 
     @property
-    def animalid(self) -> str:
-        """Gets the animalid of this KnowledgeArticle.
+    def animal_id(self) -> str:
+        """Gets the animal_id of this KnowledgeArticle.
 
 
-        :return: The animalid of this KnowledgeArticle.
+        :return: The animal_id of this KnowledgeArticle.
         :rtype: str
         """
-        return self._animalid
+        return self._animal_id
 
-    @animalid.setter
-    def animalid(self, animalid: str):
-        """Sets the animalid of this KnowledgeArticle.
+    @animal_id.setter
+    def animal_id(self, animal_id: str):
+        """Sets the animal_id of this KnowledgeArticle.
 
 
-        :param animalid: The animalid of this KnowledgeArticle.
-        :type animalid: str
+        :param animal_id: The animal_id of this KnowledgeArticle.
+        :type animal_id: str
         """
 
-        self._animalid = animalid
+        self._animal_id = animal_id
 
     @property
     def created(self) -> AuditStamp:
@@ -286,24 +286,24 @@ class KnowledgeArticle(Model):
         self._soft_delete = soft_delete
 
     @property
-    def id(self) -> str:
-        """Gets the id of this KnowledgeArticle.
+    def knowledge_id(self) -> str:
+        """Gets the knowledge_id of this KnowledgeArticle.
 
 
-        :return: The id of this KnowledgeArticle.
+        :return: The knowledge_id of this KnowledgeArticle.
         :rtype: str
         """
-        return self._id
+        return self._knowledge_id
 
-    @id.setter
-    def id(self, id: str):
-        """Sets the id of this KnowledgeArticle.
+    @knowledge_id.setter
+    def knowledge_id(self, knowledge_id: str):
+        """Sets the knowledge_id of this KnowledgeArticle.
 
 
-        :param id: The id of this KnowledgeArticle.
-        :type id: str
+        :param knowledge_id: The knowledge_id of this KnowledgeArticle.
+        :type knowledge_id: str
         """
-        if id is None:
-            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
+        if knowledge_id is None:
+            raise ValueError("Invalid value for `knowledge_id`, must not be `None`")  # noqa: E501
 
-        self._id = id
+        self._knowledge_id = knowledge_id

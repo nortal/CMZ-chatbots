@@ -14,7 +14,7 @@ class AnimalConfig(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, voice=None, personality=None, ai_model=None, temperature=0.7, top_p=1, tools_enabled=None, guardrails=None):  # noqa: E501
+    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, animal_config_id=None, voice=None, personality=None, ai_model=None, temperature=0.7, top_p=1, tools_enabled=None, guardrails=None):  # noqa: E501
         """AnimalConfig - a model defined in OpenAPI
 
         :param created: The created of this AnimalConfig.  # noqa: E501
@@ -25,6 +25,8 @@ class AnimalConfig(Model):
         :type deleted: AuditStamp
         :param soft_delete: The soft_delete of this AnimalConfig.  # noqa: E501
         :type soft_delete: bool
+        :param animal_config_id: The animal_config_id of this AnimalConfig.  # noqa: E501
+        :type animal_config_id: str
         :param voice: The voice of this AnimalConfig.  # noqa: E501
         :type voice: str
         :param personality: The personality of this AnimalConfig.  # noqa: E501
@@ -45,6 +47,7 @@ class AnimalConfig(Model):
             'modified': AuditStamp,
             'deleted': AuditStamp,
             'soft_delete': bool,
+            'animal_config_id': str,
             'voice': str,
             'personality': str,
             'ai_model': str,
@@ -59,6 +62,7 @@ class AnimalConfig(Model):
             'modified': 'modified',
             'deleted': 'deleted',
             'soft_delete': 'softDelete',
+            'animal_config_id': 'animalConfigId',
             'voice': 'voice',
             'personality': 'personality',
             'ai_model': 'aiModel',
@@ -72,6 +76,7 @@ class AnimalConfig(Model):
         self._modified = modified
         self._deleted = deleted
         self._soft_delete = soft_delete
+        self._animal_config_id = animal_config_id
         self._voice = voice
         self._personality = personality
         self._ai_model = ai_model
@@ -174,6 +179,27 @@ class AnimalConfig(Model):
         """
 
         self._soft_delete = soft_delete
+
+    @property
+    def animal_config_id(self) -> str:
+        """Gets the animal_config_id of this AnimalConfig.
+
+
+        :return: The animal_config_id of this AnimalConfig.
+        :rtype: str
+        """
+        return self._animal_config_id
+
+    @animal_config_id.setter
+    def animal_config_id(self, animal_config_id: str):
+        """Sets the animal_config_id of this AnimalConfig.
+
+
+        :param animal_config_id: The animal_config_id of this AnimalConfig.
+        :type animal_config_id: str
+        """
+
+        self._animal_config_id = animal_config_id
 
     @property
     def voice(self) -> str:

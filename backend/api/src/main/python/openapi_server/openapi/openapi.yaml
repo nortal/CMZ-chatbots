@@ -1784,6 +1784,7 @@ components:
             enum:
             - visitor
             - user
+            - member
             - editor
             - admin
             type: string
@@ -1840,6 +1841,7 @@ components:
             enum:
             - visitor
             - user
+            - member
             - editor
             - admin
             type: string
