@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="25" skipped="0" tests="39" time="3.428" timestamp="2025-09-10T11:34:50.977356-07:00" hostname="macbookair.lan"><testcase classname="tests.integration.test_api_validation_epic.TestSoftDeleteSemantics" name="test_pr003946_66_soft_delete_flag_consistency" time="0.786" /><testcase classname="tests.integration.test_api_validation_epic.TestSoftDeleteSemantics" name="test_pr003946_67_cascade_soft_delete" time="0.091"><failure message="assert 404 in [204, 501]&#10; +  where 404 = &lt;WrapperTestResponse streamed [404 NOT FOUND]&gt;.status_code">self = &lt;tests.integration.test_api_validation_epic.TestSoftDeleteSemantics object at 0x1079041a0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+db_helper = &lt;tests.conftest.db_helper.&lt;locals&gt;.DatabaseHelper object at 0x109da8c80&gt;
+sample_family = {'created': {'at': '2025-09-10T18:34:51.932531+00:00', 'by': {'displayName': 'Test User', 'email': 'test_5ecac606@cmz....ayName': 'Test User', 'email': 'test_5ecac606@cmz.org', 'userId': 'user_0280b8d0'}}, 'parents': ['user_0280b8d0'], ...}
+sample_user = {'created': {'at': '2025-09-10T18:34:51.932482+00:00', 'by': {'displayName': 'System', 'email': 'system@cmz.org', 'userId': 'system'}}, 'displayName': 'Test User', 'email': 'test_5ecac606@cmz.org', 'familyId': None, ...}
+
+    def test_pr003946_67_cascade_soft_delete(self, client, db_helper, sample_family, sample_user):
+        """PR003946-67: Cascade soft-delete for related entities"""
+        # Create family with users
+        family = db_helper.insert_test_family(sample_family)
+    
+        # Test family deletion cascades to related entities
+        response = client.delete(f'/family/{family["familyId"]}')
+    
+        # Should implement cascade logic when family is deleted
+        # This test documents the expected behavior
+&gt;       assert response.status_code in [204, 501]  # 501 if not implemented yet
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 404 in [204, 501]
+E        +  where 404 = &lt;WrapperTestResponse streamed [404 NOT FOUND]&gt;.status_code
+
+tests/integration/test_api_validation_epic.py:46: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestSoftDeleteSemantics" name="test_pr003946_68_soft_delete_recovery" time="0.003" /><testcase classname="tests.integration.test_api_validation_epic.TestIDValidation" name="test_pr003946_69_server_generated_ids" time="0.001" /><testcase classname="tests.integration.test_api_validation_epic.TestIDValidation" name="test_pr003946_70_reject_client_provided_ids" time="0.001" /><testcase classname="tests.integration.test_api_validation_epic.TestAuthenticationValidation" name="test_pr003946_71_token_validation" time="0.001" /><testcase classname="tests.integration.test_api_validation_epic.TestAuthenticationValidation" name="test_pr003946_72_role_based_access" time="0.080" /><testcase classname="tests.integration.test_api_validation_epic.TestAuthenticationValidation" name="test_pr003946_87_password_policy_enforcement" time="0.002"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'123' is too short - 'password'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_api_validation_epic.TestAuthenticationValidation object at 0x107904da0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0374a0&gt;
+data_factory = &lt;tests.conftest.data_factory.&lt;locals&gt;.TestDataFactory object at 0x10b0375c0&gt;
+
+    def test_pr003946_87_password_policy_enforcement(self, client, validation_helper, data_factory):
+        """PR003946-87: Password policy enforcement with configurable rules"""
+    
+        # Test weak password
+        auth_data = data_factory.create_auth_request(password="123")  # Too short
+    
+        response = client.post('/auth',
+                              data=json.dumps(auth_data),
+                              content_type='application/json')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "invalid_password")
+
+tests/integration/test_api_validation_epic.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'123' is too short - 'password'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'invalid_password'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'123' is too short - 'password'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestAuthenticationValidation" name="test_pr003946_88_token_refresh_consistency" time="0.002"><failure message="AssertionError: Logout should always return 204&#10;assert 500 == 204&#10; +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code">self = &lt;tests.integration.test_api_validation_epic.TestAuthenticationValidation object at 0x1079051c0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+auth_headers = &lt;function auth_headers.&lt;locals&gt;._generate_headers at 0x10a68efc0&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10a6aae10&gt;
+
+    def test_pr003946_88_token_refresh_consistency(self, client, auth_headers, validation_helper):
+        """PR003946-88: Token refresh and logout consistency"""
+    
+        valid_headers = auth_headers(role="member")
+    
+        # Test token refresh
+        response = client.post('/auth/refresh', headers=valid_headers)
+    
+        if response.status_code == 200:
+            data = json.loads(response.data)
+            assert "token" in data, "Refresh should return new token"
+            assert "expiresIn" in data, "Refresh should return expiry"
+    
+        # Test logout always returns 204
+        logout_response = client.post('/auth/logout', headers=valid_headers)
+&gt;       assert logout_response.status_code == 204, "Logout should always return 204"
+E       AssertionError: Logout should always return 204
+E       assert 500 == 204
+E        +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code
+
+tests/integration/test_api_validation_epic.py:179: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestDataIntegrityValidation" name="test_pr003946_73_foreign_key_validation" time="0.002"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'member' is not one of ['visitor', 'user', 'editor', 'admin'] - 'role'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_api_validation_epic.TestDataIntegrityValidation object at 0x107905280&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+db_helper = &lt;tests.conftest.db_helper.&lt;locals&gt;.DatabaseHelper object at 0x10a6430e0&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10941fd70&gt;
+
+    def test_pr003946_73_foreign_key_validation(self, client, db_helper, validation_helper):
+        """PR003946-73: Foreign key constraint validation"""
+    
+        # Test creating user with invalid familyId
+        user_data = {
+            "email": "test@cmz.org",
+            "displayName": "Test User",
+            "role": "member",
+            "userType": "student",
+            "familyId": "non_existent_family_id"  # Invalid foreign key
+        }
+    
+        response = client.post('/user',
+                              data=json.dumps(user_data),
+                              content_type='application/json')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "foreign_key_violation")
+
+tests/integration/test_api_validation_epic.py:206: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'member' is not one of ['visitor', 'user', 'editor', 'admin'] - 'role'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'foreign_key_violation'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'member' is not one of ['visitor', 'user', 'editor', 'admin'] - 'role'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestDataIntegrityValidation" name="test_pr003946_74_data_consistency_checks" time="0.004" /><testcase classname="tests.integration.test_api_validation_epic.TestFamilyManagementValidation" name="test_pr003946_79_family_membership_constraints" time="0.006" /><testcase classname="tests.integration.test_api_validation_epic.TestFamilyManagementValidation" name="test_pr003946_80_parent_student_relationship_validation" time="0.004"><failure message="botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Type mismatch for Index Key familyId Expected: S Actual: NULL IndexName: family-index">self = &lt;tests.integration.test_api_validation_epic.TestFamilyManagementValidation object at 0x107905af0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+db_helper = &lt;tests.conftest.db_helper.&lt;locals&gt;.DatabaseHelper object at 0x10b071160&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b071850&gt;
+sample_user = {'created': {'at': '2025-09-10T18:34:52.194027+00:00', 'by': {'displayName': 'System', 'email': 'system@cmz.org', 'userId': 'system'}}, 'displayName': 'Test User', 'email': 'test_0425fdf0@cmz.org', 'familyId': None, ...}
+
+    def test_pr003946_80_parent_student_relationship_validation(self, client, db_helper, validation_helper, sample_user):
+        """PR003946-80: Parent-student relationship consistency"""
+    
+        # Create user as both parent and student (should fail)
+&gt;       user = db_helper.insert_test_user(sample_user)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_api_validation_epic.py:261: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/conftest.py:358: in insert_test_user
+    table.put_item(Item=user_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;botocore.client.DynamoDB object at 0x10727a030&gt;
+operation_name = 'PutItem'
+api_params = {'Item': {'created': {'M': {'at': {'S': '2025-09-10T18:34:52.194027+00:00'}, 'by': {'M': {'displayName': {...}, 'email...'Test User'}, 'email': {'S': 'test_0425fdf0@cmz.org'}, 'familyId': {'NULL': True}, ...}, 'TableName': 'test-cmz-users'}
+
+    @with_current_context()
+    def _make_api_call(self, operation_name, api_params):
+        operation_model = self._service_model.operation_model(operation_name)
+        service_name = self._service_model.service_name
+        history_recorder.record(
+            'API_CALL',
+            {
+                'service': service_name,
+                'operation': operation_name,
+                'params': api_params,
+            },
+        )
+        if operation_model.deprecated:
+            logger.debug(
+                'Warning: %s.%s() is deprecated', service_name, operation_name
+            )
+        request_context = {
+            'client_region': self.meta.region_name,
+            'client_config': self.meta.config,
+            'has_streaming_input': operation_model.has_streaming_input,
+            'auth_type': operation_model.resolved_auth_type,
+            'unsigned_payload': operation_model.unsigned_payload,
+            'auth_options': self._service_model.metadata.get('auth'),
+        }
+    
+        api_params = self._emit_api_params(
+            api_params=api_params,
+            operation_model=operation_model,
+            context=request_context,
+        )
+        (
+            endpoint_url,
+            additional_headers,
+            properties,
+        ) = self._resolve_endpoint_ruleset(
+            operation_model, api_params, request_context
+        )
+        if properties:
+            # Pass arbitrary endpoint info with the Request
+            # for use during construction.
+            request_context['endpoint_properties'] = properties
+        request_dict = self._convert_to_request_dict(
+            api_params=api_params,
+            operation_model=operation_model,
+            endpoint_url=endpoint_url,
+            context=request_context,
+            headers=additional_headers,
+        )
+        resolve_checksum_context(request_dict, operation_model, api_params)
+    
+        service_id = self._service_model.service_id.hyphenize()
+        handler, event_response = self.meta.events.emit_until_response(
+            f'before-call.{service_id}.{operation_name}',
+            model=operation_model,
+            params=request_dict,
+            request_signer=self._request_signer,
+            context=request_context,
+        )
+    
+        if event_response is not None:
+            http, parsed_response = event_response
+        else:
+            maybe_compress_request(
+                self.meta.config, request_dict, operation_model
+            )
+            apply_request_checksum(request_dict)
+            http, parsed_response = self._make_request(
+                operation_model, request_dict, request_context
+            )
+    
+        self.meta.events.emit(
+            f'after-call.{service_id}.{operation_name}',
+            http_response=http,
+            parsed=parsed_response,
+            model=operation_model,
+            context=request_context,
+        )
+    
+        if http.status_code &gt;= 300:
+            error_info = parsed_response.get("Error", {})
+            error_code = request_context.get(
+                'error_code_override'
+            ) or error_info.get("Code")
+            error_class = self.exceptions.from_code(error_code)
+&gt;           raise error_class(parsed_response, operation_name)
+E           botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Type mismatch for Index Key familyId Expected: S Actual: NULL IndexName: family-index
+
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: ClientError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestPaginationValidation" name="test_pr003946_81_pagination_parameter_validation" time="0.006" /><testcase classname="tests.integration.test_api_validation_epic.TestPaginationValidation" name="test_pr003946_82_filter_parameter_validation" time="0.002" /><testcase classname="tests.integration.test_api_validation_epic.TestAnalyticsValidation" name="test_pr003946_83_time_window_validation" time="0.001"><failure message="dateutil.parser._parser.ParserError: Unknown string format: invalid_date">self = &lt;tests.integration.test_api_validation_epic.TestAnalyticsValidation object at 0x107906330&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0b6de0&gt;
+
+    def test_pr003946_83_time_window_validation(self, client, validation_helper):
+        """PR003946-83: Analytics time window validation"""
+    
+        # Test invalid date range
+&gt;       response = client.get('/performance_metrics?start=invalid_date&amp;end=2023-12-31T23:59:59Z')
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_api_validation_epic.py:328: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:1141: in get
+    return self.open(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/flask/testing.py:217: in open
+    return super().open(
+/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:1095: in open
+    response = self.run_wsgi_app(request.environ, buffered=buffered)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:962: in run_wsgi_app
+    rv = run_wsgi_app(self.application, environ, buffered=buffered)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:1243: in run_wsgi_app
+    app_rv = app(environ, start_response)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:2095: in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:2080: in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:2077: in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:1525: in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:1523: in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:1509: in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/decorator.py:68: in wrapper
+    response = function(request)
+               ^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/uri_parsing.py:149: in wrapper
+    response = function(request)
+               ^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:399: in wrapper
+    return function(request)
+           ^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/parameter.py:120: in wrapper
+    return function(**kwargs)
+           ^^^^^^^^^^^^^^^^^^
+openapi_server/controllers/analytics_controller.py:60: in performance_metrics_get
+    start = util.deserialize_datetime(start)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+openapi_server/util.py:94: in deserialize_datetime
+    return parse(string)
+           ^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/dateutil/parser/_parser.py:1368: in parse
+    return DEFAULTPARSER.parse(timestr, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;dateutil.parser._parser.parser object at 0x1054b5fd0&gt;
+timestr = 'invalid_date', default = datetime.datetime(2025, 9, 10, 0, 0)
+ignoretz = False, tzinfos = None, kwargs = {}, res = None, skipped_tokens = None
+
+    def parse(self, timestr, default=None,
+              ignoretz=False, tzinfos=None, **kwargs):
+        """
+        Parse the date/time string into a :class:`datetime.datetime` object.
+    
+        :param timestr:
+            Any date/time string using the supported formats.
+    
+        :param default:
+            The default datetime object, if this is a datetime object and not
+            ``None``, elements specified in ``timestr`` replace elements in the
+            default object.
+    
+        :param ignoretz:
+            If set ``True``, time zones in parsed strings are ignored and a
+            naive :class:`datetime.datetime` object is returned.
+    
+        :param tzinfos:
+            Additional time zone names / aliases which may be present in the
+            string. This argument maps time zone names (and optionally offsets
+            from those time zones) to time zones. This parameter can be a
+            dictionary with timezone aliases mapping time zone names to time
+            zones or a function taking two parameters (``tzname`` and
+            ``tzoffset``) and returning a time zone.
+    
+            The timezones to which the names are mapped can be an integer
+            offset from UTC in seconds or a :class:`tzinfo` object.
+    
+            .. doctest::
+               :options: +NORMALIZE_WHITESPACE
+    
+                &gt;&gt;&gt; from dateutil.parser import parse
+                &gt;&gt;&gt; from dateutil.tz import gettz
+                &gt;&gt;&gt; tzinfos = {"BRST": -7200, "CST": gettz("America/Chicago")}
+                &gt;&gt;&gt; parse("2012-01-19 17:21:00 BRST", tzinfos=tzinfos)
+                datetime.datetime(2012, 1, 19, 17, 21, tzinfo=tzoffset(u'BRST', -7200))
+                &gt;&gt;&gt; parse("2012-01-19 17:21:00 CST", tzinfos=tzinfos)
+                datetime.datetime(2012, 1, 19, 17, 21,
+                                  tzinfo=tzfile('/usr/share/zoneinfo/America/Chicago'))
+    
+            This parameter is ignored if ``ignoretz`` is set.
+    
+        :param \\*\\*kwargs:
+            Keyword arguments as passed to ``_parse()``.
+    
+        :return:
+            Returns a :class:`datetime.datetime` object or, if the
+            ``fuzzy_with_tokens`` option is ``True``, returns a tuple, the
+            first element being a :class:`datetime.datetime` object, the second
+            a tuple containing the fuzzy tokens.
+    
+        :raises ParserError:
+            Raised for invalid or unknown string format, if the provided
+            :class:`tzinfo` is not in a valid format, or if an invalid date
+            would be created.
+    
+        :raises TypeError:
+            Raised for non-string or character stream input.
+    
+        :raises OverflowError:
+            Raised if the parsed date exceeds the largest valid C integer on
+            your system.
+        """
+    
+        if default is None:
+            default = datetime.datetime.now().replace(hour=0, minute=0,
+                                                      second=0, microsecond=0)
+    
+        res, skipped_tokens = self._parse(timestr, **kwargs)
+    
+        if res is None:
+&gt;           raise ParserError("Unknown string format: %s", timestr)
+E           dateutil.parser._parser.ParserError: Unknown string format: invalid_date
+
+/opt/miniconda3/lib/python3.12/site-packages/dateutil/parser/_parser.py:643: ParserError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestAnalyticsValidation" name="test_pr003946_84_log_level_validation" time="0.002"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'invalid_level' is not one of ['debug', 'info', 'warn', 'error']\n\nFailed validating 'enum' in schema:\n    {'enum': ['debug', 'info', 'warn', 'error'], 'type': 'string'}\n\nOn instance:\n    'invalid_level'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_api_validation_epic.TestAnalyticsValidation object at 0x1079065a0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0b6180&gt;
+
+    def test_pr003946_84_log_level_validation(self, client, validation_helper):
+        """PR003946-84: Log level enum validation"""
+    
+        response = client.get('/logs?level=invalid_level')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "invalid_log_level")
+
+tests/integration/test_api_validation_epic.py:348: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'invalid_level' is not one of ['debug', 'info', 'warn', 'error']\n\nFailed validating 'enum' in schema:\n ... 'type': 'string'}\n\nOn instance:\n    'invalid_level'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'invalid_log_level'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'invalid_level' is not one of ['debug', 'info', 'warn', 'error']\n\nFailed validating 'enum' in schema:\n    {'enum': ['debug', 'info', 'warn', 'error'], 'type': 'string'}\n\nOn instance:\n    'invalid_level'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestBillingValidation" name="test_pr003946_86_billing_period_format_validation" time="0.002"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'invalid_format' does not match '^[0-9]{4}-[0-9]{2}$'\n\nFailed validating 'pattern' in schema:\n    {'pattern': '^[0-9]{4}-[0-9]{2}$', 'type': 'string'}\n\nOn instance:\n    'invalid_format'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_api_validation_epic.TestBillingValidation object at 0x107906810&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0b58e0&gt;
+
+    def test_pr003946_86_billing_period_format_validation(self, client, validation_helper):
+        """PR003946-86: Billing period format and real calendar month validation"""
+    
+        # Test invalid format
+        response = client.get('/billing?period=invalid_format')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "invalid_period_format")
+
+tests/integration/test_api_validation_epic.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'invalid_format' does not match '^[0-9]{4}-[0-9]{2}$'\n\nFailed validating 'pattern' in schema:\n    {'pat...'type': 'string'}\n\nOn instance:\n    'invalid_format'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'invalid_period_format'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'invalid_format' does not match '^[0-9]{4}-[0-9]{2}$'\n\nFailed validating 'pattern' in schema:\n    {'pattern': '^[0-9]{4}-[0-9]{2}$', 'type': 'string'}\n\nOn instance:\n    'invalid_format'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestInputValidation" name="test_pr003946_89_media_upload_constraints" time="0.008"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'file' is a required property&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_api_validation_epic.TestInputValidation object at 0x107906ae0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b073ad0&gt;
+
+    def test_pr003946_89_media_upload_constraints(self, client, validation_helper):
+        """PR003946-89: Media upload validation for required fields and safe content"""
+    
+        # Test missing file
+        response = client.post('/upload_media',
+                              data={},
+                              content_type='multipart/form-data')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "missing_file")
+
+tests/integration/test_api_validation_epic.py:397: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'file' is a required property", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'missing_file'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'file' is a required property", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestInputValidation" name="test_pr003946_91_conversation_turn_input_limits" time="0.001"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'message' is a required property&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_api_validation_epic.TestInputValidation object at 0x107906d80&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x109da89e0&gt;
+data_factory = &lt;tests.conftest.data_factory.&lt;locals&gt;.TestDataFactory object at 0x109da8c50&gt;
+
+    def test_pr003946_91_conversation_turn_input_limits(self, client, validation_helper, data_factory):
+        """PR003946-91: ConvoTurnRequest message length limits and required fields"""
+    
+        # Test missing required fields
+        invalid_request = {"animalId": "test"}  # Missing message
+    
+        response = client.post('/convo_turn',
+                              data=json.dumps(invalid_request),
+                              content_type='application/json')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "missing_required_field")
+
+tests/integration/test_api_validation_epic.py:414: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'message' is a required property", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'missing_required_field'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'message' is a required property", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_api_validation_epic.TestErrorHandlingValidation" name="test_pr003946_90_consistent_error_schema" time="0.001"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': 'The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}">self = &lt;tests.integration.test_api_validation_epic.TestErrorHandlingValidation object at 0x107906bd0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0377a0&gt;
+
+    def test_pr003946_90_consistent_error_schema(self, client, validation_helper):
+        """PR003946-90: All 4xx/5xx responses use Error schema with per-field details"""
+    
+        # Test 404 error format
+        response = client.get('/non_existent_endpoint')
+        assert response.status_code == 404
+    
+        data = json.loads(response.data)
+&gt;       validation_helper.assert_error_schema(data, "not_found")
+
+tests/integration/test_api_validation_epic.py:443: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': 'The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
+expected_code = 'not_found'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': 'The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAuthenticationEndpoints" name="test_auth_post_endpoint_validation" time="0.002"><failure message="assert 500 in [404, 501, 401]&#10; +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code">self = &lt;tests.integration.test_endpoints.TestAuthenticationEndpoints object at 0x107907080&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0b68d0&gt;
+data_factory = &lt;tests.conftest.data_factory.&lt;locals&gt;.TestDataFactory object at 0x10b0b50d0&gt;
+
+    def test_auth_post_endpoint_validation(self, client, validation_helper, data_factory):
+        """Test /auth POST endpoint validation requirements"""
+    
+        # Test valid registration
+        auth_data = data_factory.create_auth_request(register=True)
+        response = client.post('/auth',
+                              data=json.dumps(auth_data),
+                              content_type='application/json')
+    
+        # Should return 200 with token or 404/501 if not implemented
+        if response.status_code == 200:
+            data = json.loads(response.data)
+            assert "token" in data
+            assert "expiresIn" in data
+            assert "user" in data
+            validation_helper.assert_audit_fields(data["user"])
+        else:
+&gt;           assert response.status_code in [404, 501, 401]
+E           assert 500 in [404, 501, 401]
+E            +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code
+
+tests/integration/test_endpoints.py:31: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAuthenticationEndpoints" name="test_auth_refresh_endpoint" time="0.001"><failure message="assert 500 in [401, 404, 501]&#10; +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code">self = &lt;tests.integration.test_endpoints.TestAuthenticationEndpoints object at 0x1079072f0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+auth_headers = &lt;function auth_headers.&lt;locals&gt;._generate_headers at 0x10b016a20&gt;
+
+    def test_auth_refresh_endpoint(self, client, auth_headers):
+        """Test /auth/refresh endpoint (PR003946-88)"""
+    
+        headers = auth_headers(role="member")
+        response = client.post('/auth/refresh', headers=headers)
+    
+        if response.status_code == 200:
+            data = json.loads(response.data)
+            assert "token" in data
+            assert "expiresIn" in data
+        else:
+            # Document current behavior
+&gt;           assert response.status_code in [401, 404, 501]
+E           assert 500 in [401, 404, 501]
+E            +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code
+
+tests/integration/test_endpoints.py:56: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAuthenticationEndpoints" name="test_auth_logout_endpoint" time="0.001"><failure message="assert 500 == 204&#10; +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code">self = &lt;tests.integration.test_endpoints.TestAuthenticationEndpoints object at 0x107907560&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+auth_headers = &lt;function auth_headers.&lt;locals&gt;._generate_headers at 0x10b015760&gt;
+
+    def test_auth_logout_endpoint(self, client, auth_headers):
+        """Test /auth/logout endpoint consistency (PR003946-88)"""
+    
+        headers = auth_headers(role="member")
+        response = client.post('/auth/logout', headers=headers)
+    
+        # Should always return 204 and actually invalidate session
+&gt;       assert response.status_code == 204
+E       assert 500 == 204
+E        +  where 500 = &lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&gt;.status_code
+
+tests/integration/test_endpoints.py:65: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestUserEndpoints" name="test_user_list_endpoint_pagination" time="0.003"><failure message="AssertionError: Missing page in paginated response&#10;assert 'page' in {'items': []}">self = &lt;tests.integration.test_endpoints.TestUserEndpoints object at 0x107907830&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b1402c0&gt;
+
+    def test_user_list_endpoint_pagination(self, client, validation_helper):
+        """Test /user GET endpoint pagination (PR003946-81)"""
+    
+        # Test default pagination
+        response = client.get('/user')
+    
+        if response.status_code == 200:
+            data = json.loads(response.data)
+&gt;           validation_helper.validate_pagination(data)
+
+tests/integration/test_endpoints.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'items': []}
+
+    @staticmethod
+    def validate_pagination(response_data: dict):
+        """Validate pagination structure"""
+        assert "items" in response_data, "Missing items in paginated response"
+&gt;       assert "page" in response_data, "Missing page in paginated response"
+E       AssertionError: Missing page in paginated response
+E       assert 'page' in {'items': []}
+
+tests/conftest.py:325: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestUserEndpoints" name="test_user_create_endpoint_validation" time="0.002" /><testcase classname="tests.integration.test_endpoints.TestUserEndpoints" name="test_user_get_by_id_endpoint" time="0.002"><failure message="botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Type mismatch for Index Key familyId Expected: S Actual: NULL IndexName: family-index">self = &lt;tests.integration.test_endpoints.TestUserEndpoints object at 0x107907dd0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+db_helper = &lt;tests.conftest.db_helper.&lt;locals&gt;.DatabaseHelper object at 0x10b141220&gt;
+sample_user = {'created': {'at': '2025-09-10T18:34:52.571636+00:00', 'by': {'displayName': 'System', 'email': 'system@cmz.org', 'userId': 'system'}}, 'displayName': 'Test User', 'email': 'test_f008128f@cmz.org', 'familyId': None, ...}
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b143a40&gt;
+
+    def test_user_get_by_id_endpoint(self, client, db_helper, sample_user, validation_helper):
+        """Test /user/{userId} GET endpoint"""
+    
+&gt;       user = db_helper.insert_test_user(sample_user)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_endpoints.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/conftest.py:358: in insert_test_user
+    table.put_item(Item=user_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;botocore.client.DynamoDB object at 0x10727a030&gt;
+operation_name = 'PutItem'
+api_params = {'Item': {'created': {'M': {'at': {'S': '2025-09-10T18:34:52.571636+00:00'}, 'by': {'M': {'displayName': {...}, 'email...'Test User'}, 'email': {'S': 'test_f008128f@cmz.org'}, 'familyId': {'NULL': True}, ...}, 'TableName': 'test-cmz-users'}
+
+    @with_current_context()
+    def _make_api_call(self, operation_name, api_params):
+        operation_model = self._service_model.operation_model(operation_name)
+        service_name = self._service_model.service_name
+        history_recorder.record(
+            'API_CALL',
+            {
+                'service': service_name,
+                'operation': operation_name,
+                'params': api_params,
+            },
+        )
+        if operation_model.deprecated:
+            logger.debug(
+                'Warning: %s.%s() is deprecated', service_name, operation_name
+            )
+        request_context = {
+            'client_region': self.meta.region_name,
+            'client_config': self.meta.config,
+            'has_streaming_input': operation_model.has_streaming_input,
+            'auth_type': operation_model.resolved_auth_type,
+            'unsigned_payload': operation_model.unsigned_payload,
+            'auth_options': self._service_model.metadata.get('auth'),
+        }
+    
+        api_params = self._emit_api_params(
+            api_params=api_params,
+            operation_model=operation_model,
+            context=request_context,
+        )
+        (
+            endpoint_url,
+            additional_headers,
+            properties,
+        ) = self._resolve_endpoint_ruleset(
+            operation_model, api_params, request_context
+        )
+        if properties:
+            # Pass arbitrary endpoint info with the Request
+            # for use during construction.
+            request_context['endpoint_properties'] = properties
+        request_dict = self._convert_to_request_dict(
+            api_params=api_params,
+            operation_model=operation_model,
+            endpoint_url=endpoint_url,
+            context=request_context,
+            headers=additional_headers,
+        )
+        resolve_checksum_context(request_dict, operation_model, api_params)
+    
+        service_id = self._service_model.service_id.hyphenize()
+        handler, event_response = self.meta.events.emit_until_response(
+            f'before-call.{service_id}.{operation_name}',
+            model=operation_model,
+            params=request_dict,
+            request_signer=self._request_signer,
+            context=request_context,
+        )
+    
+        if event_response is not None:
+            http, parsed_response = event_response
+        else:
+            maybe_compress_request(
+                self.meta.config, request_dict, operation_model
+            )
+            apply_request_checksum(request_dict)
+            http, parsed_response = self._make_request(
+                operation_model, request_dict, request_context
+            )
+    
+        self.meta.events.emit(
+            f'after-call.{service_id}.{operation_name}',
+            http_response=http,
+            parsed=parsed_response,
+            model=operation_model,
+            context=request_context,
+        )
+    
+        if http.status_code &gt;= 300:
+            error_info = parsed_response.get("Error", {})
+            error_code = request_context.get(
+                'error_code_override'
+            ) or error_info.get("Code")
+            error_class = self.exceptions.from_code(error_code)
+&gt;           raise error_class(parsed_response, operation_name)
+E           botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Type mismatch for Index Key familyId Expected: S Actual: NULL IndexName: family-index
+
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: ClientError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAnimalEndpoints" name="test_animal_list_endpoint" time="0.006" /><testcase classname="tests.integration.test_endpoints.TestAnimalEndpoints" name="test_animal_details_endpoint_validation" time="0.001"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;Missing query parameter 'animalId'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_endpoints.TestAnimalEndpoints object at 0x107950410&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0d1730&gt;
+
+    def test_animal_details_endpoint_validation(self, client, validation_helper):
+        """Test /animal_details GET endpoint validation"""
+    
+        # Test missing animalId parameter
+        response = client.get('/animal_details')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "missing_parameter")
+
+tests/integration/test_endpoints.py:173: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "Missing query parameter 'animalId'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'missing_parameter'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "Missing query parameter 'animalId'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAnimalEndpoints" name="test_animal_config_endpoint_validation" time="0.001"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;Missing query parameter 'animalId'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_endpoints.TestAnimalEndpoints object at 0x107950680&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10a6432f0&gt;
+
+    def test_animal_config_endpoint_validation(self, client, validation_helper):
+        """Test /animal_config endpoints validation"""
+    
+        # Test GET with missing animalId
+        response = client.get('/animal_config')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "missing_parameter")
+
+tests/integration/test_endpoints.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "Missing query parameter 'animalId'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'missing_parameter'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "Missing query parameter 'animalId'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestConversationEndpoints" name="test_convo_turn_endpoint_validation" time="0.002"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'message' is a required property&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_endpoints.TestConversationEndpoints object at 0x1079509b0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0d07a0&gt;
+data_factory = &lt;tests.conftest.data_factory.&lt;locals&gt;.TestDataFactory object at 0x10b0d3140&gt;
+
+    def test_convo_turn_endpoint_validation(self, client, validation_helper, data_factory):
+        """Test /convo_turn POST endpoint validation (PR003946-91)"""
+    
+        # Test missing required fields
+        invalid_request = {"animalId": "test"}  # Missing message
+    
+        response = client.post('/convo_turn',
+                              data=json.dumps(invalid_request),
+                              content_type='application/json')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "missing_required_field")
+
+tests/integration/test_endpoints.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'message' is a required property", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'missing_required_field'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'message' is a required property", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestFamilyEndpoints" name="test_family_list_endpoint" time="0.005" /><testcase classname="tests.integration.test_endpoints.TestFamilyEndpoints" name="test_family_create_endpoint_validation" time="0.008" /><testcase classname="tests.integration.test_endpoints.TestFamilyEndpoints" name="test_family_get_by_id_endpoint" time="0.003"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': 'Item not found: familyId=non_existent', 'status': 404, 'title': 'Not Found'}">self = &lt;tests.integration.test_endpoints.TestFamilyEndpoints object at 0x107951100&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b1437a0&gt;
+
+    def test_family_get_by_id_endpoint(self, client, validation_helper):
+        """Test /family/{familyId} GET endpoint"""
+    
+        response = client.get('/family/non_existent')
+    
+        if response.status_code == 404:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "not_found")
+
+tests/integration/test_endpoints.py:321: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': 'Item not found: familyId=non_existent', 'status': 404, 'title': 'Not Found'}
+expected_code = 'not_found'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': 'Item not found: familyId=non_existent', 'status': 404, 'title': 'Not Found'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAnalyticsEndpoints" name="test_performance_metrics_endpoint_validation" time="0.001"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;Missing query parameter 'start'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_endpoints.TestAnalyticsEndpoints object at 0x1079076b0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b1435f0&gt;
+
+    def test_performance_metrics_endpoint_validation(self, client, validation_helper):
+        """Test /performance_metrics GET endpoint (PR003946-83)"""
+    
+        # Test missing required parameters
+        response = client.get('/performance_metrics')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "missing_required_parameter")
+
+tests/integration/test_endpoints.py:337: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "Missing query parameter 'start'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'missing_required_parameter'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "Missing query parameter 'start'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAnalyticsEndpoints" name="test_logs_endpoint_validation" time="0.002"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'invalid_level' is not one of ['debug', 'info', 'warn', 'error']\n\nFailed validating 'enum' in schema:\n    {'enum': ['debug', 'info', 'warn', 'error'], 'type': 'string'}\n\nOn instance:\n    'invalid_level'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_endpoints.TestAnalyticsEndpoints object at 0x107950c50&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0d36e0&gt;
+
+    def test_logs_endpoint_validation(self, client, validation_helper):
+        """Test /logs GET endpoint validation (PR003946-84)"""
+    
+        # Test invalid log level
+        response = client.get('/logs?level=invalid_level')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "invalid_log_level")
+
+tests/integration/test_endpoints.py:372: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'invalid_level' is not one of ['debug', 'info', 'warn', 'error']\n\nFailed validating 'enum' in schema:\n ... 'type': 'string'}\n\nOn instance:\n    'invalid_level'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'invalid_log_level'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'invalid_level' is not one of ['debug', 'info', 'warn', 'error']\n\nFailed validating 'enum' in schema:\n    {'enum': ['debug', 'info', 'warn', 'error'], 'type': 'string'}\n\nOn instance:\n    'invalid_level'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestAnalyticsEndpoints" name="test_billing_endpoint_validation" time="0.002"><failure message="AssertionError: Error response missing 'code' field&#10;assert 'code' in {'detail': &quot;'invalid_format' does not match '^[0-9]{4}-[0-9]{2}$'\n\nFailed validating 'pattern' in schema:\n    {'pattern': '^[0-9]{4}-[0-9]{2}$', 'type': 'string'}\n\nOn instance:\n    'invalid_format'&quot;, 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}">self = &lt;tests.integration.test_endpoints.TestAnalyticsEndpoints object at 0x1079502f0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b0d2720&gt;
+
+    def test_billing_endpoint_validation(self, client, validation_helper):
+        """Test /billing GET endpoint validation (PR003946-86)"""
+    
+        # Test invalid period format
+        response = client.get('/billing?period=invalid_format')
+    
+        if response.status_code == 400:
+            data = json.loads(response.data)
+&gt;           validation_helper.assert_error_schema(data, "invalid_period_format")
+
+tests/integration/test_endpoints.py:394: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response_data = {'detail': "'invalid_format' does not match '^[0-9]{4}-[0-9]{2}$'\n\nFailed validating 'pattern' in schema:\n    {'pat...'type': 'string'}\n\nOn instance:\n    'invalid_format'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+expected_code = 'invalid_period_format'
+
+    @staticmethod
+    def assert_error_schema(response_data: dict, expected_code: str = None):
+        """Validate error response follows Error schema (PR003946-90)"""
+&gt;       assert "code" in response_data, "Error response missing 'code' field"
+E       AssertionError: Error response missing 'code' field
+E       assert 'code' in {'detail': "'invalid_format' does not match '^[0-9]{4}-[0-9]{2}$'\n\nFailed validating 'pattern' in schema:\n    {'pattern': '^[0-9]{4}-[0-9]{2}$', 'type': 'string'}\n\nOn instance:\n    'invalid_format'", 'status': 400, 'title': 'Bad Request', 'type': 'about:blank'}
+
+tests/conftest.py:294: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestSystemEndpoints" name="test_system_health_endpoint" time="0.002"><failure message="AssertionError: assert 'status' in 'do some magic!'">self = &lt;tests.integration.test_endpoints.TestSystemEndpoints object at 0x107951430&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+
+    def test_system_health_endpoint(self, client):
+        """Test /system_health GET endpoint"""
+    
+        response = client.get('/system_health')
+    
+        if response.status_code == 200:
+            data = json.loads(response.data)
+&gt;           assert "status" in data
+E           AssertionError: assert 'status' in 'do some magic!'
+
+tests/integration/test_endpoints.py:425: AssertionError</failure></testcase><testcase classname="tests.integration.test_endpoints.TestSystemEndpoints" name="test_feature_flags_endpoint" time="0.002"><failure message="AssertionError: assert 'flags' in 'do some magic!'">self = &lt;tests.integration.test_endpoints.TestSystemEndpoints object at 0x1079516a0&gt;
+client = &lt;FlaskClient &lt;Flask 'tests.conftest'&gt;&gt;
+validation_helper = &lt;tests.conftest.validation_helper.&lt;locals&gt;.ValidationHelper object at 0x10b19f0e0&gt;
+
+    def test_feature_flags_endpoint(self, client, validation_helper):
+        """Test /feature_flags endpoints"""
+    
+        # Test GET
+        response = client.get('/feature_flags')
+    
+        if response.status_code == 200:
+            data = json.loads(response.data)
+&gt;           assert "flags" in data
+E           AssertionError: assert 'flags' in 'do some magic!'
+
+tests/integration/test_endpoints.py:440: AssertionError</failure></testcase></testsuite></testsuites>

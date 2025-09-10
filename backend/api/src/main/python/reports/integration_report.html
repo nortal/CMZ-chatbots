@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">integration_report.html</title>
+      <link href="assets/style.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <h1 id="title">integration_report.html</h1>
+    <p>Report generated on 10-Sep-2025 at 11:34:54 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.1.1</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</th>
+        </tr>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left"><</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">></div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">39 tests took 00:00:01.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" />
+            <span class="failed">25 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" />
+            <span class="passed">14 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled/>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled/>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled/>
+            <span class="rerun">0 Reruns</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  </body>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.4&#34;, &#34;Platform&#34;: &#34;macOS-15.6.1-arm64-arm-64bit&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;8.4.2&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;html&#34;: &#34;4.1.1&#34;, &#34;asyncio&#34;: &#34;1.1.0&#34;, &#34;xdist&#34;: &#34;3.8.0&#34;, &#34;mock&#34;: &#34;3.15.0&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;hypothesis&#34;: &#34;6.138.15&#34;, &#34;Faker&#34;: &#34;37.6.0&#34;, &#34;benchmark&#34;: &#34;5.1.0&#34;, &#34;cov&#34;: &#34;7.0.0&#34;}, &#34;AWS_REGION&#34;: &#34;us-west-2&#34;, &#34;JAVA_HOME&#34;: &#34;/Library/Java/JavaVirtualMachines/jdk1.8.0_331.jdk/Contents/Home&#34;}, &#34;tests&#34;: {&#34;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_66_soft_delete_flag_consistency&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_66_soft_delete_flag_consistency&#34;, &#34;duration&#34;: &#34;786 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_66_soft_delete_flag_consistency&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;786 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_67_cascade_soft_delete&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_67_cascade_soft_delete&#34;, &#34;duration&#34;: &#34;91 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_67_cascade_soft_delete&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;91 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestSoftDeleteSemantics object at 0x1079041a0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\ndb_helper = &amp;lt;tests.conftest.db_helper.&amp;lt;locals&amp;gt;.DatabaseHelper object at 0x109da8c80&amp;gt;\nsample_family = {&amp;#x27;created&amp;#x27;: {&amp;#x27;at&amp;#x27;: &amp;#x27;2025-09-10T18:34:51.932531+00:00&amp;#x27;, &amp;#x27;by&amp;#x27;: {&amp;#x27;displayName&amp;#x27;: &amp;#x27;Test User&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;test_5ecac606@cmz....ayName&amp;#x27;: &amp;#x27;Test User&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;test_5ecac606@cmz.org&amp;#x27;, &amp;#x27;userId&amp;#x27;: &amp;#x27;user_0280b8d0&amp;#x27;}}, &amp;#x27;parents&amp;#x27;: [&amp;#x27;user_0280b8d0&amp;#x27;], ...}\nsample_user = {&amp;#x27;created&amp;#x27;: {&amp;#x27;at&amp;#x27;: &amp;#x27;2025-09-10T18:34:51.932482+00:00&amp;#x27;, &amp;#x27;by&amp;#x27;: {&amp;#x27;displayName&amp;#x27;: &amp;#x27;System&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;system@cmz.org&amp;#x27;, &amp;#x27;userId&amp;#x27;: &amp;#x27;system&amp;#x27;}}, &amp;#x27;displayName&amp;#x27;: &amp;#x27;Test User&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;test_5ecac606@cmz.org&amp;#x27;, &amp;#x27;familyId&amp;#x27;: None, ...}\n\n    def test_pr003946_67_cascade_soft_delete(self, client, db_helper, sample_family, sample_user):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-67: Cascade soft-delete for related entities&amp;quot;&amp;quot;&amp;quot;\n        # Create family with users\n        family = db_helper.insert_test_family(sample_family)\n    \n        # Test family deletion cascades to related entities\n        response = client.delete(f&amp;#x27;/family/{family[&amp;quot;familyId&amp;quot;]}&amp;#x27;)\n    \n        # Should implement cascade logic when family is deleted\n        # This test documents the expected behavior\n&amp;gt;       assert response.status_code in [204, 501]  # 501 if not implemented yet\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       assert 404 in [204, 501]\nE        +  where 404 = &amp;lt;WrapperTestResponse streamed [404 NOT FOUND]&amp;gt;.status_code\n\ntests/integration/test_api_validation_epic.py:46: AssertionError\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_68_soft_delete_recovery&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_68_soft_delete_recovery&#34;, &#34;duration&#34;: &#34;3 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_68_soft_delete_recovery&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;3 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_69_server_generated_ids&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_69_server_generated_ids&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_69_server_generated_ids&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_70_reject_client_provided_ids&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_70_reject_client_provided_ids&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_70_reject_client_provided_ids&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_71_token_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_71_token_validation&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_71_token_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_72_role_based_access&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_72_role_based_access&#34;, &#34;duration&#34;: &#34;80 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_72_role_based_access&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;80 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_87_password_policy_enforcement&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_87_password_policy_enforcement&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_87_password_policy_enforcement&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestAuthenticationValidation object at 0x107904da0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0374a0&amp;gt;\ndata_factory = &amp;lt;tests.conftest.data_factory.&amp;lt;locals&amp;gt;.TestDataFactory object at 0x10b0375c0&amp;gt;\n\n    def test_pr003946_87_password_policy_enforcement(self, client, validation_helper, data_factory):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-87: Password policy enforcement with configurable rules&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test weak password\n        auth_data = data_factory.create_auth_request(password=&amp;quot;123&amp;quot;)  # Too short\n    \n        response = client.post(&amp;#x27;/auth&amp;#x27;,\n                              data=json.dumps(auth_data),\n                              content_type=&amp;#x27;application/json&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;invalid_password&amp;quot;)\n\ntests/integration/test_api_validation_epic.py:158: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;123&amp;#x27; is too short - &amp;#x27;password&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;invalid_password&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;123&amp;#x27; is too short - &amp;#x27;password&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n\n------------------------------ Captured log call -------------------------------\nERROR    connexion.decorators.validation:validation.py:216 http://localhost/auth validation error: &amp;#x27;123&amp;#x27; is too short - &amp;#x27;password&amp;#x27;\n\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_88_token_refresh_consistency&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_88_token_refresh_consistency&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_88_token_refresh_consistency&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestAuthenticationValidation object at 0x1079051c0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nauth_headers = &amp;lt;function auth_headers.&amp;lt;locals&amp;gt;._generate_headers at 0x10a68efc0&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10a6aae10&amp;gt;\n\n    def test_pr003946_88_token_refresh_consistency(self, client, auth_headers, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-88: Token refresh and logout consistency&amp;quot;&amp;quot;&amp;quot;\n    \n        valid_headers = auth_headers(role=&amp;quot;member&amp;quot;)\n    \n        # Test token refresh\n        response = client.post(&amp;#x27;/auth/refresh&amp;#x27;, headers=valid_headers)\n    \n        if response.status_code == 200:\n            data = json.loads(response.data)\n            assert &amp;quot;token&amp;quot; in data, &amp;quot;Refresh should return new token&amp;quot;\n            assert &amp;quot;expiresIn&amp;quot; in data, &amp;quot;Refresh should return expiry&amp;quot;\n    \n        # Test logout always returns 204\n        logout_response = client.post(&amp;#x27;/auth/logout&amp;#x27;, headers=valid_headers)\n&amp;gt;       assert logout_response.status_code == 204, &amp;quot;Logout should always return 204&amp;quot;\nE       AssertionError: Logout should always return 204\nE       assert 500 == 204\nE        +  where 500 = &amp;lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&amp;gt;.status_code\n\ntests/integration/test_api_validation_epic.py:179: AssertionError\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_73_foreign_key_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_73_foreign_key_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_73_foreign_key_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestDataIntegrityValidation object at 0x107905280&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\ndb_helper = &amp;lt;tests.conftest.db_helper.&amp;lt;locals&amp;gt;.DatabaseHelper object at 0x10a6430e0&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10941fd70&amp;gt;\n\n    def test_pr003946_73_foreign_key_validation(self, client, db_helper, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-73: Foreign key constraint validation&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test creating user with invalid familyId\n        user_data = {\n            &amp;quot;email&amp;quot;: &amp;quot;test@cmz.org&amp;quot;,\n            &amp;quot;displayName&amp;quot;: &amp;quot;Test User&amp;quot;,\n            &amp;quot;role&amp;quot;: &amp;quot;member&amp;quot;,\n            &amp;quot;userType&amp;quot;: &amp;quot;student&amp;quot;,\n            &amp;quot;familyId&amp;quot;: &amp;quot;non_existent_family_id&amp;quot;  # Invalid foreign key\n        }\n    \n        response = client.post(&amp;#x27;/user&amp;#x27;,\n                              data=json.dumps(user_data),\n                              content_type=&amp;#x27;application/json&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;foreign_key_violation&amp;quot;)\n\ntests/integration/test_api_validation_epic.py:206: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;member&amp;#x27; is not one of [&amp;#x27;visitor&amp;#x27;, &amp;#x27;user&amp;#x27;, &amp;#x27;editor&amp;#x27;, &amp;#x27;admin&amp;#x27;] - &amp;#x27;role&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;foreign_key_violation&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;member&amp;#x27; is not one of [&amp;#x27;visitor&amp;#x27;, &amp;#x27;user&amp;#x27;, &amp;#x27;editor&amp;#x27;, &amp;#x27;admin&amp;#x27;] - &amp;#x27;role&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n\n------------------------------ Captured log call -------------------------------\nERROR    connexion.decorators.validation:validation.py:216 http://localhost/user validation error: &amp;#x27;member&amp;#x27; is not one of [&amp;#x27;visitor&amp;#x27;, &amp;#x27;user&amp;#x27;, &amp;#x27;editor&amp;#x27;, &amp;#x27;admin&amp;#x27;] - &amp;#x27;role&amp;#x27;\n\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_74_data_consistency_checks&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_74_data_consistency_checks&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_74_data_consistency_checks&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_79_family_membership_constraints&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_79_family_membership_constraints&#34;, &#34;duration&#34;: &#34;6 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_79_family_membership_constraints&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;6 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_80_parent_student_relationship_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_80_parent_student_relationship_validation&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_80_parent_student_relationship_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestFamilyManagementValidation object at 0x107905af0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\ndb_helper = &amp;lt;tests.conftest.db_helper.&amp;lt;locals&amp;gt;.DatabaseHelper object at 0x10b071160&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b071850&amp;gt;\nsample_user = {&amp;#x27;created&amp;#x27;: {&amp;#x27;at&amp;#x27;: &amp;#x27;2025-09-10T18:34:52.194027+00:00&amp;#x27;, &amp;#x27;by&amp;#x27;: {&amp;#x27;displayName&amp;#x27;: &amp;#x27;System&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;system@cmz.org&amp;#x27;, &amp;#x27;userId&amp;#x27;: &amp;#x27;system&amp;#x27;}}, &amp;#x27;displayName&amp;#x27;: &amp;#x27;Test User&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;test_0425fdf0@cmz.org&amp;#x27;, &amp;#x27;familyId&amp;#x27;: None, ...}\n\n    def test_pr003946_80_parent_student_relationship_validation(self, client, db_helper, validation_helper, sample_user):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-80: Parent-student relationship consistency&amp;quot;&amp;quot;&amp;quot;\n    \n        # Create user as both parent and student (should fail)\n&amp;gt;       user = db_helper.insert_test_user(sample_user)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/integration/test_api_validation_epic.py:261: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/conftest.py:358: in insert_test_user\n    table.put_item(Item=user_data)\n/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action\n    response = action(self, *args, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__\n    response = getattr(parent.meta.client, operation_name)(*args, **params)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call\n    return self._make_api_call(operation_name, kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;botocore.client.DynamoDB object at 0x10727a030&amp;gt;\noperation_name = &amp;#x27;PutItem&amp;#x27;\napi_params = {&amp;#x27;Item&amp;#x27;: {&amp;#x27;created&amp;#x27;: {&amp;#x27;M&amp;#x27;: {&amp;#x27;at&amp;#x27;: {&amp;#x27;S&amp;#x27;: &amp;#x27;2025-09-10T18:34:52.194027+00:00&amp;#x27;}, &amp;#x27;by&amp;#x27;: {&amp;#x27;M&amp;#x27;: {&amp;#x27;displayName&amp;#x27;: {...}, &amp;#x27;email...&amp;#x27;Test User&amp;#x27;}, &amp;#x27;email&amp;#x27;: {&amp;#x27;S&amp;#x27;: &amp;#x27;test_0425fdf0@cmz.org&amp;#x27;}, &amp;#x27;familyId&amp;#x27;: {&amp;#x27;NULL&amp;#x27;: True}, ...}, &amp;#x27;TableName&amp;#x27;: &amp;#x27;test-cmz-users&amp;#x27;}\n\n    @with_current_context()\n    def _make_api_call(self, operation_name, api_params):\n        operation_model = self._service_model.operation_model(operation_name)\n        service_name = self._service_model.service_name\n        history_recorder.record(\n            &amp;#x27;API_CALL&amp;#x27;,\n            {\n                &amp;#x27;service&amp;#x27;: service_name,\n                &amp;#x27;operation&amp;#x27;: operation_name,\n                &amp;#x27;params&amp;#x27;: api_params,\n            },\n        )\n        if operation_model.deprecated:\n            logger.debug(\n                &amp;#x27;Warning: %s.%s() is deprecated&amp;#x27;, service_name, operation_name\n            )\n        request_context = {\n            &amp;#x27;client_region&amp;#x27;: self.meta.region_name,\n            &amp;#x27;client_config&amp;#x27;: self.meta.config,\n            &amp;#x27;has_streaming_input&amp;#x27;: operation_model.has_streaming_input,\n            &amp;#x27;auth_type&amp;#x27;: operation_model.resolved_auth_type,\n            &amp;#x27;unsigned_payload&amp;#x27;: operation_model.unsigned_payload,\n            &amp;#x27;auth_options&amp;#x27;: self._service_model.metadata.get(&amp;#x27;auth&amp;#x27;),\n        }\n    \n        api_params = self._emit_api_params(\n            api_params=api_params,\n            operation_model=operation_model,\n            context=request_context,\n        )\n        (\n            endpoint_url,\n            additional_headers,\n            properties,\n        ) = self._resolve_endpoint_ruleset(\n            operation_model, api_params, request_context\n        )\n        if properties:\n            # Pass arbitrary endpoint info with the Request\n            # for use during construction.\n            request_context[&amp;#x27;endpoint_properties&amp;#x27;] = properties\n        request_dict = self._convert_to_request_dict(\n            api_params=api_params,\n            operation_model=operation_model,\n            endpoint_url=endpoint_url,\n            context=request_context,\n            headers=additional_headers,\n        )\n        resolve_checksum_context(request_dict, operation_model, api_params)\n    \n        service_id = self._service_model.service_id.hyphenize()\n        handler, event_response = self.meta.events.emit_until_response(\n            f&amp;#x27;before-call.{service_id}.{operation_name}&amp;#x27;,\n            model=operation_model,\n            params=request_dict,\n            request_signer=self._request_signer,\n            context=request_context,\n        )\n    \n        if event_response is not None:\n            http, parsed_response = event_response\n        else:\n            maybe_compress_request(\n                self.meta.config, request_dict, operation_model\n            )\n            apply_request_checksum(request_dict)\n            http, parsed_response = self._make_request(\n                operation_model, request_dict, request_context\n            )\n    \n        self.meta.events.emit(\n            f&amp;#x27;after-call.{service_id}.{operation_name}&amp;#x27;,\n            http_response=http,\n            parsed=parsed_response,\n            model=operation_model,\n            context=request_context,\n        )\n    \n        if http.status_code &amp;gt;= 300:\n            error_info = parsed_response.get(&amp;quot;Error&amp;quot;, {})\n            error_code = request_context.get(\n                &amp;#x27;error_code_override&amp;#x27;\n            ) or error_info.get(&amp;quot;Code&amp;quot;)\n            error_class = self.exceptions.from_code(error_code)\n&amp;gt;           raise error_class(parsed_response, operation_name)\nE           botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Type mismatch for Index Key familyId Expected: S Actual: NULL IndexName: family-index\n\n/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: ClientError\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_81_pagination_parameter_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_81_pagination_parameter_validation&#34;, &#34;duration&#34;: &#34;6 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_81_pagination_parameter_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;6 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_82_filter_parameter_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_82_filter_parameter_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_82_filter_parameter_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_83_time_window_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_83_time_window_validation&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_83_time_window_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestAnalyticsValidation object at 0x107906330&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0b6de0&amp;gt;\n\n    def test_pr003946_83_time_window_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-83: Analytics time window validation&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test invalid date range\n&amp;gt;       response = client.get(&amp;#x27;/performance_metrics?start=invalid_date&amp;amp;end=2023-12-31T23:59:59Z&amp;#x27;)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/integration/test_api_validation_epic.py:328: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:1141: in get\n    return self.open(*args, **kw)\n           ^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/flask/testing.py:217: in open\n    return super().open(\n/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:1095: in open\n    response = self.run_wsgi_app(request.environ, buffered=buffered)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:962: in run_wsgi_app\n    rv = run_wsgi_app(self.application, environ, buffered=buffered)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/werkzeug/test.py:1243: in run_wsgi_app\n    app_rv = app(environ, start_response)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:2095: in __call__\n    return self.wsgi_app(environ, start_response)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:2080: in wsgi_app\n    response = self.handle_exception(e)\n               ^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:2077: in wsgi_app\n    response = self.full_dispatch_request()\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:1525: in full_dispatch_request\n    rv = self.handle_user_exception(e)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:1523: in full_dispatch_request\n    rv = self.dispatch_request()\n         ^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/flask/app.py:1509: in dispatch_request\n    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/decorator.py:68: in wrapper\n    response = function(request)\n               ^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/uri_parsing.py:149: in wrapper\n    response = function(request)\n               ^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:399: in wrapper\n    return function(request)\n           ^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/parameter.py:120: in wrapper\n    return function(**kwargs)\n           ^^^^^^^^^^^^^^^^^^\nopenapi_server/controllers/analytics_controller.py:60: in performance_metrics_get\n    start = util.deserialize_datetime(start)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nopenapi_server/util.py:94: in deserialize_datetime\n    return parse(string)\n           ^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/dateutil/parser/_parser.py:1368: in parse\n    return DEFAULTPARSER.parse(timestr, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;dateutil.parser._parser.parser object at 0x1054b5fd0&amp;gt;\ntimestr = &amp;#x27;invalid_date&amp;#x27;, default = datetime.datetime(2025, 9, 10, 0, 0)\nignoretz = False, tzinfos = None, kwargs = {}, res = None, skipped_tokens = None\n\n    def parse(self, timestr, default=None,\n              ignoretz=False, tzinfos=None, **kwargs):\n        &amp;quot;&amp;quot;&amp;quot;\n        Parse the date/time string into a :class:`datetime.datetime` object.\n    \n        :param timestr:\n            Any date/time string using the supported formats.\n    \n        :param default:\n            The default datetime object, if this is a datetime object and not\n            ``None``, elements specified in ``timestr`` replace elements in the\n            default object.\n    \n        :param ignoretz:\n            If set ``True``, time zones in parsed strings are ignored and a\n            naive :class:`datetime.datetime` object is returned.\n    \n        :param tzinfos:\n            Additional time zone names / aliases which may be present in the\n            string. This argument maps time zone names (and optionally offsets\n            from those time zones) to time zones. This parameter can be a\n            dictionary with timezone aliases mapping time zone names to time\n            zones or a function taking two parameters (``tzname`` and\n            ``tzoffset``) and returning a time zone.\n    \n            The timezones to which the names are mapped can be an integer\n            offset from UTC in seconds or a :class:`tzinfo` object.\n    \n            .. doctest::\n               :options: +NORMALIZE_WHITESPACE\n    \n                &amp;gt;&amp;gt;&amp;gt; from dateutil.parser import parse\n                &amp;gt;&amp;gt;&amp;gt; from dateutil.tz import gettz\n                &amp;gt;&amp;gt;&amp;gt; tzinfos = {&amp;quot;BRST&amp;quot;: -7200, &amp;quot;CST&amp;quot;: gettz(&amp;quot;America/Chicago&amp;quot;)}\n                &amp;gt;&amp;gt;&amp;gt; parse(&amp;quot;2012-01-19 17:21:00 BRST&amp;quot;, tzinfos=tzinfos)\n                datetime.datetime(2012, 1, 19, 17, 21, tzinfo=tzoffset(u&amp;#x27;BRST&amp;#x27;, -7200))\n                &amp;gt;&amp;gt;&amp;gt; parse(&amp;quot;2012-01-19 17:21:00 CST&amp;quot;, tzinfos=tzinfos)\n                datetime.datetime(2012, 1, 19, 17, 21,\n                                  tzinfo=tzfile(&amp;#x27;/usr/share/zoneinfo/America/Chicago&amp;#x27;))\n    \n            This parameter is ignored if ``ignoretz`` is set.\n    \n        :param \\\\*\\\\*kwargs:\n            Keyword arguments as passed to ``_parse()``.\n    \n        :return:\n            Returns a :class:`datetime.datetime` object or, if the\n            ``fuzzy_with_tokens`` option is ``True``, returns a tuple, the\n            first element being a :class:`datetime.datetime` object, the second\n            a tuple containing the fuzzy tokens.\n    \n        :raises ParserError:\n            Raised for invalid or unknown string format, if the provided\n            :class:`tzinfo` is not in a valid format, or if an invalid date\n            would be created.\n    \n        :raises TypeError:\n            Raised for non-string or character stream input.\n    \n        :raises OverflowError:\n            Raised if the parsed date exceeds the largest valid C integer on\n            your system.\n        &amp;quot;&amp;quot;&amp;quot;\n    \n        if default is None:\n            default = datetime.datetime.now().replace(hour=0, minute=0,\n                                                      second=0, microsecond=0)\n    \n        res, skipped_tokens = self._parse(timestr, **kwargs)\n    \n        if res is None:\n&amp;gt;           raise ParserError(&amp;quot;Unknown string format: %s&amp;quot;, timestr)\nE           dateutil.parser._parser.ParserError: Unknown string format: invalid_date\n\n/opt/miniconda3/lib/python3.12/site-packages/dateutil/parser/_parser.py:643: ParserError\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_84_log_level_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_84_log_level_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_84_log_level_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestAnalyticsValidation object at 0x1079065a0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0b6180&amp;gt;\n\n    def test_pr003946_84_log_level_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-84: Log level enum validation&amp;quot;&amp;quot;&amp;quot;\n    \n        response = client.get(&amp;#x27;/logs?level=invalid_level&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;invalid_log_level&amp;quot;)\n\ntests/integration/test_api_validation_epic.py:348: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_level&amp;#x27; is not one of [&amp;#x27;debug&amp;#x27;, &amp;#x27;info&amp;#x27;, &amp;#x27;warn&amp;#x27;, &amp;#x27;error&amp;#x27;]\\n\\nFailed validating &amp;#x27;enum&amp;#x27; in schema:\\n ... &amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_level&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;invalid_log_level&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_level&amp;#x27; is not one of [&amp;#x27;debug&amp;#x27;, &amp;#x27;info&amp;#x27;, &amp;#x27;warn&amp;#x27;, &amp;#x27;error&amp;#x27;]\\n\\nFailed validating &amp;#x27;enum&amp;#x27; in schema:\\n    {&amp;#x27;enum&amp;#x27;: [&amp;#x27;debug&amp;#x27;, &amp;#x27;info&amp;#x27;, &amp;#x27;warn&amp;#x27;, &amp;#x27;error&amp;#x27;], &amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_level&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestBillingValidation::test_pr003946_86_billing_period_format_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestBillingValidation::test_pr003946_86_billing_period_format_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestBillingValidation::test_pr003946_86_billing_period_format_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestBillingValidation object at 0x107906810&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0b58e0&amp;gt;\n\n    def test_pr003946_86_billing_period_format_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-86: Billing period format and real calendar month validation&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test invalid format\n        response = client.get(&amp;#x27;/billing?period=invalid_format&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;invalid_period_format&amp;quot;)\n\ntests/integration/test_api_validation_epic.py:367: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_format&amp;#x27; does not match &amp;#x27;^[0-9]{4}-[0-9]{2}$&amp;#x27;\\n\\nFailed validating &amp;#x27;pattern&amp;#x27; in schema:\\n    {&amp;#x27;pat...&amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_format&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;invalid_period_format&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_format&amp;#x27; does not match &amp;#x27;^[0-9]{4}-[0-9]{2}$&amp;#x27;\\n\\nFailed validating &amp;#x27;pattern&amp;#x27; in schema:\\n    {&amp;#x27;pattern&amp;#x27;: &amp;#x27;^[0-9]{4}-[0-9]{2}$&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_format&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_89_media_upload_constraints&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_89_media_upload_constraints&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_89_media_upload_constraints&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestInputValidation object at 0x107906ae0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b073ad0&amp;gt;\n\n    def test_pr003946_89_media_upload_constraints(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-89: Media upload validation for required fields and safe content&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test missing file\n        response = client.post(&amp;#x27;/upload_media&amp;#x27;,\n                              data={},\n                              content_type=&amp;#x27;multipart/form-data&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;missing_file&amp;quot;)\n\ntests/integration/test_api_validation_epic.py:397: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;file&amp;#x27; is a required property&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;missing_file&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;file&amp;#x27; is a required property&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n\n------------------------------ Captured log call -------------------------------\nERROR    connexion.decorators.validation:validation.py:216 http://localhost/upload_media validation error: &amp;#x27;file&amp;#x27; is a required property\n\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_91_conversation_turn_input_limits&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_91_conversation_turn_input_limits&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_91_conversation_turn_input_limits&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestInputValidation object at 0x107906d80&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x109da89e0&amp;gt;\ndata_factory = &amp;lt;tests.conftest.data_factory.&amp;lt;locals&amp;gt;.TestDataFactory object at 0x109da8c50&amp;gt;\n\n    def test_pr003946_91_conversation_turn_input_limits(self, client, validation_helper, data_factory):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-91: ConvoTurnRequest message length limits and required fields&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test missing required fields\n        invalid_request = {&amp;quot;animalId&amp;quot;: &amp;quot;test&amp;quot;}  # Missing message\n    \n        response = client.post(&amp;#x27;/convo_turn&amp;#x27;,\n                              data=json.dumps(invalid_request),\n                              content_type=&amp;#x27;application/json&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;missing_required_field&amp;quot;)\n\ntests/integration/test_api_validation_epic.py:414: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;message&amp;#x27; is a required property&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;missing_required_field&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;message&amp;#x27; is a required property&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n\n------------------------------ Captured log call -------------------------------\nERROR    connexion.decorators.validation:validation.py:216 http://localhost/convo_turn validation error: &amp;#x27;message&amp;#x27; is a required property\n\n&#34;}], &#34;tests/integration/test_api_validation_epic.py::TestErrorHandlingValidation::test_pr003946_90_consistent_error_schema&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_api_validation_epic.py::TestErrorHandlingValidation::test_pr003946_90_consistent_error_schema&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_api_validation_epic.py::TestErrorHandlingValidation::test_pr003946_90_consistent_error_schema&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_api_validation_epic.TestErrorHandlingValidation object at 0x107906bd0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0377a0&amp;gt;\n\n    def test_pr003946_90_consistent_error_schema(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;PR003946-90: All 4xx/5xx responses use Error schema with per-field details&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test 404 error format\n        response = client.get(&amp;#x27;/non_existent_endpoint&amp;#x27;)\n        assert response.status_code == 404\n    \n        data = json.loads(response.data)\n&amp;gt;       validation_helper.assert_error_schema(data, &amp;quot;not_found&amp;quot;)\n\ntests/integration/test_api_validation_epic.py:443: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;#x27;The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.&amp;#x27;, &amp;#x27;status&amp;#x27;: 404, &amp;#x27;title&amp;#x27;: &amp;#x27;Not Found&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;not_found&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;#x27;The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.&amp;#x27;, &amp;#x27;status&amp;#x27;: 404, &amp;#x27;title&amp;#x27;: &amp;#x27;Not Found&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_post_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_post_endpoint_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_post_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAuthenticationEndpoints object at 0x107907080&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0b68d0&amp;gt;\ndata_factory = &amp;lt;tests.conftest.data_factory.&amp;lt;locals&amp;gt;.TestDataFactory object at 0x10b0b50d0&amp;gt;\n\n    def test_auth_post_endpoint_validation(self, client, validation_helper, data_factory):\n        &amp;quot;&amp;quot;&amp;quot;Test /auth POST endpoint validation requirements&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test valid registration\n        auth_data = data_factory.create_auth_request(register=True)\n        response = client.post(&amp;#x27;/auth&amp;#x27;,\n                              data=json.dumps(auth_data),\n                              content_type=&amp;#x27;application/json&amp;#x27;)\n    \n        # Should return 200 with token or 404/501 if not implemented\n        if response.status_code == 200:\n            data = json.loads(response.data)\n            assert &amp;quot;token&amp;quot; in data\n            assert &amp;quot;expiresIn&amp;quot; in data\n            assert &amp;quot;user&amp;quot; in data\n            validation_helper.assert_audit_fields(data[&amp;quot;user&amp;quot;])\n        else:\n&amp;gt;           assert response.status_code in [404, 501, 401]\nE           assert 500 in [404, 501, 401]\nE            +  where 500 = &amp;lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&amp;gt;.status_code\n\ntests/integration/test_endpoints.py:31: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_refresh_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_refresh_endpoint&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_refresh_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAuthenticationEndpoints object at 0x1079072f0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nauth_headers = &amp;lt;function auth_headers.&amp;lt;locals&amp;gt;._generate_headers at 0x10b016a20&amp;gt;\n\n    def test_auth_refresh_endpoint(self, client, auth_headers):\n        &amp;quot;&amp;quot;&amp;quot;Test /auth/refresh endpoint (PR003946-88)&amp;quot;&amp;quot;&amp;quot;\n    \n        headers = auth_headers(role=&amp;quot;member&amp;quot;)\n        response = client.post(&amp;#x27;/auth/refresh&amp;#x27;, headers=headers)\n    \n        if response.status_code == 200:\n            data = json.loads(response.data)\n            assert &amp;quot;token&amp;quot; in data\n            assert &amp;quot;expiresIn&amp;quot; in data\n        else:\n            # Document current behavior\n&amp;gt;           assert response.status_code in [401, 404, 501]\nE           assert 500 in [401, 404, 501]\nE            +  where 500 = &amp;lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&amp;gt;.status_code\n\ntests/integration/test_endpoints.py:56: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_logout_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_logout_endpoint&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAuthenticationEndpoints::test_auth_logout_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAuthenticationEndpoints object at 0x107907560&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nauth_headers = &amp;lt;function auth_headers.&amp;lt;locals&amp;gt;._generate_headers at 0x10b015760&amp;gt;\n\n    def test_auth_logout_endpoint(self, client, auth_headers):\n        &amp;quot;&amp;quot;&amp;quot;Test /auth/logout endpoint consistency (PR003946-88)&amp;quot;&amp;quot;&amp;quot;\n    \n        headers = auth_headers(role=&amp;quot;member&amp;quot;)\n        response = client.post(&amp;#x27;/auth/logout&amp;#x27;, headers=headers)\n    \n        # Should always return 204 and actually invalidate session\n&amp;gt;       assert response.status_code == 204\nE       assert 500 == 204\nE        +  where 500 = &amp;lt;WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]&amp;gt;.status_code\n\ntests/integration/test_endpoints.py:65: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_list_endpoint_pagination&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_list_endpoint_pagination&#34;, &#34;duration&#34;: &#34;3 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_list_endpoint_pagination&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;3 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestUserEndpoints object at 0x107907830&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b1402c0&amp;gt;\n\n    def test_user_list_endpoint_pagination(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /user GET endpoint pagination (PR003946-81)&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test default pagination\n        response = client.get(&amp;#x27;/user&amp;#x27;)\n    \n        if response.status_code == 200:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.validate_pagination(data)\n\ntests/integration/test_endpoints.py:79: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;items&amp;#x27;: []}\n\n    @staticmethod\n    def validate_pagination(response_data: dict):\n        &amp;quot;&amp;quot;&amp;quot;Validate pagination structure&amp;quot;&amp;quot;&amp;quot;\n        assert &amp;quot;items&amp;quot; in response_data, &amp;quot;Missing items in paginated response&amp;quot;\n&amp;gt;       assert &amp;quot;page&amp;quot; in response_data, &amp;quot;Missing page in paginated response&amp;quot;\nE       AssertionError: Missing page in paginated response\nE       assert &amp;#x27;page&amp;#x27; in {&amp;#x27;items&amp;#x27;: []}\n\ntests/conftest.py:325: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_create_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_create_endpoint_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_create_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;------------------------------ Captured log call -------------------------------\nERROR    connexion.decorators.validation:validation.py:216 http://localhost/user validation error: &amp;#x27;member&amp;#x27; is not one of [&amp;#x27;visitor&amp;#x27;, &amp;#x27;user&amp;#x27;, &amp;#x27;editor&amp;#x27;, &amp;#x27;admin&amp;#x27;] - &amp;#x27;role&amp;#x27;\n\n&#34;}], &#34;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_get_by_id_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_get_by_id_endpoint&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestUserEndpoints::test_user_get_by_id_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestUserEndpoints object at 0x107907dd0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\ndb_helper = &amp;lt;tests.conftest.db_helper.&amp;lt;locals&amp;gt;.DatabaseHelper object at 0x10b141220&amp;gt;\nsample_user = {&amp;#x27;created&amp;#x27;: {&amp;#x27;at&amp;#x27;: &amp;#x27;2025-09-10T18:34:52.571636+00:00&amp;#x27;, &amp;#x27;by&amp;#x27;: {&amp;#x27;displayName&amp;#x27;: &amp;#x27;System&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;system@cmz.org&amp;#x27;, &amp;#x27;userId&amp;#x27;: &amp;#x27;system&amp;#x27;}}, &amp;#x27;displayName&amp;#x27;: &amp;#x27;Test User&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;test_f008128f@cmz.org&amp;#x27;, &amp;#x27;familyId&amp;#x27;: None, ...}\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b143a40&amp;gt;\n\n    def test_user_get_by_id_endpoint(self, client, db_helper, sample_user, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /user/{userId} GET endpoint&amp;quot;&amp;quot;&amp;quot;\n    \n&amp;gt;       user = db_helper.insert_test_user(sample_user)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/integration/test_endpoints.py:119: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/conftest.py:358: in insert_test_user\n    table.put_item(Item=user_data)\n/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action\n    response = action(self, *args, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__\n    response = getattr(parent.meta.client, operation_name)(*args, **params)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call\n    return self._make_api_call(operation_name, kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;botocore.client.DynamoDB object at 0x10727a030&amp;gt;\noperation_name = &amp;#x27;PutItem&amp;#x27;\napi_params = {&amp;#x27;Item&amp;#x27;: {&amp;#x27;created&amp;#x27;: {&amp;#x27;M&amp;#x27;: {&amp;#x27;at&amp;#x27;: {&amp;#x27;S&amp;#x27;: &amp;#x27;2025-09-10T18:34:52.571636+00:00&amp;#x27;}, &amp;#x27;by&amp;#x27;: {&amp;#x27;M&amp;#x27;: {&amp;#x27;displayName&amp;#x27;: {...}, &amp;#x27;email...&amp;#x27;Test User&amp;#x27;}, &amp;#x27;email&amp;#x27;: {&amp;#x27;S&amp;#x27;: &amp;#x27;test_f008128f@cmz.org&amp;#x27;}, &amp;#x27;familyId&amp;#x27;: {&amp;#x27;NULL&amp;#x27;: True}, ...}, &amp;#x27;TableName&amp;#x27;: &amp;#x27;test-cmz-users&amp;#x27;}\n\n    @with_current_context()\n    def _make_api_call(self, operation_name, api_params):\n        operation_model = self._service_model.operation_model(operation_name)\n        service_name = self._service_model.service_name\n        history_recorder.record(\n            &amp;#x27;API_CALL&amp;#x27;,\n            {\n                &amp;#x27;service&amp;#x27;: service_name,\n                &amp;#x27;operation&amp;#x27;: operation_name,\n                &amp;#x27;params&amp;#x27;: api_params,\n            },\n        )\n        if operation_model.deprecated:\n            logger.debug(\n                &amp;#x27;Warning: %s.%s() is deprecated&amp;#x27;, service_name, operation_name\n            )\n        request_context = {\n            &amp;#x27;client_region&amp;#x27;: self.meta.region_name,\n            &amp;#x27;client_config&amp;#x27;: self.meta.config,\n            &amp;#x27;has_streaming_input&amp;#x27;: operation_model.has_streaming_input,\n            &amp;#x27;auth_type&amp;#x27;: operation_model.resolved_auth_type,\n            &amp;#x27;unsigned_payload&amp;#x27;: operation_model.unsigned_payload,\n            &amp;#x27;auth_options&amp;#x27;: self._service_model.metadata.get(&amp;#x27;auth&amp;#x27;),\n        }\n    \n        api_params = self._emit_api_params(\n            api_params=api_params,\n            operation_model=operation_model,\n            context=request_context,\n        )\n        (\n            endpoint_url,\n            additional_headers,\n            properties,\n        ) = self._resolve_endpoint_ruleset(\n            operation_model, api_params, request_context\n        )\n        if properties:\n            # Pass arbitrary endpoint info with the Request\n            # for use during construction.\n            request_context[&amp;#x27;endpoint_properties&amp;#x27;] = properties\n        request_dict = self._convert_to_request_dict(\n            api_params=api_params,\n            operation_model=operation_model,\n            endpoint_url=endpoint_url,\n            context=request_context,\n            headers=additional_headers,\n        )\n        resolve_checksum_context(request_dict, operation_model, api_params)\n    \n        service_id = self._service_model.service_id.hyphenize()\n        handler, event_response = self.meta.events.emit_until_response(\n            f&amp;#x27;before-call.{service_id}.{operation_name}&amp;#x27;,\n            model=operation_model,\n            params=request_dict,\n            request_signer=self._request_signer,\n            context=request_context,\n        )\n    \n        if event_response is not None:\n            http, parsed_response = event_response\n        else:\n            maybe_compress_request(\n                self.meta.config, request_dict, operation_model\n            )\n            apply_request_checksum(request_dict)\n            http, parsed_response = self._make_request(\n                operation_model, request_dict, request_context\n            )\n    \n        self.meta.events.emit(\n            f&amp;#x27;after-call.{service_id}.{operation_name}&amp;#x27;,\n            http_response=http,\n            parsed=parsed_response,\n            model=operation_model,\n            context=request_context,\n        )\n    \n        if http.status_code &amp;gt;= 300:\n            error_info = parsed_response.get(&amp;quot;Error&amp;quot;, {})\n            error_code = request_context.get(\n                &amp;#x27;error_code_override&amp;#x27;\n            ) or error_info.get(&amp;quot;Code&amp;quot;)\n            error_class = self.exceptions.from_code(error_code)\n&amp;gt;           raise error_class(parsed_response, operation_name)\nE           botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Type mismatch for Index Key familyId Expected: S Actual: NULL IndexName: family-index\n\n/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: ClientError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_list_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_list_endpoint&#34;, &#34;duration&#34;: &#34;6 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_list_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;6 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_details_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_details_endpoint_validation&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_details_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAnimalEndpoints object at 0x107950410&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0d1730&amp;gt;\n\n    def test_animal_details_endpoint_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /animal_details GET endpoint validation&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test missing animalId parameter\n        response = client.get(&amp;#x27;/animal_details&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;missing_parameter&amp;quot;)\n\ntests/integration/test_endpoints.py:173: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;Missing query parameter &amp;#x27;animalId&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;missing_parameter&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;Missing query parameter &amp;#x27;animalId&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_config_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_config_endpoint_validation&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAnimalEndpoints::test_animal_config_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAnimalEndpoints object at 0x107950680&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10a6432f0&amp;gt;\n\n    def test_animal_config_endpoint_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /animal_config endpoints validation&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test GET with missing animalId\n        response = client.get(&amp;#x27;/animal_config&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;missing_parameter&amp;quot;)\n\ntests/integration/test_endpoints.py:192: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;Missing query parameter &amp;#x27;animalId&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;missing_parameter&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;Missing query parameter &amp;#x27;animalId&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestConversationEndpoints::test_convo_turn_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestConversationEndpoints::test_convo_turn_endpoint_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestConversationEndpoints::test_convo_turn_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestConversationEndpoints object at 0x1079509b0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0d07a0&amp;gt;\ndata_factory = &amp;lt;tests.conftest.data_factory.&amp;lt;locals&amp;gt;.TestDataFactory object at 0x10b0d3140&amp;gt;\n\n    def test_convo_turn_endpoint_validation(self, client, validation_helper, data_factory):\n        &amp;quot;&amp;quot;&amp;quot;Test /convo_turn POST endpoint validation (PR003946-91)&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test missing required fields\n        invalid_request = {&amp;quot;animalId&amp;quot;: &amp;quot;test&amp;quot;}  # Missing message\n    \n        response = client.post(&amp;#x27;/convo_turn&amp;#x27;,\n                              data=json.dumps(invalid_request),\n                              content_type=&amp;#x27;application/json&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;missing_required_field&amp;quot;)\n\ntests/integration/test_endpoints.py:224: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;message&amp;#x27; is a required property&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;missing_required_field&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;message&amp;#x27; is a required property&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n\n------------------------------ Captured log call -------------------------------\nERROR    connexion.decorators.validation:validation.py:216 http://localhost/convo_turn validation error: &amp;#x27;message&amp;#x27; is a required property\n\n&#34;}], &#34;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_list_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_list_endpoint&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_list_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_create_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_create_endpoint_validation&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_create_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_get_by_id_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_get_by_id_endpoint&#34;, &#34;duration&#34;: &#34;3 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestFamilyEndpoints::test_family_get_by_id_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;3 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestFamilyEndpoints object at 0x107951100&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b1437a0&amp;gt;\n\n    def test_family_get_by_id_endpoint(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /family/{familyId} GET endpoint&amp;quot;&amp;quot;&amp;quot;\n    \n        response = client.get(&amp;#x27;/family/non_existent&amp;#x27;)\n    \n        if response.status_code == 404:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;not_found&amp;quot;)\n\ntests/integration/test_endpoints.py:321: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;#x27;Item not found: familyId=non_existent&amp;#x27;, &amp;#x27;status&amp;#x27;: 404, &amp;#x27;title&amp;#x27;: &amp;#x27;Not Found&amp;#x27;}\nexpected_code = &amp;#x27;not_found&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;#x27;Item not found: familyId=non_existent&amp;#x27;, &amp;#x27;status&amp;#x27;: 404, &amp;#x27;title&amp;#x27;: &amp;#x27;Not Found&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_performance_metrics_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_performance_metrics_endpoint_validation&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_performance_metrics_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAnalyticsEndpoints object at 0x1079076b0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b1435f0&amp;gt;\n\n    def test_performance_metrics_endpoint_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /performance_metrics GET endpoint (PR003946-83)&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test missing required parameters\n        response = client.get(&amp;#x27;/performance_metrics&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;missing_required_parameter&amp;quot;)\n\ntests/integration/test_endpoints.py:337: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;Missing query parameter &amp;#x27;start&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;missing_required_parameter&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;Missing query parameter &amp;#x27;start&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_logs_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_logs_endpoint_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_logs_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAnalyticsEndpoints object at 0x107950c50&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0d36e0&amp;gt;\n\n    def test_logs_endpoint_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /logs GET endpoint validation (PR003946-84)&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test invalid log level\n        response = client.get(&amp;#x27;/logs?level=invalid_level&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;invalid_log_level&amp;quot;)\n\ntests/integration/test_endpoints.py:372: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_level&amp;#x27; is not one of [&amp;#x27;debug&amp;#x27;, &amp;#x27;info&amp;#x27;, &amp;#x27;warn&amp;#x27;, &amp;#x27;error&amp;#x27;]\\n\\nFailed validating &amp;#x27;enum&amp;#x27; in schema:\\n ... &amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_level&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;invalid_log_level&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_level&amp;#x27; is not one of [&amp;#x27;debug&amp;#x27;, &amp;#x27;info&amp;#x27;, &amp;#x27;warn&amp;#x27;, &amp;#x27;error&amp;#x27;]\\n\\nFailed validating &amp;#x27;enum&amp;#x27; in schema:\\n    {&amp;#x27;enum&amp;#x27;: [&amp;#x27;debug&amp;#x27;, &amp;#x27;info&amp;#x27;, &amp;#x27;warn&amp;#x27;, &amp;#x27;error&amp;#x27;], &amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_level&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_billing_endpoint_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_billing_endpoint_validation&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestAnalyticsEndpoints::test_billing_endpoint_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestAnalyticsEndpoints object at 0x1079502f0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b0d2720&amp;gt;\n\n    def test_billing_endpoint_validation(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /billing GET endpoint validation (PR003946-86)&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test invalid period format\n        response = client.get(&amp;#x27;/billing?period=invalid_format&amp;#x27;)\n    \n        if response.status_code == 400:\n            data = json.loads(response.data)\n&amp;gt;           validation_helper.assert_error_schema(data, &amp;quot;invalid_period_format&amp;quot;)\n\ntests/integration/test_endpoints.py:394: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresponse_data = {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_format&amp;#x27; does not match &amp;#x27;^[0-9]{4}-[0-9]{2}$&amp;#x27;\\n\\nFailed validating &amp;#x27;pattern&amp;#x27; in schema:\\n    {&amp;#x27;pat...&amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_format&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\nexpected_code = &amp;#x27;invalid_period_format&amp;#x27;\n\n    @staticmethod\n    def assert_error_schema(response_data: dict, expected_code: str = None):\n        &amp;quot;&amp;quot;&amp;quot;Validate error response follows Error schema (PR003946-90)&amp;quot;&amp;quot;&amp;quot;\n&amp;gt;       assert &amp;quot;code&amp;quot; in response_data, &amp;quot;Error response missing &amp;#x27;code&amp;#x27; field&amp;quot;\nE       AssertionError: Error response missing &amp;#x27;code&amp;#x27; field\nE       assert &amp;#x27;code&amp;#x27; in {&amp;#x27;detail&amp;#x27;: &amp;quot;&amp;#x27;invalid_format&amp;#x27; does not match &amp;#x27;^[0-9]{4}-[0-9]{2}$&amp;#x27;\\n\\nFailed validating &amp;#x27;pattern&amp;#x27; in schema:\\n    {&amp;#x27;pattern&amp;#x27;: &amp;#x27;^[0-9]{4}-[0-9]{2}$&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;string&amp;#x27;}\\n\\nOn instance:\\n    &amp;#x27;invalid_format&amp;#x27;&amp;quot;, &amp;#x27;status&amp;#x27;: 400, &amp;#x27;title&amp;#x27;: &amp;#x27;Bad Request&amp;#x27;, &amp;#x27;type&amp;#x27;: &amp;#x27;about:blank&amp;#x27;}\n\ntests/conftest.py:294: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestSystemEndpoints::test_system_health_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestSystemEndpoints::test_system_health_endpoint&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestSystemEndpoints::test_system_health_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestSystemEndpoints object at 0x107951430&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\n\n    def test_system_health_endpoint(self, client):\n        &amp;quot;&amp;quot;&amp;quot;Test /system_health GET endpoint&amp;quot;&amp;quot;&amp;quot;\n    \n        response = client.get(&amp;#x27;/system_health&amp;#x27;)\n    \n        if response.status_code == 200:\n            data = json.loads(response.data)\n&amp;gt;           assert &amp;quot;status&amp;quot; in data\nE           AssertionError: assert &amp;#x27;status&amp;#x27; in &amp;#x27;do some magic!&amp;#x27;\n\ntests/integration/test_endpoints.py:425: AssertionError\n&#34;}], &#34;tests/integration/test_endpoints.py::TestSystemEndpoints::test_feature_flags_endpoint&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/integration/test_endpoints.py::TestSystemEndpoints::test_feature_flags_endpoint&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/integration/test_endpoints.py::TestSystemEndpoints::test_feature_flags_endpoint&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.integration.test_endpoints.TestSystemEndpoints object at 0x1079516a0&amp;gt;\nclient = &amp;lt;FlaskClient &amp;lt;Flask &amp;#x27;tests.conftest&amp;#x27;&amp;gt;&amp;gt;\nvalidation_helper = &amp;lt;tests.conftest.validation_helper.&amp;lt;locals&amp;gt;.ValidationHelper object at 0x10b19f0e0&amp;gt;\n\n    def test_feature_flags_endpoint(self, client, validation_helper):\n        &amp;quot;&amp;quot;&amp;quot;Test /feature_flags endpoints&amp;quot;&amp;quot;&amp;quot;\n    \n        # Test GET\n        response = client.get(&amp;#x27;/feature_flags&amp;#x27;)\n    \n        if response.status_code == 200:\n            data = json.loads(response.data)\n&amp;gt;           assert &amp;quot;flags&amp;quot; in data\nE           AssertionError: assert &amp;#x27;flags&amp;#x27; in &amp;#x27;do some magic!&amp;#x27;\n\ntests/integration/test_endpoints.py:440: AssertionError\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;integration_report.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > td')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > td')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+</html>

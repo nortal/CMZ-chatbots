@@ -1,6 +1,22 @@
 # CMZ-chatbots
 A repository for the CMZ chatbot program
 
+## 🧪 Testing Framework
+
+This project includes a comprehensive integration test framework designed for Test-Driven Development (TDD) against Jira ticket requirements. The framework validates all API endpoints against the requirements from the **API Validation Epic (PR003946-61)**.
+
+**Quick Start:**
+```bash
+# Run all integration tests
+cd backend/api/src/main/python
+python run_integration_tests.py --tdd
+
+# Test specific Jira ticket requirements
+python run_integration_tests.py --ticket PR003946-90
+```
+
+📖 **[Complete Testing Documentation](README_TESTING.md)** - Comprehensive guide to the test framework, TDD workflow, and validation requirements.
+
 ## History Tracking Requirement
 
 **All contributors must create a session history log before committing code.**
