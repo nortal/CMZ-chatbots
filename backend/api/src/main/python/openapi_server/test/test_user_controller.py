@@ -2,8 +2,7 @@ import unittest
 
 from flask import json
 
-from openapi_server.models.create_user_request import CreateUserRequest  # noqa: E501
-from openapi_server.models.user import User  # noqa: E501
+# Removed unused imports as flagged by GitHub Advanced Security
 from openapi_server.test import BaseTestCase
 
 

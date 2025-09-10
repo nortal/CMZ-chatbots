@@ -10,7 +10,7 @@ from pynamodb.exceptions import PutError
 # PR003946-69: Server-Generated IDs
 from ..id_generator import (
     add_audit_timestamps, ensure_user_id, ensure_animal_id, 
-    ensure_family_id, ensure_conversation_id, ensure_knowledge_id
+    ensure_family_id
 )
 
 class DynamoStore(Protocol):

@@ -5,7 +5,7 @@ This module provides validation for foreign key relationships between entities
 to ensure data integrity and prevent orphaned records.
 """
 
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from openapi_server.impl.error_handler import ValidationError
 
 

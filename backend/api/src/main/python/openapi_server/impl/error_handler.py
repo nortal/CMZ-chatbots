@@ -7,7 +7,7 @@ follow the consistent Error schema with code, message, and details fields.
 
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
-from connexion.exceptions import BadRequestProblem, ProblemException
+from connexion.exceptions import BadRequestProblem
 from openapi_server.models.error import Error
 import logging
 
