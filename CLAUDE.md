@@ -226,3 +226,48 @@ The API includes these major endpoint groups:
 - Include cross-references between related session files
 
 **Example**: See `history/kc.stegbauer_2025-09-07_09h-13h.md` for comprehensive session documentation
+
+## API Validation Implementation Template
+
+**Use this prompt for systematic implementation of API validation tickets:**
+
+```
+Implement the next 5 high-priority Jira tickets from our API validation epic, following the same systematic approach we used for PR003946-90, PR003946-72, PR003946-73, PR003946-69, and PR003946-66.
+
+## Context
+- CMZ chatbot backend API using OpenAPI-first development
+- Flask/Connexion with DynamoDB persistence
+- Docker containerized development environment
+- All business logic must go in `impl/` directory (never in generated code)
+
+## Required Process
+1. **Use sequential reasoning MCP** to predict test outcomes and plan implementation
+2. **Implement all tickets systematically** with proper error handling
+3. **Verify functionality via cURL testing** against running Docker container
+4. **Address any GitHub Advanced Security scanner issues** (unused imports, etc.)
+5. **Create comprehensive MR** targeting `dev` branch with full documentation
+
+## Technical Requirements
+- Follow existing patterns in `openapi_server/impl/`
+- Maintain OpenAPI specification compliance
+- Use consistent Error schema with code/message/details structure
+- Include proper audit timestamps and server-generated IDs
+- Implement foreign key validation where applicable
+- Ensure soft-delete semantics consistency
+
+## Quality Gates
+- All functionality verified working via API testing
+- No breaking changes to existing features
+- GitHub Advanced Security issues resolved
+- Professional MR description with API verification examples
+- Clean, maintainable code following project conventions
+
+Please start by listing the next 5 tickets, then use sequential reasoning to plan the implementation approach.
+```
+
+**Why This Template Works:**
+- References proven successful implementation pattern
+- Emphasizes systematic sequential reasoning + implementation + testing workflow
+- Captures key architectural constraints (impl/ directory, OpenAPI-first)
+- Includes security scanning and professional documentation requirements
+- Provides clear actionable starting steps

@@ -28,6 +28,20 @@ def register_error_handlers(app):
         if hasattr(error, 'description') and error.description:
             message = str(error.description)
             
+            # PR003946-84: Detect log level enum validation errors
+            if "level" in message and ("not one of" in message.lower() or "invalid enum value" in message.lower()):
+                code = "invalid_log_level"
+                message = "Invalid log level specified"
+                details = {
+                    "field": "level",
+                    "allowed_values": ["debug", "info", "warn", "error"],
+                    "error_type": "invalid_log_level"
+                }
+            # Detect other enum validation patterns from OpenAPI/Connexion
+            elif "not one of" in message.lower() or "invalid enum value" in message.lower():
+                code = "invalid_enum_value"
+                details["validation_detail"] = message
+                
         # Handle Connexion validation errors
         if isinstance(error, BadRequestProblem):
             code = "validation_error" 

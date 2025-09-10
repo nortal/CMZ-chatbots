@@ -40,9 +40,8 @@ def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # no
 
     :rtype: Union[PagedLogs, Tuple[PagedLogs, int], Tuple[PagedLogs, int, Dict[str, str]]
     """
-    start = util.deserialize_datetime(start)
-    end = util.deserialize_datetime(end)
-    return 'do some magic!'
+    from openapi_server.impl.analytics import handle_logs
+    return handle_logs(level, start, end, page, page_size)
 
 
 def performance_metrics_get(start, end):  # noqa: E501
@@ -57,6 +56,5 @@ def performance_metrics_get(start, end):  # noqa: E501
 
     :rtype: Union[PerformanceMetrics, Tuple[PerformanceMetrics, int], Tuple[PerformanceMetrics, int, Dict[str, str]]
     """
-    start = util.deserialize_datetime(start)
-    end = util.deserialize_datetime(end)
-    return 'do some magic!'
+    from openapi_server.impl.analytics import handle_performance_metrics
+    return handle_performance_metrics(start, end)
