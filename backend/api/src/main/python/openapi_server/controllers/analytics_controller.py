@@ -19,7 +19,8 @@ def billing_get(period=None):  # noqa: E501
 
     :rtype: Union[BillingSummary, Tuple[BillingSummary, int], Tuple[BillingSummary, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    from openapi_server.impl.analytics import handle_billing
+    return handle_billing(period)
 
 
 def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # noqa: E501
