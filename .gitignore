@@ -152,6 +152,12 @@ tmp/
 temp/
 backend/api/generated/
 
+# Test Reports and Logs
+backend/api/src/main/python/reports/
+**/reports/*.html
+**/reports/*.xml
+**/reports/*.json
+
 # Spyder project settings
 .spyderproject
 .spyproject
