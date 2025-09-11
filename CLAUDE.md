@@ -227,7 +227,7 @@ The API includes these major endpoint groups:
 
 **Example**: See `history/kc.stegbauer_2025-09-07_09h-13h.md` for comprehensive session documentation
 
-## API Validation Implementation Template
+## API Validation Implementation Template (/nextfive)
 
 **Use this prompt for systematic implementation of API validation tickets:**
 
@@ -245,7 +245,9 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 2. **Implement all tickets systematically** with proper error handling
 3. **Verify functionality via cURL testing** against running Docker container
 4. **Address any GitHub Advanced Security scanner issues** (unused imports, etc.)
-5. **Create comprehensive MR** targeting `dev` branch with full documentation
+5. **Create and submit MR** with Copilot review workflow
+6. **Update Jira tickets** with implementation status and MR links
+7. **Handle review feedback** and iterate until approval
 
 ## Technical Requirements
 - Follow existing patterns in `openapi_server/impl/`
@@ -255,12 +257,41 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - Implement foreign key validation where applicable
 - Ensure soft-delete semantics consistency
 
+## MR Creation and Review Process
+- **Target Branch**: `dev`
+- **Add Reviewer**: @github-actions[bot] (Copilot) - add as reviewer on the MR/PR
+- **MR Description**: Include comprehensive implementation documentation with API verification examples
+- **Include History File**: Add session documentation to `/history/` directory
+- **Single Review Round**: Address Copilot feedback once, don't iterate endlessly
+- **Re-test After Changes**: Verify all functionality still works after addressing feedback
+- **Security Scans**: Ensure all GitHub Advanced Security checks pass
+
+## Jira Integration
+- **Status Update**: Transition all implemented tickets to "In Progress" 
+- **Activity Comments**: Add implementation details and MR links to ticket history
+- **Use Script**: Run `./scripts/update_jira_tickets.sh comment` with new MR URLs
+
 ## Quality Gates
 - All functionality verified working via API testing
 - No breaking changes to existing features
 - GitHub Advanced Security issues resolved
+- Copilot review feedback addressed (one round)
 - Professional MR description with API verification examples
 - Clean, maintainable code following project conventions
+- Jira tickets updated with implementation status
+- Final sequential reasoning validation of all steps completed
+
+## Complete Workflow
+1. List next 5 tickets and use sequential reasoning to plan
+2. Implement systematically with comprehensive testing
+3. Address security issues and run quality checks
+4. Create MR targeting `dev` branch with Copilot as reviewer
+5. Add history documentation to MR
+6. Update Jira tickets to "In Progress" with MR links using script
+7. Wait for and address Copilot review feedback (one round)
+8. Re-test and verify all functionality after changes
+9. **Use sequential reasoning to validate all steps were completed correctly**
+10. Ensure final approval and merge readiness
 
 Please start by listing the next 5 tickets, then use sequential reasoning to plan the implementation approach.
 ```
