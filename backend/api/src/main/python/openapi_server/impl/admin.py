@@ -78,12 +78,12 @@ def handle_create_user(body: UserInput) -> User:
     
     PR003946-73: Includes foreign key validation
     """
-    from openapi_server.impl.validators import validate_foreign_key_constraints
+    from openapi_server.impl.commands.foreign_key_validation import execute_foreign_key_validation
     
     data = model_to_json_keyed_dict(body) or {}
     
     # PR003946-73: Validate foreign key constraints before creation
-    validate_foreign_key_constraints('user', data)
+    execute_foreign_key_validation('user', data)
     
     ensure_pk(data, USER_PK_NAME)  # allow caller to supply userId, otherwise generate
     data.setdefault("userType", "none")
