@@ -256,7 +256,8 @@ def validate_password_policy(password):
         raise ValidationError(
             "Password does not meet security requirements",
             field_errors=errors,
-            details={"field": "password", "policy_violations": errors}
+            details={"field": "password", "policy_violations": errors},
+            error_code="invalid_password"
         )
     
     return True

@@ -161,6 +161,10 @@ run-api:
 			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
 			-v $$HOME/.aws:/root/.aws:ro \
 			-e FLASK_ENV=development \
+			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
+			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
+			-e FAMILY_DYNAMO_TABLE_NAME=quest-dev-family \
+			-e FAMILY_DYNAMO_PK_NAME=familyId \
 			"$(IMAGE_NAME)"; \
 	else \
 		docker run --rm -d \
@@ -169,6 +173,10 @@ run-api:
 			-p "$(PORT):$(CONTAINER_PORT)" \
 			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
 			-v $$HOME/.aws:/root/.aws:ro \
+			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
+			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
+			-e FAMILY_DYNAMO_TABLE_NAME=quest-dev-family \
+			-e FAMILY_DYNAMO_PK_NAME=familyId \
 			"$(IMAGE_NAME)"; \
 		echo ">> Container running: http://localhost:$(PORT)"; \
 	fi

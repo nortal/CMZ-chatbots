@@ -2,6 +2,7 @@ import connexion
 
 from openapi_server.models.animal_config import AnimalConfig  # noqa: E501
 from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noqa: E501
+from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
 
 # Import hexagonal architecture handlers
@@ -88,8 +89,40 @@ def animal_details_get(animal_id):  # noqa: E501
     try:
         # Use get_animal handler and convert to AnimalDetails format
         animal = handle_get_animal(animal_id)
-        # Convert Animal to AnimalDetails (they should be compatible)
-        return animal
+        
+        # Convert Animal to AnimalDetails by extracting all Animal fields and adding AnimalDetails-specific fields
+        if hasattr(animal, 'to_dict'):
+            animal_data = animal.to_dict()
+        else:
+            # Safely access animal attributes with defaults
+            animal_data = {}
+            for attr in ['animal_id', 'name', 'species', 'status', 'created', 'modified', 'deleted', 'soft_delete']:
+                if hasattr(animal, attr):
+                    value = getattr(animal, attr)
+                    # Convert snake_case to camelCase for JSON
+                    if attr == 'animal_id':
+                        animal_data['animalId'] = value
+                    elif attr == 'soft_delete':
+                        animal_data['softDelete'] = value
+                    else:
+                        animal_data[attr] = value
+        
+        # Ensure animalId is available for creating extended fields
+        animal_id_value = animal_data.get('animalId', animal_data.get('animal_id', 'unknown'))
+        animal_name = animal_data.get('name', 'Unknown Animal')
+        animal_species = animal_data.get('species', 'Unknown Species')
+        
+        # Ensure animalId is set (required field for AnimalDetails)
+        animal_data['animalId'] = animal_id_value
+        
+        # Add AnimalDetails-specific fields - for now using mock data
+        # TODO: These should come from a dedicated animal_details table or extended animal data
+        animal_data['animalDetailId'] = f"detail_{animal_id_value}"
+        animal_data['description'] = f"Meet {animal_name}, a magnificent {animal_species} at Cougar Mountain Zoo."
+        animal_data['habitat'] = f"{animal_species} Habitat"
+        animal_data['imageUrl'] = f"https://cougarmountainzoo.org/images/{animal_id_value}.jpg"
+        
+        return AnimalDetails.from_dict(animal_data)
     except Exception as e:
         return Error(code='INTERNAL_ERROR', message=str(e)), 500
 

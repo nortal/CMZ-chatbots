@@ -10,7 +10,7 @@
       },
       "message": "The requested resource was not found"
     },
-    "raw_output": "HTTP/1.1 404 NOT FOUND\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 21:30:16 GMT\nContent-Type: application/json\nContent-Length: 108\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\"code\":\"not_found\",\"details\":{\"resource_type\":\"unknown\"},\"message\":\"The requested resource was not found\"}\n"
+    "raw_output": "HTTP/1.1 404 NOT FOUND\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Thu, 11 Sep 2025 01:02:13 GMT\nContent-Type: application/json\nContent-Length: 108\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\"code\":\"not_found\",\"details\":{\"resource_type\":\"unknown\"},\"message\":\"The requested resource was not found\"}\n"
   },
   {
     "test": "GET /user/999999 - Error Format Test",
@@ -23,19 +23,20 @@
       },
       "message": "An unexpected error occurred"
     },
-    "raw_output": "HTTP/1.1 500 INTERNAL SERVER ERROR\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 21:30:16 GMT\nContent-Type: application/json\nContent-Length: 105\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\"code\":\"internal_error\",\"details\":{\"error_type\":\"TableError\"},\"message\":\"An unexpected error occurred\"}\n"
+    "raw_output": "HTTP/1.1 500 INTERNAL SERVER ERROR\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Thu, 11 Sep 2025 01:02:13 GMT\nContent-Type: application/json\nContent-Length: 105\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\"code\":\"internal_error\",\"details\":{\"error_type\":\"TableError\"},\"message\":\"An unexpected error occurred\"}\n"
   },
   {
     "test": "POST /auth - Error Format Test",
     "command": "curl -s -i -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/auth",
     "status_code": 400,
     "response": {
-      "detail": "None is not of type 'object'",
-      "status": 400,
-      "title": "Bad Request",
-      "type": "about:blank"
+      "code": "validation_error",
+      "details": {
+        "validation_detail": "None is not of type 'object'"
+      },
+      "message": "Request validation failed"
     },
-    "raw_output": "HTTP/1.1 400 BAD REQUEST\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 21:30:16 GMT\nContent-Type: application/problem+json\nContent-Length: 115\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\n  \"detail\": \"None is not of type 'object'\",\n  \"status\": 400,\n  \"title\": \"Bad Request\",\n  \"type\": \"about:blank\"\n}\n"
+    "raw_output": "HTTP/1.1 400 BAD REQUEST\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Thu, 11 Sep 2025 01:02:13 GMT\nContent-Type: application/json\nContent-Length: 129\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\"code\":\"validation_error\",\"details\":{\"validation_detail\":\"None is not of type 'object'\"},\"message\":\"Request validation failed\"}\n"
   },
   {
     "test": "DELETE /family - Error Format Test",
@@ -48,6 +49,6 @@
       },
       "message": "The HTTP method is not allowed for this resource"
     },
-    "raw_output": "HTTP/1.1 405 METHOD NOT ALLOWED\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Wed, 10 Sep 2025 21:30:16 GMT\nContent-Type: application/json\nContent-Length: 124\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\"code\":\"method_not_allowed\",\"details\":{\"allowed_methods\":[]},\"message\":\"The HTTP method is not allowed for this resource\"}\n"
+    "raw_output": "HTTP/1.1 405 METHOD NOT ALLOWED\nServer: Werkzeug/2.2.3 Python/3.13.7\nDate: Thu, 11 Sep 2025 01:02:13 GMT\nContent-Type: application/json\nContent-Length: 124\nAccess-Control-Allow-Origin: http://localhost:3000\nConnection: close\n\n{\"code\":\"method_not_allowed\",\"details\":{\"allowed_methods\":[]},\"message\":\"The HTTP method is not allowed for this resource\"}\n"
   }
 ]

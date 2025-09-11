@@ -241,21 +241,24 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - All business logic must go in `impl/` directory (never in generated code)
 
 ## Required Process
-1. **Use sequential reasoning MCP** to predict test outcomes and plan implementation
-2. **Implement all tickets systematically** with proper error handling
-3. **Verify functionality via cURL testing** against running Docker container
-4. **Address any GitHub Advanced Security scanner issues** (unused imports, etc.)
-5. **Create and submit MR** with Copilot review workflow
-6. **Update Jira tickets** with implementation status and MR links
-7. **Handle review feedback** and iterate until approval
+1. **Run integration tests FIRST** to identify actual failing tickets (never assume based on Jira status)
+2. **Use sequential reasoning MCP** to predict test outcomes and plan implementation  
+3. **If fewer than 5 failing tickets**, look for new endpoint implementation opportunities
+4. **Implement all identified tickets systematically** with proper error handling
+5. **Verify functionality via cURL testing** against running Docker container
+6. **Address any GitHub Advanced Security scanner issues** (unused imports, etc.)
+7. **Create and submit MR** with Copilot review workflow
+8. **Update Jira tickets** with implementation status and MR links
+9. **Handle review feedback** and iterate until approval
 
 ## Technical Requirements
+- **Focus on Endpoint Implementation**: Prioritize new API endpoints over strict business validation
 - Follow existing patterns in `openapi_server/impl/`
 - Maintain OpenAPI specification compliance
 - Use consistent Error schema with code/message/details structure
 - Include proper audit timestamps and server-generated IDs
-- Implement foreign key validation where applicable
-- Ensure soft-delete semantics consistency
+- Basic CRUD operations with DynamoDB integration
+- Simple validation (required fields, basic formats) rather than complex business rules
 
 ## MR Creation and Review Process
 - **Target Branch**: `dev`
@@ -267,12 +270,15 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - **Security Scans**: Ensure all GitHub Advanced Security checks pass
 
 ## Jira Integration
-- **Status Update**: Transition all implemented tickets to "In Progress" 
-- **Activity Comments**: Add implementation details and MR links to ticket history
-- **Use Script**: Run `./scripts/update_jira_tickets.sh comment` with new MR URLs
+- **Automated Updates**: Use the `/scripts/update_jira_simple.sh` script for all Jira ticket updates
+- **Status Transitions**: Script automatically transitions tickets from "To Do" → "In Progress"
+- **Activity Comments**: Script adds implementation details as activity comments (never overwrites descriptions)
+- **Authentication**: Uses Basic Auth with email:token (not Bearer token)
+- **Simple Comments**: Avoid complex multi-line JSON that causes parsing errors
 
 ## Quality Gates
-- All functionality verified working via API testing
+- **API Endpoints Working**: All new endpoints respond correctly via cURL testing
+- **CRUD Operations Functional**: Basic create, read, update, delete operations work
 - No breaking changes to existing features
 - GitHub Advanced Security issues resolved
 - Copilot review feedback addressed (one round)
@@ -282,18 +288,48 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - Final sequential reasoning validation of all steps completed
 
 ## Complete Workflow
-1. List next 5 tickets and use sequential reasoning to plan
-2. Implement systematically with comprehensive testing
-3. Address security issues and run quality checks
-4. Create MR targeting `dev` branch, then add Copilot reviewer with `gh pr edit <PR_NUMBER> --add-reviewer Copilot`
-5. Add history documentation to MR
-6. Update Jira tickets to "In Progress" with MR links using script
-7. Wait for and address Copilot review feedback (one round)
-8. Re-test and verify all functionality after changes
-9. **Use sequential reasoning to validate all steps were completed correctly**
-10. Ensure final approval and merge readiness
+1. **DISCOVERY PHASE**: Run integration tests to identify actual failing tickets
+2. **PLANNING PHASE**: List discovered tickets and use sequential reasoning to plan implementation
+3. **SCOPE EXPANSION**: If fewer than 5 tickets, identify new endpoint opportunities from OpenAPI spec
+4. **IMPLEMENTATION PHASE**: Implement systematically with comprehensive testing
+5. **QUALITY PHASE**: Address security issues and run quality checks
+6. **MR PHASE**: Create MR targeting `dev` branch, then add Copilot reviewer with `gh pr edit <PR_NUMBER> --add-reviewer Copilot`
+7. **DOCUMENTATION PHASE**: Add history documentation to MR
+8. **JIRA PHASE**: Update Jira tickets using automated script: `./scripts/update_jira_simple.sh`
+9. **REVIEW PHASE**: Wait for and address Copilot review feedback (one round)
+10. **VALIDATION PHASE**: Re-test and verify all functionality after changes
+11. **COMPLETION PHASE**: Use sequential reasoning to validate all steps completed correctly and ensure merge readiness
 
-Please start by listing the next 5 tickets, then use sequential reasoning to plan the implementation approach.
+**START HERE - Discovery-Driven Approach:**
+
+```bash
+# Step 1: ALWAYS run integration tests first to find actual failing tickets
+python -m pytest tests/integration/test_api_validation_epic.py -v
+
+# Step 2: Identify specific failing test methods and their associated tickets
+# Step 3: If fewer than 5 failing tickets, examine OpenAPI spec for new endpoint opportunities
+```
+
+Then use sequential reasoning to plan the implementation approach for discovered work.
+
+**Implementation Priority Order:**
+1. **New API Endpoints** (GET, POST, PUT, DELETE operations)
+2. **Basic CRUD Implementation** (DynamoDB integration, standard patterns)
+3. **Simple Validation** (required fields, format checks)
+4. **Error Handling** (consistent Error schema responses)
+5. **Complex Business Logic** (only if specifically required by ticket)
+
+**Discovery Commands Reference:**
+```bash
+# Find failing tickets
+python -m pytest tests/integration/test_api_validation_epic.py -v
+
+# Examine OpenAPI spec for new endpoints
+grep -A 5 -B 5 "paths:" backend/api/openapi_spec.yaml
+
+# Check implemented vs missing endpoints
+ls backend/api/src/main/python/openapi_server/impl/
+```
 ```
 
 **Why This Template Works:**
@@ -301,4 +337,32 @@ Please start by listing the next 5 tickets, then use sequential reasoning to pla
 - Emphasizes systematic sequential reasoning + implementation + testing workflow
 - Captures key architectural constraints (impl/ directory, OpenAPI-first)
 - Includes security scanning and professional documentation requirements
+- **Automated Jira Updates**: Uses working script for reliable ticket management
 - Provides clear actionable starting steps
+
+## Jira Update Script Template
+
+The project includes a working Jira automation script at `/scripts/update_jira_simple.sh`:
+
+**Key Features:**
+- **Basic Authentication**: Uses `email:token` encoded with base64 (not Bearer token)
+- **Status Transitions**: Automatically moves tickets from "To Do" → "In Progress"
+- **Simple Comments**: Avoids complex JSON that causes parsing errors
+- **Error Handling**: Provides clear success/failure feedback
+
+**Usage Pattern:**
+```bash
+# After implementing tickets, update them with:
+./scripts/update_jira_simple.sh
+
+# Script will:
+# 1. Test API connectivity
+# 2. Transition ticket status
+# 3. Add implementation comments
+# 4. Provide verification links
+```
+
+**Authentication Setup:**
+- Uses existing `JIRA_API_TOKEN` environment variable
+- Requires `kc.stegbauer@nortal.com` email for Basic Auth
+- Script handles base64 encoding automatically

@@ -79,10 +79,17 @@ def handle_logs(level: str = None, start: str = None, end: str = None,
 
 def handle_billing(period: str = None) -> Tuple[Dict[str, Any], int]:
     """
-    Handle billing summary endpoint.
+    PR003946-86: Billing period format and real calendar month validation
+    
+    Handle billing summary endpoint with proper period validation.
     """
     if period:
         _validate_billing_period(period)
+    else:
+        # Default to current month if no period specified
+        from datetime import datetime
+        current_date = datetime.now()
+        period = current_date.strftime("%Y-%m")
         
     # Return mock billing data for test mode
     if os.getenv('TEST_MODE', '').lower() == 'true':
