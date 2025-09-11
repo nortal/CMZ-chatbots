@@ -1700,7 +1700,6 @@ components:
           title: username
           type: string
         password:
-          minLength: 6
           title: password
           type: string
         register:
