@@ -5,6 +5,9 @@ from typing import Union
 
 from openapi_server.models.user import User  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
+from openapi_server.models.user_input import UserInput  # noqa: E501
+from openapi_server.models.paged_users import PagedUsers  # noqa: E501
+from openapi_server.impl import users as user_handlers
 
 
 def me_get():  # noqa: E501
@@ -55,3 +58,119 @@ def me_get():  # noqa: E501
         "familyId": None,
         "softDelete": False
     })
+
+
+def create_user(user_input=None):  # noqa: E501
+    """Create a new user
+    
+    PR003946-69: Server generates all entity IDs, rejects client-provided IDs
+    PR003946-73: Foreign key constraint validation
+    
+    :param user_input: User creation data
+    :type user_input: dict | bytes
+    
+    :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]]
+    """
+    if connexion.request.is_json:
+        user_input = UserInput.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    try:
+        result = user_handlers.handle_create_user(user_input)
+        return result, 201
+    except Exception as e:
+        return Error(
+            code="internal_error",
+            message="An unexpected error occurred",
+            details={"error_type": type(e).__name__}
+        ), 500
+
+
+def list_users(page=None, page_size=None):  # noqa: E501
+    """Get list of all users
+    
+    PR003946-81: Pagination parameter validation
+    
+    :param page: Page number (1-based)
+    :type page: int
+    :param page_size: Number of items per page
+    :type page_size: int
+    
+    :rtype: Union[PagedUsers, Tuple[PagedUsers, int], Tuple[PagedUsers, int, Dict[str, str]]]
+    """
+    try:
+        result = user_handlers.handle_list_users(page, page_size)
+        return result, 200
+    except Exception as e:
+        return Error(
+            code="internal_error",
+            message="An unexpected error occurred",
+            details={"error_type": type(e).__name__}
+        ), 500
+
+
+def delete_user(user_id):  # noqa: E501
+    """Delete user by ID
+    
+    PR003946-68: Soft-delete recovery mechanism
+    
+    :param user_id: User ID
+    :type user_id: str
+    
+    :rtype: Union[Tuple[None, int], Tuple[None, int, Dict[str, str]]]
+    """
+    try:
+        user_handlers.handle_delete_user(user_id)
+        return None, 204
+    except Exception as e:
+        return Error(
+            code="internal_error",
+            message="An unexpected error occurred", 
+            details={"error_type": type(e).__name__}
+        ), 500
+
+
+def get_user(user_id):  # noqa: E501
+    """Get user by ID
+    
+    :param user_id: User ID
+    :type user_id: str
+    
+    :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]]
+    """
+    try:
+        result = user_handlers.handle_get_user(user_id)
+        if isinstance(result, tuple):  # Error response
+            return result
+        return result, 200
+    except Exception as e:
+        return Error(
+            code="internal_error",
+            message="An unexpected error occurred",
+            details={"error_type": type(e).__name__}
+        ), 500
+
+
+def update_user(user_id, user_input=None):  # noqa: E501
+    """Update user by ID
+    
+    :param user_id: User ID
+    :type user_id: str
+    :param user_input: User update data
+    :type user_input: dict | bytes
+    
+    :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]]
+    """
+    if connexion.request.is_json:
+        user_input = UserInput.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    try:
+        result = user_handlers.handle_update_user(user_id, user_input)
+        if isinstance(result, tuple):  # Error response
+            return result
+        return result, 200
+    except Exception as e:
+        return Error(
+            code="internal_error",
+            message="An unexpected error occurred",
+            details={"error_type": type(e).__name__}
+        ), 500

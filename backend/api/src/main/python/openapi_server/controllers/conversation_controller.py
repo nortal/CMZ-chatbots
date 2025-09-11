@@ -150,6 +150,18 @@ def convo_turn_post(body):  # noqa: E501
         if not message:
             return Error(code='VALIDATION_ERROR', message='message is required'), 400
         
+        # PR003946-91: ConvoTurnRequest message length limits
+        if len(message) > 16000:
+            return Error(
+                code='validation_error',
+                message='Message length exceeds maximum allowed',
+                details={
+                    'field': 'message',
+                    'max_length': 16000,
+                    'current_length': len(message)
+                }
+            ), 400
+        
         # Generate AI response
         start_time = time.time()
         ai_reply = _generate_ai_response(animal_id, message, context_summary)
