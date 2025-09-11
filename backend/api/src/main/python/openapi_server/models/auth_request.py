@@ -92,8 +92,6 @@ class AuthRequest(Model):
         """
         if password is None:
             raise ValueError("Invalid value for `password`, must not be `None`")  # noqa: E501
-        if password is not None and len(password) < 6:
-            raise ValueError("Invalid value for `password`, length must be greater than or equal to `6`")  # noqa: E501
 
         self._password = password
 

@@ -259,7 +259,7 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 
 ## MR Creation and Review Process
 - **Target Branch**: `dev`
-- **Add Reviewer**: @github-actions[bot] (Copilot) - add as reviewer on the MR/PR
+- **Add Reviewer**: Use `gh pr edit <PR_NUMBER> --add-reviewer Copilot` to add Copilot as reviewer
 - **MR Description**: Include comprehensive implementation documentation with API verification examples
 - **Include History File**: Add session documentation to `/history/` directory
 - **Single Review Round**: Address Copilot feedback once, don't iterate endlessly
@@ -285,7 +285,7 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 1. List next 5 tickets and use sequential reasoning to plan
 2. Implement systematically with comprehensive testing
 3. Address security issues and run quality checks
-4. Create MR targeting `dev` branch with Copilot as reviewer
+4. Create MR targeting `dev` branch, then add Copilot reviewer with `gh pr edit <PR_NUMBER> --add-reviewer Copilot`
 5. Add history documentation to MR
 6. Update Jira tickets to "In Progress" with MR links using script
 7. Wait for and address Copilot review feedback (one round)

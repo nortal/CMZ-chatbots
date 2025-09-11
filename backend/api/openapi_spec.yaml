@@ -1314,7 +1314,6 @@ components:
           format: email
         password:
           type: string
-          minLength: 6
         register:
           type: boolean
           description: If true, create account if not found

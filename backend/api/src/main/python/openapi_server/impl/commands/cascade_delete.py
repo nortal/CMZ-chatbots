@@ -113,11 +113,11 @@ class CascadeDeleteProcessor:
             )
             
             if not primary_deleted:
-                return error_response(
-                    "not_found",
-                    f"{command.entity_type.title()} not found: {command.entity_id}",
-                    404
-                )
+                # DELETE operations are idempotent - deleting non-existent entity succeeds
+                log.info(f"Entity {command.entity_type} {command.entity_id} not found - treating as successful delete")
+                result["deleted_entities"][command.entity_type] = 0
+                result["total_affected"] = 0
+                return result
             
             result["deleted_entities"][command.entity_type] = 1
             result["total_affected"] = 1
