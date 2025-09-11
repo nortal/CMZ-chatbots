@@ -3,11 +3,9 @@ import logging
 
 # users.py - User CRUD operations implementation
 from openapi_server.impl.utils import (
-    get_store, ensure_pk, model_to_json_keyed_dict, now_iso, error_response, not_found
+    get_store, ensure_pk, model_to_json_keyed_dict, now_iso, not_found
 )
 from openapi_server.impl.error_handler import ValidationError
-from openapi_server.models.user import User
-from openapi_server.models.paged_users import PagedUsers
 
 log = logging.getLogger(__name__)
 
@@ -119,8 +117,7 @@ def handle_create_user(body):
     if validation_errors:
         raise ValidationError(
             "Foreign key validation failed",
-            field_errors=validation_errors,
-            entity_type="user"
+            field_errors=validation_errors
         )
     
     # Required field validation
@@ -188,9 +185,8 @@ def handle_update_user(user_id: str, body):
     validation_errors = _validate_foreign_keys(data)
     if validation_errors:
         raise ValidationError(
-            "Foreign key validation failed", 
-            field_errors=validation_errors,
-            entity_type="user"
+            "Foreign key validation failed",
+            field_errors=validation_errors
         )
     
     # Update in DynamoDB
@@ -221,6 +217,7 @@ def handle_delete_user(user_id: str):
     }
     
     _store().update_fields(user_id, update_data)
+    return None
 
 def _validate_foreign_keys(data):
     """

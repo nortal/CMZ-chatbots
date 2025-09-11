@@ -6,7 +6,6 @@ from typing import Union
 from openapi_server.models.user import User  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.user_input import UserInput  # noqa: E501
-from openapi_server.models.paged_users import PagedUsers  # noqa: E501
 from openapi_server.impl import users as user_handlers
 
 
