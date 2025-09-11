@@ -140,7 +140,7 @@ class MediaGet200Response(Model):
         if media_id is None:
             raise ValueError("Invalid value for `media_id`, must not be `None`")  # noqa: E501
         if media_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', media_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `media_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `media_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
 
         self._media_id = media_id
 
@@ -246,7 +246,7 @@ class MediaGet200Response(Model):
         :type animal_id: str
         """
         if animal_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', animal_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `animal_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `animal_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
 
         self._animal_id = animal_id
 

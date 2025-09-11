@@ -87,7 +87,7 @@ class Family(Model):
         :type family_id: str
         """
         if family_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', family_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `family_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `family_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
 
         self._family_id = family_id
 
