@@ -39,4 +39,11 @@ def root_get():  # noqa: E501
 
     :rtype: Union[PublicHome, Tuple[PublicHome, int], Tuple[PublicHome, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        return PublicHome(
+            status="ok",
+            message="Welcome to the Cougar Mountain Zoo Digital Ambassador API"
+        )
+    except Exception as e:
+        from openapi_server.models.error import Error
+        return Error(code='INTERNAL_ERROR', message=str(e)), 500
