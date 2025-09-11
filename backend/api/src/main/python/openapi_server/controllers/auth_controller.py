@@ -67,7 +67,7 @@ def auth_post(body):  # noqa: E501
         )
     
     # Validate additional password policy (PR003946-87)
-    # validate_password_policy(password)  # Temporarily disabled for testing
+    validate_password_policy(password)
     
     # Authenticate user and generate JWT token
     auth_result = authenticate_user(email, password)

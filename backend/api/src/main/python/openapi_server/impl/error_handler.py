@@ -138,19 +138,7 @@ def register_error_handlers(app):
         logger.error(f"Internal server error: {str(error)}")
         return jsonify(error_obj.to_dict()), 500
 
-    @app.errorhandler(ValidationError)
-    def handle_validation_error(error):
-        """Handle custom ValidationError exceptions."""
-        code = error.error_code if hasattr(error, 'error_code') else 'validation_error'
-        print(f"DEBUG: First ValidationError handler called with code: {code}")
-        error_obj = Error(
-            code=code,
-            message=error.message,
-            details=error.details
-        )
-        
-        logger.warning(f"Validation error: {error.message}")
-        return jsonify(error_obj.to_dict()), 400
+    # ValidationError handler removed - duplicate handler exists in register_custom_error_handlers()
 
     @app.errorhandler(Exception)
     def handle_generic_exception(error):
@@ -177,7 +165,7 @@ class ValidationError(Exception):
         self.field_errors = field_errors or []
         self.details = details or {}
         self.error_code = error_code or "validation_error"
-        print(f"DEBUG: Creating ValidationError with error_code: {self.error_code}")
+        logger.debug(f"Creating ValidationError with error_code: {self.error_code}")
         super().__init__(message)
 
 
@@ -218,7 +206,7 @@ def register_custom_error_handlers(app):
     def handle_validation_error(error):
         """Handle custom ValidationError exceptions."""
         code = error.error_code if hasattr(error, 'error_code') else 'validation_error'
-        print(f"DEBUG: Second ValidationError handler called with code: {code}")
+        logger.debug(f"Second ValidationError handler called with code: {code}")
         error_obj = Error(
             code=code,
             message=error.message,
