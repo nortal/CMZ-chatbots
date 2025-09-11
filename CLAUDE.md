@@ -266,6 +266,7 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - **MR Description**: Include comprehensive implementation documentation with API verification examples
 - **Include History File**: Add session documentation to `/history/` directory
 - **Single Review Round**: Address Copilot feedback once, don't iterate endlessly
+- **Resolve Inline Comments**: Mark each addressed inline comment as resolved with `gh pr comment <comment-id> --body "✅ Resolved: [description]"`
 - **Re-test After Changes**: Verify all functionality still works after addressing feedback
 - **Security Scans**: Ensure all GitHub Advanced Security checks pass
 
@@ -281,7 +282,7 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - **CRUD Operations Functional**: Basic create, read, update, delete operations work
 - No breaking changes to existing features
 - GitHub Advanced Security issues resolved
-- Copilot review feedback addressed (one round)
+- Copilot review feedback addressed with inline comments marked as resolved
 - Professional MR description with API verification examples
 - Clean, maintainable code following project conventions
 - Jira tickets updated with implementation status
@@ -297,6 +298,9 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 7. **DOCUMENTATION PHASE**: Add history documentation to MR
 8. **JIRA PHASE**: Update Jira tickets using automated script: `./scripts/update_jira_simple.sh`
 9. **REVIEW PHASE**: Wait for and address Copilot review feedback (one round)
+   - Address all inline code comments and suggestions
+   - **Mark resolved comments**: Use `gh pr comment <comment-id> --body "✅ Resolved: [brief description]"` to mark inline comments as resolved
+   - Commit fixes with descriptive messages explaining what was addressed
 10. **VALIDATION PHASE**: Re-test and verify all functionality after changes
 11. **COMPLETION PHASE**: Use sequential reasoning to validate all steps completed correctly and ensure merge readiness
 
