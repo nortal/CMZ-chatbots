@@ -15,11 +15,10 @@ class TestFamilyController(BaseTestCase):
 
         Create a new family
         """
-        family = {"students":["students","students"],"id":"id","parents":["parents","parents"]}
+        family = {"familyId":"familyId","students":["students","students"],"parents":["parents","parents"]}
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/family',
@@ -36,10 +35,9 @@ class TestFamilyController(BaseTestCase):
         Delete a family
         """
         headers = { 
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
-            '/family/{id}'.format(id='id_example'),
+            '/family/{family_id}'.format(family_id='family_id_example'),
             method='DELETE',
             headers=headers)
         self.assert200(response,
@@ -52,10 +50,9 @@ class TestFamilyController(BaseTestCase):
         """
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
-            '/family/{id}'.format(id='id_example'),
+            '/family/{family_id}'.format(family_id='family_id_example'),
             method='GET',
             headers=headers)
         self.assert200(response,
@@ -68,7 +65,6 @@ class TestFamilyController(BaseTestCase):
         """
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/family',
@@ -82,14 +78,13 @@ class TestFamilyController(BaseTestCase):
 
         Update an existing family
         """
-        family = {"students":["students","students"],"id":"id","parents":["parents","parents"]}
+        family = {"familyId":"familyId","students":["students","students"],"parents":["parents","parents"]}
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
-            '/family/{id}'.format(id='id_example'),
+            '/family/{family_id}'.format(family_id='family_id_example'),
             method='PATCH',
             headers=headers,
             data=json.dumps(family),

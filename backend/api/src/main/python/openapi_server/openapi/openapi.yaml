@@ -63,6 +63,137 @@ paths:
       tags:
       - UI
       x-openapi-router-controller: openapi_server.controllers.ui_controller
+  /animal:
+    post:
+      operationId: animal_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnimalInput"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                animalId: animal_123
+                name: New Animal
+                species: Test Species
+                status: active
+                created:
+                  at: 2025-09-11T10:30:00Z
+                modified:
+                  at: 2025-09-11T10:30:00Z
+                softDelete: false
+              schema:
+                $ref: "#/components/schemas/Animal"
+          description: Animal created successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+      security: []
+      summary: Create a new animal
+      tags:
+      - Animals
+      x-openapi-router-controller: openapi_server.controllers.animals_controller
+  /animal/{id}:
+    delete:
+      operationId: animal_id_delete
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Animal deleted successfully
+        "404":
+          $ref: "#/components/responses/NotFound"
+      security: []
+      summary: Delete an animal (soft delete)
+      tags:
+      - Animals
+      x-openapi-router-controller: openapi_server.controllers.animals_controller
+    get:
+      operationId: animal_id_get
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                animalId: animal_1
+                name: Simba
+                species: Lion
+                status: active
+                created:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                modified:
+                  at: 2025-08-11T09:00:00Z
+                  by:
+                    userId: user_1
+                    email: system@cmz.org
+                    displayName: System
+                softDelete: false
+              schema:
+                $ref: "#/components/schemas/Animal"
+          description: Animal details
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Get a specific animal by ID
+      tags:
+      - Animals
+      x-openapi-router-controller: openapi_server.controllers.animals_controller
+    put:
+      operationId: animal_id_put
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnimalUpdate"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Animal"
+          description: Animal updated successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+      security: []
+      summary: Update an existing animal
+      tags:
+      - Animals
+      x-openapi-router-controller: openapi_server.controllers.animals_controller
   /animal_config:
     get:
       operationId: animal_config_get
@@ -1570,6 +1701,28 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
       description: Resource not found
+    BadRequest:
+      content:
+        application/json:
+          examples:
+            badRequest:
+              value:
+                code: invalid_request
+                message: The request is invalid
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Bad request
+    ValidationError:
+      content:
+        application/json:
+          examples:
+            validationError:
+              value:
+                code: validation_error
+                message: Request validation failed
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Validation error
   schemas:
     ActorRef:
       example:
@@ -2182,6 +2335,58 @@ components:
         animalId: animalId
         status: active
       title: Animal
+    AnimalInput:
+      example:
+        species: species
+        name: name
+        status: active
+      properties:
+        name:
+          maxLength: 100
+          minLength: 1
+          title: name
+          type: string
+        species:
+          maxLength: 100
+          minLength: 1
+          title: species
+          type: string
+        status:
+          default: active
+          enum:
+          - active
+          - hidden
+          title: status
+          type: string
+      required:
+      - name
+      - species
+      title: AnimalInput
+      type: object
+    AnimalUpdate:
+      example:
+        species: species
+        name: name
+        status: active
+      properties:
+        name:
+          maxLength: 100
+          minLength: 1
+          title: name
+          type: string
+        species:
+          maxLength: 100
+          minLength: 1
+          title: species
+          type: string
+        status:
+          enum:
+          - active
+          - hidden
+          title: status
+          type: string
+      title: AnimalUpdate
+      type: object
     AnimalDetails:
       allOf:
       - $ref: "#/components/schemas/Animal"

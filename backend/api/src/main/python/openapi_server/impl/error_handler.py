@@ -14,6 +14,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def create_error_response(code: str, message: str, details=None):
+    """Create a standardized error response using the Error schema."""
+    return {
+        "code": code,
+        "message": message,
+        "details": details or {}
+    }
+
+
 def register_error_handlers(app):
     """Register centralized error handlers for consistent Error schema responses."""
     

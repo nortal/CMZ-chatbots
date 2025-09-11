@@ -6,6 +6,8 @@ from openapi_server.models.animal import Animal
 from openapi_server.models.animal_config import AnimalConfig
 from openapi_server.models.animal_config_update import AnimalConfigUpdate
 from openapi_server.models.animal_details import AnimalDetails
+from openapi_server.models.animal_input import AnimalInput
+from openapi_server.models.animal_update import AnimalUpdate
 from openapi_server.models.audit_fields import AuditFields
 from openapi_server.models.audit_stamp import AuditStamp
 from openapi_server.models.auth_request import AuthRequest

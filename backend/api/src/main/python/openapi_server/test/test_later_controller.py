@@ -21,7 +21,6 @@ class TestLaterController(BaseTestCase):
         query_string = [('id', 'id_example')]
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/convo_history',
@@ -36,12 +35,11 @@ class TestLaterController(BaseTestCase):
 
         Get conversation history (backlog)
         """
-        query_string = [('animalid', 'animalid_example'),
-                        ('userid', 'userid_example'),
+        query_string = [('animalId', 'animal_id_example'),
+                        ('userId', 'user_id_example'),
                         ('limit', 100)]
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/convo_history',
@@ -56,9 +54,8 @@ class TestLaterController(BaseTestCase):
 
         Delete media by id (backlog)
         """
-        query_string = [('id', 'id_example')]
+        query_string = [('mediaId', 'media_id_example')]
         headers = { 
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/media',
@@ -73,7 +70,7 @@ class TestLaterController(BaseTestCase):
 
         Fetch media by id (backlog)
         """
-        query_string = [('id', 'id_example')]
+        query_string = [('mediaId', 'media_id_example')]
         headers = { 
             'Accept': 'application/json',
         }
@@ -94,7 +91,6 @@ class TestLaterController(BaseTestCase):
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/summarize_convo',
@@ -114,11 +110,10 @@ class TestLaterController(BaseTestCase):
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'multipart/form-data',
-            'Authorization': 'Bearer special-key',
         }
         data = dict(file='/path/to/file',
                     title='title_example',
-                    animalid='animalid_example')
+                    animal_id='animal_id_example')
         response = self.client.open(
             '/upload_media',
             method='POST',

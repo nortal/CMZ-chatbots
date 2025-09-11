@@ -16,9 +16,8 @@ class TestKnowledgeController(BaseTestCase):
 
         Delete knowledge article
         """
-        query_string = [('id', 'id_example')]
+        query_string = [('knowledgeId', 'knowledge_id_example')]
         headers = { 
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/knowledge_article',
@@ -33,7 +32,7 @@ class TestKnowledgeController(BaseTestCase):
 
         Get article by id
         """
-        query_string = [('id', 'id_example')]
+        query_string = [('knowledgeId', 'knowledge_id_example')]
         headers = { 
             'Accept': 'application/json',
         }
@@ -50,11 +49,10 @@ class TestKnowledgeController(BaseTestCase):
 
         Create knowledge article
         """
-        knowledge_create = {"visibility":"public","title":"title","body":"body","animalid":"animalid","tags":["tags","tags"]}
+        knowledge_create = {"visibility":"public","title":"title","body":"body","animalId":"animalId","tags":["tags","tags"]}
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/knowledge_article',
