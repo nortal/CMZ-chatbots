@@ -5,16 +5,20 @@
 
 set -e
 
-# Check if JIRA_API_TOKEN is set
+# Check if required environment variables are set
 if [ -z "$JIRA_API_TOKEN" ]; then
     echo "Error: JIRA_API_TOKEN environment variable is not set"
     exit 1
 fi
 
-JIRA_BASE_URL="https://nortal.atlassian.net"
-JIRA_EMAIL="kc.stegbauer@nortal.com"
+if [ -z "$JIRA_EMAIL" ]; then
+    echo "Error: JIRA_EMAIL environment variable is not set"
+    exit 1
+fi
 
-# Create base64 encoded credentials for Basic Auth
+JIRA_BASE_URL="https://nortal.atlassian.net"
+
+# Create base64 encoded credentials for Basic Auth (credentials are from env vars only)
 JIRA_CREDENTIALS=$(echo -n "$JIRA_EMAIL:$JIRA_API_TOKEN" | base64)
 
 echo "🎯 Updating Jira tickets..."

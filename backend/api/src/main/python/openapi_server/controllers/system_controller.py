@@ -100,8 +100,8 @@ def system_health_get():  # noqa: E501
             pk_name = os.getenv("ANIMAL_DYNAMO_PK_NAME", "animalId")
             store = get_store(table_name, pk_name)
             
-            # Perform a simple table operation
-            store.list(limit=1)  # Just check if we can connect
+            # Perform a simple table operation to test connectivity
+            store.list()  # Just check if we can connect
             
             checks.append(SystemHealthChecksInner(
                 name="DynamoDB", 
