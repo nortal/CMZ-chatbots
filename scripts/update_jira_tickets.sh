@@ -5,6 +5,15 @@
 
 set -e
 
+# Source local environment file if it exists (for secure credential management)
+if [ -f ".env.local" ]; then
+    echo "📋 Loading credentials from .env.local..."
+    source .env.local
+elif [ -f "../.env.local" ]; then
+    echo "📋 Loading credentials from ../.env.local..."
+    source ../.env.local
+fi
+
 # Configuration
 JIRA_BASE_URL="https://nortal.atlassian.net"
 PROJECT_KEY="PR003946"
