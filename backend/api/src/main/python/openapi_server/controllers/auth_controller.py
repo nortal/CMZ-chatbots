@@ -7,7 +7,6 @@ from openapi_server.models.auth_request import AuthRequest  # noqa: E501
 from openapi_server.models.auth_response import AuthResponse  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.password_reset_request import PasswordResetRequest  # noqa: E501
-from openapi_server import util
 
 # PR003946-72: Role-Based Access Control
 from openapi_server.impl.auth import (
