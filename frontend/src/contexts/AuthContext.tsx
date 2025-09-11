@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/roles';
+import { authApi } from '../services/api';
+import { getUserFromToken, isTokenExpired } from '../utils/jwt';
 
 interface AuthContextType {
   user: User | null;
@@ -30,11 +32,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Check for existing auth on mount
     const token = localStorage.getItem('cmz_token');
-    const savedUser = localStorage.getItem('cmz_user');
     
-    if (token && savedUser) {
+    if (token) {
       try {
-        setUser(JSON.parse(savedUser));
+        // Check if token is expired
+        if (isTokenExpired(token)) {
+          // Token expired, clear it
+          localStorage.removeItem('cmz_token');
+          localStorage.removeItem('cmz_user');
+        } else {
+          // Token is valid, decode user information
+          const userInfo = getUserFromToken(token);
+          if (userInfo) {
+            // Convert JWT user info to our User type
+            const user: User = {
+              userId: userInfo.userId,
+              email: userInfo.email,
+              role: userInfo.role,
+              displayName: userInfo.displayName,
+              created: {
+                at: new Date().toISOString(),
+                by: {
+                  userId: 'system',
+                  email: 'system@cmz.org',
+                  displayName: 'System'
+                }
+              },
+              modified: {
+                at: new Date().toISOString(),
+                by: {
+                  userId: userInfo.userId,
+                  email: userInfo.email,
+                  displayName: userInfo.displayName
+                }
+              },
+              softDelete: false
+            };
+            setUser(user);
+          } else {
+            // Invalid token, clear it
+            localStorage.removeItem('cmz_token');
+            localStorage.removeItem('cmz_user');
+          }
+        }
       } catch (error) {
         // Clear invalid data
         localStorage.removeItem('cmz_token');
@@ -48,141 +88,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // Mock authentication for development/testing
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+      // Call the real API
+      const response = await authApi.login(email, password);
+      const { token } = response;
       
-      // Mock user data based on email
-      const mockUsers = {
-        'admin@cmz.org': {
-          userId: '1',
-          email: 'admin@cmz.org',
-          role: 'admin' as const,
-          displayName: 'John Administrator',
-          created: {
-            at: '2023-01-01T00:00:00Z',
-            by: {
-              userId: 'system',
-              email: 'system@cmz.org',
-              displayName: 'System'
-            }
-          },
-          modified: {
-            at: new Date().toISOString(),
-            by: {
-              userId: '1',
-              email: 'admin@cmz.org',
-              displayName: 'John Administrator'
-            }
-          },
-          softDelete: false
-        },
-        'zookeeper@cmz.org': {
-          userId: '2',
-          email: 'zookeeper@cmz.org',
-          role: 'zookeeper' as const,
-          displayName: 'Sarah Johnson (Zookeeper)',
-          created: {
-            at: '2023-03-01T00:00:00Z',
-            by: {
-              userId: '1',
-              email: 'admin@cmz.org',
-              displayName: 'John Administrator'
-            }
-          },
-          modified: {
-            at: new Date().toISOString(),
-            by: {
-              userId: '2',
-              email: 'zookeeper@cmz.org',
-              displayName: 'Sarah Johnson (Zookeeper)'
-            }
-          },
-          softDelete: false
-        },
-        'educator@cmz.org': {
-          userId: '3',
-          email: 'educator@cmz.org',
-          role: 'educator' as const,
-          displayName: 'Maria Rodriguez (Educator)',
-          created: {
-            at: '2023-05-01T00:00:00Z',
-            by: {
-              userId: '1',
-              email: 'admin@cmz.org',
-              displayName: 'John Administrator'
-            }
-          },
-          modified: {
-            at: new Date().toISOString(),
-            by: {
-              userId: '3',
-              email: 'educator@cmz.org',
-              displayName: 'Maria Rodriguez (Educator)'
-            }
-          },
-          softDelete: false
-        },
-        'member@cmz.org': {
-          userId: '4',
-          email: 'member@cmz.org',
-          role: 'member' as const,
-          displayName: 'John Member',
-          created: {
-            at: '2023-11-01T00:00:00Z',
-            by: {
-              userId: 'system',
-              email: 'system@cmz.org',
-              displayName: 'System'
-            }
-          },
-          modified: {
-            at: new Date().toISOString(),
-            by: {
-              userId: '4',
-              email: 'member@cmz.org',
-              displayName: 'John Member'
-            }
-          },
-          softDelete: false
-        },
-        'visitor@cmz.org': {
-          userId: '5',
-          email: 'visitor@cmz.org',
-          role: 'visitor' as const,
-          displayName: 'Jane Visitor',
-          created: {
-            at: new Date().toISOString(),
-            by: {
-              userId: 'system',
-              email: 'system@cmz.org',
-              displayName: 'System'
-            }
-          },
-          modified: {
-            at: new Date().toISOString(),
-            by: {
-              userId: '5',
-              email: 'visitor@cmz.org',
-              displayName: 'Jane Visitor'
-            }
-          },
-          softDelete: false
-        }
-      };
-
-      const user = mockUsers[email as keyof typeof mockUsers];
-      
-      if (!user) {
-        throw new Error('Invalid credentials');
+      // Decode user information from the JWT token
+      const userInfo = getUserFromToken(token);
+      if (!userInfo) {
+        throw new Error('Invalid token received from server');
       }
-
-      const mockToken = 'mock-jwt-token-' + Date.now();
+      
+      // Convert JWT user info to our User type
+      const user: User = {
+        userId: userInfo.userId,
+        email: userInfo.email,
+        role: userInfo.role,
+        displayName: userInfo.displayName,
+        created: {
+          at: new Date().toISOString(),
+          by: {
+            userId: 'system',
+            email: 'system@cmz.org',
+            displayName: 'System'
+          }
+        },
+        modified: {
+          at: new Date().toISOString(),
+          by: {
+            userId: userInfo.userId,
+            email: userInfo.email,
+            displayName: userInfo.displayName
+          }
+        },
+        softDelete: false
+      };
       
       // Store auth data
-      localStorage.setItem('cmz_token', mockToken);
+      localStorage.setItem('cmz_token', token);
       localStorage.setItem('cmz_user', JSON.stringify(user));
       setUser(user);
     } catch (error) {
+      // Let the error bubble up to the login form
       throw error;
     } finally {
       setIsLoading(false);

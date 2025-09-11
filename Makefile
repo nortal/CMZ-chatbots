@@ -161,7 +161,13 @@ run-api:
 			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
 			-v $$HOME/.aws:/root/.aws:ro \
 			-e FLASK_ENV=development \
+			-e AWS_REGION=us-west-2 \
+			-e AWS_DEFAULT_REGION=us-west-2 \
+			-e AWS_PROFILE=cmz \
+			-e AWS_ACCESS_KEY_ID=$$AWS_ACCESS_KEY_ID \
+			-e AWS_SECRET_ACCESS_KEY=$$AWS_SECRET_ACCESS_KEY \
 			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
+			-e ANIMAL_DYNAMO_PK_NAME=animalId \
 			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
 			-e FAMILY_DYNAMO_TABLE_NAME=quest-dev-family \
 			-e FAMILY_DYNAMO_PK_NAME=familyId \
@@ -173,7 +179,13 @@ run-api:
 			-p "$(PORT):$(CONTAINER_PORT)" \
 			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
 			-v $$HOME/.aws:/root/.aws:ro \
+			-e AWS_REGION=us-west-2 \
+			-e AWS_DEFAULT_REGION=us-west-2 \
+			-e AWS_PROFILE=cmz \
+			-e AWS_ACCESS_KEY_ID=$$AWS_ACCESS_KEY_ID \
+			-e AWS_SECRET_ACCESS_KEY=$$AWS_SECRET_ACCESS_KEY \
 			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
+			-e ANIMAL_DYNAMO_PK_NAME=animalId \
 			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
 			-e FAMILY_DYNAMO_TABLE_NAME=quest-dev-family \
 			-e FAMILY_DYNAMO_PK_NAME=familyId \

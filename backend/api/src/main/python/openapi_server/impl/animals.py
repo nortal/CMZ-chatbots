@@ -53,7 +53,7 @@ def handle_create_animal(body: Animal) -> Animal:
             return response
         else:
             # Convert error response to exception (maintains existing error handling)
-            error_msg = response.get("detail", "Animal creation failed") if isinstance(response, dict) else "Animal creation failed"
+            error_msg = response.get("detail", "Animal creation failed") if isinstance(response, dict) else str(response)
             raise Exception(error_msg)
             
     except Exception as e:
@@ -90,7 +90,7 @@ def handle_get_animal(animal_id: str) -> Animal:
             return not_found("animalId", animal_id)
         else:
             # Convert error to exception
-            error_msg = response.get("detail", "Animal retrieval failed") if isinstance(response, dict) else "Animal retrieval failed"
+            error_msg = response.get("detail", "Animal retrieval failed") if isinstance(response, dict) else str(response)
             raise Exception(error_msg)
             
     except Exception as e:
@@ -116,15 +116,9 @@ def handle_list_animals(status: Optional[str] = None) -> List[Animal]:
         response, status_code = _get_flask_handler().list_animals(status)
         
         if status_code == 200:
-            # Convert dict responses to Animal models if needed
+            # Return response directly - Flask handler has already converted domain entities to proper format
             if isinstance(response, list):
-                animals = []
-                for item in response:
-                    if isinstance(item, dict):
-                        animals.append(Animal.from_dict(item))
-                    else:
-                        animals.append(item)
-                return animals
+                return response
             else:
                 return []
         else:
@@ -166,7 +160,7 @@ def handle_update_animal(animal_id: str, body: Animal) -> Animal:
             return not_found("animalId", animal_id)
         else:
             # Convert error to exception
-            error_msg = response.get("detail", "Animal update failed") if isinstance(response, dict) else "Animal update failed"
+            error_msg = response.get("detail", "Animal update failed") if isinstance(response, dict) else str(response)
             raise Exception(error_msg)
             
     except Exception as e:
@@ -202,7 +196,7 @@ def handle_delete_animal(animal_id: str) -> Tuple[None, int]:
             return not_found("animalId", animal_id)
         else:
             # Convert error to exception
-            error_msg = response.get("detail", "Animal deletion failed") if isinstance(response, dict) else "Animal deletion failed"
+            error_msg = response.get("detail", "Animal deletion failed") if isinstance(response, dict) else str(response)
             raise Exception(error_msg)
             
     except Exception as e:
@@ -239,7 +233,7 @@ def handle_get_animal_config(animal_id: str) -> AnimalConfig:
             return not_found("animalId", animal_id)
         else:
             # Convert error to exception
-            error_msg = response.get("detail", "Animal config retrieval failed") if isinstance(response, dict) else "Animal config retrieval failed"
+            error_msg = response.get("detail", "Animal config retrieval failed") if isinstance(response, dict) else str(response)
             raise Exception(error_msg)
             
     except Exception as e:
@@ -277,7 +271,7 @@ def handle_update_animal_config(animal_id: str, body: AnimalConfig) -> AnimalCon
             return not_found("animalId", animal_id)
         else:
             # Convert error to exception
-            error_msg = response.get("detail", "Animal config update failed") if isinstance(response, dict) else "Animal config update failed"
+            error_msg = response.get("detail", "Animal config update failed") if isinstance(response, dict) else str(response)
             raise Exception(error_msg)
             
     except Exception as e:
