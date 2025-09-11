@@ -64,6 +64,14 @@ def animal_config_patch(animal_id, body):  # noqa: E501
         config = AnimalConfig.from_dict(config_data)
         return handle_update_animal_config(animal_id, config)
     except Exception as e:
+        from openapi_server.impl.error_handler import ValidationError
+        if isinstance(e, ValidationError):
+            # PR003946-74: Return proper validation error
+            return Error(
+                code="validation_error",
+                message=str(e),
+                details=e.details
+            ), 400
         return Error(code='INTERNAL_ERROR', message=str(e)), 500
 
 
