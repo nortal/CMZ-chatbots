@@ -1,30 +1,15 @@
 import connexion
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
+from openapi_server.models.animal import Animal  # noqa: E501
 from openapi_server.models.animal_config import AnimalConfig  # noqa: E501
 from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noqa: E501
 from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
-from openapi_server.models.error import Error  # noqa: E501
-
-# Import hexagonal architecture handlers
-import os
-try:
-    # Try production implementation first
-    if os.getenv('TEST_MODE') == 'true':
-        raise ImportError("Using test mode")
-    from openapi_server.impl.animals import (
-        handle_list_animals,
-        handle_get_animal,
-        handle_get_animal_config,
-        handle_update_animal_config
-    )
-except ImportError:
-    # Fall back to test implementation if AWS credentials not available
-    from openapi_server.impl.test_animals import (
-        handle_list_animals,
-        handle_get_animal,
-        handle_get_animal_config,
-        handle_update_animal_config
-    )
+from openapi_server.models.animal_input import AnimalInput  # noqa: E501
+from openapi_server.models.animal_update import AnimalUpdate  # noqa: E501
+from openapi_server import util
 
 
 def animal_config_get(animal_id):  # noqa: E501
@@ -37,10 +22,7 @@ def animal_config_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
-    try:
-        return handle_get_animal_config(animal_id)
-    except Exception as e:
-        return Error(code='INTERNAL_ERROR', message=str(e)), 500
+    return 'do some magic!'
 
 
 def animal_config_patch(animal_id, body):  # noqa: E501
@@ -58,22 +40,7 @@ def animal_config_patch(animal_id, body):  # noqa: E501
     animal_config_update = body
     if connexion.request.is_json:
         animal_config_update = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    
-    try:
-        # Convert update to full config for handler
-        config_data = animal_config_update.to_dict() if hasattr(animal_config_update, 'to_dict') else dict(animal_config_update)
-        config = AnimalConfig.from_dict(config_data)
-        return handle_update_animal_config(animal_id, config)
-    except Exception as e:
-        from openapi_server.impl.error_handler import ValidationError
-        if isinstance(e, ValidationError):
-            # PR003946-74: Return proper validation error
-            return Error(
-                code="validation_error",
-                message=str(e),
-                details=e.details
-            ), 400
-        return Error(code='INTERNAL_ERROR', message=str(e)), 500
+    return 'do some magic!'
 
 
 def animal_details_get(animal_id):  # noqa: E501
@@ -86,45 +53,73 @@ def animal_details_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalDetails, Tuple[AnimalDetails, int], Tuple[AnimalDetails, int, Dict[str, str]]
     """
+    return 'do some magic!'
+
+
+def animal_id_delete(id):  # noqa: E501
+    """Delete an animal (soft delete)
+
+     # noqa: E501
+
+    :param id: 
+    :type id: str
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    """
+    from openapi_server.impl.animals import handle_delete_animal
+    
     try:
-        # Use get_animal handler and convert to AnimalDetails format
-        animal = handle_get_animal(animal_id)
-        
-        # Convert Animal to AnimalDetails by extracting all Animal fields and adding AnimalDetails-specific fields
-        if hasattr(animal, 'to_dict'):
-            animal_data = animal.to_dict()
-        else:
-            # Safely access animal attributes with defaults
-            animal_data = {}
-            for attr in ['animal_id', 'name', 'species', 'status', 'created', 'modified', 'deleted', 'soft_delete']:
-                if hasattr(animal, attr):
-                    value = getattr(animal, attr)
-                    # Convert snake_case to camelCase for JSON
-                    if attr == 'animal_id':
-                        animal_data['animalId'] = value
-                    elif attr == 'soft_delete':
-                        animal_data['softDelete'] = value
-                    else:
-                        animal_data[attr] = value
-        
-        # Ensure animalId is available for creating extended fields
-        animal_id_value = animal_data.get('animalId', animal_data.get('animal_id', 'unknown'))
-        animal_name = animal_data.get('name', 'Unknown Animal')
-        animal_species = animal_data.get('species', 'Unknown Species')
-        
-        # Ensure animalId is set (required field for AnimalDetails)
-        animal_data['animalId'] = animal_id_value
-        
-        # Add AnimalDetails-specific fields - for now using mock data
-        # TODO: These should come from a dedicated animal_details table or extended animal data
-        animal_data['animalDetailId'] = f"detail_{animal_id_value}"
-        animal_data['description'] = f"Meet {animal_name}, a magnificent {animal_species} at Cougar Mountain Zoo."
-        animal_data['habitat'] = f"{animal_species} Habitat"
-        animal_data['imageUrl'] = f"https://cougarmountainzoo.org/images/{animal_id_value}.jpg"
-        
-        return AnimalDetails.from_dict(animal_data)
+        result, status_code = handle_delete_animal(id)
+        return result, status_code
     except Exception as e:
-        return Error(code='INTERNAL_ERROR', message=str(e)), 500
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("not_found", f"Animal with id {id} not found"), 404
+
+
+def animal_id_get(id):  # noqa: E501
+    """Get a specific animal by ID
+
+     # noqa: E501
+
+    :param id: 
+    :type id: str
+
+    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
+    """
+    from openapi_server.impl.animals import handle_get_animal
+    
+    try:
+        result = handle_get_animal(id)
+        return result, 200
+    except Exception as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("not_found", f"Animal with id {id} not found"), 404
+
+
+def animal_id_put(id, body):  # noqa: E501
+    """Update an existing animal
+
+     # noqa: E501
+
+    :param id: 
+    :type id: str
+    :param animal_update: 
+    :type animal_update: dict | bytes
+
+    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
+    """
+    from openapi_server.impl.animals import handle_update_animal
+    
+    animal_update = body
+    if connexion.request.is_json:
+        animal_update = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    try:
+        result = handle_update_animal(id, animal_update)
+        return result, 200
+    except Exception as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("validation_error", str(e)), 400
 
 
 def animal_list_get():  # noqa: E501
@@ -135,7 +130,28 @@ def animal_list_get():  # noqa: E501
 
     :rtype: Union[List[Animal], Tuple[List[Animal], int], Tuple[List[Animal], int, Dict[str, str]]
     """
+    return 'do some magic!'
+
+
+def animal_post(body):  # noqa: E501
+    """Create a new animal
+
+     # noqa: E501
+
+    :param animal_input: 
+    :type animal_input: dict | bytes
+
+    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
+    """
+    from openapi_server.impl.animals import handle_create_animal
+    
+    animal_input = body
+    if connexion.request.is_json:
+        animal_input = AnimalInput.from_dict(connexion.request.get_json())  # noqa: E501
+    
     try:
-        return handle_list_animals()
+        result = handle_create_animal(animal_input)
+        return result, 201
     except Exception as e:
-        return Error(code='INTERNAL_ERROR', message=str(e)), 500
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("validation_error", str(e)), 400

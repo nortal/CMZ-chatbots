@@ -16,7 +16,6 @@ class TestUsersController(BaseTestCase):
         """
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/me',

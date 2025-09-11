@@ -18,7 +18,6 @@ class TestSystemController(BaseTestCase):
         """
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/feature_flags',
@@ -36,7 +35,6 @@ class TestSystemController(BaseTestCase):
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/feature_flags',
@@ -54,7 +52,6 @@ class TestSystemController(BaseTestCase):
         """
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/system_health',

@@ -18,7 +18,6 @@ class TestUIController(BaseTestCase):
         """
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/admin',
@@ -34,7 +33,6 @@ class TestUIController(BaseTestCase):
         """
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/member',

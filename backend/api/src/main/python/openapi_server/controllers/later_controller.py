@@ -4,7 +4,6 @@ from typing import Tuple
 from typing import Union
 
 from openapi_server.models.convo_history import ConvoHistory  # noqa: E501
-from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.media import Media  # noqa: E501
 from openapi_server.models.summarize_request import SummarizeRequest  # noqa: E501
 from openapi_server.models.summary import Summary  # noqa: E501
@@ -24,15 +23,15 @@ def convo_history_delete(id):  # noqa: E501
     return 'do some magic!'
 
 
-def convo_history_get(animalid=None, userid=None, limit=None):  # noqa: E501
+def convo_history_get(animal_id=None, user_id=None, limit=None):  # noqa: E501
     """Get conversation history (backlog)
 
      # noqa: E501
 
-    :param animalid: 
-    :type animalid: str
-    :param userid: 
-    :type userid: str
+    :param animal_id: 
+    :type animal_id: str
+    :param user_id: 
+    :type user_id: str
     :param limit: 
     :type limit: int
 
@@ -41,26 +40,26 @@ def convo_history_get(animalid=None, userid=None, limit=None):  # noqa: E501
     return 'do some magic!'
 
 
-def media_delete(id):  # noqa: E501
+def media_delete(media_id):  # noqa: E501
     """Delete media by id (backlog)
 
      # noqa: E501
 
-    :param id: 
-    :type id: str
+    :param media_id: 
+    :type media_id: str
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     return 'do some magic!'
 
 
-def media_get(id):  # noqa: E501
+def media_get(media_id):  # noqa: E501
     """Fetch media by id (backlog)
 
      # noqa: E501
 
-    :param id: 
-    :type id: str
+    :param media_id: 
+    :type media_id: str
 
     :rtype: Union[Media, Tuple[Media, int], Tuple[Media, int, Dict[str, str]]
     """
@@ -83,7 +82,7 @@ def summarize_convo_post(body):  # noqa: E501
     return 'do some magic!'
 
 
-def upload_media_post(file, title=None, animalid=None):  # noqa: E501
+def upload_media_post(file, title=None, animal_id=None):  # noqa: E501
     """Upload media (image/audio/video) (backlog)
 
      # noqa: E501
@@ -92,8 +91,8 @@ def upload_media_post(file, title=None, animalid=None):  # noqa: E501
     :type file: str
     :param title: 
     :type title: str
-    :param animalid: 
-    :type animalid: str
+    :param animal_id: 
+    :type animal_id: str
 
     :rtype: Union[Media, Tuple[Media, int], Tuple[Media, int, Dict[str, str]]
     """

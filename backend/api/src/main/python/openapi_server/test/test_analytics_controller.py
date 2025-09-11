@@ -19,7 +19,6 @@ class TestAnalyticsController(BaseTestCase):
         query_string = [('period', 'period_example')]
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/billing',
@@ -41,7 +40,6 @@ class TestAnalyticsController(BaseTestCase):
                         ('pageSize', 200)]
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/logs',
@@ -60,7 +58,6 @@ class TestAnalyticsController(BaseTestCase):
                         ('end', '2013-10-20T19:20:30+01:00')]
         headers = { 
             'Accept': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/performance_metrics',

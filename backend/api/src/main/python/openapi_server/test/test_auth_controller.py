@@ -18,7 +18,6 @@ class TestAuthController(BaseTestCase):
         Logout current user (invalidate token/session)
         """
         headers = { 
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/auth/logout',

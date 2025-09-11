@@ -18,7 +18,7 @@ class TestAnimalsController(BaseTestCase):
 
         Get animal configuration
         """
-        query_string = [('animalid', 'animalid_example')]
+        query_string = [('animalId', 'animal_id_example')]
         headers = { 
             'Accept': 'application/json',
         }
@@ -35,12 +35,11 @@ class TestAnimalsController(BaseTestCase):
 
         Update animal configuration
         """
-        animal_config_update = {"voice":"voice","deleted":{"at":"2000-01-23T04:56:07.000+00:00","by":{"displayName":"displayName","id":"id","email":"email"}},"personality":"personality","softDelete":False,"created":{"at":"2000-01-23T04:56:07.000+00:00","by":{"displayName":"displayName","id":"id","email":"email"}},"temperature":0.1601656380922023,"toolsEnabled":["toolsEnabled","toolsEnabled"],"guardrails":{"key":""},"modified":{"at":"2000-01-23T04:56:07.000+00:00","by":{"displayName":"displayName","id":"id","email":"email"}},"aiModel":"aiModel","topP":0.6027456183070403}
-        query_string = [('animalid', 'animalid_example')]
+        animal_config_update = {"voice":"voice","animalConfigId":"animalConfigId","deleted":{"at":"2000-01-23T04:56:07.000+00:00","by":{"actorId":"actorId","displayName":"displayName","email":"email"}},"personality":"personality","softDelete":False,"created":{"at":"2000-01-23T04:56:07.000+00:00","by":{"actorId":"actorId","displayName":"displayName","email":"email"}},"temperature":0.1601656380922023,"toolsEnabled":["toolsEnabled","toolsEnabled"],"guardrails":{"key":""},"modified":{"at":"2000-01-23T04:56:07.000+00:00","by":{"actorId":"actorId","displayName":"displayName","email":"email"}},"aiModel":"aiModel","topP":0.6027456183070403}
+        query_string = [('animalId', 'animal_id_example')]
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer special-key',
         }
         response = self.client.open(
             '/animal_config',
@@ -57,7 +56,7 @@ class TestAnimalsController(BaseTestCase):
 
         Fetch animal details
         """
-        query_string = [('animalid', 'animalid_example')]
+        query_string = [('animalId', 'animal_id_example')]
         headers = { 
             'Accept': 'application/json',
         }
