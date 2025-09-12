@@ -19,17 +19,7 @@ def billing_get(period=None):  # noqa: E501
 
     :rtype: Union[BillingSummary, Tuple[BillingSummary, int], Tuple[BillingSummary, int, Dict[str, str]]
     """
-    from openapi_server.impl.analytics import handle_billing
-    
-    try:
-        result, status_code = handle_billing(period)
-        return result, status_code
-    except ValueError as e:
-        from openapi_server.impl.error_handler import create_error_response
-        return create_error_response("validation_error", str(e)), 400
-    except Exception as e:
-        from openapi_server.impl.error_handler import create_error_response
-        return create_error_response("server_error", "Failed to retrieve billing information"), 500
+    return 'do some magic!'
 
 
 def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # noqa: E501

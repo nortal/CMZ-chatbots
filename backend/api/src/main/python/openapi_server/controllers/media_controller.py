@@ -3,6 +3,7 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.media import Media  # noqa: E501
 from openapi_server.models.media_get200_response import MediaGet200Response  # noqa: E501
 from openapi_server import util

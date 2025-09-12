@@ -6,6 +6,7 @@ from typing import Union
 from openapi_server.models.convo_history import ConvoHistory  # noqa: E501
 from openapi_server.models.convo_turn_post200_response import ConvoTurnPost200Response  # noqa: E501
 from openapi_server.models.convo_turn_post_request import ConvoTurnPostRequest  # noqa: E501
+from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.summarize_convo_post200_response import SummarizeConvoPost200Response  # noqa: E501
 from openapi_server.models.summarize_convo_post_request import SummarizeConvoPostRequest  # noqa: E501
 from openapi_server import util

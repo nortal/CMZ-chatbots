@@ -1001,23 +1001,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Animal'
+              example:
+                - animalId: animal_1
+                  name: Pokey
+                  species: Coendou prehensilis
+                  status: active
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+                - animalId: animal_2
+                  name: Animal 2
+                  species: Speciesus exampleus
+                  status: hidden
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
         '400':
           $ref: '#/components/responses/BadRequest'
-              example:
-              - animalId: animal_1
-                name: Pokey
-                species: Coendou prehensilis
-                status: active
-                created: *id002
-                modified: *id003
-                softDelete: false
-              - animalId: animal_2
-                name: Animal 2
-                species: Speciesus exampleus
-                status: hidden
-                created: *id002
-                modified: *id003
-                softDelete: false
   /animal:
     post:
       tags:
