@@ -12,6 +12,8 @@ from ..id_generator import (
     add_audit_timestamps, ensure_user_id, ensure_animal_id, 
     ensure_family_id
 )
+# PR003946-95: File-based persistence for offline testing
+from .file_store import FileStore
 
 class DynamoStore(Protocol):
     def list(self, hide_soft_deleted: bool = True) -> List[Dict[str, Any]]: ...
@@ -224,6 +226,22 @@ _ID_GENERATOR_MAP = {
 
 
 def get_store(table_name: str, pk_name: str) -> DynamoStore:
+    """
+    Factory function to get appropriate persistence store implementation.
+    
+    PR003946-95: Environment variable switchable persistence layer
+    - PERSISTENCE_MODE=dynamo (default): Use DynamoDB via PynamoDB
+    - PERSISTENCE_MODE=file: Use file-based JSON storage for testing
+    """
+    # Get persistence mode from environment
+    persistence_mode = os.getenv("PERSISTENCE_MODE", "dynamo").lower()
+    
+    if persistence_mode == "file":
+        # PR003946-95: File-based persistence for offline testing
+        id_generator = _ID_GENERATOR_MAP.get(table_name)
+        return FileStore(table_name, pk_name, id_generator)
+    
+    # Default DynamoDB persistence
     try:
         model_cls, expected_pk = _MODEL_MAP[table_name]
     except KeyError:

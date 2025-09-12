@@ -117,7 +117,8 @@ def handle_create_user(body):
     if validation_errors:
         raise ValidationError(
             "Foreign key validation failed",
-            field_errors=validation_errors
+            field_errors=validation_errors,
+            details={"entity_type": "family"}
         )
     
     # Required field validation
@@ -186,7 +187,8 @@ def handle_update_user(user_id: str, body):
     if validation_errors:
         raise ValidationError(
             "Foreign key validation failed",
-            field_errors=validation_errors
+            field_errors=validation_errors,
+            details={"entity_type": "family"}
         )
     
     # Update in DynamoDB

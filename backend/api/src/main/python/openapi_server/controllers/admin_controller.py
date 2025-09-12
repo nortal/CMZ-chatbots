@@ -9,6 +9,7 @@ from openapi_server.models.user_details import UserDetails  # noqa: E501
 from openapi_server.models.user_details_input import UserDetailsInput  # noqa: E501
 from openapi_server.models.user_input import UserInput  # noqa: E501
 from openapi_server import util
+from openapi_server.impl.users import handle_create_user, handle_get_user, handle_update_user, handle_delete_user, handle_list_users
 
 
 def create_user(body):  # noqa: E501
@@ -24,7 +25,10 @@ def create_user(body):  # noqa: E501
     user_input = body
     if connexion.request.is_json:
         user_input = UserInput.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    
+    # Call implementation
+    result = handle_create_user(user_input)
+    return result, 201
 
 
 def create_user_details(body):  # noqa: E501
@@ -53,7 +57,8 @@ def delete_user(user_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    result = handle_delete_user(user_id)
+    return result, 204
 
 
 def delete_user_details(user_id):  # noqa: E501
@@ -79,7 +84,7 @@ def get_user(user_id):  # noqa: E501
 
     :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    return handle_get_user(user_id)
 
 
 def get_user_details(user_id):  # noqa: E501
@@ -114,7 +119,7 @@ def list_users():  # noqa: E501
 
     :rtype: Union[PagedUsers, Tuple[PagedUsers, int], Tuple[PagedUsers, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    return handle_list_users()
 
 
 def update_user(user_id, body):  # noqa: E501
@@ -132,7 +137,7 @@ def update_user(user_id, body):  # noqa: E501
     user = body
     if connexion.request.is_json:
         user = User.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    return handle_update_user(user_id, user)
 
 
 def update_user_details(user_id, body):  # noqa: E501
