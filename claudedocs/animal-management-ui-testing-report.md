@@ -120,8 +120,8 @@ Successfully resolved all animal management frontend issues and documented compr
 6. **Form Controls** - Basic Info, System Prompt, Settings tabs validated
 
 ### ⏳ **Remaining Tests** (50+ controls identified)
-1. **Add New Animal Workflow** - Complete animal creation process
-2. **Active/Inactive Toggles** - Status management for each animal  
+1. **Add New Animal Workflow** - ⚠️ **TESTED: Button responds but no modal/navigation occurs**
+2. **Active/Inactive Toggles** - ⚠️ **TESTED: Checkboxes are readonly, display state only**
 3. **Action Buttons** - Edit/delete functionality testing
 4. **Knowledge Base/Guardrails** - Add entry workflows
 5. **Advanced Settings** - Slider, dropdowns, checkboxes validation
