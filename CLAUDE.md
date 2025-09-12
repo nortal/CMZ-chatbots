@@ -58,6 +58,8 @@ make run-api CONTAINER_NAME=cmz-dev-custom
 ```
 
 ### Testing & Quality
+
+#### Unit & Integration Tests
 ```bash
 # Full test suite with coverage
 tox
@@ -73,6 +75,43 @@ make venv-api && make install-api
 source .venv/openapi-venv/bin/activate
 pytest --cov=openapi_server
 ```
+
+#### Two-Step Playwright E2E Testing
+**IMPORTANT**: Always use two-step approach to catch fundamental issues early
+
+**Step 1: Login Validation** (Required before full suite)
+```bash
+# Navigate to Playwright directory
+cd backend/api/src/main/python/tests/playwright
+
+# Quick validation script
+./run-step1-validation.sh
+
+# Manual Step 1 - All 5 test users
+FRONTEND_URL=http://localhost:3001 npx playwright test --config config/playwright.config.js --grep "🔐 Login User Validation - STEP 1" --reporter=line --workers=1
+
+# Single user test for debugging
+FRONTEND_URL=http://localhost:3001 npx playwright test --config config/playwright.config.js --grep "should successfully validate login for Test Parent One" --reporter=line --workers=1
+```
+
+**Step 2: Full Test Suite** (Only after Step 1 passes ≥5/6 browsers)
+```bash
+# Complete test suite
+FRONTEND_URL=http://localhost:3001 npx playwright test --config config/playwright.config.js --reporter=line
+```
+
+**Authentication Test Users:**
+- `parent1@test.cmz.org` / `testpass123` (parent role)
+- `student1@test.cmz.org` / `testpass123` (student role)  
+- `student2@test.cmz.org` / `testpass123` (student role)
+- `test@cmz.org` / `testpass123` (default user)
+- `user_parent_001@cmz.org` / `testpass123` (parent role)
+
+**Success Criteria for Step 1:**
+- ≥5/6 browsers passing authentication tests
+- Successful JWT token generation and dashboard redirects
+- No CORS errors across browsers
+- Mobile Safari UI interaction issues acceptable (known frontend styling issue)
 
 ### Local Python Environment (Optional)
 ```bash

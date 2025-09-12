@@ -34,7 +34,7 @@
         {
           "id": "login-page",
           "type": "page", 
-          "path": "/auth/login",
+          "path": "/login",
           "required": true,
           "elements": [
             {"selector": "[data-testid=email-input]", "type": "input", "validation": "email", "required": true},

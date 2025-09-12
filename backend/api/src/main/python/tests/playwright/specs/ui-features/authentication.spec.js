@@ -21,10 +21,10 @@ test.describe('Authentication Features', () => {
       await loginPage.navigateToLogin();
       
       // Use test credentials from backend test data
+      // TODO: Re-enable CORS before production! Currently testing with CORS enabled for full functionality
       await loginPage.loginSuccessfully('user_parent_001@cmz.org', 'testpass123');
       
-      // Verify we're redirected to dashboard
-      await loginPage.verifyURL('/dashboard');
+      // loginSuccessfully() method now expects real API success and redirects
     });
 
     test('should show error for invalid credentials', async () => {
@@ -32,7 +32,7 @@ test.describe('Authentication Features', () => {
       await loginPage.loginWithInvalidCredentials('invalid@test.com', 'wrongpassword');
       
       const errorMessage = await loginPage.getErrorMessage();
-      expect(errorMessage).toContain('Invalid credentials');
+      expect(errorMessage).toContain('Invalid email or password');
     });
 
     test('should validate email format', async () => {
@@ -118,7 +118,7 @@ test.describe('Authentication Features', () => {
       // Should remain authenticated (not redirect to login)
       await page.waitForTimeout(2000);
       const currentUrl = page.url();
-      expect(currentUrl).not.toContain('/auth/login');
+      expect(currentUrl).not.toContain('/login');
     });
 
     test('should handle session timeout gracefully', async ({ page }) => {
@@ -145,7 +145,7 @@ test.describe('Authentication Features', () => {
       await loginPage.goto('/admin');
       
       // Should redirect to login
-      await page.waitForURL('**/auth/login', { timeout: 5000 });
+      await page.waitForURL('**/login', { timeout: 5000 });
     });
 
     test('should validate backend data persistence', async ({ page }) => {

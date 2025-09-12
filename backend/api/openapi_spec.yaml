@@ -985,6 +985,13 @@ paths:
       tags:
       - Animals
       summary: List animals
+      parameters:
+      - in: query
+        name: status
+        description: Filter animals by status
+        schema:
+          type: string
+          enum: [active, inactive, hidden, breeding, retired]
       responses:
         '200':
           description: List of animals
@@ -995,20 +1002,22 @@ paths:
                 items:
                   $ref: '#/components/schemas/Animal'
               example:
-              - animalId: animal_1
-                name: Pokey
-                species: Coendou prehensilis
-                status: active
-                created: *id002
-                modified: *id003
-                softDelete: false
-              - animalId: animal_2
-                name: Animal 2
-                species: Speciesus exampleus
-                status: hidden
-                created: *id002
-                modified: *id003
-                softDelete: false
+                - animalId: animal_1
+                  name: Pokey
+                  species: Coendou prehensilis
+                  status: active
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+                - animalId: animal_2
+                  name: Animal 2
+                  species: Speciesus exampleus
+                  status: hidden
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
   /animal:
     post:
       tags:

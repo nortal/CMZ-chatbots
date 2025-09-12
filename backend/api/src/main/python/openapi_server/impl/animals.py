@@ -6,6 +6,7 @@ Maintains API interface compatibility while providing pure business logic separa
 """
 import logging
 from typing import Any, Dict, List, Optional, Tuple
+import connexion
 
 # OpenAPI models for API compatibility
 from openapi_server.models.animal import Animal
@@ -13,6 +14,9 @@ from openapi_server.models.animal_config import AnimalConfig
 
 # Import hexagonal architecture components
 from .dependency_injection import create_flask_animal_handler
+
+# Import validation utilities for PR003946-70 and PR003946-82
+from .utils.validation import validate_no_client_id, validate_animal_status_filter
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +39,8 @@ def handle_create_animal(body: Animal) -> Animal:
     """
     Create a new animal using hexagonal architecture
     
+    PR003946-70: Reject client-provided IDs
+    
     Args:
         body: Animal OpenAPI model
         
@@ -45,6 +51,21 @@ def handle_create_animal(body: Animal) -> Animal:
         Exception: On creation errors (converted to HTTP responses by controller)
     """
     try:
+        # PR003946-70: Validate no client-provided ID in raw request
+        if hasattr(connexion, 'request') and connexion.request.is_json:
+            raw_data = connexion.request.get_json()
+            if raw_data:
+                id_validation_error = validate_no_client_id(raw_data, 'animalId')
+                if id_validation_error:
+                    from .error_handler import ValidationError
+                    # Use ValidationError to preserve error details and code
+                    raise ValidationError(
+                        id_validation_error["message"],
+                        field_errors=[],
+                        details=id_validation_error["details"],
+                        error_code=id_validation_error["code"]
+                    )
+        
         # Delegate to Flask handler which uses domain service
         response, status_code = _get_flask_handler().create_animal(body)
         
@@ -105,13 +126,31 @@ def handle_list_animals(status: Optional[str] = None) -> List[Animal]:
     """
     List animals with optional status filter using hexagonal architecture
     
+    PR003946-82: Filter parameter validation
+    
     Args:
         status: Optional status filter (e.g., "active", "inactive")
         
     Returns:
         List[Animal]: List of Animal OpenAPI models
+        
+    Raises:
+        Exception: On validation errors (converted to HTTP responses by controller)
     """
     try:
+        # PR003946-82: Validate status filter parameter
+        if status:
+            status_validation_error = validate_animal_status_filter(status)
+            if status_validation_error:
+                from .error_handler import ValidationError
+                # Use ValidationError to preserve error details and code
+                raise ValidationError(
+                    status_validation_error["message"],
+                    field_errors=[],
+                    details=status_validation_error["details"],
+                    error_code=status_validation_error["code"]
+                )
+        
         # Delegate to Flask handler which uses domain service
         response, status_code = _get_flask_handler().list_animals(status)
         
@@ -127,7 +166,7 @@ def handle_list_animals(status: Optional[str] = None) -> List[Animal]:
             
     except Exception as e:
         log.exception("Error in handle_list_animals")
-        return []
+        raise
 
 
 # ------------------------------------

@@ -177,6 +177,7 @@ def authenticate_user(email, password):
     
     # Test users for development/testing
     test_users = {
+        # Original test users
         'admin@cmz.org': {
             'password': 'admin123',
             'user_id': 'admin_001',
@@ -200,6 +201,37 @@ def authenticate_user(email, password):
             'user_id': 'member_001',
             'role': 'member', 
             'user_type': 'none'
+        },
+        # Playwright test users
+        'parent1@test.cmz.org': {
+            'password': 'testpass123',
+            'user_id': 'user_test_parent_001',
+            'role': 'parent',
+            'user_type': 'parent'
+        },
+        'student1@test.cmz.org': {
+            'password': 'testpass123',
+            'user_id': 'user_test_student_001',
+            'role': 'member',
+            'user_type': 'student'
+        },
+        'student2@test.cmz.org': {
+            'password': 'testpass123',
+            'user_id': 'user_test_student_002',
+            'role': 'member',
+            'user_type': 'student'
+        },
+        'test@cmz.org': {
+            'password': 'testpass123',
+            'user_id': 'user_default_test',
+            'role': 'member',
+            'user_type': 'none'
+        },
+        'user_parent_001@cmz.org': {
+            'password': 'testpass123',
+            'user_id': 'user_parent_001',
+            'role': 'parent',
+            'user_type': 'parent'
         }
     }
     

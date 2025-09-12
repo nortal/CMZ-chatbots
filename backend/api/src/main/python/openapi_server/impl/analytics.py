@@ -1,5 +1,6 @@
 """
 PR003946-83: Analytics time window validation implementation
+PR003946-86: Billing period format validation implementation
 
 This module provides analytics functionality with proper date/time validation.
 """
@@ -12,6 +13,8 @@ from dateutil.parser import parse, ParserError
 from typing import Tuple, Dict, Any
 
 from openapi_server.impl.error_handler import ValidationError
+# Import validation utilities for PR003946-86
+from .utils.validation import validate_billing_period
 
 log = logging.getLogger(__name__)
 
@@ -82,9 +85,15 @@ def handle_billing(period: str = None) -> Tuple[Dict[str, Any], int]:
     PR003946-86: Billing period format and real calendar month validation
     
     Handle billing summary endpoint with proper period validation.
+    
+    Raises:
+        ValueError: On validation errors (converted to HTTP responses by controller)
     """
     if period:
-        _validate_billing_period(period)
+        # PR003946-86: Use centralized validation utility
+        validation_error = validate_billing_period(period)
+        if validation_error:
+            raise ValueError(f"Validation error: {validation_error['message']}")
     else:
         # Default to current month if no period specified
         from datetime import datetime

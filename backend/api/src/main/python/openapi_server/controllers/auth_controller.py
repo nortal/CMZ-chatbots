@@ -4,12 +4,7 @@ from typing import Tuple
 from typing import Union
 
 from openapi_server.models.auth_request import AuthRequest  # noqa: E501
-from openapi_server.models.auth_response import AuthResponse  # noqa: E501
 from openapi_server.models.password_reset_request import PasswordResetRequest  # noqa: E501
-from openapi_server import util
-
-from openapi_server.impl.auth import authenticate_user, refresh_jwt_token, decode_jwt_token
-from openapi_server.impl.error_handler import create_error_response, AuthenticationError
 
 
 def auth_logout_post():  # noqa: E501
@@ -33,39 +28,35 @@ def auth_post(body):  # noqa: E501
 
     :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
     """
+    from openapi_server.impl.auth import authenticate_user
+    from openapi_server.impl.error_handler import AuthenticationError
+    
+    auth_request = body
+    if connexion.request.is_json:
+        auth_request = AuthRequest.from_dict(connexion.request.get_json())  # noqa: E501
+    
     try:
-        auth_request = body
-        if connexion.request.is_json:
-            auth_request = AuthRequest.from_dict(connexion.request.get_json())  # noqa: E501
+        # Extract username and password from request
+        username = auth_request.username if hasattr(auth_request, 'username') else body.get('username')
+        password = auth_request.password if hasattr(auth_request, 'password') else body.get('password')
         
-        # Extract credentials from the request
-        username = auth_request.username
-        password = auth_request.password
+        if not username or not password:
+            return {'code': 'validation_error', 'message': 'Username and password are required'}, 400
         
         # Authenticate user and get token
         auth_result = authenticate_user(username, password)
         
-        # Create response using the AuthResponse model
-        response = AuthResponse(
-            token=auth_result['token'],
-            expires_in=86400  # 24 hours in seconds
-        )
-        
-        return response, 200
+        # Return auth response
+        return {
+            'token': auth_result['token'],
+            'expiresIn': 86400,  # 24 hours in seconds
+            'user': auth_result['user']
+        }, 200
         
     except AuthenticationError as e:
-        error_response = create_error_response(
-            "authentication_failed",
-            str(e)
-        )
-        return error_response, 401
-        
-    except Exception as e:
-        error_response = create_error_response(
-            "internal_error",
-            "Authentication failed due to server error"
-        )
-        return error_response, 500
+        return {'code': 'authentication_failed', 'message': str(e)}, 401
+    except Exception:
+        return {'code': 'internal_error', 'message': 'Authentication service error'}, 500
 
 
 def auth_refresh_post():  # noqa: E501
