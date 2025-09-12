@@ -175,6 +175,131 @@ def handle_operation(body):
 - `DYNAMODB_ENDPOINT_URL`: Override for local DynamoDB testing
 - `PORT`: API server port (default 8080)
 
+## Authentication Implementation Patterns
+
+### Generated Controller Connection Pattern
+**CRITICAL**: Generated OpenAPI controllers return placeholder code - must connect to implementation
+
+**Common Issue**: Generated auth controller returns `'do some magic!'` instead of authentication logic
+
+**Solution Pattern**:
+```python
+# In backend/api/src/main/python/openapi_server/controllers/auth_controller.py
+def auth_post(body):  # noqa: E501
+    from openapi_server.impl.auth import authenticate_user
+    from openapi_server.impl.error_handler import AuthenticationError
+    
+    try:
+        # Extract credentials from request body
+        username = auth_request.username if hasattr(auth_request, 'username') else body.get('username')
+        password = auth_request.password if hasattr(auth_request, 'password') else body.get('password')
+        
+        # Call implementation layer
+        auth_result = authenticate_user(username, password)
+        
+        return {
+            'token': auth_result['token'],
+            'expiresIn': 86400,
+            'user': auth_result['user']
+        }, 200
+        
+    except AuthenticationError as e:
+        return {'code': 'authentication_failed', 'message': str(e)}, 401
+    except Exception:
+        return {'code': 'internal_error', 'message': 'Authentication service error'}, 500
+```
+
+**Verification Steps**:
+1. Check that generated controllers call `impl/` functions (not placeholder strings)
+2. Verify test users exist in backend `impl/auth.py`
+3. Test authentication flow: Frontend → Backend API → JWT validation → Success response
+
+### Test User Synchronization
+**Requirement**: Frontend test expectations must match backend test data
+
+**Test User Configuration** (in `backend/api/src/main/python/openapi_server/impl/auth.py`):
+```python
+test_users = {
+    # Playwright test users
+    'parent1@test.cmz.org': {
+        'password': 'testpass123',
+        'user_id': 'user_test_parent_001',
+        'role': 'parent',
+        'user_type': 'parent'
+    },
+    'student1@test.cmz.org': {
+        'password': 'testpass123', 
+        'user_id': 'user_test_student_001',
+        'role': 'member',
+        'user_type': 'student'
+    },
+    # Additional test users...
+}
+```
+
+**Single Source of Truth**: Maintain test user config in backend, reference in frontend tests
+
+### CORS Configuration Philosophy
+**Principle**: "CORS issue is still a failure" - maintain proper configuration while fixing real issues
+
+**Configuration** (in `backend/api/src/main/python/openapi_server/__main__.py`):
+```python
+# Enable CORS for frontend integration
+# TODO: Re-enable CORS before production! Currently configured for testing
+CORS(app.app, origins=['http://localhost:3001', 'http://localhost:3000'], supports_credentials=True)
+```
+
+**Debugging Approach**:
+1. Don't disable CORS to mask authentication issues
+2. Distinguish between CORS problems vs implementation disconnection
+3. Fix root cause (authentication) while maintaining proper CORS configuration
+
+## Security & Quality Patterns
+
+### Proactive Security Scanning
+**Pattern**: Fix common security issues before automated scans
+
+**Common CodeQL Findings**:
+```python
+# ❌ Unused imports (security scan failure)
+from openapi_server.models.error import Error  # noqa: E501  # UNUSED
+
+# ✅ Clean imports (security scan pass)  
+# Remove unused imports proactively
+
+# ❌ Information disclosure (security risk)
+except Exception as e:
+    return {'message': str(e)}, 500  # Exposes internal details
+
+# ✅ Generic error messages (security compliant)
+except Exception:
+    return {'code': 'internal_error', 'message': 'Authentication service error'}, 500
+```
+
+**Security Checklist**:
+- Remove unused imports from all controller files
+- Use generic exception messages (no internal details exposure)  
+- Apply bare `raise` for exception forwarding (preserves traceback)
+- Use module-level constants for error codes (maintainability)
+
+### Copilot Review Integration
+**Process**: Address all Copilot feedback systematically during development
+
+**Common Feedback Patterns**:
+1. **Exception Handling**: Use bare `raise` (not `raise e`) to preserve traceback
+2. **Error Constants**: Define module-level constants instead of hardcoded strings
+3. **Import Hygiene**: Remove unused imports to reduce attack surface
+4. **Code Quality**: Apply consistent patterns and maintainability improvements
+
+**Response Pattern**:
+```bash
+# Address feedback with detailed explanation
+gh pr comment <comment-id> --body "✅ Resolved: [specific description of fix]"
+
+# Commit fixes with clear messages
+git commit -m "Address Copilot feedback: Remove unused imports for security compliance"
+```
+
 ## AWS & MCP Integration
 
 The project includes comprehensive AWS tooling via 24 MCP servers:
@@ -615,12 +740,26 @@ ls backend/api/src/main/python/openapi_server/impl/
 ✅ **Security Integration**: GitHub Advanced Security scanner resolution is critical
 ✅ **Review Process**: Copilot review + inline comment resolution pattern
 
+### **Authentication Implementation Lessons:**
+✅ **Generated Controller Verification**: Always verify generated controllers call actual implementation (not placeholder code)
+✅ **Test User Synchronization**: Ensure frontend test expectations match backend test data exactly
+✅ **CORS vs Authentication**: Don't disable CORS to mask authentication issues - fix root cause while maintaining proper configuration
+✅ **Two-Step Validation**: Step 1 (login validation) + Step 2 (comprehensive tests) catches fundamental issues early
+
+### **Security & Quality Lessons:**
+✅ **Proactive Security Scanning**: Fix common issues (unused imports, exception handling) before automated scans
+✅ **Copilot Review Integration**: Address feedback systematically with detailed explanations and proper commit messages
+✅ **CodeQL Compliance**: Remove unused imports, use generic error messages, apply proper exception forwarding patterns
+✅ **Security Checklist**: Import hygiene + error constants + generic messages + bare raise patterns
+
 ### **Template Success Factors:**
 - Discovery-first approach (run tests before assuming failures)
 - Systematic enhancement when obvious failures don't exist
 - Proper git workflow with feature branches
-- Security scanner integration and resolution
+- Security scanner integration and resolution  
 - Verification-based Jira automation with corrective capabilities
+- **NEW**: Generated controller verification and test user synchronization
+- **NEW**: Proactive security compliance and systematic Copilot feedback addressing
 
 ## Jira Update Script Template
 
