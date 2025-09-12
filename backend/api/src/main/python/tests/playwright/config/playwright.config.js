@@ -136,7 +136,7 @@ module.exports = defineConfig({
   webServer: [
     // Backend server with file persistence mode
     {
-      command: 'PERSISTENCE_MODE=file python -m flask run --host=0.0.0.0 --port=8080',
+      command: 'PERSISTENCE_MODE=file python -m openapi_server',
       port: 8080,
       cwd: '../../../',
       reuseExistingServer: !process.env.CI,

@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 DYNAMO_TABLE_NAME = os.getenv("USER_DYNAMO_TABLE_NAME", "quest-dev-user")
 PK_NAME = os.getenv("USER_DYNAMO_PK_NAME", "userId")
 
+# Constants for validation
+FOREIGN_KEY_ENTITY_TYPE = "family"
+
 def _store():
     return get_store(DYNAMO_TABLE_NAME, PK_NAME)
 
@@ -118,7 +121,7 @@ def handle_create_user(body):
         raise ValidationError(
             "Foreign key validation failed",
             field_errors=validation_errors,
-            details={"entity_type": "family"}
+            details={"entity_type": FOREIGN_KEY_ENTITY_TYPE}
         )
     
     # Required field validation
@@ -188,7 +191,7 @@ def handle_update_user(user_id: str, body):
         raise ValidationError(
             "Foreign key validation failed",
             field_errors=validation_errors,
-            details={"entity_type": "family"}
+            details={"entity_type": FOREIGN_KEY_ENTITY_TYPE}
         )
     
     # Update in DynamoDB

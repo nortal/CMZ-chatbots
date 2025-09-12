@@ -110,12 +110,16 @@ class TestEndpointBase:
             # This allows basic endpoint testing without full Flask integration
             print(f"Warning: Could not create full Connexion app ({e}). Using mock client.")
             from unittest.mock import Mock
+            
+            def make_mock_response():
+                mock_response = Mock()
+                mock_response.status_code = 501
+                mock_response.get_json = Mock(return_value={"error": "not implemented"})
+                return mock_response
+
             self.client = Mock()
-            self.client.get = Mock(return_value=Mock(status_code=501, get_json=Mock(return_value={"error": "not implemented"})))
-            self.client.post = Mock(return_value=Mock(status_code=501, get_json=Mock(return_value={"error": "not implemented"})))
-            self.client.put = Mock(return_value=Mock(status_code=501, get_json=Mock(return_value={"error": "not implemented"})))
-            self.client.delete = Mock(return_value=Mock(status_code=501, get_json=Mock(return_value={"error": "not implemented"})))
-            self.client.patch = Mock(return_value=Mock(status_code=501, get_json=Mock(return_value={"error": "not implemented"})))
+            for method in ['get', 'post', 'put', 'delete', 'patch']:
+                setattr(self.client, method, Mock(return_value=make_mock_response()))
             yield
     
     def make_request(self, method: str, url: str, data: Dict = None, headers: Dict = None):
