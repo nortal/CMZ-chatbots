@@ -239,20 +239,45 @@ The API includes these major endpoint groups:
 
 ### Targeted Usage (Specific Ticket Mode)
 ```
+# Single ticket
 /nextfive PR003946-91
 # Implements PR003946-91 and resolves any blocking dependencies first
-# If dependencies exceed 5 tickets, reports and continues with priority subset
+
+# Multiple tickets
+/nextfive PR003946-91 PR003946-88 PR003946-75
+# Implements specified tickets with combined dependency resolution
+
+# Multiple tickets (comma-separated alternative)
+/nextfive PR003946-91,PR003946-88,PR003946-75
+# Same as above, supports both space and comma separation
+
+# If dependencies exceed 5 tickets total, reports and continues with priority subset
 ```
 
 ### Implementation Template
 ```
 Implement the next 5 high-priority Jira tickets from our API validation epic, following the same systematic approach we used for PR003946-90, PR003946-72, PR003946-73, PR003946-69, and PR003946-66.
 
-**TARGETED TICKET MODE**: If specific ticket provided (e.g., PR003946-91), analyze dependencies and implement in priority order:
-1. **Dependency Analysis**: Check if target ticket is blocked by other tickets
-2. **Priority Resolution**: Address blocking tickets first, up to 5 total tickets
-3. **Dependency Limit**: If >5 dependencies found, inform user to re-run after merge and select next 5 priority tickets
-4. **Systematic Implementation**: Implement tickets in dependency order (blockers first, target ticket last)
+**TARGETED TICKET MODE**: If specific tickets provided, analyze dependencies and implement in priority order:
+
+### Single Ticket Mode (e.g., PR003946-91)
+1. **Target Analysis**: Verify ticket exists and get current status
+2. **Dependency Analysis**: Check if target ticket is blocked by other tickets  
+3. **Priority Resolution**: Address blocking tickets first, up to 5 total tickets
+4. **Systematic Implementation**: Implement in dependency order (blockers first, target last)
+
+### Multiple Ticket Mode (e.g., PR003946-91 PR003946-88 PR003946-75)
+1. **Multi-Target Parsing**: Parse space-separated or comma-separated ticket list
+2. **Combined Dependency Analysis**: Build complete dependency graph for all specified tickets
+3. **Dependency Deduplication**: Remove duplicate dependencies across multiple tickets
+4. **Priority Ordering**: Create implementation sequence (all dependencies first, then targets)
+5. **Smart Limiting**: If total >5 tickets, prioritize by dependency depth and user specification order
+6. **Systematic Implementation**: Execute in calculated priority order
+
+### Limit Handling
+- **≤5 Total Tickets**: Implement all (dependencies + specified + fill remaining with discovery)
+- **>5 Total Tickets**: Inform user of total count, implement top 5 priority tickets
+- **Dependencies Only >5**: Inform user to re-run after merge, focus on critical dependencies
 
 ## Context
 - CMZ chatbot backend API using OpenAPI-first development
@@ -367,25 +392,55 @@ grep -A 2 -B 1 "PR003946-" tests/integration/test_api_validation_epic.py
 grep -A 5 -B 5 "paths:" backend/api/openapi_spec.yaml
 ```
 
-### Targeted Mode (/nextfive PR003946-XX)
+### Targeted Mode (/nextfive PR003946-XX [PR003946-YY ...])
 ```bash
-# Step 1: TARGETED TICKET DEPENDENCY ANALYSIS
-# First, verify target ticket exists and get status
-TICKET="PR003946-91"  # Replace with provided ticket
-grep -r "$TICKET" tests/integration/ jira_mappings.md 2>/dev/null
+# Step 1: PARSE MULTIPLE TICKETS
+# Parse space-separated or comma-separated ticket arguments
+TICKETS_INPUT="$*"  # All arguments after /nextfive
+TICKETS=($(echo "$TICKETS_INPUT" | tr ',' ' '))  # Convert comma to space
+echo "Target tickets: ${TICKETS[@]}"
 
-# Step 2: ANALYZE DEPENDENCIES (check if ticket is blocked)
-# Look for dependency indicators: "depends on", "blocked by", "requires"
-grep -A 3 -B 3 "$TICKET" tests/integration/test_api_validation_epic.py
-grep -A 5 -B 5 "blocked\|depends\|requires" tests/integration/test_api_validation_epic.py
+# Step 2: MULTI-TARGET VALIDATION
+# Verify each target ticket exists and get status
+for TICKET in "${TICKETS[@]}"; do
+    echo "Analyzing: $TICKET"
+    grep -r "$TICKET" tests/integration/ jira_mappings.md 2>/dev/null || echo "⚠️ $TICKET not found"
+done
 
-# Step 3: BUILD DEPENDENCY CHAIN 
-# If dependencies found, add them to implementation list (max 5 tickets total)
-# Priority order: dependencies first, target ticket last
-# If >5 dependencies: warn user and select top 5 priority tickets
+# Step 3: COMBINED DEPENDENCY ANALYSIS  
+# Build complete dependency graph for ALL specified tickets
+DEPENDENCIES=()
+for TICKET in "${TICKETS[@]}"; do
+    echo "Dependencies for $TICKET:"
+    grep -A 3 -B 3 "$TICKET" tests/integration/test_api_validation_epic.py
+    # Look for: "depends on", "blocked by", "requires", "after"
+    TICKET_DEPS=$(grep -A 5 -B 5 "blocked\|depends\|requires\|after.*$TICKET" tests/integration/test_api_validation_epic.py | grep -o 'PR003946-[0-9]*')
+    DEPENDENCIES+=($TICKET_DEPS)
+done
 
-# Step 4: FALLBACK TO DISCOVERY if target ticket not found or no dependencies
-python -m pytest tests/integration/test_api_validation_epic.py -v
+# Step 4: DEDUPLICATION & PRIORITY ORDERING
+# Remove duplicate dependencies and create implementation sequence  
+ALL_TICKETS=($(printf '%s\n' "${DEPENDENCIES[@]}" "${TICKETS[@]}" | sort -u))
+TOTAL_COUNT=${#ALL_TICKETS[@]}
+echo "Total tickets (dependencies + targets): $TOTAL_COUNT"
+
+# Step 5: SMART LIMITING
+if [ $TOTAL_COUNT -gt 5 ]; then
+    echo "⚠️ $TOTAL_COUNT tickets found (exceeds 5 limit)"
+    echo "Prioritizing by dependency depth and specification order"
+    echo "Consider re-running /nextfive after merge for remaining tickets"
+    # Take first 5 by priority: critical dependencies first, then specified targets
+    FINAL_TICKETS=("${ALL_TICKETS[@]:0:5}")
+else
+    echo "✅ $TOTAL_COUNT tickets within limit, filling remaining slots with discovery"
+    FINAL_TICKETS=("${ALL_TICKETS[@]}")
+fi
+
+# Step 6: FALLBACK TO DISCOVERY if no valid targets found
+if [ ${#FINAL_TICKETS[@]} -eq 0 ]; then
+    echo "No valid target tickets found, falling back to discovery mode"
+    python -m pytest tests/integration/test_api_validation_epic.py -v
+fi
 ```
 
 ### Mandatory Setup (Both Modes)
@@ -415,14 +470,16 @@ When fewer than 5 failing tickets exist, implement systematic enhancements:
 
 ## Dependency Resolution Examples
 
-### Example 1: Simple Targeted Implementation
+### Single Ticket Examples
+
+### Example 1: Simple Single Ticket
 ```bash
 /nextfive PR003946-91
 # Target found, no dependencies → implement PR003946-91 + discover 4 more tickets
 # Result: 5 tickets implemented (1 targeted + 4 discovered)
 ```
 
-### Example 2: Dependencies Found
+### Example 2: Single Ticket with Dependencies
 ```bash  
 /nextfive PR003946-91
 # Analysis finds: PR003946-91 depends on PR003946-88, PR003946-89
@@ -430,18 +487,59 @@ When fewer than 5 failing tickets exist, implement systematic enhancements:
 # Result: 5 tickets implemented (3 dependency chain + 2 discovered)
 ```
 
-### Example 3: Too Many Dependencies
+### Multiple Ticket Examples
+
+### Example 3: Simple Multiple Tickets
 ```bash
-/nextfive PR003946-91  
-# Analysis finds: PR003946-91 depends on 6+ tickets
-# Response: "PR003946-91 has 7 dependencies. Please re-run /nextfive after merge. 
-#           Implementing next 5 priority tickets: PR003946-88, PR003946-89, PR003946-90..."
+/nextfive PR003946-91 PR003946-75 PR003946-72
+# 3 targets found, no dependencies → implement all 3 + discover 2 more
+# Result: 5 tickets implemented (3 specified + 2 discovered)
 ```
 
-### Example 4: Ticket Not Found
+### Example 4: Multiple Tickets with Shared Dependencies
 ```bash
-/nextfive PR003946-999
-# Target ticket not found → fallback to discovery mode
+/nextfive PR003946-91 PR003946-88 PR003946-75
+# Analysis finds: 
+#   PR003946-91 depends on PR003946-89
+#   PR003946-88 no dependencies  
+#   PR003946-75 depends on PR003946-89 (shared dependency)
+# Implementation order: PR003946-89 → PR003946-91 → PR003946-88 → PR003946-75 + 1 more
+# Result: 5 tickets implemented (1 dependency + 3 specified + 1 discovered)
+```
+
+### Example 5: Multiple Tickets with Complex Dependencies
+```bash
+/nextfive PR003946-91 PR003946-88 PR003946-75
+# Analysis finds:
+#   PR003946-91 depends on PR003946-89, PR003946-87
+#   PR003946-88 depends on PR003946-86
+#   PR003946-75 depends on PR003946-89 (shared), PR003946-85
+# Total: 3 specified + 4 unique dependencies = 7 tickets
+# Response: "7 tickets found (exceeds 5 limit). Implementing priority 5:
+#           PR003946-87 → PR003946-89 → PR003946-86 → PR003946-91 → PR003946-88"
+# Result: 5 highest priority tickets by dependency depth
+```
+
+### Example 6: Comma-Separated Format
+```bash
+/nextfive PR003946-91,PR003946-88,PR003946-75
+# Same as space-separated, supports both formats
+# Parsed as: ["PR003946-91", "PR003946-88", "PR003946-75"]
+```
+
+### Error Handling Examples
+
+### Example 7: Mixed Valid/Invalid Tickets
+```bash
+/nextfive PR003946-91 PR003946-999 PR003946-75
+# Analysis: PR003946-91 ✅, PR003946-999 ❌, PR003946-75 ✅
+# Result: Process valid tickets (PR003946-91, PR003946-75) + their dependencies
+```
+
+### Example 8: No Valid Tickets Found
+```bash
+/nextfive PR003946-999 PR003946-998
+# All target tickets not found → fallback to discovery mode
 # Result: Standard /nextfive behavior (discover and implement 5 tickets)
 ```
 
