@@ -39,7 +39,17 @@ class PynamoStore:
             # PR003946-66: Filter soft-deleted records by default
             if hide_soft_deleted and getattr(m, "softDelete", False):
                 continue
-            out.append(m.to_plain_dict() if hasattr(m, "to_plain_dict") else dict(m.attribute_values))
+            # Use model-specific conversion method if available, fallback to generic methods
+            if hasattr(m, "to_animal_dict"):
+                out.append(m.to_animal_dict())
+            elif hasattr(m, "to_user_dict"):
+                out.append(m.to_user_dict())
+            elif hasattr(m, "to_family_dict"):
+                out.append(m.to_family_dict())
+            elif hasattr(m, "to_plain_dict"):
+                out.append(m.to_plain_dict())
+            else:
+                out.append(dict(m.attribute_values))
         return out
 
     def get(self, pk: Any) -> Optional[Dict[str, Any]]:
@@ -47,7 +57,17 @@ class PynamoStore:
             m = self._model.get(pk)
         except DoesNotExist:
             return None
-        return m.to_plain_dict() if hasattr(m, "to_plain_dict") else dict(m.attribute_values)
+        # Use model-specific conversion method if available, fallback to generic methods
+        if hasattr(m, "to_animal_dict"):
+            return m.to_animal_dict()
+        elif hasattr(m, "to_user_dict"):
+            return m.to_user_dict()
+        elif hasattr(m, "to_family_dict"):
+            return m.to_family_dict()
+        elif hasattr(m, "to_plain_dict"):
+            return m.to_plain_dict()
+        else:
+            return dict(m.attribute_values)
 
     def create(self, item: dict) -> None:
         pk_name = self._pk

@@ -176,11 +176,10 @@ def deserialize_family(data: Dict[str, Any]) -> Family:
     )
 
 
-def serialize_animal(animal: Animal) -> Dict[str, Any]:
+def serialize_animal(animal: Animal, include_api_id: bool = True) -> Dict[str, Any]:
     """Convert Animal domain entity to dict"""
-    return {
-        "id": animal.animal_id,  # OpenAPI model uses 'id'
-        "animalId": animal.animal_id,  # Also include animalId for consistency
+    result = {
+        "animalId": animal.animal_id,
         "name": animal.name,
         "species": animal.species,
         "status": animal.status,
@@ -191,6 +190,12 @@ def serialize_animal(animal: Animal) -> Dict[str, Any]:
         "modified": serialize_audit_stamp(animal.modified),
         "deleted": serialize_audit_stamp(animal.deleted)
     }
+    
+    # Only include 'id' field for API responses, not for database persistence
+    if include_api_id:
+        result["id"] = animal.animal_id
+        
+    return result
 
 
 def deserialize_animal(data: Dict[str, Any]) -> Animal:

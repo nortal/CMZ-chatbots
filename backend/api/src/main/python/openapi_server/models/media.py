@@ -18,9 +18,15 @@ class Media(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, media_id=None, title=None, url=None, kind=None, animal_id=None, description=None, tags=None, file_size=None, mime_type=None, duration=None, dimensions=None):  # noqa: E501
+    def __init__(self, media_id=None, url=None, kind=None, created=None, modified=None, deleted=None, soft_delete=False, title=None, animal_id=None, description=None, tags=None, file_size=None, mime_type=None, duration=None, dimensions=None):  # noqa: E501
         """Media - a model defined in OpenAPI
 
+        :param media_id: The media_id of this Media.  # noqa: E501
+        :type media_id: str
+        :param url: The url of this Media.  # noqa: E501
+        :type url: str
+        :param kind: The kind of this Media.  # noqa: E501
+        :type kind: str
         :param created: The created of this Media.  # noqa: E501
         :type created: AuditStamp
         :param modified: The modified of this Media.  # noqa: E501
@@ -29,14 +35,8 @@ class Media(Model):
         :type deleted: AuditStamp
         :param soft_delete: The soft_delete of this Media.  # noqa: E501
         :type soft_delete: bool
-        :param media_id: The media_id of this Media.  # noqa: E501
-        :type media_id: str
         :param title: The title of this Media.  # noqa: E501
         :type title: str
-        :param url: The url of this Media.  # noqa: E501
-        :type url: str
-        :param kind: The kind of this Media.  # noqa: E501
-        :type kind: str
         :param animal_id: The animal_id of this Media.  # noqa: E501
         :type animal_id: str
         :param description: The description of this Media.  # noqa: E501
@@ -53,14 +53,14 @@ class Media(Model):
         :type dimensions: MediaAllOfDimensions
         """
         self.openapi_types = {
+            'media_id': str,
+            'url': str,
+            'kind': str,
             'created': AuditStamp,
             'modified': AuditStamp,
             'deleted': AuditStamp,
             'soft_delete': bool,
-            'media_id': str,
             'title': str,
-            'url': str,
-            'kind': str,
             'animal_id': str,
             'description': str,
             'tags': List[str],
@@ -71,14 +71,14 @@ class Media(Model):
         }
 
         self.attribute_map = {
+            'media_id': 'mediaId',
+            'url': 'url',
+            'kind': 'kind',
             'created': 'created',
             'modified': 'modified',
             'deleted': 'deleted',
             'soft_delete': 'softDelete',
-            'media_id': 'mediaId',
             'title': 'title',
-            'url': 'url',
-            'kind': 'kind',
             'animal_id': 'animalId',
             'description': 'description',
             'tags': 'tags',
@@ -88,14 +88,14 @@ class Media(Model):
             'dimensions': 'dimensions'
         }
 
+        self._media_id = media_id
+        self._url = url
+        self._kind = kind
         self._created = created
         self._modified = modified
         self._deleted = deleted
         self._soft_delete = soft_delete
-        self._media_id = media_id
         self._title = title
-        self._url = url
-        self._kind = kind
         self._animal_id = animal_id
         self._description = description
         self._tags = tags
@@ -114,6 +114,87 @@ class Media(Model):
         :rtype: Media
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def media_id(self) -> str:
+        """Gets the media_id of this Media.
+
+        Unique identifier for the media item  # noqa: E501
+
+        :return: The media_id of this Media.
+        :rtype: str
+        """
+        return self._media_id
+
+    @media_id.setter
+    def media_id(self, media_id: str):
+        """Sets the media_id of this Media.
+
+        Unique identifier for the media item  # noqa: E501
+
+        :param media_id: The media_id of this Media.
+        :type media_id: str
+        """
+        if media_id is None:
+            raise ValueError("Invalid value for `media_id`, must not be `None`")  # noqa: E501
+        if media_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', media_id):  # noqa: E501
+            raise ValueError(r"Invalid value for `media_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+
+        self._media_id = media_id
+
+    @property
+    def url(self) -> str:
+        """Gets the url of this Media.
+
+        CDN or storage URL for the media file  # noqa: E501
+
+        :return: The url of this Media.
+        :rtype: str
+        """
+        return self._url
+
+    @url.setter
+    def url(self, url: str):
+        """Sets the url of this Media.
+
+        CDN or storage URL for the media file  # noqa: E501
+
+        :param url: The url of this Media.
+        :type url: str
+        """
+        if url is None:
+            raise ValueError("Invalid value for `url`, must not be `None`")  # noqa: E501
+
+        self._url = url
+
+    @property
+    def kind(self) -> str:
+        """Gets the kind of this Media.
+
+        Type of media content  # noqa: E501
+
+        :return: The kind of this Media.
+        :rtype: str
+        """
+        return self._kind
+
+    @kind.setter
+    def kind(self, kind: str):
+        """Sets the kind of this Media.
+
+        Type of media content  # noqa: E501
+
+        :param kind: The kind of this Media.
+        :type kind: str
+        """
+        allowed_values = ["image", "audio", "video"]  # noqa: E501
+        if kind not in allowed_values:
+            raise ValueError(
+                "Invalid value for `kind` ({0}), must be one of {1}"
+                .format(kind, allowed_values)
+            )
+
+        self._kind = kind
 
     @property
     def created(self) -> AuditStamp:
@@ -200,33 +281,6 @@ class Media(Model):
         self._soft_delete = soft_delete
 
     @property
-    def media_id(self) -> str:
-        """Gets the media_id of this Media.
-
-        Unique identifier for the media item  # noqa: E501
-
-        :return: The media_id of this Media.
-        :rtype: str
-        """
-        return self._media_id
-
-    @media_id.setter
-    def media_id(self, media_id: str):
-        """Sets the media_id of this Media.
-
-        Unique identifier for the media item  # noqa: E501
-
-        :param media_id: The media_id of this Media.
-        :type media_id: str
-        """
-        if media_id is None:
-            raise ValueError("Invalid value for `media_id`, must not be `None`")  # noqa: E501
-        if media_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', media_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `media_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
-
-        self._media_id = media_id
-
-    @property
     def title(self) -> str:
         """Gets the title of this Media.
 
@@ -254,60 +308,6 @@ class Media(Model):
         self._title = title
 
     @property
-    def url(self) -> str:
-        """Gets the url of this Media.
-
-        CDN or storage URL for the media file  # noqa: E501
-
-        :return: The url of this Media.
-        :rtype: str
-        """
-        return self._url
-
-    @url.setter
-    def url(self, url: str):
-        """Sets the url of this Media.
-
-        CDN or storage URL for the media file  # noqa: E501
-
-        :param url: The url of this Media.
-        :type url: str
-        """
-        if url is None:
-            raise ValueError("Invalid value for `url`, must not be `None`")  # noqa: E501
-
-        self._url = url
-
-    @property
-    def kind(self) -> str:
-        """Gets the kind of this Media.
-
-        Type of media content  # noqa: E501
-
-        :return: The kind of this Media.
-        :rtype: str
-        """
-        return self._kind
-
-    @kind.setter
-    def kind(self, kind: str):
-        """Sets the kind of this Media.
-
-        Type of media content  # noqa: E501
-
-        :param kind: The kind of this Media.
-        :type kind: str
-        """
-        allowed_values = ["image", "audio", "video"]  # noqa: E501
-        if kind not in allowed_values:
-            raise ValueError(
-                "Invalid value for `kind` ({0}), must be one of {1}"
-                .format(kind, allowed_values)
-            )
-
-        self._kind = kind
-
-    @property
     def animal_id(self) -> str:
         """Gets the animal_id of this Media.
 
@@ -328,7 +328,7 @@ class Media(Model):
         :type animal_id: str
         """
         if animal_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', animal_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `animal_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `animal_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
 
         self._animal_id = animal_id
 
@@ -386,7 +386,7 @@ class Media(Model):
     def file_size(self) -> int:
         """Gets the file_size of this Media.
 
-        File size in bytes  # noqa: E501
+        File size in bytes (max 100MB)  # noqa: E501
 
         :return: The file_size of this Media.
         :rtype: int
@@ -397,13 +397,15 @@ class Media(Model):
     def file_size(self, file_size: int):
         """Sets the file_size of this Media.
 
-        File size in bytes  # noqa: E501
+        File size in bytes (max 100MB)  # noqa: E501
 
         :param file_size: The file_size of this Media.
         :type file_size: int
         """
-        if file_size is not None and file_size < 0:  # noqa: E501
-            raise ValueError("Invalid value for `file_size`, must be a value greater than or equal to `0`")  # noqa: E501
+        if file_size is not None and file_size > 104857600:  # noqa: E501
+            raise ValueError("Invalid value for `file_size`, must be a value less than or equal to `104857600`")  # noqa: E501
+        if file_size is not None and file_size < 1:  # noqa: E501
+            raise ValueError("Invalid value for `file_size`, must be a value greater than or equal to `1`")  # noqa: E501
 
         self._file_size = file_size
 
@@ -411,7 +413,7 @@ class Media(Model):
     def mime_type(self) -> str:
         """Gets the mime_type of this Media.
 
-        MIME type of the media file  # noqa: E501
+        MIME type of the media file (validated against supported types)  # noqa: E501
 
         :return: The mime_type of this Media.
         :rtype: str
@@ -422,11 +424,17 @@ class Media(Model):
     def mime_type(self, mime_type: str):
         """Sets the mime_type of this Media.
 
-        MIME type of the media file  # noqa: E501
+        MIME type of the media file (validated against supported types)  # noqa: E501
 
         :param mime_type: The mime_type of this Media.
         :type mime_type: str
         """
+        allowed_values = [None,"image/jpeg", "image/png", "image/gif", "image/webp", "audio/mpeg", "audio/wav", "audio/ogg", "video/mp4", "video/webm", "video/quicktime"]  # noqa: E501
+        if mime_type not in allowed_values:
+            raise ValueError(
+                "Invalid value for `mime_type` ({0}), must be one of {1}"
+                .format(mime_type, allowed_values)
+            )
 
         self._mime_type = mime_type
 

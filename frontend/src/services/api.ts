@@ -205,4 +205,59 @@ export const utils = {
   },
 };
 
+// Auth API Functions
+export const authApi = {
+  /**
+   * Login user with email/password
+   */
+  async login(email: string, password: string): Promise<{ token: string; expiresIn: number }> {
+    if (!email?.trim()) {
+      throw new Error('Email is required');
+    }
+    if (!password?.trim()) {
+      throw new Error('Password is required');
+    }
+    
+    return apiRequest<{ token: string; expiresIn: number }>('/auth', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: email, // Backend expects 'username' field
+        password: password
+      })
+    });
+  },
+
+  /**
+   * Refresh JWT token
+   */
+  async refreshToken(): Promise<{ token: string; expiresIn: number }> {
+    return apiRequest<{ token: string; expiresIn: number }>('/auth/refresh', {
+      method: 'POST'
+    });
+  },
+
+  /**
+   * Logout user
+   */
+  async logout(): Promise<void> {
+    return apiRequest<void>('/auth/logout', {
+      method: 'POST'
+    });
+  }
+};
+
+// User API Functions
+export const userApi = {
+  /**
+   * Get current user information from token
+   */
+  async getCurrentUser(token: string): Promise<any> {
+    return apiRequest<any>('/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  }
+};
+
 export default animalApi;

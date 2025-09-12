@@ -182,7 +182,7 @@ class DynamoAnimalRepository(AnimalRepository):
     
     def create(self, animal: Animal) -> Animal:
         """Create a new animal in DynamoDB"""
-        animal_data = serialize_animal(animal)
+        animal_data = serialize_animal(animal, include_api_id=False)
         
         try:
             self._store.create(animal_data)
@@ -208,7 +208,7 @@ class DynamoAnimalRepository(AnimalRepository):
     
     def update(self, animal: Animal) -> Animal:
         """Update existing animal in DynamoDB"""
-        animal_data = serialize_animal(animal)
+        animal_data = serialize_animal(animal, include_api_id=False)
         self._store.update_fields(animal.animal_id, animal_data)
         return animal
     

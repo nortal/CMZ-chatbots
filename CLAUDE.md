@@ -229,10 +229,30 @@ The API includes these major endpoint groups:
 
 ## API Validation Implementation Template (/nextfive)
 
-**Use this prompt for systematic implementation of API validation tickets:**
+**Use this prompt for systematic implementation of API validation tickets with optional specific ticket targeting:**
 
+### Basic Usage (Discovery Mode)
+```
+/nextfive
+# Discovers and implements next 5 high-priority tickets automatically
+```
+
+### Targeted Usage (Specific Ticket Mode)
+```
+/nextfive PR003946-91
+# Implements PR003946-91 and resolves any blocking dependencies first
+# If dependencies exceed 5 tickets, reports and continues with priority subset
+```
+
+### Implementation Template
 ```
 Implement the next 5 high-priority Jira tickets from our API validation epic, following the same systematic approach we used for PR003946-90, PR003946-72, PR003946-73, PR003946-69, and PR003946-66.
+
+**TARGETED TICKET MODE**: If specific ticket provided (e.g., PR003946-91), analyze dependencies and implement in priority order:
+1. **Dependency Analysis**: Check if target ticket is blocked by other tickets
+2. **Priority Resolution**: Address blocking tickets first, up to 5 total tickets
+3. **Dependency Limit**: If >5 dependencies found, inform user to re-run after merge and select next 5 priority tickets
+4. **Systematic Implementation**: Implement tickets in dependency order (blockers first, target ticket last)
 
 ## Context
 - CMZ chatbot backend API using OpenAPI-first development
@@ -240,16 +260,16 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - Docker containerized development environment
 - All business logic must go in `impl/` directory (never in generated code)
 
-## Required Process
-1. **Run integration tests FIRST** to identify actual failing tickets (never assume based on Jira status)
-2. **Use sequential reasoning MCP** to predict test outcomes and plan implementation  
-3. **If fewer than 5 failing tickets**, look for new endpoint implementation opportunities
-4. **Implement all identified tickets systematically** with proper error handling
-5. **Verify functionality via cURL testing** against running Docker container
-6. **Address any GitHub Advanced Security scanner issues** (unused imports, etc.)
-7. **Create and submit MR** with Copilot review workflow
-8. **Update Jira tickets** with implementation status and MR links
-9. **Handle review feedback** and iterate until approval
+## Required Process - Discovery-First Approach
+1. **DISCOVERY FIRST**: Run integration tests to identify actual state (never assume based on Jira status)
+2. **SEQUENTIAL REASONING**: Use MCP to predict outcomes and plan systematic approach
+3. **SCOPE ASSESSMENT**: If fewer than 5 failing tickets, identify comprehensive enhancement opportunities
+4. **GIT WORKFLOW**: MANDATORY - Always start from dev, create feature branch, target dev for MR
+5. **SYSTEMATIC IMPLEMENTATION**: Focus on OpenAPI spec enhancements + model regeneration + infrastructure
+6. **SECURITY & QUALITY**: Address GitHub Advanced Security scanner issues systematically  
+7. **FEATURE BRANCH MR**: Create MR from feature branch targeting dev (never commit directly to dev)
+8. **COPILOT REVIEW**: Add reviewer and address feedback with inline comment resolution
+9. **CORRECTIVE JIRA**: Verify ticket mapping before updates, use corrective comments for mistakes
 
 ## Technical Requirements
 - **Focus on Endpoint Implementation**: Prioritize new API endpoints over strict business validation
@@ -260,22 +280,51 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - Basic CRUD operations with DynamoDB integration
 - Simple validation (required fields, basic formats) rather than complex business rules
 
-## MR Creation and Review Process
-- **Target Branch**: `dev`
-- **Add Reviewer**: Use `gh pr edit <PR_NUMBER> --add-reviewer Copilot` to add Copilot as reviewer
-- **MR Description**: Include comprehensive implementation documentation with API verification examples
-- **Include History File**: Add session documentation to `/history/` directory
-- **Single Review Round**: Address Copilot feedback once, don't iterate endlessly
-- **Resolve Inline Comments**: Mark each addressed inline comment as resolved with `gh pr comment <comment-id> --body "✅ Resolved: [description]"`
-- **Re-test After Changes**: Verify all functionality still works after addressing feedback
-- **Security Scans**: Ensure all GitHub Advanced Security checks pass
+## Git Workflow & MR Process - CRITICAL PATTERN
+```bash
+# MANDATORY GIT WORKFLOW - Never commit directly to dev
+git checkout dev && git pull origin dev
+git checkout -b feature/[descriptive-name]
+# Work, commit, test thoroughly
+git push -u origin feature/[descriptive-name]
+gh pr create --title "..." --body "..." --base dev
 
-## Jira Integration
-- **Automated Updates**: Use the `/scripts/update_jira_simple.sh` script for all Jira ticket updates
-- **Status Transitions**: Script automatically transitions tickets from "To Do" → "In Progress"
-- **Activity Comments**: Script adds implementation details as activity comments (never overwrites descriptions)
-- **Authentication**: Uses Basic Auth with email:token (not Bearer token)
-- **Simple Comments**: Avoid complex multi-line JSON that causes parsing errors
+# MR REVIEW INTEGRATION
+gh pr edit <PR_NUMBER> --add-reviewer Copilot
+# Address all feedback systematically
+gh pr comment <comment-id> --body "✅ Resolved: [description]"
+```
+
+**MR Requirements:**
+- **Target Branch**: Always `dev` (never main/master)
+- **Feature Branch**: Always work in feature branches, never directly on dev
+- **Copilot Review**: Add reviewer via CLI after MR creation
+- **Inline Comments**: Mark each resolved comment with specific description
+- **Security Scans**: All GitHub Advanced Security checks must pass
+- **History Documentation**: Include session file in `/history/` directory
+- **Re-test**: Verify all functionality after addressing review feedback
+
+## Jira Integration - VERIFICATION-FIRST APPROACH
+**CRITICAL LEARNING**: Always verify ticket mapping before automation
+
+```bash
+# 1. DISCOVER correct ticket mapping via test files
+grep -r "PR003946-" tests/integration/test_api_validation_epic.py
+
+# 2. VERIFY current ticket status before transitions
+curl -H "Authorization: Basic $CREDS" \
+  "$JIRA_BASE_URL/rest/api/3/issue/$TICKET?fields=status"
+
+# 3. USE CORRECTIVE COMMENTS for automation mistakes
+add_simple_comment "PR003946-XX" "CORRECTION: Previous comment was incorrect..."
+```
+
+**Jira Best Practices:**
+- **Map Work to Tickets**: Match actual implementation scope to ticket descriptions in test files
+- **Status Checking**: Verify current status before attempting transitions
+- **Corrective Action**: Add clarifying comments when automation makes mistakes
+- **Authentication**: Basic Auth with `email:token` base64 encoded (not Bearer)
+- **Ticket Verification**: Never assume ticket numbers - verify against project documentation
 
 ## Quality Gates
 - **API Endpoints Working**: All new endpoints respond correctly via cURL testing
@@ -306,22 +355,95 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 
 **START HERE - Discovery-Driven Approach:**
 
+### Discovery Mode (Standard /nextfive)
 ```bash
 # Step 1: ALWAYS run integration tests first to find actual failing tickets
 python -m pytest tests/integration/test_api_validation_epic.py -v
 
 # Step 2: Identify specific failing test methods and their associated tickets
-# Step 3: If fewer than 5 failing tickets, examine OpenAPI spec for new endpoint opportunities
+grep -A 2 -B 1 "PR003946-" tests/integration/test_api_validation_epic.py
+
+# Step 3: If fewer than 5 failing tickets, examine OpenAPI spec for enhancement opportunities
+grep -A 5 -B 5 "paths:" backend/api/openapi_spec.yaml
 ```
 
-Then use sequential reasoning to plan the implementation approach for discovered work.
+### Targeted Mode (/nextfive PR003946-XX)
+```bash
+# Step 1: TARGETED TICKET DEPENDENCY ANALYSIS
+# First, verify target ticket exists and get status
+TICKET="PR003946-91"  # Replace with provided ticket
+grep -r "$TICKET" tests/integration/ jira_mappings.md 2>/dev/null
 
-**Implementation Priority Order:**
-1. **New API Endpoints** (GET, POST, PUT, DELETE operations)
-2. **Basic CRUD Implementation** (DynamoDB integration, standard patterns)
-3. **Simple Validation** (required fields, format checks)
-4. **Error Handling** (consistent Error schema responses)
-5. **Complex Business Logic** (only if specifically required by ticket)
+# Step 2: ANALYZE DEPENDENCIES (check if ticket is blocked)
+# Look for dependency indicators: "depends on", "blocked by", "requires"
+grep -A 3 -B 3 "$TICKET" tests/integration/test_api_validation_epic.py
+grep -A 5 -B 5 "blocked\|depends\|requires" tests/integration/test_api_validation_epic.py
+
+# Step 3: BUILD DEPENDENCY CHAIN 
+# If dependencies found, add them to implementation list (max 5 tickets total)
+# Priority order: dependencies first, target ticket last
+# If >5 dependencies: warn user and select top 5 priority tickets
+
+# Step 4: FALLBACK TO DISCOVERY if target ticket not found or no dependencies
+python -m pytest tests/integration/test_api_validation_epic.py -v
+```
+
+### Mandatory Setup (Both Modes)
+```bash
+# MANDATORY - Create feature branch before any work
+git checkout dev && git pull origin dev
+git checkout -b feature/api-validation-improvements-$(date +%Y%m%d)
+```
+
+**Then use sequential reasoning MCP to plan systematic implementation approach.**
+
+**Enhanced Implementation Strategy - Comprehensive Approach:**
+When fewer than 5 failing tickets exist, implement systematic enhancements:
+
+1. **OpenAPI Specification Enhancements** (validation patterns, schemas, constraints)
+2. **Model Regeneration + Validation Logic** (25+ model files with consistent patterns)
+3. **Centralized Infrastructure** (error handling, utilities, common patterns)
+4. **Security Scanner Resolution** (CodeQL, unused imports, grammar fixes)
+5. **Cross-Domain Validation** (referential integrity, business rules)
+
+**MCP Tool Selection for /nextfive:**
+- **Sequential Reasoning**: ALWAYS use for planning and prediction (essential)
+- **Context7**: Framework-specific patterns and official documentation
+- **Morphllm**: Bulk validation pattern application across multiple files
+- **Magic**: Not typically needed for backend API validation work
+- **Playwright**: Not needed for API-only validation improvements
+
+## Dependency Resolution Examples
+
+### Example 1: Simple Targeted Implementation
+```bash
+/nextfive PR003946-91
+# Target found, no dependencies → implement PR003946-91 + discover 4 more tickets
+# Result: 5 tickets implemented (1 targeted + 4 discovered)
+```
+
+### Example 2: Dependencies Found
+```bash  
+/nextfive PR003946-91
+# Analysis finds: PR003946-91 depends on PR003946-88, PR003946-89
+# Implementation order: PR003946-88 → PR003946-89 → PR003946-91 + discover 2 more
+# Result: 5 tickets implemented (3 dependency chain + 2 discovered)
+```
+
+### Example 3: Too Many Dependencies
+```bash
+/nextfive PR003946-91  
+# Analysis finds: PR003946-91 depends on 6+ tickets
+# Response: "PR003946-91 has 7 dependencies. Please re-run /nextfive after merge. 
+#           Implementing next 5 priority tickets: PR003946-88, PR003946-89, PR003946-90..."
+```
+
+### Example 4: Ticket Not Found
+```bash
+/nextfive PR003946-999
+# Target ticket not found → fallback to discovery mode
+# Result: Standard /nextfive behavior (discover and implement 5 tickets)
+```
 
 **Discovery Commands Reference:**
 ```bash
@@ -336,13 +458,32 @@ ls backend/api/src/main/python/openapi_server/impl/
 ```
 ```
 
-**Why This Template Works:**
-- References proven successful implementation pattern
-- Emphasizes systematic sequential reasoning + implementation + testing workflow
-- Captures key architectural constraints (impl/ directory, OpenAPI-first)
-- Includes security scanning and professional documentation requirements
-- **Automated Jira Updates**: Uses working script for reliable ticket management
-- Provides clear actionable starting steps
+## Key Learnings from /nextfive Implementation
+
+**CRITICAL DISCOVERY**: Most tickets were already working - success came from comprehensive enhancement strategy rather than fixing individual failures.
+
+### **Git Workflow Lessons:**
+❌ **Never commit directly to dev** - Always use feature branches
+✅ **Mandatory Pattern**: `dev` → `feature/branch` → MR to `dev`
+✅ **User Feedback**: "We're always starting from dev on this project and always need to create MRs against dev"
+
+### **Jira Automation Lessons:**
+❌ **Problem**: Scripts updated wrong tickets (87, 67) with incorrect information
+✅ **Solution**: Always verify ticket mapping via test files before automation
+✅ **Corrective Action**: Use clarifying comments to fix automation mistakes
+
+### **Implementation Strategy Lessons:**
+✅ **Comprehensive Enhancements Work**: OpenAPI spec + model generation + infrastructure
+✅ **Sequential Reasoning Essential**: Predict outcomes, plan systematically
+✅ **Security Integration**: GitHub Advanced Security scanner resolution is critical
+✅ **Review Process**: Copilot review + inline comment resolution pattern
+
+### **Template Success Factors:**
+- Discovery-first approach (run tests before assuming failures)
+- Systematic enhancement when obvious failures don't exist
+- Proper git workflow with feature branches
+- Security scanner integration and resolution
+- Verification-based Jira automation with corrective capabilities
 
 ## Jira Update Script Template
 

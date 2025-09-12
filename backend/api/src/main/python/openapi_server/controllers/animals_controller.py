@@ -22,7 +22,14 @@ def animal_config_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    from openapi_server.impl.animals import handle_get_animal_config
+    
+    try:
+        result = handle_get_animal_config(animal_id)
+        return result, 200
+    except Exception as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("not_found", f"Animal config for id {animal_id} not found"), 404
 
 
 def animal_config_patch(animal_id, body):  # noqa: E501
@@ -37,10 +44,22 @@ def animal_config_patch(animal_id, body):  # noqa: E501
 
     :rtype: Union[object, Tuple[object, int], Tuple[object, int, Dict[str, str]]
     """
+    from openapi_server.impl.animals import handle_update_animal_config
+    
     animal_config_update = body
     if connexion.request.is_json:
         animal_config_update = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    
+    try:
+        # Convert AnimalConfigUpdate to AnimalConfig for the handler
+        config_data = animal_config_update.to_dict() if hasattr(animal_config_update, 'to_dict') else animal_config_update
+        animal_config = AnimalConfig.from_dict(config_data)
+        
+        result = handle_update_animal_config(animal_id, animal_config)
+        return result, 200
+    except Exception as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("validation_error", f"Failed to update animal config: {str(e)}"), 400
 
 
 def animal_details_get(animal_id):  # noqa: E501
@@ -53,10 +72,22 @@ def animal_details_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalDetails, Tuple[AnimalDetails, int], Tuple[AnimalDetails, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    from openapi_server.impl.animals import handle_get_animal
+    
+    try:
+        # For now, use the existing get_animal handler and convert to AnimalDetails
+        # This is a temporary implementation - animal details should include additional info
+        animal = handle_get_animal(animal_id)
+        
+        # Convert Animal to AnimalDetails (they should have compatible fields based on OpenAPI spec)
+        animal_details = AnimalDetails.from_dict(animal.to_dict())
+        return animal_details, 200
+    except Exception as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("not_found", f"Animal details for id {animal_id} not found"), 404
 
 
-def animal_id_delete(id):  # noqa: E501
+def animal_id_delete(id_):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
@@ -69,14 +100,14 @@ def animal_id_delete(id):  # noqa: E501
     from openapi_server.impl.animals import handle_delete_animal
     
     try:
-        result, status_code = handle_delete_animal(id)
+        result, status_code = handle_delete_animal(id_)
         return result, status_code
     except Exception as e:
         from openapi_server.impl.error_handler import create_error_response
-        return create_error_response("not_found", f"Animal with id {id} not found"), 404
+        return create_error_response("not_found", f"Animal with id {id_} not found"), 404
 
 
-def animal_id_get(id):  # noqa: E501
+def animal_id_get(id_):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
@@ -89,14 +120,14 @@ def animal_id_get(id):  # noqa: E501
     from openapi_server.impl.animals import handle_get_animal
     
     try:
-        result = handle_get_animal(id)
+        result = handle_get_animal(id_)
         return result, 200
     except Exception as e:
         from openapi_server.impl.error_handler import create_error_response
-        return create_error_response("not_found", f"Animal with id {id} not found"), 404
+        return create_error_response("not_found", f"Animal with id {id_} not found"), 404
 
 
-def animal_id_put(id, body):  # noqa: E501
+def animal_id_put(id_, body):  # noqa: E501
     """Update an existing animal
 
      # noqa: E501
@@ -115,7 +146,7 @@ def animal_id_put(id, body):  # noqa: E501
         animal_update = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     
     try:
-        result = handle_update_animal(id, animal_update)
+        result = handle_update_animal(id_, animal_update)
         return result, 200
     except Exception as e:
         from openapi_server.impl.error_handler import create_error_response
@@ -130,7 +161,14 @@ def animal_list_get():  # noqa: E501
 
     :rtype: Union[List[Animal], Tuple[List[Animal], int], Tuple[List[Animal], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    from openapi_server.impl.animals import handle_list_animals
+    
+    try:
+        result = handle_list_animals()
+        return result, 200
+    except Exception as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("server_error", "Failed to retrieve animals list"), 500
 
 
 def animal_post(body):  # noqa: E501

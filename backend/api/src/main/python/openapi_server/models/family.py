@@ -14,15 +14,15 @@ class Family(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, family_id=None, parents=None, students=None, max_students=None, status='active', enrollment_date=None):  # noqa: E501
+    def __init__(self, parents=None, students=None, family_id=None, max_students=None, status='active', enrollment_date=None):  # noqa: E501
         """Family - a model defined in OpenAPI
 
-        :param family_id: The family_id of this Family.  # noqa: E501
-        :type family_id: str
         :param parents: The parents of this Family.  # noqa: E501
         :type parents: List[str]
         :param students: The students of this Family.  # noqa: E501
         :type students: List[str]
+        :param family_id: The family_id of this Family.  # noqa: E501
+        :type family_id: str
         :param max_students: The max_students of this Family.  # noqa: E501
         :type max_students: int
         :param status: The status of this Family.  # noqa: E501
@@ -31,26 +31,26 @@ class Family(Model):
         :type enrollment_date: date
         """
         self.openapi_types = {
-            'family_id': str,
             'parents': List[str],
             'students': List[str],
+            'family_id': str,
             'max_students': int,
             'status': str,
             'enrollment_date': date
         }
 
         self.attribute_map = {
-            'family_id': 'familyId',
             'parents': 'parents',
             'students': 'students',
+            'family_id': 'familyId',
             'max_students': 'maxStudents',
             'status': 'status',
             'enrollment_date': 'enrollmentDate'
         }
 
-        self._family_id = family_id
         self._parents = parents
         self._students = students
+        self._family_id = family_id
         self._max_students = max_students
         self._status = status
         self._enrollment_date = enrollment_date
@@ -65,31 +65,6 @@ class Family(Model):
         :rtype: Family
         """
         return util.deserialize_model(dikt, cls)
-
-    @property
-    def family_id(self) -> str:
-        """Gets the family_id of this Family.
-
-        Unique family ID  # noqa: E501
-
-        :return: The family_id of this Family.
-        :rtype: str
-        """
-        return self._family_id
-
-    @family_id.setter
-    def family_id(self, family_id: str):
-        """Sets the family_id of this Family.
-
-        Unique family ID  # noqa: E501
-
-        :param family_id: The family_id of this Family.
-        :type family_id: str
-        """
-        if family_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', family_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `family_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
-
-        self._family_id = family_id
 
     @property
     def parents(self) -> List[str]:
@@ -144,6 +119,31 @@ class Family(Model):
             raise ValueError("Invalid value for `students`, number of items must be greater than or equal to `1`")  # noqa: E501
 
         self._students = students
+
+    @property
+    def family_id(self) -> str:
+        """Gets the family_id of this Family.
+
+        Unique family ID  # noqa: E501
+
+        :return: The family_id of this Family.
+        :rtype: str
+        """
+        return self._family_id
+
+    @family_id.setter
+    def family_id(self, family_id: str):
+        """Sets the family_id of this Family.
+
+        Unique family ID  # noqa: E501
+
+        :param family_id: The family_id of this Family.
+        :type family_id: str
+        """
+        if family_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', family_id):  # noqa: E501
+            raise ValueError(r"Invalid value for `family_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+
+        self._family_id = family_id
 
     @property
     def max_students(self) -> int:

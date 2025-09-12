@@ -8,7 +8,7 @@ from .common.exceptions import (
 )
 from .common.validators import validate_animal_creation_data, validate_soft_delete_allowed, validate_update_allowed
 from .common.audit import create_creation_audit, create_modification_audit, create_deletion_audit
-from .common.serializers import deserialize_animal, serialize_animal
+from .common.serializers import deserialize_animal, serialize_animal, serialize_audit_stamp
 from ..ports.repository import AnimalRepository
 from ..ports.audit import AuditService
 
@@ -67,10 +67,10 @@ class AnimalService:
         actor_data = self._audit_service.extract_actor_data(animal_data)
         audit_stamps = self._audit_service.create_creation_audit(actor_data)
         
-        # Merge audit data
+        # Merge audit data - serialize audit stamps to dictionaries
         animal_data.update({
-            "created": audit_stamps["created"],
-            "modified": audit_stamps["modified"],
+            "created": serialize_audit_stamp(audit_stamps["created"]),
+            "modified": serialize_audit_stamp(audit_stamps["modified"]),
             "deleted": None
         })
         
@@ -147,7 +147,7 @@ class AnimalService:
         """
         # Get current animal
         current_animal = self.get_animal(animal_id)  # This handles not found and soft delete
-        current_data = serialize_animal(current_animal)
+        current_data = serialize_animal(current_animal, include_api_id=False)
         
         # Business rule: cannot update soft deleted animals
         validate_update_allowed(current_data, "Animal")
@@ -170,7 +170,12 @@ class AnimalService:
         # Create modification audit
         actor_data = self._audit_service.extract_actor_data(update_data)
         audit_stamps = self._audit_service.create_modification_audit(actor_data)
-        merged_data.update(audit_stamps)
+        
+        # Serialize audit stamps to dictionaries before merging
+        serialized_audit = {
+            key: serialize_audit_stamp(stamp) for key, stamp in audit_stamps.items()
+        }
+        merged_data.update(serialized_audit)
         
         # Convert to domain entity
         updated_animal = deserialize_animal(merged_data)
@@ -195,7 +200,7 @@ class AnimalService:
         """
         # Get current animal
         current_animal = self.get_animal(animal_id)  # This handles not found and soft delete
-        current_data = serialize_animal(current_animal)
+        current_data = serialize_animal(current_animal, include_api_id=False)
         
         # Business rule: cannot delete already deleted animals
         validate_soft_delete_allowed(current_data, "Animal")
@@ -213,7 +218,12 @@ class AnimalService:
         
         # Create deletion audit
         audit_stamps = self._audit_service.create_deletion_audit(actor_data)
-        current_data.update(audit_stamps)
+        
+        # Serialize audit stamps to dictionaries before merging
+        serialized_audit = {
+            key: serialize_audit_stamp(stamp) for key, stamp in audit_stamps.items()
+        }
+        current_data.update(serialized_audit)
         
         # Convert to domain entity and persist
         updated_animal = deserialize_animal(current_data)

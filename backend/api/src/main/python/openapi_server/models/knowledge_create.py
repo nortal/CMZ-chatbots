@@ -12,40 +12,40 @@ class KnowledgeCreate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, title=None, body=None, tags=None, visibility=None, animal_id=None):  # noqa: E501
+    def __init__(self, title=None, body=None, visibility=None, tags=None, animal_id=None):  # noqa: E501
         """KnowledgeCreate - a model defined in OpenAPI
 
         :param title: The title of this KnowledgeCreate.  # noqa: E501
         :type title: str
         :param body: The body of this KnowledgeCreate.  # noqa: E501
         :type body: str
-        :param tags: The tags of this KnowledgeCreate.  # noqa: E501
-        :type tags: List[str]
         :param visibility: The visibility of this KnowledgeCreate.  # noqa: E501
         :type visibility: str
+        :param tags: The tags of this KnowledgeCreate.  # noqa: E501
+        :type tags: List[str]
         :param animal_id: The animal_id of this KnowledgeCreate.  # noqa: E501
         :type animal_id: str
         """
         self.openapi_types = {
             'title': str,
             'body': str,
-            'tags': List[str],
             'visibility': str,
+            'tags': List[str],
             'animal_id': str
         }
 
         self.attribute_map = {
             'title': 'title',
             'body': 'body',
-            'tags': 'tags',
             'visibility': 'visibility',
+            'tags': 'tags',
             'animal_id': 'animalId'
         }
 
         self._title = title
         self._body = body
-        self._tags = tags
         self._visibility = visibility
+        self._tags = tags
         self._animal_id = animal_id
 
     @classmethod
@@ -106,27 +106,6 @@ class KnowledgeCreate(Model):
         self._body = body
 
     @property
-    def tags(self) -> List[str]:
-        """Gets the tags of this KnowledgeCreate.
-
-
-        :return: The tags of this KnowledgeCreate.
-        :rtype: List[str]
-        """
-        return self._tags
-
-    @tags.setter
-    def tags(self, tags: List[str]):
-        """Sets the tags of this KnowledgeCreate.
-
-
-        :param tags: The tags of this KnowledgeCreate.
-        :type tags: List[str]
-        """
-
-        self._tags = tags
-
-    @property
     def visibility(self) -> str:
         """Gets the visibility of this KnowledgeCreate.
 
@@ -152,6 +131,27 @@ class KnowledgeCreate(Model):
             )
 
         self._visibility = visibility
+
+    @property
+    def tags(self) -> List[str]:
+        """Gets the tags of this KnowledgeCreate.
+
+
+        :return: The tags of this KnowledgeCreate.
+        :rtype: List[str]
+        """
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags: List[str]):
+        """Sets the tags of this KnowledgeCreate.
+
+
+        :param tags: The tags of this KnowledgeCreate.
+        :type tags: List[str]
+        """
+
+        self._tags = tags
 
     @property
     def animal_id(self) -> str:

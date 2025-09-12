@@ -8,9 +8,11 @@ connexion[swagger-ui] <= 2.14.2; python_version>"3.4"
 # https://github.com/zalando/connexion/pull/1044
 werkzeug == 0.16.1; python_version=="3.5" or python_version=="3.4"
 swagger-ui-bundle >= 0.0.2
+PyJWT >= 2.4.0
 python_dateutil >= 2.6.0
 setuptools >= 21.0.0
 Flask == 2.1.1
+Flask-CORS >= 3.0.0
 
 # Additional dependencies for CMZ hexagonal architecture
 boto3 >= 1.26.0
