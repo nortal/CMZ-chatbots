@@ -10,7 +10,6 @@ PR003946-94: Provide unit tests for backend that can be used in GitLab CI pipeli
 """
 import os
 import pytest
-import json
 from typing import Dict
 
 # Set file persistence mode for testing isolation
