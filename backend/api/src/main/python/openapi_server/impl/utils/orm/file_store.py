@@ -23,12 +23,22 @@ class FileStore:
     """
     
     def __init__(self, table_name: str, pk_name: str, id_generator_func=None):
+        # Validate table name to prevent path traversal
+        if not table_name or not isinstance(table_name, str):
+            raise ValueError("table_name must be a non-empty string")
+        
+        # Sanitize table name to prevent directory traversal
+        import re
+        if not re.match(r'^[a-zA-Z0-9_-]+$', table_name) or '..' in table_name or '/' in table_name:
+            raise ValueError(f"Invalid table name: {table_name}. Only alphanumeric characters, hyphens, and underscores are allowed.")
+        
         self.table_name = table_name
         self.pk_name = pk_name
         self.id_generator = id_generator_func
         
-        # Set up file storage path
-        self.storage_dir = Path(os.getenv("FILE_PERSISTENCE_DIR", "/tmp/cmz_test_data"))
+        # Set up file storage path with validation
+        storage_dir_path = os.getenv("FILE_PERSISTENCE_DIR", "/tmp/cmz_test_data")
+        self.storage_dir = Path(storage_dir_path).resolve()
         self.storage_dir.mkdir(exist_ok=True, parents=True)
         self.storage_file = self.storage_dir / f"{table_name}.json"
         
@@ -40,15 +50,22 @@ class FileStore:
         """Initialize storage file with pre-populated test data."""
         test_data_path = Path(__file__).parent / "test_data.json"
         
-        if test_data_path.exists():
-            with open(test_data_path, 'r') as f:
-                all_test_data = json.load(f)
-            
-            # Extract data for this specific table
-            table_data = all_test_data.get(self.table_name, [])
-        else:
-            # Create empty dataset if no test data file exists
+        # Validate that the test data path is within expected directory structure
+        if not test_data_path.is_file() or not test_data_path.resolve().is_relative_to(Path(__file__).parent.resolve()):
+            # Create empty dataset if no valid test data file exists
             table_data = []
+        else:
+            try:
+                with open(test_data_path, 'r', encoding='utf-8') as f:
+                    all_test_data = json.load(f)
+                
+                # Extract data for this specific table
+                table_data = all_test_data.get(self.table_name, [])
+            except (json.JSONDecodeError, IOError, OSError) as e:
+                # Log error and continue with empty dataset
+                import logging
+                logging.getLogger(__name__).warning(f"Failed to load test data from {test_data_path}: {e}")
+                table_data = []
             
         self._save_data(table_data)
     
@@ -56,17 +73,36 @@ class FileStore:
         """Load data from JSON file."""
         if not self.storage_file.exists():
             return []
+        
+        # Validate that storage file is within expected directory
+        if not self.storage_file.resolve().is_relative_to(self.storage_dir.resolve()):
+            import logging
+            logging.getLogger(__name__).error(f"Storage file path {self.storage_file} is outside expected directory")
+            return []
             
         try:
-            with open(self.storage_file, 'r') as f:
+            with open(self.storage_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except (json.JSONDecodeError, FileNotFoundError):
+        except (json.JSONDecodeError, FileNotFoundError, IOError, OSError) as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to load data from {self.storage_file}: {e}")
             return []
     
     def _save_data(self, data: List[Dict[str, Any]]):
         """Save data to JSON file."""
-        with open(self.storage_file, 'w') as f:
-            json.dump(data, f, indent=2, default=str)
+        # Validate that storage file is within expected directory
+        if not self.storage_file.resolve().is_relative_to(self.storage_dir.resolve()):
+            import logging
+            logging.getLogger(__name__).error(f"Storage file path {self.storage_file} is outside expected directory")
+            raise ValueError(f"Invalid storage path: {self.storage_file}")
+            
+        try:
+            with open(self.storage_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, default=str)
+        except (IOError, OSError) as e:
+            import logging
+            logging.getLogger(__name__).error(f"Failed to save data to {self.storage_file}: {e}")
+            raise
     
     def _find_item_index(self, data: List[Dict[str, Any]], pk_value: Any) -> Optional[int]:
         """Find index of item with given primary key value."""
