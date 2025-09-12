@@ -13,6 +13,14 @@ import re
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
+# Error code constants for consistency
+ERROR_INVALID_REQUEST = "invalid_request"
+ERROR_INVALID_FILTER = "invalid_filter"
+ERROR_INVALID_FORMAT = "invalid_format"
+ERROR_INVALID_MONTH = "invalid_month"
+ERROR_INVALID_YEAR = "invalid_year"
+ERROR_VALIDATION_ERROR = "validation_error"
+
 
 def create_validation_error(error_type: str, message: str, details: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
@@ -45,7 +53,7 @@ def validate_no_client_id(data: Dict[str, Any], id_field: str) -> Optional[Dict[
     """
     if id_field in data and data[id_field] is not None:
         return create_validation_error(
-            "invalid_request",
+            ERROR_INVALID_REQUEST,
             f"Client-provided {id_field} not allowed. IDs are server-generated.",
             {"field": id_field, "provided_value": data[id_field]}
         )
@@ -66,7 +74,7 @@ def validate_animal_status_filter(status: str) -> Optional[Dict[str, Any]]:
     
     if status not in valid_statuses:
         return create_validation_error(
-            "invalid_filter",
+            ERROR_INVALID_FILTER,
             f"Invalid status filter value: {status}",
             {
                 "field": "status",
@@ -90,7 +98,7 @@ def validate_billing_period(period: str) -> Optional[Dict[str, Any]]:
     # Check format YYYY-MM
     if not re.match(r'^\d{4}-\d{2}$', period):
         return create_validation_error(
-            "invalid_format",
+            ERROR_INVALID_FORMAT,
             f"Invalid billing period format: {period}. Expected format: YYYY-MM",
             {
                 "field": "period", 
@@ -107,7 +115,7 @@ def validate_billing_period(period: str) -> Optional[Dict[str, Any]]:
         # Validate month range
         if month < 1 or month > 12:
             return create_validation_error(
-                "invalid_month",
+                ERROR_INVALID_MONTH,
                 f"Invalid month: {month}. Month must be 01-12",
                 {
                     "field": "period",
@@ -120,7 +128,7 @@ def validate_billing_period(period: str) -> Optional[Dict[str, Any]]:
         current_year = datetime.now().year
         if year < 2020 or year > current_year + 5:
             return create_validation_error(
-                "invalid_year", 
+                ERROR_INVALID_YEAR, 
                 f"Invalid year: {year}. Year must be between 2020 and {current_year + 5}",
                 {
                     "field": "period",
@@ -131,7 +139,7 @@ def validate_billing_period(period: str) -> Optional[Dict[str, Any]]:
             
     except ValueError:
         return create_validation_error(
-            "invalid_format",
+            ERROR_INVALID_FORMAT,
             f"Invalid billing period format: {period}. Expected format: YYYY-MM",
             {
                 "field": "period",
@@ -161,7 +169,7 @@ def validate_user_references(user_ids: List[str], existing_users: List[str]) -> 
     
     if missing_users:
         return create_validation_error(
-            "validation_error",
+            ERROR_VALIDATION_ERROR,
             f"Referenced users do not exist: {', '.join(missing_users)}",
             {
                 "entity_type": "family",
@@ -191,7 +199,7 @@ def validate_parent_student_separation(parents: List[str], students: List[str]) 
     
     if overlap:
         return create_validation_error(
-            "validation_error",
+            ERROR_VALIDATION_ERROR,
             f"Users cannot be both parent and student: {', '.join(overlap)}",
             {
                 "entity_type": "family",
