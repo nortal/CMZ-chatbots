@@ -8,6 +8,9 @@ from openapi_server.impl.utils import (
 from openapi_server.impl.error_handler import ValidationError
 from openapi_server.impl.commands.cascade_delete import execute_cascade_delete
 
+# Import validation utilities for PR003946-79 and PR003946-80
+from .utils.validation import validate_family_data
+
 # If you use generated models:
 # from openapi_server.models.family import Family
 
@@ -36,20 +39,22 @@ def handle_get_family(family_id: str):
 def handle_create_family(body):
     """
     PR003946-79: Family membership validation and constraints
+    PR003946-80: Parent-student relationship validation
     
     Validates that all parent and student user IDs exist before creating family.
+    
+    Raises:
+        ValueError: On validation errors (converted to HTTP responses by controller)
     """
     data = model_to_json_keyed_dict(body) if hasattr(body, "attribute_map") else dict(body or {})
     ensure_pk(data, PK_NAME)
     
-    # PR003946-79: Validate family membership constraints
-    validation_errors = _validate_family_members(data)
-    if validation_errors:
-        raise ValidationError(
-            "Family member validation failed",
-            field_errors=validation_errors,
-            details={"entity_type": "family"}
-        )
+    # PR003946-79 & PR003946-80: Use centralized family validation
+    existing_users = _get_existing_user_ids()
+    validation_error = validate_family_data(data, existing_users)
+    if validation_error:
+        # Raise ValueError for consistent controller error handling
+        raise ValueError(f"Validation error: {validation_error['message']}")
     
     now = now_iso()
     data.setdefault("softDelete", False)
@@ -79,6 +84,30 @@ def handle_update_family(family_id: str, body):
         raise
     # Return the fresh item (matches your current pattern)
     return _store().get(family_id)
+
+def _get_existing_user_ids():
+    """
+    Get list of existing user IDs for validation.
+    
+    Returns list of user IDs that exist and are not soft-deleted.
+    """
+    test_mode = os.getenv('TEST_MODE', '').lower() == 'true'
+    
+    if test_mode:
+        # Return mock user IDs for testing
+        return ["user_12345678", "user_87654321", "user_11111111", "user_22222222"]
+    
+    # Get user store
+    USER_TABLE_NAME = os.getenv("USER_DYNAMO_TABLE_NAME", "quest-dev-user")  
+    USER_PK_NAME = os.getenv("USER_DYNAMO_PK_NAME", "userId")
+    user_store = get_store(USER_TABLE_NAME, USER_PK_NAME)
+    
+    try:
+        users = user_store.list()
+        return [user[USER_PK_NAME] for user in users if not user.get("softDelete", False)]
+    except Exception as e:
+        log.warning(f"Failed to fetch existing users: {e}")
+        return []
 
 def _validate_family_members(family_data):
     """

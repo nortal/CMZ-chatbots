@@ -11,6 +11,8 @@ from openapi_server.models.animal_input import AnimalInput  # noqa: E501
 from openapi_server.models.animal_update import AnimalUpdate  # noqa: E501
 from openapi_server import util
 
+from openapi_server.impl.error_handler import ValidationError
+
 
 def animal_config_get(animal_id):  # noqa: E501
     """Get animal configuration
@@ -153,19 +155,24 @@ def animal_id_put(id_, body):  # noqa: E501
         return create_error_response("validation_error", str(e)), 400
 
 
-def animal_list_get():  # noqa: E501
+def animal_list_get(status=None):  # noqa: E501
     """List animals
 
      # noqa: E501
 
+    :param status: Filter animals by status
+    :type status: str
 
     :rtype: Union[List[Animal], Tuple[List[Animal], int], Tuple[List[Animal], int, Dict[str, str]]
     """
     from openapi_server.impl.animals import handle_list_animals
     
     try:
-        result = handle_list_animals()
+        result = handle_list_animals(status)
         return result, 200
+    except ValidationError as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response(e.error_code, e.message, e.details), 400
     except Exception as e:
         from openapi_server.impl.error_handler import create_error_response
         return create_error_response("server_error", "Failed to retrieve animals list"), 500
@@ -190,6 +197,9 @@ def animal_post(body):  # noqa: E501
     try:
         result = handle_create_animal(animal_input)
         return result, 201
+    except ValidationError as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response(e.error_code, e.message, e.details), 400
     except Exception as e:
         from openapi_server.impl.error_handler import create_error_response
         return create_error_response("validation_error", str(e)), 400

@@ -17,10 +17,21 @@ def create_family(body):  # noqa: E501
 
     :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
     """
+    from openapi_server.impl.family import handle_create_family
+    
     family = body
     if connexion.request.is_json:
         family = Family.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    
+    try:
+        result, status_code = handle_create_family(family)
+        return result, status_code
+    except ValueError as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("validation_error", str(e)), 400
+    except Exception as e:
+        from openapi_server.impl.error_handler import create_error_response
+        return create_error_response("server_error", "Failed to create family"), 500
 
 
 def delete_family(family_id):  # noqa: E501

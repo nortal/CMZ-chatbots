@@ -985,6 +985,13 @@ paths:
       tags:
       - Animals
       summary: List animals
+      parameters:
+      - in: query
+        name: status
+        description: Filter animals by status
+        schema:
+          type: string
+          enum: [active, inactive, hidden, breeding, retired]
       responses:
         '200':
           description: List of animals
@@ -994,6 +1001,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Animal'
+        '400':
+          $ref: '#/components/responses/BadRequest'
               example:
               - animalId: animal_1
                 name: Pokey
