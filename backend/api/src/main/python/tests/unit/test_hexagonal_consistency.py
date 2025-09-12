@@ -5,9 +5,8 @@ PR003946-96: Hexagonal architecture testing
 Verifies that Flask controllers and Lambda handlers call the same business logic
 functions, ensuring consistent behavior across different deployment architectures.
 """
-import pytest
 import inspect
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # Import Flask controllers
 from openapi_server.controllers import (

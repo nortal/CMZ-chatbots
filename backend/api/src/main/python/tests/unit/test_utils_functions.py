@@ -9,9 +9,10 @@ import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
-from openapi_server.impl.utils.id_generator import generate_id, generate_user_id, generate_family_id
+from openapi_server.impl.utils.id_generator import generate_id, generate_uuid, generate_user_id, generate_family_id
+from openapi_server.impl.utils.orm.store import get_store
 from openapi_server.impl.utils.core import (
-    get_store, ensure_pk, model_to_json_keyed_dict, now_iso, not_found
+    ensure_pk, model_to_json_keyed_dict, now_iso, not_found
 )
 from openapi_server.impl.utils.validation import validate_email, validate_required_fields
 from openapi_server.impl.error_handler import ValidationError

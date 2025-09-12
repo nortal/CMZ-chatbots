@@ -68,7 +68,7 @@ def sample_family_data():
 def sample_animal_data():
     """Sample animal data for testing."""
     return {
-        "animalName": "Test Sample Lion",
+        "name": "Test Sample Lion",
         "species": "Lion",
         "habitat": "African Savanna",
         "description": "A sample lion for comprehensive testing",
@@ -78,6 +78,15 @@ def sample_animal_data():
             "model": "claude-3-sonnet",
             "temperature": 0.7
         }
+    }
+
+@pytest.fixture
+def sample_animal_config_data():
+    """Sample animal config data for testing."""
+    return {
+        "personality": "friendly",
+        "aiModel": "claude-3-sonnet",
+        "temperature": 0.7
     }
 
 
@@ -148,7 +157,13 @@ def seeded_repositories():
 
 @pytest.fixture
 def mock_store_patch():
-    """Patch the _store() functions to use mock repositories."""
+    """Patch storage functions to use mock repositories.
+    
+    Note: Different modules use different storage patterns:
+    - users/family: Use _store() for direct DynamoDB access
+    - animals: Use _get_flask_handler() for Flask handler abstraction
+    This reflects the actual architecture differences in the codebase.
+    """
     def create_mock_store(table_name, primary_key):
         return test_db_manager.get_repository(table_name, primary_key)
     

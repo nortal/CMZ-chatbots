@@ -19,7 +19,6 @@ class MockDynamoDBRepository:
         self.table_name = table_name
         self.primary_key = primary_key
         self.data: Dict[str, Dict] = {}
-        self.soft_deleted: Dict[str, Dict] = {}
     
     def create(self, item: Dict) -> Dict:
         """Create a new item in the mock store."""
@@ -83,7 +82,6 @@ class MockDynamoDBRepository:
     def clear(self):
         """Clear all data (for test cleanup)."""
         self.data.clear()
-        self.soft_deleted.clear()
 
 
 class TestDataGenerator:

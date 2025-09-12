@@ -11,7 +11,7 @@ from datetime import datetime
 
 from openapi_server.impl.users import (
     handle_list_users, handle_get_user, handle_create_user,
-    handle_update_user, handle_delete_user, _validate_foreign_keys
+    handle_update_user, handle_delete_user
 )
 from openapi_server.impl.error_handler import ValidationError
 
