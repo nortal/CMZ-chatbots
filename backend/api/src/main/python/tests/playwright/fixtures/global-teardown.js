@@ -35,14 +35,34 @@ async function globalTeardown() {
 async function updateTestMetadata() {
   const metadataPath = path.join(__dirname, '..', 'reports', 'test-metadata.json');
   
-  if (fs.existsSync(metadataPath)) {
-    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+  try {
+    // Use atomic read-modify-write operation to prevent race conditions
+    let metadata = {};
     
+    try {
+      // Read existing metadata if file exists
+      const existingContent = fs.readFileSync(metadataPath, 'utf8');
+      metadata = JSON.parse(existingContent);
+    } catch (readError) {
+      // File doesn't exist or is invalid, start with empty metadata
+      console.log('📝 Creating new test metadata file');
+      metadata = { started_at: new Date().toISOString() };
+    }
+    
+    // Update completion information
     metadata.completed_at = new Date().toISOString();
-    metadata.duration_ms = new Date().getTime() - new Date(metadata.started_at).getTime();
+    metadata.duration_ms = metadata.started_at 
+      ? new Date().getTime() - new Date(metadata.started_at).getTime()
+      : 0;
     
-    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+    // Write atomically by writing to temp file first, then renaming
+    const tempPath = metadataPath + '.tmp';
+    fs.writeFileSync(tempPath, JSON.stringify(metadata, null, 2));
+    fs.renameSync(tempPath, metadataPath);
+    
     console.log('📝 Test metadata updated with completion info');
+  } catch (error) {
+    console.error('❌ Failed to update test metadata:', error.message);
   }
 }
 

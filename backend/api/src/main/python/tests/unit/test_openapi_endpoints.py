@@ -138,6 +138,7 @@ class TestEndpointBase:
                 raise ValueError(f"Unsupported HTTP method: {method}")
         except Exception as e:
             pytest.fail(f"Request failed: {method} {url} - {str(e)}")
+            return None  # Explicit return for CodeQL (pytest.fail() stops execution but CodeQL needs explicit return)
     
     def assert_error_response(self, response, expected_status: int = None):
         """Assert response is a proper error with consistent schema (PR003946-90)."""
