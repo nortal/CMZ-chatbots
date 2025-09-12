@@ -3,7 +3,6 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.family import Family  # noqa: E501
 from openapi_server import util
 

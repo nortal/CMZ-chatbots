@@ -4,7 +4,6 @@ from typing import Tuple
 from typing import Union
 
 from openapi_server.models.convo_history import ConvoHistory  # noqa: E501
-from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.summarize_request import SummarizeRequest  # noqa: E501
 from openapi_server.models.summary import Summary  # noqa: E501
 from openapi_server import util

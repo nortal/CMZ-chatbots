@@ -1,5 +1,4 @@
 import connexion
-from typing import Dict, List
 from typing import Tuple
 from typing import Union
 
@@ -9,18 +8,12 @@ from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noq
 from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
 from openapi_server.models.animal_input import AnimalInput  # noqa: E501
 from openapi_server.models.animal_update import AnimalUpdate  # noqa: E501
-from openapi_server.models.error import Error  # noqa: E501
 from openapi_server import util
 
 # Import implementation handlers
 from openapi_server.impl.animals import (
     handle_create_animal,
-    handle_get_animal,
-    handle_list_animals,
-    handle_update_animal,
-    handle_delete_animal,
-    handle_get_animal_config,
-    handle_update_animal_config
+    handle_list_animals
 )
 from openapi_server.impl.error_handler import ValidationError, create_error_response
 
