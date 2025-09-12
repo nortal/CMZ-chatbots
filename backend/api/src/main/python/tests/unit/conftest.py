@@ -18,7 +18,7 @@ from unittest.mock import patch
 # Import enhanced test utilities
 from tests.unit.test_utils import (
     TestDataGenerator, BoundaryValueTestGenerator, 
-    MockAuthenticationHelper, TestDatabaseManager, test_db_manager
+    MockAuthenticationHelper, test_db_manager
 )
 
 # Ensure file persistence mode for all tests

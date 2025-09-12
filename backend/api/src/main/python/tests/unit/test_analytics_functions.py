@@ -7,7 +7,7 @@ time window validation, and business logic.
 """
 import pytest
 from datetime import datetime, timezone
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from openapi_server.impl.analytics import (
     handle_performance_metrics, handle_logs, handle_billing,
@@ -266,8 +266,7 @@ class TestValidateBillingPeriod:
         
         for period in valid_periods:
             # Should not raise any exception
-            result = _validate_billing_period(period)
-            assert result is None
+            _validate_billing_period(period)  # Returns None, just checking no exception
     
     def test_validate_billing_period_invalid_format(self):
         """Test billing period validation fails with invalid format."""
@@ -304,8 +303,7 @@ class TestValidateBillingPeriod:
         
         for period in boundary_cases:
             # Should not raise any exception
-            result = _validate_billing_period(period)
-            assert result is None
+            _validate_billing_period(period)  # Returns None, just checking no exception
 
 
 class TestMockDataGenerators:
@@ -332,7 +330,7 @@ class TestMockDataGenerators:
         start_dt = datetime(2023, 1, 1, tzinfo=timezone.utc)
         end_dt = datetime(2023, 1, 31, tzinfo=timezone.utc)
         
-        result = _get_mock_logs('ERROR', start_dt, end_dt, limit=10)
+        result = _get_mock_logs('ERROR', start_dt, end_dt, page=1, page_size=10)
         
         assert 'logs' in result
         assert 'totalCount' in result
