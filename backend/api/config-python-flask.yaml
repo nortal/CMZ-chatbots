@@ -1,0 +1,15 @@
+packageName: openapi_server
+packageVersion: 1.0.0
+packageUrl: https://github.com/cougar-mountain-zoo/cmz-chatbots
+authorName: Nortal
+authorEmail: kc.stegbauer@nortal.com
+generateSourceCodeOnly: true
+strictSpec: true
+usePython310: true
+ensureUniqueParams: true
+legacyDiscriminatorBehavior: false
+sortParamsByRequiredFlag: true
+sortModelPropertiesByRequiredFlag: true
+generateAliasAsModel: false
+hideGenerationTimestamp: true
+disallowAdditionalPropertiesIfNotPresent: false

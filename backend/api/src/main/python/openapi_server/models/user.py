@@ -203,7 +203,7 @@ class User(Model):
         :type user_id: str
         """
         if user_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', user_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `user_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `user_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
 
         self._user_id = user_id
 
@@ -228,7 +228,7 @@ class User(Model):
         :type email: str
         """
         if email is not None and not re.search(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):  # noqa: E501
-            raise ValueError(r"Invalid value for `email`, must follow the pattern or equal to `/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `email`, must be a follow pattern or equal to `/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/`")  # noqa: E501
 
         self._email = email
 
@@ -257,7 +257,7 @@ class User(Model):
         if display_name is not None and len(display_name) < 1:
             raise ValueError("Invalid value for `display_name`, length must be greater than or equal to `1`")  # noqa: E501
         if display_name is not None and not re.search(r'^[a-zA-Z0-9\s\-\.\']+$', display_name):  # noqa: E501
-            raise ValueError(r"Invalid value for `display_name`, must follow the pattern or equal to `/^[a-zA-Z0-9\s\-\.']+$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `display_name`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\-\.']+$/`")  # noqa: E501
 
         self._display_name = display_name
 
@@ -282,7 +282,7 @@ class User(Model):
         :type phone_number: str
         """
         if phone_number is not None and not re.search(r'^\+[1-9]\d{1,14}$', phone_number):  # noqa: E501
-            raise ValueError(r"Invalid value for `phone_number`, must follow the pattern or equal to `/^\+[1-9]\d{1,14}$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `phone_number`, must be a follow pattern or equal to `/^\+[1-9]\d{1,14}$/`")  # noqa: E501
 
         self._phone_number = phone_number
 

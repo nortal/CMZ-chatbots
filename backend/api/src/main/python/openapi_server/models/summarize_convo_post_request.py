@@ -94,7 +94,7 @@ class SummarizeConvoPostRequest(Model):
         if session_id is None:
             raise ValueError("Invalid value for `session_id`, must not be `None`")  # noqa: E501
         if session_id is not None and not re.search(r'^[a-zA-Z0-9_-]+$', session_id):  # noqa: E501
-            raise ValueError(r"Invalid value for `session_id`, must follow the pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
+            raise ValueError(r"Invalid value for `session_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
 
         self._session_id = session_id
 

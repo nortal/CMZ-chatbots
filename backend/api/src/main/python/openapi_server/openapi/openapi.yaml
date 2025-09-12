@@ -261,6 +261,7 @@ paths:
           content:
             application/json:
               example:
+                animalConfigId: config_1
                 voice: pokey_v1
                 personality: goofy-friendly
                 aiModel: gpt-5o-mini
@@ -284,14 +285,15 @@ paths:
                     email: system@cmz.org
                     displayName: System
                 softDelete: false
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/AnimalConfig"
           description: Updated config
         "400":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Invalid config
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
       security: []
       summary: Update animal configuration
       tags:
@@ -535,44 +537,144 @@ paths:
     delete:
       operationId: convo_history_delete
       parameters:
-      - description: Conversation/session id
+      - description: Specific conversation session to delete
         explode: true
         in: query
-        name: id
-        required: true
-        schema:
-          type: string
-        style: form
-      responses:
-        "204":
-          description: Deleted
-        "404":
-          $ref: "#/components/responses/NotFound"
-      security: []
-      summary: Delete conversation history (GDPR) (backlog)
-      tags:
-      - Conversation
-      - Later
-      x-phase: later
-      x-openapi-router-controller: openapi_server.controllers.conversation_controller
-    get:
-      operationId: convo_history_get
-      parameters:
-      - explode: true
-        in: query
-        name: animalId
+        name: sessionId
         required: false
         schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
           type: string
         style: form
-      - explode: true
+      - description: Delete all conversations for specific user (GDPR right to erasure)
+        explode: true
         in: query
         name: userId
         required: false
         schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
           type: string
         style: form
-      - explode: true
+      - description: Delete all conversations with specific animal
+        explode: true
+        in: query
+        name: animalId
+        required: false
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: form
+      - description: Delete conversations older than specified date (ISO8601)
+        explode: true
+        in: query
+        name: olderThan
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Required confirmation for bulk user data deletion
+        explode: true
+        in: query
+        name: confirmGDPR
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Reason for deletion (for audit logs)
+        explode: true
+        in: query
+        name: auditReason
+        required: false
+        schema:
+          maxLength: 500
+          pattern: "^[a-zA-Z0-9\\s\\-_\\.,:;]+$"
+          type: string
+        style: form
+      responses:
+        "204":
+          description: Conversation history deleted successfully
+        "400":
+          content:
+            application/json:
+              example:
+                code: gdpr_confirmation_required
+                message: GDPR confirmation required for bulk user data deletion
+                details:
+                  required_parameter: confirmGDPR
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid request or missing GDPR confirmation
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Insufficient permissions for bulk deletion
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid parameters or conflicting deletion criteria
+      security: []
+      summary: Delete conversation history with enhanced GDPR compliance
+      tags:
+      - Conversation
+      x-openapi-router-controller: openapi_server.controllers.conversation_controller
+    get:
+      operationId: convo_history_get
+      parameters:
+      - description: Filter conversations by animal identifier
+        explode: true
+        in: query
+        name: animalId
+        required: false
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: form
+      - description: Filter conversations by user identifier
+        explode: true
+        in: query
+        name: userId
+        required: false
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: form
+      - description: Get specific conversation session
+        explode: true
+        in: query
+        name: sessionId
+        required: false
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: form
+      - description: Filter conversations from this date (ISO8601)
+        explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Filter conversations until this date (ISO8601)
+        explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Maximum number of conversation turns to return
+        explode: true
         in: query
         name: limit
         required: false
@@ -582,6 +684,25 @@ paths:
           minimum: 1
           type: integer
         style: form
+      - description: Number of conversation turns to skip (pagination)
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          type: integer
+        style: form
+      - description: "Include turn metadata (tokens, latency, etc.)"
+        explode: true
+        in: query
+        name: includeMetadata
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
       responses:
         "200":
           content:
@@ -590,22 +711,32 @@ paths:
                 sessionId: sess_123
                 animalId: animal_1
                 userId: user_2
+                totalTurns: 24
                 turns:
                 - role: user
                   content: Hi Pokey
                   timestamp: 2025-08-11T09:00:00Z
+                  metadata:
+                    tokensPrompt: 12
+                    latencyMs: 45
                 - role: assistant
-                  content: Hello!
-                  timestamp: 2025-08-11T09:00:00Z
+                  content: Hello! I'm Pokey the porcupine. What would you like to
+                    know?
+                  timestamp: 2025-08-11T09:00:05Z
+                  metadata:
+                    tokensCompletion: 28
+                    latencyMs: 420
               schema:
                 $ref: "#/components/schemas/ConvoHistory"
-          description: Conversation turns
+          description: Conversation history with optional metadata
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
       security: []
-      summary: Get conversation history (backlog)
+      summary: Get conversation history with enhanced filtering and pagination
       tags:
       - Conversation
-      - Later
-      x-phase: later
       x-openapi-router-controller: openapi_server.controllers.conversation_controller
   /convo_turn:
     post:
@@ -614,25 +745,64 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConvoTurnRequest"
+              $ref: "#/components/schemas/_convo_turn_post_request"
         required: true
       responses:
         "200":
           content:
             application/json:
               example:
-                reply: Hi there! I'm Pokey. Want to hear a porcupine fact?
+                reply: "Hi there! I'm Pokey the porcupine! Did you know that porcupines\
+                  \ have about 30,000 quills? Each quill has tiny barbs that make\
+                  \ them stick when we use them for defense. What would you like to\
+                  \ learn about porcupines today?"
                 turn:
                   convoTurnId: turn_001
                   timestamp: 2025-08-11T09:00:00Z
                   tokensPrompt: 120
-                  tokensCompletion: 35
+                  tokensCompletion: 58
                   latencyMs: 420
+                analytics:
+                  responseQuality: 8.5
+                  topicRelevance: 9.2
+                  educationalValue: 9.0
+                  userEngagementPrediction: 8.7
+                moderation:
+                  flagged: false
+                  categories: []
+                  confidence: 0.99
+                rateLimit:
+                  remaining: 47
+                  resetTime: 2025-08-11T10:00:00Z
+                  dailyUsage: 203
               schema:
-                $ref: "#/components/schemas/ConvoTurnResponse"
-          description: AI response and turn metadata
+                $ref: "#/components/schemas/_convo_turn_post_200_response"
+          description: AI response with enhanced metadata and analytics
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          content:
+            application/json:
+              example:
+                code: rate_limit_exceeded
+                message: API rate limit exceeded. Please try again later.
+                details:
+                  limit: 50
+                  window: 3600
+                  resetTime: 2025-08-11T10:00:00Z
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable due to high load
       security: []
-      summary: Send a conversation turn and get AI reply
+      summary: Send conversation turn with enhanced validation and rate limiting
       tags:
       - Conversation
       x-openapi-router-controller: openapi_server.controllers.conversation_controller
@@ -1039,66 +1209,136 @@ paths:
     delete:
       operationId: media_delete
       parameters:
-      - explode: true
+      - description: Media identifier to delete
+        explode: true
         in: query
         name: mediaId
         required: true
         schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
           type: string
+        style: form
+      - description: "Whether to permanently delete (true) or soft delete (false,\
+          \ default)"
+        explode: true
+        in: query
+        name: permanent
+        required: false
+        schema:
+          default: false
+          type: boolean
         style: form
       responses:
         "204":
-          description: Deleted
+          description: Media deleted successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Forbidden - Cannot delete referenced media
       security: []
-      summary: Delete media by id (backlog)
+      summary: Delete media by id (soft delete with validation)
       tags:
       - Media
-      - Later
-      x-phase: later
       x-openapi-router-controller: openapi_server.controllers.media_controller
     get:
       operationId: media_get
       parameters:
-      - explode: true
+      - description: Specific media identifier to retrieve
+        explode: true
         in: query
         name: mediaId
-        required: true
+        required: false
         schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
           type: string
+        style: form
+      - description: Filter media by animal identifier
+        explode: true
+        in: query
+        name: animalId
+        required: false
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: form
+      - description: Filter media by type
+        explode: true
+        in: query
+        name: kind
+        required: false
+        schema:
+          enum:
+          - image
+          - audio
+          - video
+          type: string
+        style: form
+      - description: Maximum number of media items to return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          type: integer
         style: form
       responses:
         "200":
           content:
             application/json:
-              example:
-                mediaId: m_001
-                title: Pokey portrait
-                url: https://cdn.example.com/m_001.jpg
-                kind: image
-                animalId: animal_1
-                created:
-                  at: 2025-08-11T09:00:00Z
-                  by:
-                    userId: user_1
-                    email: system@cmz.org
-                    displayName: System
-                modified:
-                  at: 2025-08-11T09:00:00Z
-                  by:
-                    userId: user_1
-                    email: system@cmz.org
-                    displayName: System
-                softDelete: false
+              examples:
+                single_media:
+                  summary: Single media item
+                  value:
+                    mediaId: m_001
+                    title: Pokey portrait
+                    url: https://cdn.example.com/m_001.jpg
+                    kind: image
+                    animalId: animal_1
+                    created:
+                      at: 2025-08-11T09:00:00Z
+                      by:
+                        userId: user_1
+                        email: system@cmz.org
+                        displayName: System
+                    modified:
+                      at: 2025-08-11T09:00:00Z
+                      by:
+                        userId: user_1
+                        email: system@cmz.org
+                        displayName: System
+                    softDelete: false
+                media_list:
+                  summary: List of media items
+                  value:
+                  - mediaId: m_001
+                    title: Pokey portrait
+                    url: https://cdn.example.com/m_001.jpg
+                    kind: image
+                    animalId: animal_1
+                  - mediaId: m_002
+                    title: Pokey video clip
+                    url: https://cdn.example.com/m_002.mp4
+                    kind: video
+                    animalId: animal_1
               schema:
-                $ref: "#/components/schemas/Media"
-          description: Media metadata
+                $ref: "#/components/schemas/_media_get_200_response"
+          description: Media metadata (single item or array based on parameters)
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
-      summary: Fetch media by id (backlog)
+      summary: Fetch media metadata by id with enhanced filters
       tags:
       - Media
-      - Later
-      x-phase: later
       x-openapi-router-controller: openapi_server.controllers.media_controller
   /member:
     get:
@@ -1175,21 +1415,56 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SummarizeRequest"
+              $ref: "#/components/schemas/_summarize_convo_post_request"
         required: true
       responses:
         "200":
           content:
             application/json:
+              example:
+                sessionId: sess_123
+                summaryType: detailed
+                summary: User engaged enthusiastically about porcupine quills and
+                  defense mechanisms. Showed strong interest in animal behavior and
+                  asked several follow-up questions about nocturnal habits.
+                topics:
+                - porcupine_behavior
+                - animal_defense
+                - nocturnal_animals
+                metrics:
+                  totalTurns: 12
+                  durationMinutes: 8.5
+                  avgResponseTime: 420
+                  engagementScore: 8.2
+                sentiment:
+                  overall: positive
+                  confidence: 0.85
+                  progression:
+                  - curious
+                  - engaged
+                  - enthusiastic
+                personalizationInsights:
+                  learning_style: visual_and_interactive
+                  interests: "animal_behavior,_wildlife"
+                  knowledge_level: intermediate
+                generatedAt: 2025-08-11T09:15:00Z
               schema:
-                $ref: "#/components/schemas/Summary"
-          description: Summary created
+                $ref: "#/components/schemas/_summarize_convo_post_200_response"
+          description: Conversation summary with optional analytics
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Conversation session not found
+        "422":
+          $ref: "#/components/responses/ValidationError"
       security: []
-      summary: Summarize conversation for personalization/cost control (backlog)
+      summary: Advanced conversation summarization with personalization and analytics
       tags:
       - Conversation
-      - Later
-      x-phase: later
       x-openapi-router-controller: openapi_server.controllers.conversation_controller
   /system_health:
     get:
@@ -1247,13 +1522,27 @@ paths:
                 softDelete: false
               schema:
                 $ref: "#/components/schemas/Media"
-          description: Media created
+          description: Media created successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: File too large
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unsupported media type
+        "422":
+          $ref: "#/components/responses/ValidationError"
       security: []
-      summary: Upload media (image/audio/video) (backlog)
+      summary: Upload media (image/audio/video) with enhanced validation
       tags:
       - Media
-      - Later
-      x-phase: later
       x-openapi-router-controller: openapi_server.controllers.media_controller
   /user:
     get:
@@ -1869,6 +2158,7 @@ components:
         expiresIn: 0
         user:
           familyId: familyId
+          phoneNumber: phoneNumber
           role: visitor
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
@@ -1893,6 +2183,7 @@ components:
           userType: none
           userId: userId
           email: email
+          age: 73
         token: token
       properties:
         token:
@@ -1926,12 +2217,31 @@ components:
       allOf:
       - properties:
           userId:
+            description: Unique user identifier
+            pattern: "^[a-zA-Z0-9_-]+$"
             type: string
           email:
+            description: RFC 5322 compliant email address
             format: email
+            pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
             type: string
           displayName:
+            description: Display name with basic character validation
+            maxLength: 100
+            minLength: 1
+            pattern: "^[a-zA-Z0-9\\s\\-\\.']+$"
             type: string
+          phoneNumber:
+            description: E.164 international phone number format
+            nullable: true
+            pattern: "^\\+[1-9]\\d{1,14}$"
+            type: string
+          age:
+            description: Age validation for reasonable ranges
+            maximum: 120
+            minimum: 3
+            nullable: true
+            type: integer
           role:
             enum:
             - visitor
@@ -1954,6 +2264,7 @@ components:
       - $ref: "#/components/schemas/AuditFields"
       example:
         familyId: familyId
+        phoneNumber: phoneNumber
         role: visitor
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
@@ -1978,6 +2289,7 @@ components:
         userType: none
         userId: userId
         email: email
+        age: 73
       title: User
     UserInput:
       allOf:
@@ -2003,6 +2315,7 @@ components:
         type: object
       example:
         familyId: familyId
+        phoneNumber: phoneNumber
         role: visitor
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
@@ -2027,6 +2340,7 @@ components:
         userType: none
         userId: userId
         email: email
+        age: 12
       title: UserInput
     UserDetails:
       allOf:
@@ -2039,15 +2353,7 @@ components:
             type: string
         type: object
       example:
-        familyId: familyId
         role: visitor
-        deleted:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
-        softDelete: false
         displayName: displayName
         created:
           at: 2000-01-23T04:56:07.000+00:00
@@ -2056,11 +2362,21 @@ components:
             displayName: displayName
             email: email
         usage:
-          totalSessions: 0
+          totalSessions: 6
           lastActive: 2000-01-23T04:56:07.000+00:00
-          totalTurns: 6
+          totalTurns: 1
           userId: userId
         userDetailsId: userDetailsId
+        userId: userId
+        familyId: familyId
+        phoneNumber: phoneNumber
+        deleted:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        softDelete: false
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
@@ -2068,15 +2384,15 @@ components:
             displayName: displayName
             email: email
         userType: none
-        userId: userId
         email: email
+        age: 12
       title: UserDetails
     UserDetailsInput:
       example:
         usage:
-          totalSessions: 0
+          totalSessions: 6
           lastActive: 2000-01-23T04:56:07.000+00:00
-          totalTurns: 6
+          totalTurns: 1
           userId: userId
         userId: userId
       properties:
@@ -2096,6 +2412,7 @@ components:
         page: 0
         items:
         - familyId: familyId
+          phoneNumber: phoneNumber
           role: visitor
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
@@ -2120,7 +2437,9 @@ components:
           userType: none
           userId: userId
           email: email
+          age: 73
         - familyId: familyId
+          phoneNumber: phoneNumber
           role: visitor
           deleted:
             at: 2000-01-23T04:56:07.000+00:00
@@ -2145,6 +2464,7 @@ components:
           userType: none
           userId: userId
           email: email
+          age: 73
       properties:
         items:
           items:
@@ -2163,13 +2483,6 @@ components:
       title: PagedUsers
       type: object
     ConvoTurnRequest:
-      example:
-        metadata:
-          key: ""
-        contextSummary: contextSummary
-        sessionId: sessionId
-        message: message
-        animalId: animalId
       properties:
         animalId:
           title: animalId
@@ -2194,14 +2507,6 @@ components:
       title: ConvoTurnRequest
       type: object
     ConvoTurnResponse:
-      example:
-        turn:
-          tokensCompletion: 6
-          tokensPrompt: 0
-          latencyMs: 1
-          convoTurnId: convoTurnId
-          timestamp: 2000-01-23T04:56:07.000+00:00
-        reply: reply
       properties:
         reply:
           title: reply
@@ -2243,20 +2548,14 @@ components:
       title: ConvoHistory
       type: object
     SummarizeRequest:
-      example:
-        maxChars: 0
-        sessionId: sessionId
       properties:
         sessionId:
-          title: sessionId
           type: string
         maxChars:
           default: 2000
-          title: maxChars
           type: integer
       required:
       - sessionId
-      title: SummarizeRequest
       type: object
     Summary:
       allOf:
@@ -2267,29 +2566,6 @@ components:
             type: string
         type: object
       - $ref: "#/components/schemas/AuditFields"
-      example:
-        summary: summary
-        deleted:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
-        softDelete: false
-        created:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
-        modified:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
-        sessionId: sessionId
-      title: Summary
     Animal:
       allOf:
       - properties:
@@ -2495,40 +2771,107 @@ components:
         topP: 0.6027456183070403
       title: AnimalConfig
     AnimalConfigUpdate:
-      allOf:
-      - $ref: "#/components/schemas/AnimalConfig"
       example:
-        voice: voice
-        animalConfigId: animalConfigId
-        deleted:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
+        voice: alloy
         personality: personality
-        softDelete: false
-        created:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
         temperature: 0.1601656380922023
+        maxTokens: 601
         toolsEnabled:
-        - toolsEnabled
-        - toolsEnabled
+        - facts
+        - facts
+        - facts
+        - facts
+        - facts
         guardrails:
-          key: ""
-        modified:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
-        aiModel: aiModel
+          content_filter: true
+          safe_mode: true
+          response_length_limit: 1212
+        responseFormat: text
+        aiModel: gpt-4o-mini
         topP: 0.6027456183070403
+      properties:
+        voice:
+          description: Validated voice ID from supported TTS voices
+          enum:
+          - alloy
+          - echo
+          - fable
+          - onyx
+          - nova
+          - shimmer
+          - ruth
+          - joanna
+          - matthew
+          - amy
+          maxLength: 50
+          minLength: 1
+          pattern: "^[a-zA-Z0-9_-]+$"
+          title: voice
+          type: string
+        personality:
+          description: Animal personality description with character validation
+          maxLength: 1000
+          minLength: 5
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-'\"]+$"
+          title: personality
+          type: string
+        aiModel:
+          enum:
+          - gpt-4o-mini
+          - gpt-4o
+          - claude-3-sonnet
+          - claude-3-haiku
+          - claude-3-opus
+          title: aiModel
+          type: string
+        temperature:
+          description: "AI model temperature (0.0-2.0, increments of 0.1)"
+          maximum: 2.0
+          minimum: 0.0
+          multipleOf: 0.1
+          title: temperature
+          type: number
+        topP:
+          description: "Top-p sampling parameter (0.0-1.0, increments of 0.01)"
+          maximum: 1.0
+          minimum: 0.0
+          multipleOf: 0.01
+          title: topP
+          type: number
+        maxTokens:
+          description: Maximum response tokens (1-4096)
+          maximum: 4096
+          minimum: 1
+          title: maxTokens
+          type: integer
+        toolsEnabled:
+          description: Enabled tools (no duplicates allowed)
+          items:
+            enum:
+            - facts
+            - media_lookup
+            - weather
+            - calculator
+            - web_search
+            - image_generation
+            type: string
+          maxItems: 6
+          title: toolsEnabled
+          type: array
+          uniqueItems: true
+        responseFormat:
+          default: text
+          description: Preferred response format
+          enum:
+          - text
+          - json
+          - markdown
+          title: responseFormat
+          type: string
+        guardrails:
+          $ref: "#/components/schemas/AnimalConfigUpdate_guardrails"
       title: AnimalConfigUpdate
+      type: object
     KnowledgeCreate:
       example:
         visibility: public
@@ -2610,21 +2953,72 @@ components:
       allOf:
       - properties:
           mediaId:
+            description: Unique identifier for the media item
+            pattern: "^[a-zA-Z0-9_-]+$"
             type: string
           title:
+            description: Human-readable title for the media
+            maxLength: 200
+            minLength: 1
             type: string
           url:
+            description: CDN or storage URL for the media file
             format: uri
             type: string
           kind:
+            description: Type of media content
             enum:
             - image
             - audio
             - video
             type: string
           animalId:
+            description: Associated animal identifier
+            nullable: true
+            pattern: "^[a-zA-Z0-9_-]+$"
+            type: string
+          description:
+            description: Optional description or context for the media
+            maxLength: 1000
             nullable: true
             type: string
+          tags:
+            description: Optional metadata tags for categorization
+            items:
+              pattern: "^[a-zA-Z0-9_-]+$"
+              type: string
+            maxItems: 10
+            nullable: true
+            type: array
+          fileSize:
+            description: File size in bytes (max 100MB)
+            maximum: 104857600
+            minimum: 1
+            nullable: true
+            type: integer
+          mimeType:
+            description: MIME type of the media file (validated against supported
+              types)
+            enum:
+            - image/jpeg
+            - image/png
+            - image/gif
+            - image/webp
+            - audio/mpeg
+            - audio/wav
+            - audio/ogg
+            - video/mp4
+            - video/webm
+            - video/quicktime
+            nullable: true
+            type: string
+          duration:
+            description: Duration in seconds (for audio/video)
+            minimum: 0
+            nullable: true
+            type: number
+          dimensions:
+            $ref: "#/components/schemas/Media_allOf_dimensions"
         required:
         - kind
         - mediaId
@@ -2632,13 +3026,6 @@ components:
         type: object
       - $ref: "#/components/schemas/AuditFields"
       example:
-        deleted:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
-        softDelete: false
         kind: image
         created:
           at: 2000-01-23T04:56:07.000+00:00
@@ -2646,16 +3033,36 @@ components:
             actorId: actorId
             displayName: displayName
             email: email
+        description: description
+        mimeType: image/jpeg
+        mediaId: mediaId
+        title: title
+        animalId: animalId
+        url: https://openapi-generator.tech
+        tags:
+        - tags
+        - tags
+        - tags
+        - tags
+        - tags
+        duration: 0.6027456183070403
+        deleted:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        fileSize: 8397293
+        softDelete: false
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
             actorId: actorId
             displayName: displayName
             email: email
-        mediaId: mediaId
-        title: title
-        animalId: animalId
-        url: https://openapi-generator.tech
+        dimensions:
+          width: 1
+          height: 1
       title: Media
     PerformanceMetrics:
       example:
@@ -2769,30 +3176,65 @@ components:
     Family:
       example:
         familyId: familyId
+        maxStudents: 1
+        enrollmentDate: 2000-01-23
         students:
+        - students
+        - students
+        - students
         - students
         - students
         parents:
         - parents
         - parents
+        - parents
+        - parents
+        status: active
       properties:
         familyId:
           description: Unique family ID
+          pattern: "^[a-zA-Z0-9_-]+$"
           readOnly: true
           title: familyId
           type: string
         parents:
           items:
             description: User ID of a parent
+            pattern: "^[a-zA-Z0-9_-]+$"
             type: string
+          maxItems: 4
+          minItems: 1
           title: parents
           type: array
         students:
           items:
             description: User ID of a student
+            pattern: "^[a-zA-Z0-9_-]+$"
             type: string
+          maxItems: 8
+          minItems: 1
           title: students
           type: array
+        maxStudents:
+          description: Maximum number of students allowed in family
+          maximum: 8
+          minimum: 1
+          title: maxStudents
+          type: integer
+        status:
+          default: active
+          description: Family enrollment status
+          enum:
+          - active
+          - inactive
+          - suspended
+          title: status
+          type: string
+        enrollmentDate:
+          description: Date family was enrolled (must not be future date)
+          format: date
+          title: enrollmentDate
+          type: string
       required:
       - parents
       - students
@@ -2800,9 +3242,9 @@ components:
       type: object
     UsageSummary:
       example:
-        totalSessions: 0
+        totalSessions: 6
         lastActive: 2000-01-23T04:56:07.000+00:00
-        totalTurns: 6
+        totalTurns: 1
         userId: userId
       properties:
         userId:
@@ -2893,18 +3335,365 @@ components:
           type: object
       title: FeatureFlagsUpdate
       type: object
+    _convo_turn_post_request:
+      allOf:
+      - $ref: "#/components/schemas/ConvoTurnRequest"
+      - properties:
+          priority:
+            default: normal
+            description: Processing priority for queue management
+            enum:
+            - low
+            - normal
+            - high
+            type: string
+          maxTokens:
+            default: 300
+            description: Maximum tokens for AI response
+            maximum: 1000
+            minimum: 10
+            type: integer
+          temperature:
+            default: 0.7
+            description: "AI response creativity (0=deterministic, 2=very creative)"
+            maximum: 2.0
+            minimum: 0.0
+            type: number
+          contextWindow:
+            default: 5
+            description: Number of previous conversation turns to include as context
+            maximum: 20
+            minimum: 1
+            type: integer
+          moderationLevel:
+            default: standard
+            description: Content moderation strictness level
+            enum:
+            - permissive
+            - standard
+            - strict
+            type: string
+        type: object
+      title: _convo_turn_post_request
+    _convo_turn_post_200_response_allOf_analytics:
+      example:
+        educationalValue: 2.3021358869347655
+        userEngagementPrediction: 7.061401241503109
+        responseQuality: 5.962133916683182
+        topicRelevance: 5.637376656633329
+      properties:
+        responseQuality:
+          description: AI response quality score
+          maximum: 10
+          minimum: 0
+          title: responseQuality
+          type: number
+        topicRelevance:
+          description: How relevant response is to conversation topic
+          maximum: 10
+          minimum: 0
+          title: topicRelevance
+          type: number
+        educationalValue:
+          description: Educational content value score
+          maximum: 10
+          minimum: 0
+          title: educationalValue
+          type: number
+        userEngagementPrediction:
+          description: Predicted user engagement with response
+          maximum: 10
+          minimum: 0
+          title: userEngagementPrediction
+          type: number
+      title: _convo_turn_post_200_response_allOf_analytics
+      type: object
+    _convo_turn_post_200_response_allOf_moderation:
+      example:
+        flagged: true
+        confidence: 0.9301444243932576
+        categories:
+        - categories
+        - categories
+      properties:
+        flagged:
+          description: Whether content was flagged by moderation
+          title: flagged
+          type: boolean
+        categories:
+          description: Specific moderation categories triggered
+          items:
+            type: string
+          title: categories
+          type: array
+        confidence:
+          description: Moderation confidence score
+          maximum: 1
+          minimum: 0
+          title: confidence
+          type: number
+      title: _convo_turn_post_200_response_allOf_moderation
+      type: object
+    _convo_turn_post_200_response_allOf_rateLimit:
+      example:
+        dailyUsage: 2
+        resetTime: 2000-01-23T04:56:07.000+00:00
+        remaining: 3
+      properties:
+        remaining:
+          description: Remaining API calls in current window
+          title: remaining
+          type: integer
+        resetTime:
+          description: When rate limit resets
+          format: date-time
+          title: resetTime
+          type: string
+        dailyUsage:
+          description: Total API calls used today
+          title: dailyUsage
+          type: integer
+      title: _convo_turn_post_200_response_allOf_rateLimit
+      type: object
+    _convo_turn_post_200_response:
+      allOf:
+      - $ref: "#/components/schemas/ConvoTurnResponse"
+      - properties:
+          analytics:
+            $ref: "#/components/schemas/_convo_turn_post_200_response_allOf_analytics"
+          moderation:
+            $ref: "#/components/schemas/_convo_turn_post_200_response_allOf_moderation"
+          rateLimit:
+            $ref: "#/components/schemas/_convo_turn_post_200_response_allOf_rateLimit"
+        type: object
+      example:
+        analytics:
+          educationalValue: 2.3021358869347655
+          userEngagementPrediction: 7.061401241503109
+          responseQuality: 5.962133916683182
+          topicRelevance: 5.637376656633329
+        rateLimit:
+          dailyUsage: 2
+          resetTime: 2000-01-23T04:56:07.000+00:00
+          remaining: 3
+        moderation:
+          flagged: true
+          confidence: 0.9301444243932576
+          categories:
+          - categories
+          - categories
+        turn:
+          tokensCompletion: 6
+          tokensPrompt: 0
+          latencyMs: 1
+          convoTurnId: convoTurnId
+          timestamp: 2000-01-23T04:56:07.000+00:00
+        reply: reply
+      title: _convo_turn_post_200_response
+    _summarize_convo_post_request:
+      properties:
+        sessionId:
+          description: Conversation session to summarize
+          pattern: "^[a-zA-Z0-9_-]+$"
+          title: sessionId
+          type: string
+        summaryType:
+          default: brief
+          description: Type of summary to generate
+          enum:
+          - brief
+          - detailed
+          - behavioral
+          - educational
+          - personalization
+          title: summaryType
+          type: string
+        maxLength:
+          default: 200
+          description: Maximum length of summary in characters
+          maximum: 2000
+          minimum: 50
+          title: maxLength
+          type: integer
+        includeMetrics:
+          default: false
+          description: "Include conversation metrics (turn count, duration, etc.)"
+          title: includeMetrics
+          type: boolean
+        includeTopics:
+          default: true
+          description: Extract main topics and themes discussed
+          title: includeTopics
+          type: boolean
+        includeSentiment:
+          default: false
+          description: Analyze user sentiment and engagement
+          title: includeSentiment
+          type: boolean
+        personalizationGoals:
+          description: Specific personalization insights to extract
+          items:
+            enum:
+            - learning_style
+            - interests
+            - knowledge_level
+            - engagement_patterns
+            - preferred_topics
+            type: string
+          maxItems: 5
+          title: personalizationGoals
+          type: array
+      required:
+      - sessionId
+      title: _summarize_convo_post_request
+      type: object
+    _summarize_convo_post_200_response_metrics:
+      description: Conversation metrics and analytics
+      example:
+        durationMinutes: 6.027456183070403
+        totalTurns: 0
+        avgResponseTime: 1.4658129805029452
+        engagementScore: 5.962133916683182
+      properties:
+        totalTurns:
+          title: totalTurns
+          type: integer
+        durationMinutes:
+          title: durationMinutes
+          type: number
+        avgResponseTime:
+          title: avgResponseTime
+          type: number
+        engagementScore:
+          maximum: 10
+          minimum: 0
+          title: engagementScore
+          type: number
+      title: _summarize_convo_post_200_response_metrics
+      type: object
+    _summarize_convo_post_200_response_sentiment:
+      description: Sentiment analysis results
+      example:
+        confidence: 0.5637376656633328
+        overall: positive
+        progression:
+        - progression
+        - progression
+      properties:
+        overall:
+          enum:
+          - positive
+          - neutral
+          - negative
+          title: overall
+          type: string
+        confidence:
+          maximum: 1
+          minimum: 0
+          title: confidence
+          type: number
+        progression:
+          items:
+            type: string
+          title: progression
+          type: array
+      title: _summarize_convo_post_200_response_sentiment
+      type: object
+    _summarize_convo_post_200_response:
+      example:
+        summary: summary
+        sentiment:
+          confidence: 0.5637376656633328
+          overall: positive
+          progression:
+          - progression
+          - progression
+        summaryType: summaryType
+        topics:
+        - topics
+        - topics
+        personalizationInsights:
+          key: personalizationInsights
+        generatedAt: 2000-01-23T04:56:07.000+00:00
+        sessionId: sessionId
+        metrics:
+          durationMinutes: 6.027456183070403
+          totalTurns: 0
+          avgResponseTime: 1.4658129805029452
+          engagementScore: 5.962133916683182
+      properties:
+        sessionId:
+          description: Original session identifier
+          title: sessionId
+          type: string
+        summaryType:
+          description: Type of summary generated
+          title: summaryType
+          type: string
+        summary:
+          description: Generated conversation summary
+          title: summary
+          type: string
+        topics:
+          description: Main topics discussed
+          items:
+            type: string
+          title: topics
+          type: array
+        metrics:
+          $ref: "#/components/schemas/_summarize_convo_post_200_response_metrics"
+        sentiment:
+          $ref: "#/components/schemas/_summarize_convo_post_200_response_sentiment"
+        personalizationInsights:
+          additionalProperties:
+            type: string
+          description: Extracted personalization insights
+          title: personalizationInsights
+          type: object
+        generatedAt:
+          description: When summary was generated
+          format: date-time
+          title: generatedAt
+          type: string
+      title: _summarize_convo_post_200_response
+      type: object
     _upload_media_post_request:
       properties:
         file:
+          description: Media file to upload (max 50MB)
           format: binary
           type: string
         title:
+          description: Human-readable title for the media
+          maxLength: 200
+          minLength: 1
+          pattern: "^[a-zA-Z0-9\\s\\-_\\.]+$"
           type: string
         animalId:
+          description: Associated animal identifier
+          pattern: "^[a-zA-Z0-9_-]+$"
           type: string
+        description:
+          description: Optional description or context for the media
+          maxLength: 1000
+          type: string
+        tags:
+          description: Optional metadata tags
+          items:
+            pattern: "^[a-zA-Z0-9_-]+$"
+            type: string
+          maxItems: 10
+          type: array
       required:
       - file
       type: object
+    _media_get_200_response:
+      oneOf:
+      - $ref: "#/components/schemas/Media"
+      - items:
+          $ref: "#/components/schemas/Media"
+        type: array
+      title: _media_get_200_response
     ConvoTurnResponse_turn:
       example:
         tokensCompletion: 6
@@ -2952,6 +3741,43 @@ components:
           title: timestamp
           type: string
       title: ConvoHistory_turns_inner
+      type: object
+    AnimalConfigUpdate_guardrails:
+      additionalProperties: false
+      example:
+        content_filter: true
+        safe_mode: true
+        response_length_limit: 1212
+      properties:
+        safe_mode:
+          title: safe_mode
+          type: boolean
+        content_filter:
+          title: content_filter
+          type: boolean
+        response_length_limit:
+          maximum: 2000
+          minimum: 50
+          title: response_length_limit
+          type: integer
+      title: AnimalConfigUpdate_guardrails
+      type: object
+    Media_allOf_dimensions:
+      description: Image/video dimensions in pixels
+      example:
+        width: 1
+        height: 1
+      nullable: true
+      properties:
+        width:
+          minimum: 1
+          title: width
+          type: integer
+        height:
+          minimum: 1
+          title: height
+          type: integer
+      title: Media_allOf_dimensions
       type: object
     PerformanceMetrics_window:
       example:

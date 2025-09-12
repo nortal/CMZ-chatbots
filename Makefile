@@ -25,7 +25,7 @@ OPENAPI_GEN_IMAGE ?= openapitools/openapi-generator-cli:latest
 OPENAPI_GENERATOR ?= python-flask
 
 # Optional extra OpenAPI generator opts (space-separated)
-OPENAPI_GEN_OPTS ?=
+OPENAPI_GEN_OPTS ?= --config /local/backend/api/config-python-flask.yaml
 
 # ----- Local Python tooling (UV virtualenv) -----
 UV ?= uv
