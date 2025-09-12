@@ -12,10 +12,7 @@ import copy
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 from ..core import now_iso
-from ..id_generator import (
-    add_audit_timestamps, ensure_user_id, ensure_animal_id, 
-    ensure_family_id
-)
+from ..id_generator import add_audit_timestamps
 
 class FileStore:
     """

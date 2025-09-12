@@ -11,7 +11,6 @@ This script runs all unit tests and generates HTML reports with:
 import os
 import sys
 import subprocess
-import json
 from pathlib import Path
 from datetime import datetime
 
@@ -27,7 +26,7 @@ def run_unit_tests():
     print(f"📁 Persistence Mode: FILE (isolated testing)")
     print(f"📊 Generating HTML reports...")
     
-    reports_dir = ensure_reports_directory()
+    ensure_reports_directory()
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
     # Set environment for testing

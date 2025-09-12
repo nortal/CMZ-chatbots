@@ -129,21 +129,4 @@ async function generateTestSummary() {
   }
 }
 
-/**
- * Clean up temporary test files
- */
-async function cleanupTempFiles() {
-  console.log('🗑️  Cleaning up temporary test files...');
-  
-  // Preserve important files, clean up only truly temporary ones
-  const tempPatterns = [
-    '*.tmp',
-    '*.temp',
-    'test-*.lock'
-  ];
-  
-  // Implementation would clean up files matching patterns
-  console.log('🧹 Cleanup completed');
-}
-
 module.exports = globalTeardown;

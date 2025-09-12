@@ -11,17 +11,13 @@ PR003946-94: Provide unit tests for backend that can be used in GitLab CI pipeli
 import os
 import pytest
 import json
-import string
-import random
-from typing import Any, Dict, List
-from unittest.mock import patch
+from typing import Dict
 
 # Set file persistence mode for testing isolation
 os.environ["PERSISTENCE_MODE"] = "file"
 
 import connexion
 from openapi_server.encoder import JSONEncoder
-from openapi_server.impl.utils import get_store
 
 class TestBoundaryValues:
     """Test data generators for boundary value testing."""

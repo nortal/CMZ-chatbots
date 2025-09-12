@@ -1,7 +1,6 @@
 // Global setup for Playwright tests
 // PR003946-96: Integrated playwright testing
 
-const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
