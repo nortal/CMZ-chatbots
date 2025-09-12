@@ -23,7 +23,7 @@ class LoginPage extends BasePage {
       loadingSpinner: '[data-testid=loading-spinner]'
     };
     
-    this.path = '/auth/login';
+    this.path = '/login';
   }
 
   /**
@@ -44,7 +44,7 @@ class LoginPage extends BasePage {
     await this.waitForElement(this.elements.loginButton);
     
     // Verify page title
-    await this.verifyPageTitle('CMZ Chatbot - Login');
+    await this.verifyPageTitle('CMZ Animal Config - Login');
   }
 
   /**
@@ -60,6 +60,7 @@ class LoginPage extends BasePage {
 
   /**
    * Perform successful login and wait for redirect
+   * NOTE: CORS is now enabled - expects successful API calls and redirects
    * @param {string} email - User email  
    * @param {string} password - User password
    * @param {string} expectedRedirect - Expected redirect path
@@ -67,14 +68,31 @@ class LoginPage extends BasePage {
   async loginSuccessfully(email = 'test@cmz.org', password = 'testpass123', expectedRedirect = '/dashboard') {
     await this.login(email, password);
     
-    // Wait for API response
-    await this.waitForAPIResponse('/auth', 10000);
-    
-    // Wait for redirect
-    await this.page.waitForURL(`**${expectedRedirect}`, { timeout: 10000 });
-    
-    // Verify we're on the expected page
-    await this.verifyURL(expectedRedirect);
+    // With CORS enabled, expect successful API response and redirect
+    try {
+      // Wait for API response - should succeed now
+      await this.waitForAPIResponse('/auth', 10000);
+      
+      // Wait for successful redirect to dashboard/expected page
+      await this.page.waitForURL(`**${expectedRedirect}`, { timeout: 5000 });
+      await this.verifyURL(expectedRedirect);
+      
+      console.log(`✅ Login successful - redirected to ${expectedRedirect}`);
+      
+    } catch (error) {
+      // With CORS enabled, this should indicate a real failure
+      console.log('❌ Login failed - this indicates a real issue, not CORS');
+      
+      // Check for error message
+      const hasError = await this.page.isVisible(this.elements.errorMessage, { timeout: 5000 });
+      if (hasError) {
+        const errorText = await this.page.textContent(this.elements.errorMessage);
+        console.log(`Login error: ${errorText}`);
+        throw new Error(`Login failed: ${errorText}`);
+      } else {
+        throw new Error(`Login failed: ${error.message}`);
+      }
+    }
   }
 
   /**

@@ -11,8 +11,9 @@ def main():
     app = connexion.App(__name__, specification_dir='./openapi/')
     app.app.json_encoder = encoder.JSONEncoder
     
-    # Enable CORS for frontend integration
-    CORS(app.app, origins=['http://localhost:3000'])
+    # Enable CORS for frontend integration (Updated for testing)
+    # TODO: Re-enable CORS before production! Currently disabled for comprehensive testing
+    CORS(app.app, origins=['http://localhost:3001', 'http://localhost:3000'], supports_credentials=True)
     
     # Register consistent error handlers (PR003946-90)
     register_error_handlers(app.app)

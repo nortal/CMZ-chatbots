@@ -31,10 +31,35 @@ def auth_post(body):  # noqa: E501
 
     :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
     """
+    from openapi_server.impl.auth import authenticate_user
+    from openapi_server.impl.error_handler import AuthenticationError
+    
     auth_request = body
     if connexion.request.is_json:
         auth_request = AuthRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    
+    try:
+        # Extract username and password from request
+        username = auth_request.username if hasattr(auth_request, 'username') else body.get('username')
+        password = auth_request.password if hasattr(auth_request, 'password') else body.get('password')
+        
+        if not username or not password:
+            return {'code': 'validation_error', 'message': 'Username and password are required'}, 400
+        
+        # Authenticate user and get token
+        auth_result = authenticate_user(username, password)
+        
+        # Return auth response
+        return {
+            'token': auth_result['token'],
+            'expiresIn': 86400,  # 24 hours in seconds
+            'user': auth_result['user']
+        }, 200
+        
+    except AuthenticationError as e:
+        return {'code': 'authentication_failed', 'message': str(e)}, 401
+    except Exception as e:
+        return {'code': 'internal_error', 'message': 'Authentication service error'}, 500
 
 
 def auth_refresh_post():  # noqa: E501
