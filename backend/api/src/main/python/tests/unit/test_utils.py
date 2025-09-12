@@ -313,6 +313,19 @@ class BoundaryValueTestGenerator:
             "json: {\"key\": \"value\"}",             # JSON-like structure
             "xml: <tag>content</tag>",                # XML-like structure
         ]
+    
+    @staticmethod
+    def null_empty_values() -> List[Any]:
+        """Generate null and empty values for boundary testing."""
+        return [
+            None,                        # None value
+            "",                          # Empty string
+            " ",                         # Single space
+            "   ",                       # Multiple spaces
+            "\t",                        # Tab character
+            "\n",                        # Newline character
+            "  \t  \n  ",               # Mixed whitespace
+        ]
 
 
 class MockAuthenticationHelper:

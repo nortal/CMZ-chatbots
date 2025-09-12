@@ -6,7 +6,6 @@ Tests utility functions including ID generation, validation helpers,
 ORM operations, and core utilities.
 """
 import pytest
-import os
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 

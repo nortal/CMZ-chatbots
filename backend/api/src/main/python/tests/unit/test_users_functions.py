@@ -6,7 +6,6 @@ Tests all CRUD operations, pagination validation, foreign key validation,
 and error handling for the users module.
 """
 import pytest
-import os
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
@@ -14,7 +13,7 @@ from openapi_server.impl.users import (
     handle_list_users, handle_get_user, handle_create_user,
     handle_update_user, handle_delete_user, _validate_foreign_keys
 )
-from openapi_server.impl.error_handler import ValidationError, NotFoundError
+from openapi_server.impl.error_handler import ValidationError
 
 
 class TestHandleListUsers:

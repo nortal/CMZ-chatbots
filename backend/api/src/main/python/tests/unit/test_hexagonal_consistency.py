@@ -23,6 +23,9 @@ from openapi_server.impl import (
 # Import Lambda handlers
 from openapi_server import lambda_handlers
 
+# Import error handlers
+from openapi_server.impl.error_handler import ValidationError
+
 
 class TestFlaskControllerArchitectureCompliance:
     """Test that Flask controllers are thin wrappers around business logic."""
@@ -211,8 +214,6 @@ class TestConsistentErrorHandling:
         """Test that validation errors are handled consistently."""
         # Test Flask controller error handling
         with patch('openapi_server.impl.users.handle_create_user') as mock_handle:
-            from openapi_server.impl.error_handler import ValidationError
-            
             mock_handle.side_effect = ValidationError(
                 "Validation failed",
                 field_errors={"email": ["Invalid email format"]}

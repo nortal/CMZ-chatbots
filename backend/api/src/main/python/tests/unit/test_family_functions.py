@@ -13,7 +13,7 @@ from openapi_server.impl.family import (
     handle_update_family, handle_delete_family, _validate_family_members,
     _validate_family_members_test_mode, _user_exists, _get_existing_user_ids
 )
-from openapi_server.impl.error_handler import ValidationError, NotFoundError
+from openapi_server.impl.error_handler import ValidationError
 
 
 class TestHandleListFamilies:
