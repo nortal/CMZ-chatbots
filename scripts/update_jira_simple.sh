@@ -2,6 +2,10 @@
 
 # Simple script to update Jira tickets
 # This version focuses just on the working parts we identified
+#
+# ⚠️ WARNING: This script updates INCORRECT tickets (PR003946-87, PR003946-67)
+# For API validation improvements MR, use: update_jira_validation_improvements.sh
+# which updates the CORRECT tickets: PR003946-94, PR003946-95, PR003946-96, PR003946-90, PR003946-73
 
 set -e
 
