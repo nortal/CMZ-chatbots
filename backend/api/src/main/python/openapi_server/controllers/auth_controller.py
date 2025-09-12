@@ -4,10 +4,7 @@ from typing import Tuple
 from typing import Union
 
 from openapi_server.models.auth_request import AuthRequest  # noqa: E501
-from openapi_server.models.auth_response import AuthResponse  # noqa: E501
-from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.password_reset_request import PasswordResetRequest  # noqa: E501
-from openapi_server import util
 
 
 def auth_logout_post():  # noqa: E501
@@ -58,7 +55,7 @@ def auth_post(body):  # noqa: E501
         
     except AuthenticationError as e:
         return {'code': 'authentication_failed', 'message': str(e)}, 401
-    except Exception as e:
+    except Exception:
         return {'code': 'internal_error', 'message': 'Authentication service error'}, 500
 
 
