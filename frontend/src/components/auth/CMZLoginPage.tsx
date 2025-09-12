@@ -154,15 +154,17 @@ const CMZLoginPage = () => {
         <div style={{ padding: '32px' }}>
           <form onSubmit={handleSubmit}>
             {errors.general && (
-              <div style={{
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
-                borderRadius: '6px',
-                padding: '12px 16px',
-                marginBottom: '20px',
-                color: '#dc2626',
-                fontSize: '14px'
-              }}>
+              <div 
+                data-testid="error-message"
+                style={{
+                  backgroundColor: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  borderRadius: '6px',
+                  padding: '12px 16px',
+                  marginBottom: '20px',
+                  color: '#dc2626',
+                  fontSize: '14px'
+                }}>
                 {errors.general}
               </div>
             )}
@@ -184,6 +186,7 @@ const CMZLoginPage = () => {
                 value={formData.email}
                 onChange={handleInputChange('email')}
                 disabled={isLoading}
+                data-testid="email-input"
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -229,6 +232,7 @@ const CMZLoginPage = () => {
                   value={formData.password}
                   onChange={handleInputChange('password')}
                   disabled={isLoading}
+                  data-testid="password-input"
                   style={{
                     width: '100%',
                     padding: '12px 48px 12px 16px',
@@ -294,6 +298,7 @@ const CMZLoginPage = () => {
               
               <button
                 type="button"
+                data-testid="forgot-password-link"
                 style={{
                   background: 'none',
                   border: 'none',
@@ -313,6 +318,7 @@ const CMZLoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
+              data-testid="login-button"
               style={{
                 width: '100%',
                 background: '#2d5a3d',
