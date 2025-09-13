@@ -1,4 +1,5 @@
 import connexion
+import os
 from typing import Dict
 from typing import Tuple
 from typing import Union
@@ -65,12 +66,14 @@ def delete_family(family_id):  # noqa: E501
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     # PR003946-66: Soft Delete Consistency - Implement soft delete for families
-    from openapi_server.impl.utils.dynamo import get_store, now_iso
+    from openapi_server.impl.utils.orm.store import get_store
     from datetime import datetime, timezone
 
     try:
         # Get the store for families
-        store = get_store("quest-dev-family", "familyId")
+        table_name = os.getenv('FAMILY_DYNAMO_TABLE_NAME', 'quest-dev-family')
+        pk_name = os.getenv('FAMILY_DYNAMO_PK_NAME', 'familyId')
+        store = get_store(table_name, pk_name)
 
         # Check if family exists
         family = store.get(family_id)
@@ -88,24 +91,13 @@ def delete_family(family_id):  # noqa: E501
             }, 410
 
         # Perform soft delete by setting softDelete flag and deleted audit timestamp
-        current_time = now_iso()
-        audit_actor = {
-            'actorId': 'system',
-            'email': 'system@cmz.org',
-            'displayName': 'System'
-        }
+        from openapi_server.impl.utils.core import create_audit_stamp
 
         # Update the family with soft delete markers
         update_data = {
             'softDelete': True,
-            'deleted': {
-                'at': current_time,
-                'by': audit_actor
-            },
-            'modified': {
-                'at': current_time,
-                'by': audit_actor
-            }
+            'deleted': create_audit_stamp(),
+            'modified': create_audit_stamp()
         }
 
         # Apply the soft delete update

@@ -1,4 +1,5 @@
 import connexion
+import os
 from typing import Dict
 from typing import Tuple
 from typing import Union
@@ -8,6 +9,9 @@ from openapi_server.models.auth_response import AuthResponse  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.password_reset_request import PasswordResetRequest  # noqa: E501
 from openapi_server import util
+
+# Constants for configuration
+DEFAULT_TOKEN_EXPIRY_SECONDS = 86400  # 24 hours
 
 
 def auth_logout_post():  # noqa: E501
@@ -65,8 +69,11 @@ def auth_post(body):  # noqa: E501
             username = body.get('username', '') if isinstance(body, dict) else ''
             password = body.get('password', '') if isinstance(body, dict) else ''
 
-        # Simple validation for TDD foundation
-        if username == 'admin@cmz.org' and password == 'admin123':
+        # Simple validation for TDD foundation using environment variables
+        test_username = os.getenv('TDD_TEST_USERNAME', 'admin@cmz.org')
+        test_password = os.getenv('TDD_TEST_PASSWORD', 'admin123')
+
+        if username == test_username and password == test_password:
             # Generate JWT token
             token = generate_jwt_token(
                 user_id='admin_001',
@@ -77,21 +84,12 @@ def auth_post(body):  # noqa: E501
 
             # Create response dict that satisfies AuthResponse schema
             # Include all required fields with minimal audit data for TDD foundation
-            current_time = datetime.now(timezone.utc).isoformat()
-            audit_actor = {
-                'actorId': 'system',
-                'email': 'system@cmz.org',
-                'displayName': 'System'
-            }
-
-            audit_stamp = {
-                'at': current_time,
-                'by': audit_actor
-            }
+            from openapi_server.impl.utils.core import create_audit_stamp
+            audit_stamp = create_audit_stamp()
 
             response = {
                 'token': token,
-                'expiresIn': 86400,  # Note: camelCase for OpenAPI attribute mapping
+                'expiresIn': DEFAULT_TOKEN_EXPIRY_SECONDS,  # Note: camelCase for OpenAPI attribute mapping
                 'user': {
                     'userId': 'admin_001',
                     'email': 'admin@cmz.org',
