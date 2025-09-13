@@ -20,11 +20,8 @@ def media_delete(media_id, permanent=None):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    try:
-        # Media functionality not yet implemented
-        return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
-    except Exception as e:
-        return {"code": "internal_error", "message": str(e)}, 500
+    # Media functionality not yet implemented
+    return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
 
 
 def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E501
@@ -43,11 +40,8 @@ def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E5
 
     :rtype: Union[MediaGet200Response, Tuple[MediaGet200Response, int], Tuple[MediaGet200Response, int, Dict[str, str]]
     """
-    try:
-        # Media functionality not yet implemented
-        return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
-    except Exception as e:
-        return {"code": "internal_error", "message": str(e)}, 500
+    # Media functionality not yet implemented
+    return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
 
 
 def upload_media_post(file, title=None, animal_id=None, description=None, tags=None):  # noqa: E501
@@ -68,8 +62,5 @@ def upload_media_post(file, title=None, animal_id=None, description=None, tags=N
 
     :rtype: Union[Media, Tuple[Media, int], Tuple[Media, int, Dict[str, str]]
     """
-    try:
-        # Media functionality not yet implemented
-        return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
-    except Exception as e:
-        return {"code": "internal_error", "message": str(e)}, 500
+    # Media functionality not yet implemented
+    return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501

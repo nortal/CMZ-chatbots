@@ -209,12 +209,14 @@ class TestCoreUtils:
     
     def test_not_found(self):
         """Test not_found utility function."""
-        result = not_found()
+        result = not_found("userId", "test_123")
         
-        # Should return tuple with None and 404 status
+        # Should return error response with 404 status
         assert isinstance(result, tuple)
         assert len(result) == 2
-        assert result[0] is None
+        assert isinstance(result[0], dict)
+        assert result[0]["code"] == "Not Found"
+        assert "userId=test_123" in result[0]["message"]
         assert result[1] == 404
 
 

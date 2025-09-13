@@ -18,11 +18,8 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    try:
-        # Knowledge functionality not yet implemented
-        return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
-    except Exception as e:
-        return {"code": "internal_error", "message": str(e)}, 500
+    # Knowledge functionality not yet implemented
+    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
 
 
 def knowledge_article_get(knowledge_id):  # noqa: E501
@@ -35,11 +32,8 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
 
     :rtype: Union[KnowledgeArticle, Tuple[KnowledgeArticle, int], Tuple[KnowledgeArticle, int, Dict[str, str]]
     """
-    try:
-        # Knowledge functionality not yet implemented
-        return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
-    except Exception as e:
-        return {"code": "internal_error", "message": str(e)}, 500
+    # Knowledge functionality not yet implemented
+    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
 
 
 def knowledge_article_post(body):  # noqa: E501
@@ -55,8 +49,5 @@ def knowledge_article_post(body):  # noqa: E501
     knowledge_create = body
     if connexion.request.is_json:
         knowledge_create = KnowledgeCreate.from_dict(connexion.request.get_json())  # noqa: E501
-    try:
-        # Knowledge functionality not yet implemented
-        return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
-    except Exception as e:
-        return {"code": "internal_error", "message": str(e)}, 500
+    # Knowledge functionality not yet implemented
+    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
