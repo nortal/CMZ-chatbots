@@ -13,7 +13,9 @@ from openapi_server import util
 # Import implementation handlers
 from openapi_server.impl.animals import (
     handle_create_animal,
-    handle_list_animals
+    handle_list_animals,
+    handle_get_animal_config,
+    handle_update_animal_config
 )
 from openapi_server.impl.error_handler import ValidationError, create_error_response
 
@@ -28,7 +30,15 @@ def animal_config_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        result = handle_get_animal_config(animal_id)
+        if result is None:
+            return create_error_response("not_found", f"Animal configuration not found for {animal_id}"), 404
+        return result, 200
+    except ValidationError as e:
+        return create_error_response(e.error_code, e.message, e.details), 400
+    except Exception as e:
+        return create_error_response("internal_error", str(e)), 500
 
 
 def animal_config_patch(animal_id, body):  # noqa: E501
@@ -43,10 +53,18 @@ def animal_config_patch(animal_id, body):  # noqa: E501
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
-    animal_config_update = body
-    if connexion.request.is_json:
-        animal_config_update = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        animal_config_update = body
+        if connexion.request.is_json:
+            animal_config_update = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        
+        # The implementation expects an AnimalConfig model, so pass the update object directly
+        result = handle_update_animal_config(animal_id, animal_config_update)
+        return result, 200
+    except ValidationError as e:
+        return create_error_response(e.error_code, e.message, e.details), 400
+    except Exception as e:
+        return create_error_response("internal_error", str(e)), 500
 
 
 def animal_details_get(animal_id):  # noqa: E501
