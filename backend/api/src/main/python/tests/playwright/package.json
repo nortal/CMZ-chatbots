@@ -23,7 +23,7 @@
   },
   "keywords": [
     "playwright",
-    "e2e-testing", 
+    "e2e-testing",
     "ui-testing",
     "cmz-chatbot",
     "automation"
@@ -34,7 +34,9 @@
     "@playwright/test": "^1.40.0",
     "axe-playwright": "^2.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "aws-sdk": "^2.1692.0"
+  },
   "engines": {
     "node": ">=16.0.0"
   },
