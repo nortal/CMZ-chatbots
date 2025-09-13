@@ -326,14 +326,17 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 
 ## Required Process - Discovery-First Approach
 1. **DISCOVERY FIRST**: Run integration tests to identify actual state (never assume based on Jira status)
-2. **SEQUENTIAL REASONING**: Use MCP to predict outcomes and plan systematic approach
-3. **SCOPE ASSESSMENT**: If fewer than 5 failing tickets, identify comprehensive enhancement opportunities
-4. **GIT WORKFLOW**: MANDATORY - Always start from dev, create feature branch, target dev for MR
-5. **SYSTEMATIC IMPLEMENTATION**: Focus on OpenAPI spec enhancements + model regeneration + infrastructure
-6. **SECURITY & QUALITY**: Address GitHub Advanced Security scanner issues systematically  
-7. **FEATURE BRANCH MR**: Create MR from feature branch targeting dev (never commit directly to dev)
-8. **COPILOT REVIEW**: Add reviewer and address feedback with inline comment resolution
-9. **CORRECTIVE JIRA**: Verify ticket mapping before updates, use corrective comments for mistakes
+2. **ENHANCED DISCOVERY**: Use `scripts/enhanced_discovery.py` for dependency analysis and priority scoring
+3. **TWO-PHASE QUALITY GATES**: Execute `scripts/two_phase_quality_gates.sh` for systematic validation
+4. **SEQUENTIAL REASONING**: Use MCP to predict outcomes and plan systematic approach
+5. **SCOPE ASSESSMENT**: If fewer than 5 failing tickets, identify comprehensive enhancement opportunities
+6. **GIT WORKFLOW**: MANDATORY - Always start from dev, create feature branch, target dev for MR
+7. **SYSTEMATIC IMPLEMENTATION**: Focus on OpenAPI spec enhancements + model regeneration + infrastructure
+8. **SECURITY & QUALITY**: Address GitHub Advanced Security scanner issues systematically
+9. **REPOSITORY HYGIENE**: Apply learnings from PR #32 retrospective to prevent test artifact pollution
+10. **FEATURE BRANCH MR**: Create MR from feature branch targeting dev (never commit directly to dev)
+11. **COPILOT REVIEW**: Add reviewer and address feedback with inline comment resolution
+12. **CORRECTIVE JIRA**: Verify ticket mapping before updates, use corrective comments for mistakes
 
 ## Technical Requirements
 - **Focus on Endpoint Implementation**: Prioritize new API endpoints over strict business validation
@@ -417,6 +420,32 @@ add_simple_comment "PR003946-XX" "CORRECTION: Previous comment was incorrect..."
 10. **VALIDATION PHASE**: Re-test and verify all functionality after changes
 11. **COMPLETION PHASE**: Use sequential reasoning to validate all steps completed correctly and ensure merge readiness
 
+## Retrospective Integration (PR #32 Learnings)
+
+**Critical Process Improvements Based on PR #32 Analysis:**
+
+### Repository Hygiene Enforcement
+- **Problem**: 72+ test artifact files incorrectly committed (test-failed-*.png, video.webm, error-context.md)
+- **Solution**: Enhanced .gitignore patterns and automated cleanup procedures
+- **Implementation**: Prevent test artifacts with `**/test-results/`, `**/*.webm`, `**/*.png` exclusions
+
+### Two-Phase Quality Gates
+- **Problem**: Tests failing across all 6 browsers but PR still merged
+- **Solution**: Systematic validation with `scripts/two_phase_quality_gates.sh`
+- **Implementation**: Phase 1 (fundamentals) must pass before Phase 2 (comprehensive)
+
+### Enhanced Discovery
+- **Problem**: Ad-hoc ticket selection without dependency analysis
+- **Solution**: Intelligent ticket discovery with `scripts/enhanced_discovery.py`
+- **Implementation**: Priority scoring, dependency graphing, optimal ordering
+
+### Template-Driven Consistency
+- **Problem**: Inconsistent ticket creation and scope creep
+- **Solution**: Structured templates with `scripts/ticket_template_generator.py`
+- **Implementation**: Proven patterns for TDD, Testing, API, and Playwright tickets
+
+**Reference Documentation**: See `docs/RETROSPECTIVE_PR32_LEARNINGS.md` for complete analysis
+
 **START HERE - Discovery-Driven Approach:**
 
 ### Discovery Mode (Standard /nextfive)
@@ -424,11 +453,17 @@ add_simple_comment "PR003946-XX" "CORRECTION: Previous comment was incorrect..."
 # Step 1: ALWAYS run integration tests first to find actual failing tickets
 python -m pytest tests/integration/test_api_validation_epic.py -v
 
-# Step 2: Identify specific failing test methods and their associated tickets
+# Step 2: Enhanced discovery with dependency analysis and priority scoring
+python scripts/enhanced_discovery.py --epic PR003946-61 --include-dependencies
+
+# Step 3: Identify specific failing test methods and their associated tickets
 grep -A 2 -B 1 "PR003946-" tests/integration/test_api_validation_epic.py
 
-# Step 3: If fewer than 5 failing tickets, examine OpenAPI spec for enhancement opportunities
+# Step 4: If fewer than 5 failing tickets, examine OpenAPI spec for enhancement opportunities
 grep -A 5 -B 5 "paths:" backend/api/openapi_spec.yaml
+
+# Step 5: Execute two-phase quality gates for systematic validation
+./scripts/two_phase_quality_gates.sh --phase1-only  # Quick validation first
 ```
 
 ### Targeted Mode (/nextfive PR003946-XX [PR003946-YY ...])
@@ -506,6 +541,13 @@ When fewer than 5 failing tickets exist, implement systematic enhancements:
 - **Morphllm**: Bulk validation pattern application across multiple files
 - **Magic**: Not typically needed for backend API validation work
 - **Playwright**: Not needed for API-only validation improvements
+
+**Enhanced /nextfive Integration:**
+- **Enhanced Discovery**: Use `scripts/enhanced_discovery.py` for systematic ticket discovery with dependency analysis and priority scoring
+- **Two-Phase Quality Gates**: Integrate `scripts/two_phase_quality_gates.sh` for systematic validation (Phase 1: fundamentals, Phase 2: comprehensive)
+- **Template-Driven Creation**: Use `scripts/ticket_template_generator.py` for consistent, high-quality ticket generation
+- **Repository Hygiene**: Apply learnings from `docs/RETROSPECTIVE_PR32_LEARNINGS.md` to prevent test artifact pollution
+- **Quality-First Approach**: Never proceed to Phase 2 comprehensive testing until Phase 1 fundamentals pass
 
 ## Dependency Resolution Examples
 
