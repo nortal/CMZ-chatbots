@@ -1,153 +1,72 @@
 const { test, expect } = require('@playwright/test');
-const { spawn } = require('child_process');
+const { exec } = require('child_process');
+const { promisify } = require('util');
+
+const execAsync = promisify(exec);
 
 /**
- * DynamoDB Consistency Validation Tests - SECURE VERSION
+ * DynamoDB Consistency Validation Tests
  * 
  * These tests ensure that data displayed in the UI matches what's actually 
  * stored in DynamoDB, and that UI updates are properly persisted.
- * 
- * SECURITY FIXES:
- * - Command injection protection via spawn() with args array
- * - Input validation for all user-controlled data
- * - Secure error handling without information disclosure
- * - Minimal logging with no sensitive data exposure
  */
-test.describe('DynamoDB Consistency Validation - Secure', () => {
+test.describe('DynamoDB Consistency Validation', () => {
 
     /**
-     * Secure command execution helper
-     */
-    async function execSecureCommand(command, args) {
-        return new Promise((resolve, reject) => {
-            const process = spawn(command, args, { 
-                stdio: ['pipe', 'pipe', 'pipe'],
-                timeout: 30000 // 30 second timeout
-            });
-            
-            let stdout = '';
-            let stderr = '';
-            
-            process.stdout.on('data', (data) => stdout += data);
-            process.stderr.on('data', (data) => stderr += data);
-            
-            process.on('close', (code) => {
-                if (code === 0) {
-                    resolve(stdout);
-                } else {
-                    reject(new Error(`AWS CLI command failed with exit code ${code}`));
-                }
-            });
-            
-            process.on('error', (error) => {
-                reject(new Error(`Failed to execute AWS CLI: ${error.message}`));
-            });
-        });
-    }
-
-    /**
-     * Secure input validation for animal IDs
-     */
-    function validateAnimalId(animalId) {
-        if (!animalId || typeof animalId !== 'string') {
-            throw new Error('Animal ID must be a non-empty string');
-        }
-        
-        // Only allow alphanumeric, hyphens, and underscores
-        if (!/^[a-zA-Z0-9_-]+$/.test(animalId)) {
-            throw new Error('Animal ID contains invalid characters');
-        }
-        
-        if (animalId.length > 100) {
-            throw new Error('Animal ID too long');
-        }
-        
-        return animalId;
-    }
-
-    /**
-     * Secure DynamoDB item transformation
-     */
-    function transformDynamoDBItem(item) {
-        if (!item || typeof item !== 'object') {
-            return null;
-        }
-        
-        return {
-            animalId: item.animalId?.S || '',
-            name: item.name?.S || '',
-            species: item.species?.S || '',
-            personality: item.personality?.M?.description?.S || item.personality?.S || '',
-            active: item.active?.BOOL || false,
-            educational_focus: item.educational_focus?.BOOL || false,
-            age_appropriate: item.age_appropriate?.BOOL || false,
-            created: item.created?.M?.at?.S || '',
-            modified: item.modified?.M?.at?.S || ''
-        };
-    }
-
-    /**
-     * SECURE Helper function to query DynamoDB directly
+     * Helper function to query DynamoDB directly
      */
     async function getDynamoDBAnimal(animalId) {
         try {
-            // Validate input to prevent injection
-            const validatedId = validateAnimalId(animalId);
-            
-            const args = [
-                'dynamodb',
-                'get-item',
-                '--table-name', 'quest-dev-animal',
-                '--key', JSON.stringify({ animalId: { S: validatedId } }),
-                '--output', 'json'
-            ];
-            
-            const stdout = await execSecureCommand('aws', args);
+            const { stdout } = await execAsync(
+                `aws dynamodb get-item --table-name quest-dev-animal --key '{"animalId":{"S":"${animalId}"}}' --output json`
+            );
             const result = JSON.parse(stdout);
             
             if (!result.Item) {
                 return null;
             }
             
-            return transformDynamoDBItem(result.Item);
+            // Convert DynamoDB format to normal JSON
+            const animal = {
+                animalId: result.Item.animalId?.S,
+                name: result.Item.name?.S,
+                species: result.Item.species?.S,
+                personality: result.Item.personality?.M?.description?.S || result.Item.personality?.S,
+                active: result.Item.active?.BOOL,
+                educational_focus: result.Item.educational_focus?.BOOL,
+                age_appropriate: result.Item.age_appropriate?.BOOL,
+                created: result.Item.created?.M?.at?.S,
+                modified: result.Item.modified?.M?.at?.S
+            };
             
+            return animal;
         } catch (error) {
-            // Secure error handling - no sensitive information in logs
-            if (process.env.NODE_ENV === 'test' && process.env.DEBUG_TESTS) {
-                console.debug('DynamoDB query error details:', error.message);
-            }
+            console.error('Error querying DynamoDB:', error.message);
             return null;
         }
     }
 
     /**
-     * SECURE Helper function to scan all animals from DynamoDB
+     * Helper function to scan all animals from DynamoDB
      */
     async function getAllDynamoDBAnimals() {
         try {
-            const args = [
-                'dynamodb',
-                'scan',
-                '--table-name', 'quest-dev-animal',
-                '--output', 'json'
-            ];
-            
-            const stdout = await execSecureCommand('aws', args);
+            const { stdout } = await execAsync(
+                `aws dynamodb scan --table-name quest-dev-animal --output json`
+            );
             const result = JSON.parse(stdout);
             
-            if (!result.Items || !Array.isArray(result.Items)) {
-                return [];
-            }
-            
-            return result.Items
-                .map(transformDynamoDBItem)
-                .filter(item => item !== null);
-                
+            return result.Items.map(item => ({
+                animalId: item.animalId?.S,
+                name: item.name?.S,
+                species: item.species?.S,
+                personality: item.personality?.M?.description?.S || item.personality?.S,
+                active: item.active?.BOOL,
+                educational_focus: item.educational_focus?.BOOL,
+                age_appropriate: item.age_appropriate?.BOOL
+            }));
         } catch (error) {
-            // Secure error handling
-            if (process.env.NODE_ENV === 'test' && process.env.DEBUG_TESTS) {
-                console.debug('DynamoDB scan error details:', error.message);
-            }
+            console.error('Error scanning DynamoDB:', error.message);
             return [];
         }
     }
@@ -157,13 +76,13 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
         
         // Get animals from DynamoDB directly
         const dynamoAnimals = await getAllDynamoDBAnimals();
-        console.log('DynamoDB animals count:', dynamoAnimals.length);
+        console.log('DynamoDB animals:', dynamoAnimals.length);
         
         // Get animals from API
         const apiResponse = await page.request.get('http://localhost:8080/animal_list');
         expect(apiResponse.status()).toBe(200);
         const apiAnimals = await apiResponse.json();
-        console.log('API animals count:', apiAnimals.length);
+        console.log('API animals:', apiAnimals.length);
         
         // Verify counts match
         expect(apiAnimals.length).toBe(dynamoAnimals.length);
@@ -209,7 +128,7 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
         }
         
         const testAnimal = dynamoAnimals[0];
-        console.log('Testing animal:', testAnimal.animalId);
+        console.log('Testing animal:', testAnimal.animalId, testAnimal.name);
         
         // Find and click on the animal in the UI
         const animalCard = page.locator(`text=${testAnimal.name}`).first();
@@ -233,14 +152,17 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
         }
         
         const testAnimal = dynamoAnimals[0];
-        console.log('Testing personality for animal:', testAnimal.animalId);
+        console.log('Testing personality for:', testAnimal.animalId);
+        console.log('DynamoDB personality:', testAnimal.personality);
         
         // Get personality from API
         const apiResponse = await page.request.get(`http://localhost:8080/animal_config?animalId=${testAnimal.animalId}`);
         expect(apiResponse.status()).toBe(200);
         const apiConfig = await apiResponse.json();
         
-        // Verify API matches DynamoDB (secure comparison)
+        console.log('API personality:', apiConfig.personality);
+        
+        // Verify API matches DynamoDB
         expect(apiConfig.personality).toBe(testAnimal.personality);
         
         console.log('✅ Personality field API matches DynamoDB');
@@ -258,12 +180,10 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
         
         const testAnimal = dynamoAnimals[0];
         const originalPersonality = testAnimal.personality;
+        const testPersonality = `Test personality updated at ${new Date().toISOString()}`;
         
-        // Create safe test data
-        const timestamp = Date.now();
-        const testPersonality = `Test personality updated at ${timestamp}`;
-        
-        console.log('Testing personality update for animal:', testAnimal.animalId);
+        console.log('Original personality:', originalPersonality);
+        console.log('Test personality:', testPersonality);
         
         // Update via API (simulating UI save)
         const updateResponse = await page.request.patch(
@@ -275,7 +195,7 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
         );
         
         expect(updateResponse.status()).toBe(200);
-        console.log('API update completed with status:', updateResponse.status());
+        console.log('API update response:', updateResponse.status());
         
         // Wait a moment for DynamoDB eventual consistency
         await page.waitForTimeout(1000);
@@ -295,8 +215,6 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
                 headers: { 'Content-Type': 'application/json' }
             }
         );
-        
-        console.log('✅ Original data restored');
     });
 
     test('should verify animal config form displays DynamoDB values', async ({ page }) => {
@@ -307,17 +225,18 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
         
         const dynamoAnimals = await getAllDynamoDBAnimals();
         if (dynamoAnimals.length === 0) {
-            console.log('⚠️ No animals found in DynamoDB, skipping form test');
+            console.log('⚠️ No animals found in DynamoDB, creating test data...');
             return;
         }
         
         const testAnimal = dynamoAnimals[0];
-        console.log('Testing form data for animal:', testAnimal.animalId);
+        console.log('Testing form data for:', testAnimal.name);
         
         // Navigate to the frontend (this will now show DynamoDB data, not mock data)
         await page.goto('http://localhost:3001');
         await page.waitForLoadState('networkidle');
         
+        // Skip login for now since we're testing API consistency
         // Check if API health endpoint works
         const healthResponse = await page.request.get('http://localhost:8080/health');
         if (healthResponse.status() === 200) {
@@ -331,7 +250,7 @@ test.describe('DynamoDB Consistency Validation - Secure', () => {
         if (apiResponse.status() === 200) {
             const apiConfig = await apiResponse.json();
             expect(apiConfig.personality).toBe(testAnimal.personality);
-            console.log('✅ API config matches DynamoDB data');
+            console.log('✅ API config matches DynamoDB:', apiConfig.personality === testAnimal.personality);
         }
         
         console.log('✅ Animal config form validation complete');

@@ -3,8 +3,6 @@ import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, MessageS
 import { useAnimals, useAnimalConfig, useApiHealth } from '../hooks/useAnimals';
 import { Animal as BackendAnimal, AnimalConfig as BackendAnimalConfig } from '../services/api';
 import { utils } from '../services/api';
-import { useSecureFormHandling, getSecureAnimalConfigData } from '../hooks/useSecureFormHandling';
-import { ValidationError } from '../utils/inputValidation';
 
 interface KnowledgeEntry {
   id: string;
@@ -83,18 +81,14 @@ const AnimalConfig: React.FC = () => {
     setSelectedAnimalId(animal.animalId || animal.id);
   };
   
-  // Handle configuration save with secure error handling
+  // Handle configuration save
   const handleSaveConfig = async (configData: any) => {
     try {
       await updateConfig(configData);
       // Refresh the animals list to get updated data
       refetch();
     } catch (error) {
-      // Secure error handling - don't expose sensitive details
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to save configuration:', error);
-      }
-      throw error; // Re-throw for form handler
+      console.error('Failed to save configuration:', error);
     }
   };
 
@@ -170,11 +164,6 @@ const AnimalConfig: React.FC = () => {
 
   const ConfigurationModal: React.FC = () => {
     if (!selectedAnimal) return null;
-    
-    // Use secure form handling
-    const { errors, isSubmitting, submitForm, clearErrors, getFieldError } = useSecureFormHandling(
-      handleSaveConfig
-    );
 
     const [activeTab, setActiveTab] = useState<'basic' | 'prompt' | 'knowledge' | 'guardrails' | 'settings'>('basic');
 
@@ -258,30 +247,20 @@ const AnimalConfig: React.FC = () => {
                       Animal Name
                     </label>
                     <input
-                      id="animal-name-input"
                       type="text"
                       value={animalConfig?.name || ''}
-                      onChange={(e) => clearErrors()}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                        getFieldError('name') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
-                      }`}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
-                    {getFieldError('name') && <p className="text-red-500 text-sm mt-1">{getFieldError('name')}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Species (Scientific Name)
                     </label>
                     <input
-                      id="animal-species-input"
                       type="text"
                       value={animalConfig?.species || ''}
-                      onChange={(e) => clearErrors()}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                        getFieldError('species') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
-                      }`}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
-                    {getFieldError('species') && <p className="text-red-500 text-sm mt-1">{getFieldError('species')}</p>}
                   </div>
                 </div>
 
@@ -292,14 +271,10 @@ const AnimalConfig: React.FC = () => {
                   <textarea
                     rows={4}
                     value={animalConfig?.personality || ''}
-                    onChange={(e) => clearErrors()}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      getFieldError('personality') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
-                    }`}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="Describe the animal's personality, how it should interact with visitors..."
                     id="personality-textarea"
                   />
-                  {getFieldError('personality') && <p className="text-red-500 text-sm mt-1">{getFieldError('personality')}</p>}
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
@@ -561,20 +536,19 @@ const AnimalConfig: React.FC = () => {
               </button>
               <button 
                 onClick={() => {
-                  try {
-                    const configData = getSecureAnimalConfigData();
-                    submitForm(configData);
-                  } catch (error) {
-                    if (error instanceof ValidationError) {
-                      console.debug('Form validation error:', error.message);
-                    }
-                  }
+                  // Get form data and save
+                  const personalityEl = document.getElementById('personality-textarea') as HTMLTextAreaElement;
+                  const configData = {
+                    personality: personalityEl?.value || animalConfig?.personality,
+                    // Add other form fields as needed
+                  };
+                  handleSaveConfig(configData);
                 }}
-                disabled={configSaving || isSubmitting}
+                disabled={configSaving}
                 className="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {configSaving || isSubmitting ? 'Saving...' : 'Save Configuration'}
+                {configSaving ? 'Saving...' : 'Save Configuration'}
               </button>
             </div>
           </div>
