@@ -28,12 +28,13 @@ class TestAnimalConfigPersistence:
         cls.animal_pk_name = os.getenv("ANIMAL_DYNAMO_PK_NAME", "animalId")
         
         # Initialize DynamoDB client
+        region = os.getenv("AWS_DEFAULT_REGION", "us-west-2")
         if os.getenv("DYNAMODB_ENDPOINT_URL"):
             cls.dynamodb = boto3.client('dynamodb', endpoint_url=os.getenv("DYNAMODB_ENDPOINT_URL"))
             cls.dynamodb_resource = boto3.resource('dynamodb', endpoint_url=os.getenv("DYNAMODB_ENDPOINT_URL"))
         else:
-            cls.dynamodb = boto3.client('dynamodb', region_name='us-west-2')
-            cls.dynamodb_resource = boto3.resource('dynamodb', region_name='us-west-2')
+            cls.dynamodb = boto3.client('dynamodb', region_name=region)
+            cls.dynamodb_resource = boto3.resource('dynamodb', region_name=region)
         
         cls.animal_table = cls.dynamodb_resource.Table(cls.animal_table_name)
     

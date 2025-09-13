@@ -1,5 +1,6 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
+const path = require('path');
 
 /**
  * Playwright Configuration for CMZ Chatbot UI Testing
@@ -7,6 +8,10 @@ const { defineConfig, devices } = require('@playwright/test');
  * 
  * @see https://playwright.dev/docs/test-configuration
  */
+
+// Define base paths for better maintainability
+const PROJECT_ROOT = path.resolve(__dirname, '../../../../../../../');
+const REPORTS_BASE = path.join(PROJECT_ROOT, 'reports', 'playwright');
 module.exports = defineConfig({
   // Test directory
   testDir: '../specs',
@@ -27,18 +32,18 @@ module.exports = defineConfig({
   reporter: [
     // HTML report for detailed analysis
     ['html', { 
-      outputFolder: '../../../../../../../reports/playwright/html-report',
+      outputFolder: path.join(REPORTS_BASE, 'html-report'),
       open: 'never'
     }],
     
     // JUnit XML for GitLab CI integration
     ['junit', { 
-      outputFile: '../../../../../../../reports/playwright/junit-results.xml' 
+      outputFile: path.join(REPORTS_BASE, 'junit-results.xml')
     }],
     
     // JSON report for custom processing
     ['json', { 
-      outputFile: '../../../../../../../reports/playwright/test-results.json' 
+      outputFile: path.join(REPORTS_BASE, 'test-results.json')
     }],
     
     // Line reporter for console output
@@ -157,7 +162,7 @@ module.exports = defineConfig({
   ],
 
   // Test output directory
-  outputDir: '../../../../../../../reports/playwright/test-results',
+  outputDir: path.join(REPORTS_BASE, 'test-results'),
   
   // Global setup and teardown
   globalSetup: require.resolve('../fixtures/global-setup.js'),

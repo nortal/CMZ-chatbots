@@ -34,6 +34,25 @@ def deserialize_audit_by(data: Optional[Dict[str, Any]]) -> Optional[AuditBy]:
     )
 
 
+def normalize_personality_field(personality_raw) -> Dict[str, Any]:
+    """
+    Normalize personality field that can be either string or dict format.
+    
+    Args:
+        personality_raw: Raw personality data (string, dict, or other)
+        
+    Returns:
+        Dict with personality data in standardized format
+    """
+    if isinstance(personality_raw, str):
+        # Convert string personality to dict format for domain entity
+        return {"description": personality_raw} if personality_raw else {}
+    elif isinstance(personality_raw, dict):
+        return personality_raw
+    else:
+        return {}
+
+
 def serialize_audit_stamp(audit_stamp: Optional[AuditStamp]) -> Optional[Dict[str, Any]]:
     """Convert AuditStamp domain entity to dict"""
     if not audit_stamp:
@@ -203,15 +222,8 @@ def deserialize_animal(data: Dict[str, Any]) -> Animal:
     # Handle both 'id' and 'animalId' from different sources
     animal_id = data.get("animalId") or data.get("id", "")
     
-    # Handle personality field that can be either string or dict
-    personality_raw = data.get("personality", {})
-    if isinstance(personality_raw, str):
-        # Convert string personality to dict format for domain entity
-        personality = {"description": personality_raw} if personality_raw else {}
-    elif isinstance(personality_raw, dict):
-        personality = personality_raw
-    else:
-        personality = {}
+    # Handle personality field using helper function
+    personality = normalize_personality_field(data.get("personality", {}))
     
     return Animal(
         animal_id=animal_id,

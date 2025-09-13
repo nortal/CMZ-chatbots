@@ -649,7 +649,7 @@ const AnimalConfig: React.FC = () => {
               <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No Animals Found</h3>
               <p className="text-gray-500">
-                {animalsLoading ? 'Loading animals from database...' : 'No animals are currently configured in the system.'}
+                No animals are currently configured in the system.
               </p>
             </div>
           )}
