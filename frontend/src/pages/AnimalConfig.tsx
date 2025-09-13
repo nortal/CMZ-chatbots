@@ -172,7 +172,7 @@ const AnimalConfig: React.FC = () => {
     if (!selectedAnimal) return null;
     
     // Use secure form handling
-    const { errors, isSubmitting, submitForm, clearErrors, getFieldError } = useSecureFormHandling(
+    const { isSubmitting, submitForm, clearErrors, getFieldError } = useSecureFormHandling(
       handleSaveConfig
     );
 

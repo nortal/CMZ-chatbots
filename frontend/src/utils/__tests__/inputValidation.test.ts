@@ -7,7 +7,6 @@
 import {
   validateAnimalId,
   validateAnimalName,
-  validateSpecies,
   validatePersonality,
   ValidationError,
 } from '../inputValidation';
