@@ -347,6 +347,21 @@ paths:
   /animal_list:
     get:
       operationId: animal_list_get
+      parameters:
+      - description: Filter animals by status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          enum:
+          - active
+          - inactive
+          - hidden
+          - breeding
+          - retired
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -391,6 +406,8 @@ paths:
                   $ref: "#/components/schemas/Animal"
                 type: array
           description: List of animals
+        "400":
+          $ref: "#/components/responses/BadRequest"
       summary: List animals
       tags:
       - Animals
@@ -2812,7 +2829,7 @@ components:
           description: Animal personality description with character validation
           maxLength: 1000
           minLength: 5
-          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-'\"]+$"
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-'\":()\\[\\]]+$"
           title: personality
           type: string
         aiModel:

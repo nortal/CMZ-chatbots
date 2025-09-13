@@ -203,12 +203,22 @@ def deserialize_animal(data: Dict[str, Any]) -> Animal:
     # Handle both 'id' and 'animalId' from different sources
     animal_id = data.get("animalId") or data.get("id", "")
     
+    # Handle personality field that can be either string or dict
+    personality_raw = data.get("personality", {})
+    if isinstance(personality_raw, str):
+        # Convert string personality to dict format for domain entity
+        personality = {"description": personality_raw} if personality_raw else {}
+    elif isinstance(personality_raw, dict):
+        personality = personality_raw
+    else:
+        personality = {}
+    
     return Animal(
         animal_id=animal_id,
         name=data.get("name", ""),
         species=data.get("species"),
         status=data.get("status", "active"),
-        personality=data.get("personality", {}),
+        personality=personality,
         configuration=data.get("configuration", {}),
         soft_delete=bool(data.get("softDelete", False)),
         created=deserialize_audit_stamp(data.get("created")),

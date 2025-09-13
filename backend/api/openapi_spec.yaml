@@ -2263,7 +2263,7 @@ components:
           type: string
           minLength: 5
           maxLength: 1000
-          pattern: '^[a-zA-Z0-9\s\.,!?\-''"]+$'
+          pattern: '^[a-zA-Z0-9\s\.,!?\-''":()\[\]]+$'
           description: Animal personality description with character validation
         aiModel:
           type: string

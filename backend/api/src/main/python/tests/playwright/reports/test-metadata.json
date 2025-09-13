@@ -1,9 +1,7 @@
 {
-  "test_run_id": "playwright_1757722070966",
-  "started_at": "2025-09-13T00:07:50.966Z",
+  "test_run_id": "playwright_1757727662575",
+  "started_at": "2025-09-13T01:41:02.575Z",
   "persistence_mode": "file",
   "backend_url": "http://localhost:8080",
-  "frontend_url": "http://localhost:3001",
-  "completed_at": "2025-09-13T00:07:54.249Z",
-  "duration_ms": 3283
+  "frontend_url": "http://localhost:3000"
 }
