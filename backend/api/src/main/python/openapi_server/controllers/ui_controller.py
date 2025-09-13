@@ -17,8 +17,7 @@ def admin_get():  # noqa: E501
 
     :rtype: Union[AdminShell, Tuple[AdminShell, int], Tuple[AdminShell, int, Dict[str, str]]
     """
-    # UI functionality not yet implemented
-    return {"code": "not_implemented", "message": "UI functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def member_get():  # noqa: E501
@@ -29,8 +28,7 @@ def member_get():  # noqa: E501
 
     :rtype: Union[MemberShell, Tuple[MemberShell, int], Tuple[MemberShell, int, Dict[str, str]]
     """
-    # UI functionality not yet implemented
-    return {"code": "not_implemented", "message": "UI functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def root_get():  # noqa: E501
@@ -41,5 +39,4 @@ def root_get():  # noqa: E501
 
     :rtype: Union[PublicHome, Tuple[PublicHome, int], Tuple[PublicHome, int, Dict[str, str]]
     """
-    # UI functionality not yet implemented
-    return {"code": "not_implemented", "message": "UI functionality not yet implemented"}, 501
+    return 'do some magic!'

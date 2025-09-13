@@ -3,6 +3,7 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.knowledge_article import KnowledgeArticle  # noqa: E501
 from openapi_server.models.knowledge_create import KnowledgeCreate  # noqa: E501
 from openapi_server import util
@@ -18,8 +19,7 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    # Knowledge functionality not yet implemented
-    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def knowledge_article_get(knowledge_id):  # noqa: E501
@@ -32,8 +32,7 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
 
     :rtype: Union[KnowledgeArticle, Tuple[KnowledgeArticle, int], Tuple[KnowledgeArticle, int, Dict[str, str]]
     """
-    # Knowledge functionality not yet implemented
-    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def knowledge_article_post(body):  # noqa: E501
@@ -49,5 +48,4 @@ def knowledge_article_post(body):  # noqa: E501
     knowledge_create = body
     if connexion.request.is_json:
         knowledge_create = KnowledgeCreate.from_dict(connexion.request.get_json())  # noqa: E501
-    # Knowledge functionality not yet implemented
-    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
+    return 'do some magic!'

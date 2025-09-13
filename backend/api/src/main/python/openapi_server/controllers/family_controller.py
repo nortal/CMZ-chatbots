@@ -3,6 +3,7 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.family import Family  # noqa: E501
 from openapi_server import util
 
@@ -20,8 +21,7 @@ def create_family(body):  # noqa: E501
     family = body
     if connexion.request.is_json:
         family = Family.from_dict(connexion.request.get_json())  # noqa: E501
-    # Family functionality not yet implemented
-    return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def delete_family(family_id):  # noqa: E501
@@ -34,8 +34,7 @@ def delete_family(family_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    # Family functionality not yet implemented
-    return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def get_family(family_id):  # noqa: E501
@@ -48,8 +47,7 @@ def get_family(family_id):  # noqa: E501
 
     :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
     """
-    # Family functionality not yet implemented
-    return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def list_families():  # noqa: E501
@@ -60,8 +58,7 @@ def list_families():  # noqa: E501
 
     :rtype: Union[List[Family], Tuple[List[Family], int], Tuple[List[Family], int, Dict[str, str]]
     """
-    # Family functionality not yet implemented
-    return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def update_family(family_id, body):  # noqa: E501
@@ -79,5 +76,4 @@ def update_family(family_id, body):  # noqa: E501
     family = body
     if connexion.request.is_json:
         family = Family.from_dict(connexion.request.get_json())  # noqa: E501
-    # Family functionality not yet implemented
-    return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    return 'do some magic!'

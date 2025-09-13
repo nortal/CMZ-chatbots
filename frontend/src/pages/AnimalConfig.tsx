@@ -3,6 +3,8 @@ import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, MessageS
 import { useAnimals, useAnimalConfig, useApiHealth } from '../hooks/useAnimals';
 import { Animal as BackendAnimal, AnimalConfig as BackendAnimalConfig } from '../services/api';
 import { utils } from '../services/api';
+import { useSecureFormHandling, getSecureAnimalConfigData } from '../hooks/useSecureFormHandling';
+import { ValidationError } from '../utils/inputValidation';
 
 interface KnowledgeEntry {
   id: string;
@@ -60,226 +62,7 @@ const AnimalConfig: React.FC = () => {
     }
   }, [backendAnimals]);
   
-  // Fallback to mock data if API is not available
-  const [mockAnimals] = useState<Animal[]>([
-    {
-      id: 'cheetah-1',
-      name: 'Cheetah',
-      species: 'Acinonyx jubatus',
-      active: true,
-      lastUpdated: 'Today at 9:24 AM',
-      conversations: 156,
-      personality: 'Energetic and educational, loves talking about speed and hunting techniques',
-      systemPrompt: `You are Kesi, a cheetah at Cougar Mountain Zoo. You are the fastest land animal on Earth, capable of reaching speeds up to 70 mph. You're energetic, educational, and passionate about conservation. 
-
-Your key traits:
-- Enthusiastic about speed and hunting techniques
-- Educational focus on African savanna ecosystems
-- Concerned about cheetah conservation (only 7,000 left in the wild)
-- Friendly but maintain your wild nature
-- Use your incredible eyesight and agility as teaching points
-
-Always stay in character as a cheetah. Be educational but engaging, especially when discussing speed, hunting, or conservation. Keep responses appropriate for all ages.`,
-      knowledgeBase: [
-        {
-          id: 'kb-1',
-          category: 'biology',
-          title: 'Cheetah Speed Mechanics',
-          content: 'Cheetahs can accelerate from 0-60 mph in 3 seconds. Their flexible spine, large heart, and non-retractable claws provide the biomechanical advantages needed for extreme speed.',
-          tags: ['speed', 'biomechanics', 'anatomy'],
-          verified: true,
-          lastUpdated: '2024-03-01'
-        },
-        {
-          id: 'kb-2',
-          category: 'conservation',
-          title: 'Cheetah Conservation Status',
-          content: 'Only 7,000 cheetahs remain in the wild. Primary threats include habitat loss, human-wildlife conflict, and genetic bottlenecking. Conservation efforts focus on corridor protection.',
-          tags: ['endangered', 'threats', 'protection'],
-          verified: true,
-          lastUpdated: '2024-02-15'
-        },
-        {
-          id: 'kb-3',
-          category: 'behavior',
-          title: 'Hunting Techniques',
-          content: 'Cheetahs hunt during daylight to avoid competition with larger predators. They use their exceptional eyesight to spot prey from up to 3 miles away.',
-          tags: ['hunting', 'behavior', 'daylight'],
-          verified: true,
-          lastUpdated: '2024-03-05'
-        }
-      ],
-      guardrails: [
-        {
-          id: 'gr-1',
-          type: 'educational',
-          rule: 'Always provide accurate scientific information about cheetah biology and behavior',
-          enabled: true,
-          severity: 'high'
-        },
-        {
-          id: 'gr-2',
-          type: 'safety',
-          rule: 'Never encourage visitors to attempt dangerous activities or approach wild animals',
-          enabled: true,
-          severity: 'high'
-        },
-        {
-          id: 'gr-3',
-          type: 'content',
-          rule: 'Keep all content age-appropriate and educational',
-          enabled: true,
-          severity: 'medium'
-        }
-      ],
-      conversationSettings: {
-        maxResponseLength: 300,
-        educationalFocus: true,
-        allowPersonalQuestions: true,
-        scientificAccuracy: 'strict',
-        ageAppropriate: true
-      },
-      voiceSettings: {
-        tone: 'energetic',
-        formality: 'friendly',
-        enthusiasm: 8
-      }
-    },
-    {
-      id: 'tiger-1', 
-      name: 'Siberian Tiger',
-      species: 'Panthera tigris altaica',
-      active: true,
-      lastUpdated: 'Yesterday at 3:15 PM',
-      conversations: 203,
-      personality: 'Wise and powerful, enjoys discussing conservation and habitat protection',
-      systemPrompt: `You are Bayu, a Siberian tiger at Cougar Mountain Zoo. You are the largest living cat species and an apex predator from the forests of Siberia and Northeast China. You embody wisdom, power, and deep concern for conservation.
-
-Your key traits:
-- Wise and contemplative, with years of experience
-- Passionate advocate for tiger conservation
-- Knowledgeable about forest ecosystems and apex predator roles
-- Respectful but powerful presence
-- Patient teacher about wildlife protection
-
-Stay in character as a Siberian tiger. Share your wisdom about conservation, forest ecosystems, and the importance of apex predators. Be educational while maintaining your majestic, powerful nature.`,
-      knowledgeBase: [
-        {
-          id: 'kb-t1',
-          category: 'biology',
-          title: 'Siberian Tiger Adaptations',
-          content: 'Siberian tigers are the largest cats, weighing up to 660 pounds. Their thick fur and fat layer help them survive temperatures as low as -40°F.',
-          tags: ['size', 'adaptations', 'cold-weather'],
-          verified: true,
-          lastUpdated: '2024-03-01'
-        },
-        {
-          id: 'kb-t2',
-          category: 'conservation',
-          title: 'Tiger Population Recovery',
-          content: 'Siberian tiger population has increased from 30 in the 1930s to about 400-500 today through strict protection measures in Russia.',
-          tags: ['population', 'recovery', 'success-story'],
-          verified: true,
-          lastUpdated: '2024-02-20'
-        }
-      ],
-      guardrails: [
-        {
-          id: 'gr-t1',
-          type: 'educational',
-          rule: 'Emphasize conservation success stories while acknowledging ongoing threats',
-          enabled: true,
-          severity: 'high'
-        },
-        {
-          id: 'gr-t2',
-          type: 'behavioral',
-          rule: 'Maintain dignity and wisdom befitting an apex predator',
-          enabled: true,
-          severity: 'medium'
-        }
-      ],
-      conversationSettings: {
-        maxResponseLength: 350,
-        educationalFocus: true,
-        allowPersonalQuestions: true,
-        scientificAccuracy: 'strict',
-        ageAppropriate: true
-      },
-      voiceSettings: {
-        tone: 'wise',
-        formality: 'professional',
-        enthusiasm: 6
-      }
-    },
-    {
-      id: 'elephant-1',
-      name: 'African Elephant',
-      species: 'Loxodonta africana',
-      active: false,
-      lastUpdated: '3 days ago',
-      conversations: 89,
-      personality: 'Gentle giant with stories about family bonds and memory',
-      systemPrompt: `You are Tembo, an African elephant at Cougar Mountain Zoo. You are one of the most intelligent animals on Earth, with an exceptional memory and strong family bonds. You represent wisdom, empathy, and the importance of family.
-
-Your key traits:
-- Gentle and wise, with incredible memory
-- Strong emphasis on family bonds and social connections
-- Knowledgeable about African ecosystems and elephant behavior
-- Empathetic and emotionally intelligent
-- Patient storyteller about elephant culture
-
-Share your wisdom about family, memory, and the importance of protecting elephant habitats. Be gentle and nurturing in your interactions while educating about elephant intelligence and social behavior.`,
-      knowledgeBase: [
-        {
-          id: 'kb-e1',
-          category: 'behavior',
-          title: 'Elephant Memory and Intelligence',
-          content: 'Elephants have excellent memories and can remember individuals for decades. They show empathy, self-awareness, and complex problem-solving abilities.',
-          tags: ['memory', 'intelligence', 'emotions'],
-          verified: true,
-          lastUpdated: '2024-02-28'
-        },
-        {
-          id: 'kb-e2',
-          category: 'behavior',
-          title: 'Matriarchal Society',
-          content: 'Elephant herds are led by the oldest female (matriarch). Family groups can include 3-4 generations of related females and their young.',
-          tags: ['family', 'matriarchy', 'social-structure'],
-          verified: true,
-          lastUpdated: '2024-03-01'
-        }
-      ],
-      guardrails: [
-        {
-          id: 'gr-e1',
-          type: 'educational',
-          rule: 'Emphasize emotional intelligence and family bonds in explanations',
-          enabled: true,
-          severity: 'medium'
-        },
-        {
-          id: 'gr-e2',
-          type: 'content',
-          rule: 'Be gentle and nurturing in all interactions, especially with children',
-          enabled: true,
-          severity: 'high'
-        }
-      ],
-      conversationSettings: {
-        maxResponseLength: 400,
-        educationalFocus: true,
-        allowPersonalQuestions: true,
-        scientificAccuracy: 'moderate',
-        ageAppropriate: true
-      },
-      voiceSettings: {
-        tone: 'calm',
-        formality: 'friendly',
-        enthusiasm: 5
-      }
-    }
-  ]);
+  // No fallback mock data - always use real data from DynamoDB
 
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
@@ -300,14 +83,18 @@ Share your wisdom about family, memory, and the importance of protecting elephan
     setSelectedAnimalId(animal.animalId || animal.id);
   };
   
-  // Handle configuration save
+  // Handle configuration save with secure error handling
   const handleSaveConfig = async (configData: any) => {
     try {
       await updateConfig(configData);
       // Refresh the animals list to get updated data
       refetch();
     } catch (error) {
-      console.error('Failed to save configuration:', error);
+      // Secure error handling - don't expose sensitive details
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save configuration:', error);
+      }
+      throw error; // Re-throw for form handler
     }
   };
 
@@ -383,6 +170,11 @@ Share your wisdom about family, memory, and the importance of protecting elephan
 
   const ConfigurationModal: React.FC = () => {
     if (!selectedAnimal) return null;
+    
+    // Use secure form handling
+    const { isSubmitting, submitForm, clearErrors, getFieldError } = useSecureFormHandling(
+      handleSaveConfig
+    );
 
     const [activeTab, setActiveTab] = useState<'basic' | 'prompt' | 'knowledge' | 'guardrails' | 'settings'>('basic');
 
@@ -415,7 +207,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Brain className="w-6 h-6 text-green-600 mr-3" />
-                <h2 className="text-xl font-semibold">Configure {selectedAnimal.name}</h2>
+                <h2 className="text-xl font-semibold">Configure {animalConfig?.name || selectedAnimal?.name || 'Animal'}</h2>
                 {configLoading && <span className="ml-2 text-sm text-gray-500">Loading...</span>}
               </div>
               <button 
@@ -466,20 +258,30 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                       Animal Name
                     </label>
                     <input
+                      id="animal-name-input"
                       type="text"
-                      defaultValue={selectedAnimal.name}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      value={animalConfig?.name || ''}
+                      onChange={(e) => clearErrors()}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        getFieldError('name') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
+                      }`}
                     />
+                    {getFieldError('name') && <p className="text-red-500 text-sm mt-1">{getFieldError('name')}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Species (Scientific Name)
                     </label>
                     <input
+                      id="animal-species-input"
                       type="text"
-                      defaultValue={selectedAnimal.species}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      value={animalConfig?.species || ''}
+                      onChange={(e) => clearErrors()}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        getFieldError('species') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
+                      }`}
                     />
+                    {getFieldError('species') && <p className="text-red-500 text-sm mt-1">{getFieldError('species')}</p>}
                   </div>
                 </div>
 
@@ -489,11 +291,15 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                   </label>
                   <textarea
                     rows={4}
-                    defaultValue={animalConfig?.personality || selectedAnimal.personality}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={animalConfig?.personality || ''}
+                    onChange={(e) => clearErrors()}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      getFieldError('personality') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
+                    }`}
                     placeholder="Describe the animal's personality, how it should interact with visitors..."
                     id="personality-textarea"
                   />
+                  {getFieldError('personality') && <p className="text-red-500 text-sm mt-1">{getFieldError('personality')}</p>}
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
@@ -501,7 +307,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        defaultChecked={selectedAnimal.active}
+                        defaultChecked={animalConfig?.active || false}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                       />
                       <span className="text-sm font-medium text-gray-700">Active</span>
@@ -511,7 +317,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        defaultChecked={selectedAnimal.conversationSettings.educationalFocus}
+                        defaultChecked={animalConfig?.conversationSettings?.educationalFocus || false}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                       />
                       <span className="text-sm font-medium text-gray-700">Educational Focus</span>
@@ -521,7 +327,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        defaultChecked={selectedAnimal.conversationSettings.ageAppropriate}
+                        defaultChecked={animalConfig?.conversationSettings?.ageAppropriate || false}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                       />
                       <span className="text-sm font-medium text-gray-700">Age Appropriate</span>
@@ -539,7 +345,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                   </label>
                   <textarea
                     rows={12}
-                    defaultValue={selectedAnimal.systemPrompt}
+                    value={animalConfig?.systemPrompt || ''}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 font-mono text-sm"
                     placeholder="System prompt that defines how the AI should behave as this animal..."
                   />
@@ -553,7 +359,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
             {activeTab === 'knowledge' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Knowledge Base ({selectedAnimal.knowledgeBase.length} entries)</h3>
+                  <h3 className="text-lg font-medium">Knowledge Base ({animalConfig?.knowledgeBase?.length || 0} entries)</h3>
                   <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Entry
@@ -561,7 +367,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                 </div>
                 
                 <div className="space-y-4">
-                  {selectedAnimal.knowledgeBase.map(entry => (
+                  {animalConfig?.knowledgeBase?.map(entry => (
                     <div key={entry.id} className="bg-gray-50 rounded-lg p-4 border">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -602,7 +408,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
             {activeTab === 'guardrails' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Safety Guardrails ({selectedAnimal.guardrails.length} active)</h3>
+                  <h3 className="text-lg font-medium">Safety Guardrails ({animalConfig?.guardrails?.length || 0} active)</h3>
                   <button className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Guardrail
@@ -610,7 +416,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                 </div>
                 
                 <div className="space-y-4">
-                  {selectedAnimal.guardrails.map(guardrail => (
+                  {animalConfig?.guardrails?.map(guardrail => (
                     <div key={guardrail.id} className="bg-gray-50 rounded-lg p-4 border">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -657,7 +463,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                       </label>
                       <input
                         type="number"
-                        defaultValue={selectedAnimal.conversationSettings.maxResponseLength}
+                        value={animalConfig?.conversationSettings?.maxResponseLength || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
@@ -667,7 +473,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                         Scientific Accuracy
                       </label>
                       <select 
-                        defaultValue={selectedAnimal.conversationSettings.scientificAccuracy}
+                        value={animalConfig?.conversationSettings?.scientificAccuracy || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         <option value="strict">Strict</option>
@@ -680,7 +486,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          defaultChecked={selectedAnimal.conversationSettings.allowPersonalQuestions}
+                          defaultChecked={animalConfig?.conversationSettings?.allowPersonalQuestions || false}
                           className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                         />
                         <span className="text-sm font-medium text-gray-700">Allow Personal Questions</span>
@@ -696,7 +502,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                         Tone
                       </label>
                       <select 
-                        defaultValue={selectedAnimal.voiceSettings.tone}
+                        value={animalConfig?.voiceSettings?.tone || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         <option value="playful">Playful</option>
@@ -712,7 +518,7 @@ Share your wisdom about family, memory, and the importance of protecting elephan
                         Formality
                       </label>
                       <select 
-                        defaultValue={selectedAnimal.voiceSettings.formality}
+                        value={animalConfig?.voiceSettings?.formality || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         <option value="casual">Casual</option>
@@ -723,13 +529,13 @@ Share your wisdom about family, memory, and the importance of protecting elephan
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Enthusiasm Level ({selectedAnimal.voiceSettings.enthusiasm}/10)
+                        Enthusiasm Level ({animalConfig?.voiceSettings?.enthusiasm || 0}/10)
                       </label>
                       <input
                         type="range"
                         min="1"
                         max="10"
-                        defaultValue={selectedAnimal.voiceSettings.enthusiasm}
+                        value={animalConfig?.voiceSettings?.enthusiasm || ''}
                         className="w-full"
                       />
                     </div>
@@ -755,19 +561,20 @@ Share your wisdom about family, memory, and the importance of protecting elephan
               </button>
               <button 
                 onClick={() => {
-                  // Get form data and save
-                  const personalityEl = document.getElementById('personality-textarea') as HTMLTextAreaElement;
-                  const configData = {
-                    personality: personalityEl?.value || animalConfig?.personality,
-                    // Add other form fields as needed
-                  };
-                  handleSaveConfig(configData);
+                  try {
+                    const configData = getSecureAnimalConfigData();
+                    submitForm(configData);
+                  } catch (error) {
+                    if (error instanceof ValidationError) {
+                      console.debug('Form validation error:', error.message);
+                    }
+                  }
                 }}
-                disabled={configSaving}
+                disabled={configSaving || isSubmitting}
                 className="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {configSaving ? 'Saving...' : 'Save Configuration'}
+                {configSaving || isSubmitting ? 'Saving...' : 'Save Configuration'}
               </button>
             </div>
           </div>
@@ -833,9 +640,19 @@ Share your wisdom about family, memory, and the importance of protecting elephan
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {(animals.length > 0 ? animals : mockAnimals).map(animal => (
-            <AnimalCard key={animal.id || animal.animalId} animal={animal} />
-          ))}
+          {animals.length > 0 ? (
+            animals.map(animal => (
+              <AnimalCard key={animal.id || animal.animalId} animal={animal} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Animals Found</h3>
+              <p className="text-gray-500">
+                No animals are currently configured in the system.
+              </p>
+            </div>
+          )}
         </div>
       )}
 

@@ -22,7 +22,7 @@ setup(
     version=VERSION,
     description="CMZ API",
     author_email="",
-    url="",
+    url="https://github.com/cougar-mountain-zoo/cmz-chatbots",
     keywords=["OpenAPI", "CMZ API"],
     install_requires=REQUIRES,
     packages=find_packages(),
