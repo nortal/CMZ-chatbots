@@ -20,7 +20,11 @@ def create_family(body):  # noqa: E501
     family = body
     if connexion.request.is_json:
         family = Family.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        # Family functionality not yet implemented
+        return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def delete_family(family_id):  # noqa: E501
@@ -33,7 +37,11 @@ def delete_family(family_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Family functionality not yet implemented
+        return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def get_family(family_id):  # noqa: E501
@@ -46,7 +54,11 @@ def get_family(family_id):  # noqa: E501
 
     :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Family functionality not yet implemented
+        return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def list_families():  # noqa: E501
@@ -57,7 +69,11 @@ def list_families():  # noqa: E501
 
     :rtype: Union[List[Family], Tuple[List[Family], int], Tuple[List[Family], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Family functionality not yet implemented
+        return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def update_family(family_id, body):  # noqa: E501
@@ -75,4 +91,8 @@ def update_family(family_id, body):  # noqa: E501
     family = body
     if connexion.request.is_json:
         family = Family.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        # Family functionality not yet implemented
+        return {"code": "not_implemented", "message": "Family functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500

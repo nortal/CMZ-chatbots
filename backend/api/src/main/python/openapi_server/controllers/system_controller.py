@@ -17,7 +17,11 @@ def feature_flags_get():  # noqa: E501
 
     :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # System functionality not yet implemented
+        return {"code": "not_implemented", "message": "System functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def feature_flags_patch(body):  # noqa: E501
@@ -33,7 +37,11 @@ def feature_flags_patch(body):  # noqa: E501
     feature_flags_update = body
     if connexion.request.is_json:
         feature_flags_update = FeatureFlagsUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        # System functionality not yet implemented
+        return {"code": "not_implemented", "message": "System functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def system_health_get():  # noqa: E501
@@ -44,4 +52,8 @@ def system_health_get():  # noqa: E501
 
     :rtype: Union[SystemHealth, Tuple[SystemHealth, int], Tuple[SystemHealth, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # System functionality not yet implemented
+        return {"code": "not_implemented", "message": "System functionality not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
