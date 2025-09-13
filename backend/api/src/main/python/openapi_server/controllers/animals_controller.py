@@ -8,7 +8,6 @@ from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noq
 from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
 from openapi_server.models.animal_input import AnimalInput  # noqa: E501
 from openapi_server.models.animal_update import AnimalUpdate  # noqa: E501
-from openapi_server import util
 
 # Import implementation handlers
 from openapi_server.impl.animals import (
@@ -77,7 +76,11 @@ def animal_details_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalDetails, Tuple[AnimalDetails, int], Tuple[AnimalDetails, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Animal details functionality not yet implemented
+        return {"code": "not_implemented", "message": "Animal details retrieval not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_id_delete(id):  # noqa: E501
@@ -90,7 +93,11 @@ def animal_id_delete(id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Animal deletion functionality not yet implemented
+        return {"code": "not_implemented", "message": "Animal deletion not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_id_get(id):  # noqa: E501
@@ -103,7 +110,11 @@ def animal_id_get(id):  # noqa: E501
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Individual animal retrieval functionality not yet implemented
+        return {"code": "not_implemented", "message": "Individual animal retrieval not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_id_put(id, body):  # noqa: E501
@@ -118,10 +129,15 @@ def animal_id_put(id, body):  # noqa: E501
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
-    animal_update = body
-    if connexion.request.is_json:
-        animal_update = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        animal_update = body
+        if connexion.request.is_json:
+            animal_update = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        
+        # Animal update functionality not yet implemented
+        return {"code": "not_implemented", "message": "Animal update not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_list_get(status=None):  # noqa: E501
