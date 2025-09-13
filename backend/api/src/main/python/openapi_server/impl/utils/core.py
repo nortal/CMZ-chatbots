@@ -31,3 +31,18 @@ def error_response(title: str, detail: str, status: int):
 
 def not_found(pk_name: str, pk_value: Any):
     return error_response("Not Found", f"Item not found: {pk_name}={pk_value}", 404)
+
+def create_audit_actor(actor_id: str = "system", email: str = "system@cmz.org", display_name: str = "System") -> Dict[str, str]:
+    """Create a reusable audit actor object"""
+    return {
+        'actorId': actor_id,
+        'email': email,
+        'displayName': display_name
+    }
+
+def create_audit_stamp(actor_id: str = "system", email: str = "system@cmz.org", display_name: str = "System") -> Dict[str, Any]:
+    """Create a reusable audit stamp with timestamp and actor"""
+    return {
+        'at': now_iso(),
+        'by': create_audit_actor(actor_id, email, display_name)
+    }

@@ -70,15 +70,49 @@ def convo_turn_post(body):  # noqa: E501
 
      # noqa: E501
 
-    :param convo_turn_post_request: 
+    :param convo_turn_post_request:
     :type convo_turn_post_request: dict | bytes
 
     :rtype: Union[ConvoTurnPost200Response, Tuple[ConvoTurnPost200Response, int], Tuple[ConvoTurnPost200Response, int, Dict[str, str]]
     """
-    convo_turn_post_request = body
-    if connexion.request.is_json:
-        convo_turn_post_request = ConvoTurnPostRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    # PR003946-73: Foreign Key Validation - Conversation turn with user/animal reference validation
+    from openapi_server.impl.commands.foreign_key_validation import execute_foreign_key_validation
+
+    try:
+        # Parse request body
+        convo_data = body
+        if connexion.request.is_json:
+            convo_data = connexion.request.get_json()
+
+        # Convert to dict if it's a model object
+        if hasattr(convo_data, 'to_dict'):
+            convo_data = convo_data.to_dict()
+        elif not isinstance(convo_data, dict):
+            convo_data = dict(convo_data)
+
+        # PR003946-73: Validate foreign key references before processing conversation
+        validation_result, validation_status = execute_foreign_key_validation(
+            entity_type="conversation",
+            entity_data=convo_data,
+            audit_user="system"
+        )
+
+        if validation_status != 200:
+            # Foreign key validation failed
+            return validation_result, validation_status
+
+        # If validation passes, proceed with conversation processing
+        # For TDD foundation, return simple response showing validation works
+        return {
+            "message": "Foreign key validation successful for conversation",
+            "validated_user": convo_data.get('userId'),
+            "validated_animal": convo_data.get('animalId'),
+            "session_id": convo_data.get('sessionId', 'demo_session')
+        }, 200
+
+    except Exception as e:
+        from openapi_server.impl.error_handler import handle_error
+        return handle_error(e)
 
 
 def summarize_convo_post(body):  # noqa: E501
