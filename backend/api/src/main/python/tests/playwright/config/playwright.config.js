@@ -134,14 +134,13 @@ module.exports = defineConfig({
 
   // Configure local dev server for testing
   webServer: [
-    // Backend server with file persistence mode
+    // Backend server with DynamoDB persistence mode for DynamoDB consistency testing
     {
-      command: 'PERSISTENCE_MODE=file python -m openapi_server',
+      command: 'python -m openapi_server',
       port: 8080,
       cwd: '../../../',
       reuseExistingServer: !process.env.CI,
       env: {
-        'PERSISTENCE_MODE': 'file',
         'FLASK_APP': 'openapi_server',
         'FLASK_ENV': 'development'
       },

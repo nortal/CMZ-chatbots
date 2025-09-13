@@ -79,7 +79,7 @@ test.describe('DynamoDB Consistency Validation', () => {
         console.log('DynamoDB animals:', dynamoAnimals.length);
         
         // Get animals from API
-        const apiResponse = await page.request.get('http://localhost:8080/animal');
+        const apiResponse = await page.request.get('http://localhost:8080/animal_list');
         expect(apiResponse.status()).toBe(200);
         const apiAnimals = await apiResponse.json();
         console.log('API animals:', apiAnimals.length);
@@ -267,7 +267,7 @@ test.describe('DynamoDB Consistency Validation', () => {
         const dynamoAnimals = await getAllDynamoDBAnimals();
         
         // Get API animals
-        const apiResponse = await page.request.get('http://localhost:8080/animal');
+        const apiResponse = await page.request.get('http://localhost:8080/animal_list');
         expect(apiResponse.status()).toBe(200);
         const apiAnimals = await apiResponse.json();
         
