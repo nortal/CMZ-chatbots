@@ -208,6 +208,21 @@ class NotFoundError(Exception):
         super().__init__(message)
 
 
+def handle_error(message, status_code=500, error_code=None):
+    """Generic error handling function for controller imports."""
+    from openapi_server.models.error import Error
+    from flask import jsonify
+
+    error_code = error_code or ("validation_error" if status_code == 400 else "internal_error")
+    error_obj = Error(
+        code=error_code,
+        message=message,
+        details={}
+    )
+
+    return jsonify(error_obj.to_dict()), status_code
+
+
 def register_custom_error_handlers(app):
     """Register handlers for custom exception classes."""
     

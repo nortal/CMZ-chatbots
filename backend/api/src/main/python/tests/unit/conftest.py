@@ -23,6 +23,7 @@ from tests.unit.test_utils import (
 
 # Ensure file persistence mode for all tests
 os.environ["PERSISTENCE_MODE"] = "file"
+os.environ["TEST_MODE"] = "true"  # Enable test mode for mock data
 os.environ["FILE_PERSISTENCE_DIR"] = tempfile.mkdtemp(prefix="cmz_test_")
 
 @pytest.fixture(scope="session", autouse=True)
