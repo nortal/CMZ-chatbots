@@ -161,6 +161,23 @@ def handle_operation(body):
 ```
 
 ### Environment Configuration
+**Jira API Integration:**
+- **IMPORTANT**: Jira credentials are stored in `.env.local` (not committed to git)
+- Load with: `source .env.local` before running Jira-related scripts
+- Contains: `JIRA_EMAIL=kc.stegbauer@nortal.com` and `JIRA_API_TOKEN=...`
+- Scripts should auto-load from `.env.local` when available
+
+**Jira/Nortal Integration Approach:**
+- **MANDATORY FIRST STEP**: Read "Key Learnings from TDD Coverage Analysis & Jira Integration" section before ANY Jira work
+- **Planning Requirement**: Propose comprehensive plan including:
+  1. **Ticket Ingestion**: Plan to fetch ALL CMZ tickets (100+) with acceptance criteria
+  2. **Test Analysis**: Count and describe specific unit tests across all 55 test files (439 methods)
+  3. **Playwright Verification**: Ensure Playwright steps are reflected in persistent storage
+  4. **Storage Validation**: Verify test results persist in both DynamoDB and local files
+  5. **Reportable Metrics**: Include two persistent storage tests in ALL metrics reporting
+  6. **Daily Calculations**: Store TDD coverage calculations at midnight each day
+- **Implementation**: Only proceed after plan approval, following discovered patterns from learnings section
+
 **AWS Integration:**
 - `AWS_PROFILE=cmz` (configured in .zshrc)
 - `AWS_REGION=us-west-2`
@@ -594,6 +611,32 @@ grep -A 5 -B 5 "paths:" backend/api/openapi_spec.yaml
 ls backend/api/src/main/python/openapi_server/impl/
 ```
 ```
+
+## Key Learnings from TDD Coverage Analysis & Jira Integration
+
+**CRITICAL DISCOVERY - TDD Coverage Analysis:**
+- **Previous "100% coverage" was misleading** - only analyzed 27 tickets that happened to be referenced in test files
+- **Real coverage metrics**: 55 test files, 439 test methods, 47 ticket references vs 100+ total tickets
+- **True coverage estimate**: ~47% (47 tested tickets / 100+ total tickets)
+- **Need comprehensive analysis**: ALL tickets with ALL acceptance criteria vs ALL tests
+
+**CRITICAL DISCOVERY - Jira Integration:**
+- **Project key is PR003946**, not "CMZ" - discovered through test file analysis
+- **API v3 migration required**: Old endpoints return HTTP 410, must use `/rest/api/3/search`
+- **GET method required**: POST with JSON payload returns HTTP 400, use URL parameters
+- **Credentials in `.env.local`**: Working `JIRA_API_TOKEN` and `JIRA_EMAIL` configuration
+- **Pagination essential**: 100+ tickets require proper pagination with `startAt`/`maxResults`
+- **URL encoding**: JQL queries need proper encoding (spaces=%20, ==%3D, ~=%7E)
+- **Rate limiting**: 0.5s delays between requests to avoid throttling
+- **Field selection**: Request `key,summary,description,status,issuetype,customfield_10028`
+
+**CRITICAL DISCOVERY - Persistent Storage Testing Requirements:**
+- **Two mandatory reportable tests** must be included in ALL TDD metrics:
+  1. **Playwright-to-DynamoDB persistence**: Verify Playwright test steps persist in DynamoDB tables
+  2. **Playwright-to-LocalFiles persistence**: Verify Playwright test results persist in local files
+- **Daily calculation storage**: TDD coverage metrics must be stored at midnight each day
+- **Storage verification pattern**: Each test must validate data exists in both storage layers
+- **Metrics integration**: Both persistence tests count toward overall TDD coverage percentages
 
 ## Key Learnings from /nextfive Implementation
 
