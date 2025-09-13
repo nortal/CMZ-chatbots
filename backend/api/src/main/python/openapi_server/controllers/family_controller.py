@@ -13,15 +13,45 @@ def create_family(body):  # noqa: E501
 
      # noqa: E501
 
-    :param family: 
+    :param family:
     :type family: dict | bytes
 
     :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
     """
-    family = body
-    if connexion.request.is_json:
-        family = Family.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    # PR003946-73: Foreign Key Validation - Family creation with user reference validation
+    from openapi_server.impl.commands.foreign_key_validation import execute_foreign_key_validation
+    from openapi_server.impl.family import handle_create_family
+
+    try:
+        # Parse request body
+        family_data = body
+        if connexion.request.is_json:
+            family_data = connexion.request.get_json()
+
+        # Convert to dict if it's a Family model object
+        if hasattr(family_data, 'to_dict'):
+            family_data = family_data.to_dict()
+        elif not isinstance(family_data, dict):
+            family_data = dict(family_data)
+
+        # PR003946-73: Validate foreign key references before creation
+        validation_result, validation_status = execute_foreign_key_validation(
+            entity_type="family",
+            entity_data=family_data,
+            audit_user="system"
+        )
+
+        if validation_status != 200:
+            # Foreign key validation failed
+            return validation_result, validation_status
+
+        # If validation passes, proceed with family creation
+        result = handle_create_family(family_data)
+        return result, 201
+
+    except Exception as e:
+        from openapi_server.impl.error_handler import handle_error
+        return handle_error(e)
 
 
 def delete_family(family_id):  # noqa: E501
@@ -29,12 +59,64 @@ def delete_family(family_id):  # noqa: E501
 
      # noqa: E501
 
-    :param family_id: 
+    :param family_id:
     :type family_id: str
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # PR003946-66: Soft Delete Consistency - Implement soft delete for families
+    from openapi_server.impl.utils.dynamo import get_store, now_iso
+    from datetime import datetime, timezone
+
+    try:
+        # Get the store for families
+        store = get_store("quest-dev-family", "familyId")
+
+        # Check if family exists
+        family = store.get(family_id)
+        if not family:
+            return {
+                'code': 'not_found',
+                'message': f'Family with ID {family_id} not found'
+            }, 404
+
+        # Check if already soft deleted
+        if family.get('softDelete', False):
+            return {
+                'code': 'already_deleted',
+                'message': f'Family with ID {family_id} is already deleted'
+            }, 410
+
+        # Perform soft delete by setting softDelete flag and deleted audit timestamp
+        current_time = now_iso()
+        audit_actor = {
+            'actorId': 'system',
+            'email': 'system@cmz.org',
+            'displayName': 'System'
+        }
+
+        # Update the family with soft delete markers
+        update_data = {
+            'softDelete': True,
+            'deleted': {
+                'at': current_time,
+                'by': audit_actor
+            },
+            'modified': {
+                'at': current_time,
+                'by': audit_actor
+            }
+        }
+
+        # Apply the soft delete update
+        store.update(family_id, update_data)
+
+        # Return success with no content (204)
+        return None, 204
+
+    except Exception as e:
+        from openapi_server.impl.error_handler import handle_error
+        return handle_error(e)
 
 
 def get_family(family_id):  # noqa: E501
