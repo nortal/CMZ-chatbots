@@ -59,16 +59,230 @@ make run-api CONTAINER_NAME=cmz-dev-custom
 
 ### Testing & Quality
 
-#### Frontend-Backend Integration Validation
-```bash
-# Comprehensive integration testing command
-./scripts/validate-frontend-backend-integration.sh
+## Frontend-Backend Integration Validation Template (/validate-frontend-backend-integration)
+
+**Use this prompt for comprehensive evaluation of complete CMZ chatbot platform integration with evaluation-only reporting:**
+
+### Basic Usage (Full Validation)
 ```
-**Purpose**: Systematic validation of complete integration chain using sequential reasoning MCP
-- Validates frontend UI → authentication → API → DynamoDB → data display workflow
-- Uses Playwright for real user experience testing
-- Provides detailed diagnostic output with reproduction steps for any failures
-- Critical for ensuring actual user workflows function correctly after code changes
+/validate-frontend-backend-integration
+# Executes complete integration validation workflow with detailed error reporting
+```
+
+### Implementation Template
+```
+Execute comprehensive frontend-backend integration validation for the CMZ chatbot platform using sequential reasoning for systematic evaluation.
+
+**CRITICAL EVALUATION-ONLY MODE**: Do NOT implement fixes. STOP at first blocking issue and provide comprehensive error report with exact reproduction steps, success criteria, and root cause analysis.
+
+## Context
+- CMZ chatbot backend API using OpenAPI-first development with Flask/Connexion
+- React frontend with authentication and role-based access control
+- DynamoDB persistence with real animal data for zoo education platform
+- Docker containerized development environment
+- MCP integration for enhanced validation capabilities
+
+## Required Validation Workflow
+Execute these steps systematically, stopping at first blocking issue:
+
+### Pre-Step: User Experience Test Plan Creation
+Use sequential reasoning to create comprehensive test plan covering:
+- Frontend routing and authentication flows
+- API endpoint accessibility and data flow
+- Real user journey from login to animal configuration
+- Expected vs actual behavior documentation
+
+### Step 1: Service Status Verification
+Verify both services are running and accessible:
+```bash
+# Frontend status
+curl -I http://localhost:3000
+
+# Backend status
+curl -I http://localhost:8080
+
+# Docker container status
+docker ps | grep cmz
+```
+
+### Step 2: Backend Data Structure Analysis
+Analyze DynamoDB → API → Frontend data transformation:
+- Examine OpenAPI schema definitions for required field names
+- Verify DynamoDB raw data structure and field naming
+- Identify any field mapping issues (snake_case vs camelCase)
+- Document transformation pipeline breaks
+
+### Step 3: Authentication System Verification
+Test complete authentication workflow:
+```bash
+# Test authentication endpoint
+curl -X POST http://localhost:8080/auth \
+  -H "Content-Type: application/json" \
+  -d '{"username":"test@cmz.org","password":"testpass123"}'
+
+# Verify JWT token structure and expiration
+# Test protected endpoint access with token
+```
+
+### Step 4: API Data Validation
+Test critical API endpoints with proper authentication:
+```bash
+# Test animal list endpoint
+curl -H "Authorization: Bearer [TOKEN]" http://localhost:8080/animal_list
+
+# Test root endpoint
+curl http://localhost:8080/
+
+# Verify response schema compliance with OpenAPI spec
+```
+
+### Step 5: Frontend-Backend Integration Test
+Using browser/Playwright validation:
+- Load frontend at http://localhost:3000
+- Perform login with test credentials
+- Navigate to Animal Configuration page
+- Verify animal data loads correctly
+- Check browser console for errors
+
+### Step 6: Data Flow Verification
+End-to-end data validation:
+- Confirm DynamoDB contains real animal data
+- Verify API returns properly formatted animal objects
+- Validate frontend displays animal data correctly
+- Check field mapping consistency throughout chain
+
+### Step 7: Cross-Platform Compatibility
+Test authentication and data access across:
+- Different browsers (Chrome, Safari, Firefox)
+- Mobile responsive design
+- API accessibility from different origins
+
+### CRITICAL DECISION POINT
+If ANY step fails with blocking issues:
+- **STOP EXECUTION IMMEDIATELY**
+- **Generate Comprehensive Error Report** (see template below)
+- **DO NOT PROCEED** to subsequent steps
+- **DO NOT ATTEMPT FIXES**
+
+### Final Step: Sequential Reasoning Evaluation (Only if all steps succeed)
+Use sequential reasoning to evaluate:
+- Were all validation objectives met?
+- Are there any edge cases or failure scenarios not tested?
+- Does the integration work for real user workflows?
+- What are the confidence levels for production readiness?
+
+## Error Report Template (When Blocking Issues Found)
+
+### 🔍 **VALIDATION FAILURE REPORT**
+
+**Status**: ❌ **VALIDATION FAILED** - [Brief description of blocking issue]
+
+#### **Primary Issue**: [Root cause summary]
+- **Root Cause**: [Technical explanation]
+- **Impact**: [User/system impact description]
+- **Scope**: [Which components are affected]
+
+#### **Detailed Reproduction Steps**
+**Steps to Reproduce**:
+1. [Exact commands or actions]
+2. [Expected vs actual results]
+3. [Error messages or symptoms]
+
+**Expected Result**: [What should happen when working correctly]
+**Actual Result**: [What actually happens, including error messages]
+
+#### **Success Criteria**
+- ✅ [Specific conditions that indicate the issue is fixed]
+- ✅ [Measurable outcomes for success]
+- ✅ [Integration points that should work]
+
+#### **Failure Criteria**
+- ❌ [Conditions that indicate the issue still exists]
+- ❌ [Error patterns to watch for]
+- ❌ [User experience failures]
+
+#### **Technical Root Cause Analysis**
+**Data Flow Breakdown**:
+1. [Where the process breaks down]
+2. [Component interactions that fail]
+3. [Configuration or code issues identified]
+
+**Code Location**: [Specific files and line numbers if identified]
+**Solution Path**: [High-level approach to fix, without implementation]
+
+#### **Next Steps Required**
+**For Developer Action**:
+1. [Specific fixes needed]
+2. [Configuration changes required]
+3. [Code modifications to make]
+
+**For Validation Re-run**:
+1. Apply identified fixes
+2. Restart affected services
+3. Re-execute `/validate-frontend-backend-integration`
+4. Verify all success criteria are met
+
+**VALIDATION CONCLUSION**: ❌ **FAILED** - [Summary of why integration validation could not complete]
+
+## Success Report Template (When All Steps Pass)
+
+### ✅ **VALIDATION SUCCESS REPORT**
+
+**Status**: ✅ **VALIDATION PASSED** - Complete integration validated successfully
+
+#### **Validated Components**
+- ✅ Frontend service accessibility and responsiveness
+- ✅ Backend API availability and authentication
+- ✅ Database connectivity and data retrieval
+- ✅ End-to-end user authentication workflow
+- ✅ Animal data display and formatting
+- ✅ Cross-browser compatibility
+- ✅ Role-based access control functionality
+
+#### **Performance Metrics**
+- Frontend load time: [measurement]
+- API response times: [measurement]
+- Authentication flow duration: [measurement]
+- Data retrieval latency: [measurement]
+
+#### **User Experience Validation**
+- ✅ Login flow works smoothly
+- ✅ Animal configuration page loads data correctly
+- ✅ Navigation between pages functions properly
+- ✅ No console errors or warnings
+- ✅ Responsive design works on mobile
+
+**VALIDATION CONCLUSION**: ✅ **PASSED** - Integration ready for user acceptance testing
+
+## MCP Tool Selection for Integration Validation
+- **Sequential Reasoning**: PRIMARY - Use for systematic evaluation, error analysis, and decision points
+- **Context7**: Framework-specific validation patterns and debugging approaches
+- **Playwright**: Browser automation for real user experience testing
+- **Magic**: Not typically needed for integration validation
+- **Morphllm**: Not needed for validation-only operations
+
+## Test User Credentials
+- **Primary Test User**: `test@cmz.org` / `testpass123` (member role)
+- **Parent User**: `parent1@test.cmz.org` / `testpass123` (parent role)
+- **Admin User**: Contact project maintainer for admin credentials if needed
+
+## Expected Integration Points
+1. **Authentication Flow**: Login → JWT token → Protected routes
+2. **Data Pipeline**: DynamoDB → Backend API → Frontend display
+3. **Role Authorization**: Member/Parent/Admin access control
+4. **Error Handling**: Graceful failures with user-friendly messages
+5. **Performance**: Sub-2-second load times for animal data
+```
+
+**Usage Pattern:**
+```bash
+# Execute validation workflow
+/validate-frontend-backend-integration
+
+# Expected outputs:
+# - Either complete success report with all validation steps passed
+# - Or comprehensive error report at first blocking issue with reproduction steps
+```
 
 #### Unit & Integration Tests
 ```bash
@@ -135,6 +349,23 @@ source .venv/openapi-venv/bin/activate
 make rebuild-venv-api
 ```
 
+## Jira Integration Requirements
+
+**🔴 CRITICAL REQUIREMENT**: When asked to perform ANY Jira-related tasks (creating tickets, updating status, searching, commenting), you MUST:
+
+1. **📖 First**: Read `NORTAL-JIRA-ADVICE.md` for complete Jira integration patterns and lessons learned
+2. **🔍 Second**: Reference the Jira Integration sections in this document for additional context
+3. **⚙️ Third**: Use established authentication patterns and custom field requirements
+
+**Key Integration Points:**
+- **Authentication**: Use `.env.local` credentials with Basic auth (email:token base64)
+- **Custom Fields**: Always include `"customfield_10225": {"value": "Billable"}` for ticket creation
+- **API Version**: Use `/rest/api/3/` endpoints (v3 migration complete)
+- **Project Key**: PR003946 for CMZ AI-Based Animal Interaction project
+- **Error Handling**: Remove fields causing "not on the appropriate screen" errors
+
+**Success Pattern**: Follow the proven ticket creation formula documented in NORTAL-JIRA-ADVICE.md
+
 ## Critical Implementation Rules
 
 ### Code Generation Boundaries
@@ -179,7 +410,8 @@ def handle_operation(body):
 - Scripts should auto-load from `.env.local` when available
 
 **Jira/Nortal Integration Approach:**
-- **MANDATORY FIRST STEP**: Read "Key Learnings from TDD Coverage Analysis & Jira Integration" section before ANY Jira work
+- **MANDATORY FIRST STEP**: Read `NORTAL-JIRA-ADVICE.md` document for complete Jira integration guidance
+- **SECONDARY REQUIREMENT**: Read "Key Learnings from TDD Coverage Analysis & Jira Integration" section in this file
 - **Planning Requirement**: Propose comprehensive plan including:
   1. **Ticket Ingestion**: Plan to fetch ALL CMZ tickets (100+) with acceptance criteria
   2. **Test Analysis**: Count and describe specific unit tests across all 55 test files (439 methods)
@@ -675,6 +907,45 @@ ls backend/api/src/main/python/openapi_server/impl/
 - Proper git workflow with feature branches
 - Security scanner integration and resolution
 - Verification-based Jira automation with corrective capabilities
+
+## Key Learnings from Custom Command Integration
+
+**CRITICAL DISCOVERY - Claude Code Slash Command Limitations:**
+
+### **Slash Command Recognition Issue:**
+- **Problem**: Custom slash commands like `/validate-frontend-backend-integration` are not recognized immediately after being added to CLAUDE.md
+- **Root Cause**: Claude Code requires restart/reload to recognize newly added slash command definitions
+- **Symptom**: Command appears as regular text instead of being executed as intended command
+- **Impact**: User confusion when custom commands don't work as expected after documentation
+
+### **Solution Process:**
+✅ **Immediate Workaround**: Execute command logic manually through detailed prompt description
+✅ **Proper Solution**: Restart Claude Code session to reload command definitions
+✅ **Verification**: Test command recognition after restart to confirm functionality
+
+### **Best Practices for Custom Commands:**
+- **Documentation First**: Always document command syntax and behavior in CLAUDE.md before implementation
+- **Restart Requirement**: Plan for Claude Code restart when adding new slash commands
+- **User Communication**: Inform users that restart is needed for new commands to be recognized
+- **Command Testing**: Verify command recognition and functionality after restart
+- **Fallback Strategy**: Provide manual execution instructions for immediate use before restart
+
+### **Command Integration Workflow:**
+1. **Document Command**: Add command definition and usage to CLAUDE.md
+2. **Inform User**: Explain that Claude Code restart is required for command recognition
+3. **Provide Workaround**: Execute command functionality manually if immediate execution needed
+4. **Restart Claude Code**: User restarts to enable new command recognition
+5. **Verify Command**: Test that slash command now executes properly
+6. **Update Documentation**: Add any learned nuances or implementation details
+
+### **Integration Validation Command Success:**
+✅ **Command Designed**: `/validate-frontend-backend-integration` comprehensive template created
+✅ **Manual Execution**: Successfully executed validation workflow without slash command
+✅ **Critical Issues Found**: Identified API schema mapping problems blocking integration
+✅ **Jira Integration**: Created tickets PR003946-135 and PR003946-136 for critical bugs
+✅ **Documentation Complete**: Full command template and usage examples documented
+
+**Next Step**: Restart Claude Code to enable `/validate-frontend-backend-integration` command recognition
 
 ## Jira Update Script Template
 

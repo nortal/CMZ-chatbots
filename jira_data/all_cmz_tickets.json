@@ -1,0 +1,31 @@
+🔍 Trying JQL: project = CMZ ORDER BY key ASC
+📡 Fetching page: startAt=0, maxResults=50
+❌ HTTP Error 410 for pattern: project = CMZ ORDER BY key ASC
+Response: {"errorMessages":["The requested API has been removed. Please migrate to the /rest/api/3/search/jql API. A full migration guideline is available at https://developer.atlassian.com/changelog/#CHANGE-2046"],"errors":{}}
+
+🔍 Trying JQL: project = 'Cougar Mountain Zoo' ORDER BY key ASC
+📡 Fetching page: startAt=0, maxResults=50
+❌ HTTP Error 410 for pattern: project = 'Cougar Mountain Zoo' ORDER BY key ASC
+Response: {"errorMessages":["The requested API has been removed. Please migrate to the /rest/api/3/search/jql API. A full migration guideline is available at https://developer.atlassian.com/changelog/#CHANGE-2046"],"errors":{}}
+
+🔍 Trying JQL: summary ~ 'CMZ' OR summary ~ 'Zoo' OR summary ~ 'Cougar Mountain' ORDER BY key ASC
+📡 Fetching page: startAt=0, maxResults=50
+❌ HTTP Error 410 for pattern: summary ~ 'CMZ' OR summary ~ 'Zoo' OR summary ~ 'Cougar Mountain' ORDER BY key ASC
+Response: {"errorMessages":["The requested API has been removed. Please migrate to the /rest/api/3/search/jql API. A full migration guideline is available at https://developer.atlassian.com/changelog/#CHANGE-2046"],"errors":{}}
+
+🔍 Trying JQL: description ~ 'CMZ' OR description ~ 'Zoo' OR description ~ 'Cougar Mountain' ORDER BY key ASC
+📡 Fetching page: startAt=0, maxResults=50
+❌ HTTP Error 410 for pattern: description ~ 'CMZ' OR description ~ 'Zoo' OR description ~ 'Cougar Mountain' ORDER BY key ASC
+Response: {"errorMessages":["The requested API has been removed. Please migrate to the /rest/api/3/search/jql API. A full migration guideline is available at https://developer.atlassian.com/changelog/#CHANGE-2046"],"errors":{}}
+
+🔍 Trying JQL: key ~ 'CMZ-' ORDER BY key ASC
+📡 Fetching page: startAt=0, maxResults=50
+❌ HTTP Error 410 for pattern: key ~ 'CMZ-' ORDER BY key ASC
+Response: {"errorMessages":["The requested API has been removed. Please migrate to the /rest/api/3/search/jql API. A full migration guideline is available at https://developer.atlassian.com/changelog/#CHANGE-2046"],"errors":{}}
+
+🔍 Trying JQL: project in (CMZ, 'Cougar Mountain Zoo', PR003946) ORDER BY key ASC
+📡 Fetching page: startAt=0, maxResults=50
+❌ HTTP Error 410 for pattern: project in (CMZ, 'Cougar Mountain Zoo', PR003946) ORDER BY key ASC
+Response: {"errorMessages":["The requested API has been removed. Please migrate to the /rest/api/3/search/jql API. A full migration guideline is available at https://developer.atlassian.com/changelog/#CHANGE-2046"],"errors":{}}
+
+[]

@@ -73,29 +73,26 @@ class FlaskAnimalHandler:
     def list_animals(self, status: str = None) -> Tuple[List[Any], int]:
         """
         Flask handler for animal listing
-        
+
         Args:
             status: Optional status filter
-            
+
         Returns:
             Tuple of (response_body, http_status_code)
         """
         try:
             # Execute business logic
             animals = self._animal_service.list_animals(status_filter=status)
-            
-            # Convert domain entities to OpenAPI response
+
+            # Convert domain entities to OpenAPI response - Use proper serializer like other methods
             response_items = []
             for animal in animals:
-                animal_model = self._animal_serializer.to_openapi(animal)
-                # Convert OpenAPI model back to dict for JSON response
-                if hasattr(animal_model, "to_dict"):
-                    response_items.append(animal_model.to_dict())
-                else:
-                    response_items.append(animal_model)
-            
+                # Use the same serializer pattern as get_animal() for consistency
+                openapi_animal = self._animal_serializer.to_openapi(animal)
+                response_items.append(openapi_animal)
+
             return response_items, 200
-            
+
         except Exception as e:
             return {"error": "Internal server error", "detail": str(e)}, 500
     

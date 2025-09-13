@@ -1,0 +1,15 @@
+{
+  "total_tickets": 0,
+  "total_acceptance_criteria": 0,
+  "tickets_with_tests": 0,
+  "acs_with_tests": 0,
+  "ticket_coverage_percentage": 0,
+  "ac_coverage_percentage": 0,
+  "status_breakdown": {},
+  "type_breakdown": {},
+  "test_files_analyzed": 1589,
+  "analysis_timestamp": "2025-09-13T02:11:55.619582",
+  "uncovered_tickets": [],
+  "high_coverage_tickets": [],
+  "low_coverage_tickets": []
+}

@@ -20,11 +20,13 @@ JWT_ALGORITHM = 'HS256'
 JWT_EXPIRATION_HOURS = 24
 
 # Role hierarchy (higher values have more permissions)
+# Updated to match OpenAPI schema enum values
 ROLE_HIERARCHY = {
-    'member': 1,
-    'parent': 2, 
-    'keeper': 3,
-    'admin': 4
+    'visitor': 1,
+    'user': 2,
+    'member': 3,
+    'editor': 4,
+    'admin': 5
 }
 
 # Valid user types
@@ -186,14 +188,14 @@ def authenticate_user(email, password):
         },
         'keeper@cmz.org': {
             'password': 'keeper123',
-            'user_id': 'keeper_001', 
-            'role': 'keeper',
+            'user_id': 'keeper_001',
+            'role': 'editor',  # Changed from 'keeper' to 'editor' for schema compatibility
             'user_type': 'none'
         },
         'parent@cmz.org': {
             'password': 'parent123',
             'user_id': 'parent_001',
-            'role': 'parent',
+            'role': 'member',  # Changed from 'parent' to 'member' for schema compatibility
             'user_type': 'parent'
         },
         'member@cmz.org': {
@@ -206,7 +208,7 @@ def authenticate_user(email, password):
         'parent1@test.cmz.org': {
             'password': 'testpass123',
             'user_id': 'user_test_parent_001',
-            'role': 'parent',
+            'role': 'member',  # Changed from 'parent' to 'member' for schema compatibility
             'user_type': 'parent'
         },
         'student1@test.cmz.org': {
@@ -230,7 +232,7 @@ def authenticate_user(email, password):
         'user_parent_001@cmz.org': {
             'password': 'testpass123',
             'user_id': 'user_parent_001',
-            'role': 'parent',
+            'role': 'member',  # Changed from 'parent' to 'member' for schema compatibility
             'user_type': 'parent'
         }
     }

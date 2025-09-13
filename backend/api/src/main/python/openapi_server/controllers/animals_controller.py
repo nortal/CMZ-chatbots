@@ -157,21 +157,19 @@ def animal_list_get(status=None):  # noqa: E501
     """
     # PR003946-71: JWT Token Validation - Apply to protected endpoint
     from openapi_server.impl.auth import get_current_user
+    from openapi_server.impl.animals import handle_list_animals
+
     try:
         # Validate JWT token
         user = get_current_user()
 
-        # For TDD foundation, return simple response showing auth works
-        return {
-            "message": "JWT token validation successful",
-            "authenticated_user": user['email'],
-            "user_role": user['role'],
-            "animals": []  # Placeholder for actual animal listing
-        }, 200
+        # Use real implementation to fetch animals from DynamoDB
+        animals = handle_list_animals(status)
+        return animals, 200
 
     except Exception as e:
         from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        return handle_error(str(e), 401, 'authentication_error')
 
 
 def animal_post(body):  # noqa: E501

@@ -1,0 +1,14 @@
+{
+  "current_coverage": "TestCoverage(total_test_files=55, total_test_methods=439, ticket_references_found=['89', '1', '94', '000000', '85', '69', '11', '61', '74', '73', '68', '82', '8', '67', '91', '2', '66', '9', '2557', '39', '90', '12', '7', '75', '87', '344', '067', '96', '70', '13', '80', '72', '3', '81', '84', '6', '83', '4', '10', '71', '95', '79', '14', '86', '88', '5', '46'], test_types={'unit': 33, 'integration': 12, 'e2e': 0, 'functional': 0, 'other': 10}, coverage_gaps=[])",
+  "analysis_timestamp": "2025-09-13T02:13:23.049010",
+  "recommendations": [],
+  "next_steps": [
+    "1. **Fix Jira API Access**: Update API endpoints and authentication",
+    "2. **Get ALL CMZ Tickets**: Use correct project key and pagination",
+    "3. **Extract ALL Acceptance Criteria**: Parse ticket descriptions systematically",
+    "4. **Map Each AC to Tests**: Create AC-to-test traceability matrix",
+    "5. **Calculate True Coverage**: (Tested ACs / Total ACs) \u00d7 100",
+    "6. **Identify Coverage Gaps**: List untested ACs and missing tests",
+    "7. **Generate Action Items**: Prioritize AC coverage improvements"
+  ]
+}

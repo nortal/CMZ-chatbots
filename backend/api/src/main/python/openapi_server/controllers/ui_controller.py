@@ -39,4 +39,7 @@ def root_get():  # noqa: E501
 
     :rtype: Union[PublicHome, Tuple[PublicHome, int], Tuple[PublicHome, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    return PublicHome(
+        message="Welcome to Cougar Mountain Zoo AI-Based Animal Interaction Platform",
+        status="ok"
+    )

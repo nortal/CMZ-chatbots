@@ -55,3 +55,72 @@
 **Comprehensive Logging**: Enhanced logging enables better troubleshooting and learning
 **Endpoint-Specific Comments**: Tailored comments provide better context than generic updates
 
+## 2025-09-13 20:35:00 - Custom Fields Discovery for Ticket Creation - SUCCESS
+**Result**: Successfully identified and resolved custom field requirements for creating new Jira tickets
+**Issue Encountered**: Ticket creation failed with "Please select the Billable value!" error
+**Root Cause Analysis**: Required custom field `customfield_10225` (Billable) not included in ticket creation payload
+**Tickets Created**: PR003946-135 (Critical API Schema Bug) and PR003946-136 (Root Endpoint Bug)
+
+### Custom Field Investigation Process
+**Step 1: Field Discovery via Existing Ticket**
+- Examined successful ticket PR003946-90 via `mcp__jira-mcp__get-ticket`
+- Identified multiple custom fields in ticket structure
+- Found key required field: `"customfield_10225": {"value": "Billable"}`
+
+**Step 2: Trial and Error Refinement**
+- **First Attempt**: Included multiple custom fields from sample ticket
+  - Failed: `customfield_10016` (Story Points), `reporter`, `customfield_10254` not allowed
+  - Error: "Field cannot be set. It is not on the appropriate screen, or unknown"
+- **Second Attempt**: Minimal required fields only
+  - Success: Only `customfield_10225` (Billable) required for ticket creation
+
+**Step 3: Working Ticket Creation Formula**
+```json
+{
+  "fields": {
+    "project": {"key": "PR003946"},
+    "issuetype": {"name": "Bug"},
+    "summary": "Ticket Summary",
+    "description": {"type": "doc", "version": 1, "content": [...]},
+    "priority": {"name": "High"},
+    "customfield_10225": {"value": "Billable"}  // REQUIRED
+  }
+}
+```
+
+### Key Custom Field Learnings
+**Required for Bug Creation**:
+- ✅ `customfield_10225` with value "Billable" - MANDATORY
+**NOT Required (will cause errors if included)**:
+- ❌ `customfield_10016` (Story Points) - Screen restriction
+- ❌ `reporter` field - Auto-set by system
+- ❌ `customfield_10254` (Lead percentage) - Screen restriction
+
+### Custom Field Investigation Strategy
+**Discovery Method**: Use `mcp__jira-mcp__get-ticket` to examine existing successful tickets
+**Field Identification**: Look for `customfield_*` entries in response JSON
+**Trial Process**: Start with minimal required fields, add custom fields incrementally
+**Error Interpretation**: "not on the appropriate screen" = remove field from payload
+**Verification**: Successful HTTP 201 response with ticket key confirms correct configuration
+
+### Nortal Jira Project Configuration
+**Project**: PR003946 (CMZ - AI-Based Animal Interaction)
+**Workflow**: Standard with transition ID 21 → "In Progress"
+**Authentication**: Basic auth with .env.local credentials (email:token base64)
+**Required Custom Fields for Bug Creation**: Only Billable field (customfield_10225)
+**API Endpoint**: `/rest/api/3/issue` for ticket creation
+
+### Future Ticket Creation Best Practices
+1. **Start Minimal**: Use only required fields (project, issuetype, summary, description, priority)
+2. **Add Billable Field**: Always include `"customfield_10225": {"value": "Billable"}`
+3. **Avoid Assumptions**: Don't include fields like story points or reporter without verification
+4. **Test Incrementally**: Add custom fields one at a time to identify which are allowed
+5. **Use Sample Tickets**: Reference existing tickets for field structure and values
+6. **Handle Errors Gracefully**: Remove fields that cause "screen" errors
+
+### Authentication and Connection Success
+**Credentials**: Working .env.local with JIRA_EMAIL and JIRA_API_TOKEN
+**Base64 Encoding**: Automatic handling of email:token authentication
+**API Version**: v3 REST API endpoints working correctly
+**Rate Limiting**: No issues encountered during ticket creation process
+

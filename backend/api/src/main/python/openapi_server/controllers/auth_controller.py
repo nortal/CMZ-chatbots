@@ -53,11 +53,7 @@ def auth_post(body):  # noqa: E501
 
     :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
     """
-    # PR003946-71: JWT Token Validation - Simple authentication for TDD foundation
-    from openapi_server.impl.auth import generate_jwt_token
-    from datetime import datetime, timezone
-
-    # For TDD foundation, create a simple test token endpoint
+    # Use comprehensive authentication from auth.py
     try:
         # Parse JSON request
         if connexion.request.is_json:
@@ -69,55 +65,48 @@ def auth_post(body):  # noqa: E501
             username = body.get('username', '') if isinstance(body, dict) else ''
             password = body.get('password', '') if isinstance(body, dict) else ''
 
-        # Simple validation for TDD foundation using environment variables
-        test_username = os.getenv('TDD_TEST_USERNAME', 'admin@cmz.org')
-        test_password = os.getenv('TDD_TEST_PASSWORD', 'admin123')
+        # Use the comprehensive authenticate_user function
+        from openapi_server.impl.auth import authenticate_user
 
-        if username == test_username and password == test_password:
-            # Generate JWT token
-            token = generate_jwt_token(
-                user_id='admin_001',
-                email='admin@cmz.org',
-                role='admin',
-                user_type='none'
-            )
+        auth_result = authenticate_user(username, password)
 
-            # Create response dict that satisfies AuthResponse schema
-            # Include all required fields with minimal audit data for TDD foundation
-            from openapi_server.impl.utils.core import create_audit_stamp
-            audit_stamp = create_audit_stamp()
+        # Create proper AuthResponse with all required fields
+        from datetime import datetime, timezone
 
-            response = {
-                'token': token,
-                'expiresIn': DEFAULT_TOKEN_EXPIRY_SECONDS,  # Note: camelCase for OpenAPI attribute mapping
-                'user': {
-                    'userId': 'admin_001',
-                    'email': 'admin@cmz.org',
-                    'displayName': 'Admin User',
-                    'role': 'admin',
-                    'userType': 'none',
-                    'softDelete': False,
-                    'created': audit_stamp,
-                    'modified': audit_stamp,
-                    'deleted': None,
-                    'phoneNumber': None,
-                    'age': None,
-                    'familyId': None
+        response = {
+            'token': auth_result['token'],
+            'expiresIn': DEFAULT_TOKEN_EXPIRY_SECONDS,
+            'user': {
+                'userId': auth_result['user']['user_id'],
+                'email': auth_result['user']['email'],
+                'displayName': auth_result['user']['email'].split('@')[0].title(),
+                'role': auth_result['user']['role'],
+                'userType': auth_result['user']['user_type'],
+                'softDelete': False,
+                'created': {
+                    'at': datetime.now(timezone.utc).isoformat(),
+                    'by': {
+                        'actorId': 'system',
+                        'email': 'system@cmz.org',
+                        'displayName': 'System'
+                    }
+                },
+                'modified': {
+                    'at': datetime.now(timezone.utc).isoformat(),
+                    'by': {
+                        'actorId': 'system',
+                        'email': 'system@cmz.org',
+                        'displayName': 'System'
+                    }
                 }
             }
+        }
 
-            return response, 200
-        else:
-            return {
-                'code': 'authentication_error',
-                'message': 'Invalid credentials'
-            }, 401
+        return response, 200
 
     except Exception as e:
-        return {
-            'code': 'internal_error',
-            'message': f'Authentication error: {str(e)}'
-        }, 500
+        from openapi_server.impl.error_handler import handle_error
+        return handle_error(str(e), 401, 'authentication_error')
 
 
 def auth_refresh_post():  # noqa: E501
