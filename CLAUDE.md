@@ -59,6 +59,17 @@ make run-api CONTAINER_NAME=cmz-dev-custom
 
 ### Testing & Quality
 
+#### Frontend-Backend Integration Validation
+```bash
+# Comprehensive integration testing command
+./scripts/validate-frontend-backend-integration.sh
+```
+**Purpose**: Systematic validation of complete integration chain using sequential reasoning MCP
+- Validates frontend UI → authentication → API → DynamoDB → data display workflow
+- Uses Playwright for real user experience testing
+- Provides detailed diagnostic output with reproduction steps for any failures
+- Critical for ensuring actual user workflows function correctly after code changes
+
 #### Unit & Integration Tests
 ```bash
 # Full test suite with coverage
