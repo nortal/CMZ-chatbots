@@ -13,6 +13,8 @@ import re
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
+from ...impl.error_handler import ValidationError
+
 # Error code constants for consistency
 ERROR_INVALID_REQUEST = "invalid_request"
 ERROR_INVALID_FILTER = "invalid_filter"
@@ -237,3 +239,60 @@ def validate_family_data(family_data: Dict[str, Any], existing_users: List[str])
         return separation_error
         
     return None
+
+
+def validate_email(email: str) -> None:
+    """
+    Validate email format using regex pattern.
+    
+    Args:
+        email: Email address to validate
+        
+    Raises:
+        ValidationError: If email format is invalid
+    """
+    if not email:
+        raise ValidationError("Invalid email", field_errors={"email": ["Email is required"]})
+    
+    # Basic email regex pattern
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    
+    if not re.match(pattern, email):
+        raise ValidationError("Invalid email format", field_errors={"email": ["Email format is invalid"]})
+
+
+def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -> None:
+    """
+    Validate that all required fields are present and not empty.
+    
+    Args:
+        data: Data dictionary to validate
+        required_fields: List of field names that are required
+        
+    Raises:
+        ValidationError: If any required fields are missing or empty
+    """
+    if not required_fields:
+        return  # No validation needed
+    
+    missing_fields = []
+    empty_fields = []
+    
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+        elif not data[field] or (isinstance(data[field], str) and data[field].strip() == ""):
+            empty_fields.append(field)
+    
+    field_errors = {}
+    
+    if missing_fields:
+        for field in missing_fields:
+            field_errors[field] = [f"Field '{field}' is required"]
+    
+    if empty_fields:
+        for field in empty_fields:
+            field_errors[field] = [f"Field '{field}' cannot be empty"]
+    
+    if field_errors:
+        raise ValidationError("Required field validation failed", field_errors=field_errors)

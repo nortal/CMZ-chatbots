@@ -15,4 +15,5 @@ def me_get():  # noqa: E501
 
     :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # User functionality not yet implemented
+    return {"code": "not_implemented", "message": "User functionality not yet implemented"}, 501

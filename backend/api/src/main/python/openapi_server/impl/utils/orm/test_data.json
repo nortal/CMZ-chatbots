@@ -183,6 +183,37 @@
         }
       },
       "softDelete": false
+    },
+    {
+      "animalId": "animal_test_003",
+      "animalName": "Bella the Bear",
+      "species": "Brown Bear",
+      "habitat": "Forest and Mountains", 
+      "description": "A gentle and playful bear who loves sharing stories about forest life",
+      "personality": "playful,gentle,storyteller",
+      "chatbotConfig": {
+        "enabled": true,
+        "model": "claude-3-sonnet",
+        "temperature": 0.6,
+        "maxTokens": 550
+      },
+      "created": {
+        "at": "2025-01-01T09:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T09:00:00.000Z", 
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
     }
   ],
   "quest-dev-user-details": [

@@ -19,7 +19,8 @@ def billing_get(period=None):  # noqa: E501
 
     :rtype: Union[BillingSummary, Tuple[BillingSummary, int], Tuple[BillingSummary, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Analytics functionality not yet implemented
+    return {"code": "not_implemented", "message": "Analytics functionality not yet implemented"}, 501
 
 
 def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # noqa: E501
@@ -42,7 +43,8 @@ def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # no
     """
     start = util.deserialize_datetime(start)
     end = util.deserialize_datetime(end)
-    return 'do some magic!'
+    # Analytics functionality not yet implemented
+    return {"code": "not_implemented", "message": "Analytics functionality not yet implemented"}, 501
 
 
 def performance_metrics_get(start, end):  # noqa: E501
@@ -59,4 +61,5 @@ def performance_metrics_get(start, end):  # noqa: E501
     """
     start = util.deserialize_datetime(start)
     end = util.deserialize_datetime(end)
-    return 'do some magic!'
+    # Analytics functionality not yet implemented
+    return {"code": "not_implemented", "message": "Analytics functionality not yet implemented"}, 501

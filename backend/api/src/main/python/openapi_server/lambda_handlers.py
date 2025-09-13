@@ -5,7 +5,7 @@ These handlers demonstrate how the same business logic can be deployed
 as AWS Lambda functions behind API Gateway, using identical domain services
 as the Flask application but with Lambda-specific adapters.
 """
-from impl.dependency_injection import create_lambda_user_handler
+from openapi_server.impl.dependency_injection import create_lambda_user_handler
 
 # Initialize Lambda handler (lazy loaded)
 _lambda_handler = None

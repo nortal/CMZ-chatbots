@@ -18,7 +18,8 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Knowledge functionality not yet implemented
+    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
 
 
 def knowledge_article_get(knowledge_id):  # noqa: E501
@@ -31,7 +32,8 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
 
     :rtype: Union[KnowledgeArticle, Tuple[KnowledgeArticle, int], Tuple[KnowledgeArticle, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Knowledge functionality not yet implemented
+    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501
 
 
 def knowledge_article_post(body):  # noqa: E501
@@ -47,4 +49,5 @@ def knowledge_article_post(body):  # noqa: E501
     knowledge_create = body
     if connexion.request.is_json:
         knowledge_create = KnowledgeCreate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    # Knowledge functionality not yet implemented
+    return {"code": "not_implemented", "message": "Knowledge functionality not yet implemented"}, 501

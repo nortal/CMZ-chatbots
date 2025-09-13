@@ -2,15 +2,24 @@
 Test configuration and fixtures for comprehensive unit tests.
 
 PR003946-94: Unit test fixtures and configuration
+PR003946-95: Enhanced test utilities and fixtures
 - File persistence mode for testing isolation
 - Common test data and utilities
 - HTML reporting configuration
+- Mock repositories and enhanced generators
 """
 import os
 import pytest
 import tempfile
 import shutil
 from pathlib import Path
+from unittest.mock import patch
+
+# Import enhanced test utilities
+from tests.unit.test_utils import (
+    TestDataGenerator, BoundaryValueTestGenerator, 
+    MockAuthenticationHelper, test_db_manager
+)
 
 # Ensure file persistence mode for all tests
 os.environ["PERSISTENCE_MODE"] = "file"
@@ -59,7 +68,7 @@ def sample_family_data():
 def sample_animal_data():
     """Sample animal data for testing."""
     return {
-        "animalName": "Test Sample Lion",
+        "name": "Test Sample Lion",
         "species": "Lion",
         "habitat": "African Savanna",
         "description": "A sample lion for comprehensive testing",
@@ -71,59 +80,112 @@ def sample_animal_data():
         }
     }
 
+@pytest.fixture
+def sample_animal_config_data():
+    """Sample animal config data for testing."""
+    return {
+        "personality": "friendly",
+        "aiModel": "claude-3-sonnet",
+        "temperature": 0.7
+    }
+
 
 @pytest.fixture
 def boundary_value_generator():
-    """Generator for boundary value testing."""
-    class BoundaryValueGenerator:
-        def null_empty_values(self):
-            return [None, "", " ", "   ", "\t", "\n"]
-        
-        def long_strings(self, base_length=100):
-            return [
-                "a" * (base_length - 1),
-                "a" * base_length, 
-                "a" * (base_length + 1),
-                "a" * (base_length * 2),
-                "a" * 1000,
-                "a" * 10000
-            ]
-        
-        def special_characters(self):
-            return [
-                "test@example.com",
-                "José García",
-                "测试用户",
-                "🦁🐅🐘🦅",
-                "<script>alert('test')</script>",
-                "'; DROP TABLE test; --",
-                "test\nwith\nnewlines",
-                '"quoted"',
-                "back\\slash\\test",
-                "unicode: àáâãäåæç"
-            ]
-        
-        def numeric_boundaries(self):
-            return [
-                -999999999, -1, 0, 1, 999999999,
-                2147483647, 2147483648, -2147483648, -2147483649,
-                3.14159, -3.14159, 0.0, 1.0, -1.0
-            ]
-        
-        def invalid_ids(self):
-            return [
-                "", " ", "   ",           # Empty/whitespace
-                "invalid id spaces",      # Spaces
-                "invalid/id/slashes",     # Slashes
-                "invalid@id#symbols",     # Special chars
-                "a" * 200,               # Too long
-                "123",                   # Numbers only
-                "ID_WITH_CAPS",          # All caps
-                "mixed_CASE_id",         # Mixed case
-                None                     # Null
-            ]
+    """Enhanced boundary value generator for comprehensive testing."""
+    return BoundaryValueTestGenerator()
+
+
+@pytest.fixture
+def test_data_generator():
+    """Test data generator for creating realistic test entities."""
+    return TestDataGenerator()
+
+
+@pytest.fixture
+def mock_auth_helper():
+    """Mock authentication helper for testing secured endpoints."""
+    return MockAuthenticationHelper()
+
+
+@pytest.fixture(scope="function")
+def mock_user():
+    """Create a mock authenticated user for testing."""
+    return MockAuthenticationHelper.create_mock_user()
+
+
+@pytest.fixture(scope="function")
+def mock_admin_user():
+    """Create a mock admin user for testing admin endpoints."""
+    return MockAuthenticationHelper.create_mock_user(role="admin", user_type="none")
+
+
+@pytest.fixture(scope="function")
+def mock_parent_user():
+    """Create a mock parent user for testing family operations."""
+    return MockAuthenticationHelper.create_mock_user(role="parent", user_type="parent")
+
+
+@pytest.fixture(scope="function")
+def mock_repositories():
+    """Provide clean mock repositories for testing."""
+    # Clear any existing test data
+    test_db_manager.clear_all()
     
-    return BoundaryValueGenerator()
+    # Return the manager for test use
+    yield test_db_manager
+    
+    # Cleanup after test
+    test_db_manager.clear_all()
+
+
+@pytest.fixture(scope="function")
+def seeded_repositories():
+    """Provide mock repositories with pre-seeded test data."""
+    # Clear any existing test data
+    test_db_manager.clear_all()
+    
+    # Seed with test data
+    test_db_manager.seed_test_data()
+    
+    # Return the manager for test use
+    yield test_db_manager
+    
+    # Cleanup after test
+    test_db_manager.clear_all()
+
+
+@pytest.fixture
+def mock_store_patch():
+    """Patch storage functions to use mock repositories.
+    
+    Note: Different modules use different storage patterns:
+    - users/family: Use _store() for direct DynamoDB access
+    - animals: Use _get_flask_handler() for Flask handler abstraction
+    This reflects the actual architecture differences in the codebase.
+    """
+    def create_mock_store(table_name, primary_key):
+        return test_db_manager.get_repository(table_name, primary_key)
+    
+    with patch('openapi_server.impl.users._store') as user_mock, \
+         patch('openapi_server.impl.family._store') as family_mock, \
+         patch('openapi_server.impl.animals._get_flask_handler') as animal_mock:
+        
+        # Configure user store mock
+        user_mock.return_value = create_mock_store("quest-dev-user", "userId")
+        
+        # Configure family store mock  
+        family_mock.return_value = create_mock_store("quest-dev-family", "familyId")
+        
+        # Configure animal handler mock
+        mock_animal_handler = create_mock_store("quest-dev-animal", "animalId")
+        animal_mock.return_value = mock_animal_handler
+        
+        yield {
+            "user_store": user_mock,
+            "family_store": family_mock,
+            "animal_handler": animal_mock
+        }
 
 
 def pytest_configure(config):

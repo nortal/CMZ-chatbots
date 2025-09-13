@@ -19,7 +19,8 @@ def convo_history_delete(id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Later functionality not yet implemented
+    return {"code": "not_implemented", "message": "Later functionality not yet implemented"}, 501
 
 
 def convo_history_get(animal_id=None, user_id=None, limit=None):  # noqa: E501
@@ -36,7 +37,8 @@ def convo_history_get(animal_id=None, user_id=None, limit=None):  # noqa: E501
 
     :rtype: Union[ConvoHistory, Tuple[ConvoHistory, int], Tuple[ConvoHistory, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Later functionality not yet implemented
+    return {"code": "not_implemented", "message": "Later functionality not yet implemented"}, 501
 
 
 def summarize_convo_post(body):  # noqa: E501
@@ -52,4 +54,5 @@ def summarize_convo_post(body):  # noqa: E501
     summarize_request = body
     if connexion.request.is_json:
         summarize_request = SummarizeRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    # Later functionality not yet implemented
+    return {"code": "not_implemented", "message": "Later functionality not yet implemented"}, 501

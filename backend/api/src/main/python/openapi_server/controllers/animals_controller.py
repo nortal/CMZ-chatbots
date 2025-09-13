@@ -8,12 +8,13 @@ from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noq
 from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
 from openapi_server.models.animal_input import AnimalInput  # noqa: E501
 from openapi_server.models.animal_update import AnimalUpdate  # noqa: E501
-from openapi_server import util
 
 # Import implementation handlers
 from openapi_server.impl.animals import (
     handle_create_animal,
-    handle_list_animals
+    handle_list_animals,
+    handle_get_animal_config,
+    handle_update_animal_config
 )
 from openapi_server.impl.error_handler import ValidationError, create_error_response
 
@@ -28,7 +29,15 @@ def animal_config_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        result = handle_get_animal_config(animal_id)
+        if result is None:
+            return create_error_response("not_found", f"Animal configuration not found for {animal_id}"), 404
+        return result, 200
+    except ValidationError as e:
+        return create_error_response(e.error_code, e.message, e.details), 400
+    except Exception as e:
+        return create_error_response("internal_error", str(e)), 500
 
 
 def animal_config_patch(animal_id, body):  # noqa: E501
@@ -43,10 +52,18 @@ def animal_config_patch(animal_id, body):  # noqa: E501
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
-    animal_config_update = body
-    if connexion.request.is_json:
-        animal_config_update = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        animal_config_update = body
+        if connexion.request.is_json:
+            animal_config_update = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        
+        # The implementation expects an AnimalConfig model, so pass the update object directly
+        result = handle_update_animal_config(animal_id, animal_config_update)
+        return result, 200
+    except ValidationError as e:
+        return create_error_response(e.error_code, e.message, e.details), 400
+    except Exception as e:
+        return create_error_response("internal_error", str(e)), 500
 
 
 def animal_details_get(animal_id):  # noqa: E501
@@ -59,7 +76,11 @@ def animal_details_get(animal_id):  # noqa: E501
 
     :rtype: Union[AnimalDetails, Tuple[AnimalDetails, int], Tuple[AnimalDetails, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Animal details functionality not yet implemented
+        return {"code": "not_implemented", "message": "Animal details retrieval not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_id_delete(id):  # noqa: E501
@@ -72,7 +93,11 @@ def animal_id_delete(id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Animal deletion functionality not yet implemented
+        return {"code": "not_implemented", "message": "Animal deletion not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_id_get(id):  # noqa: E501
@@ -85,7 +110,11 @@ def animal_id_get(id):  # noqa: E501
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        # Individual animal retrieval functionality not yet implemented
+        return {"code": "not_implemented", "message": "Individual animal retrieval not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_id_put(id, body):  # noqa: E501
@@ -100,10 +129,15 @@ def animal_id_put(id, body):  # noqa: E501
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
-    animal_update = body
-    if connexion.request.is_json:
-        animal_update = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        animal_update = body
+        if connexion.request.is_json:
+            animal_update = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        
+        # Animal update functionality not yet implemented
+        return {"code": "not_implemented", "message": "Animal update not yet implemented"}, 501
+    except Exception as e:
+        return {"code": "internal_error", "message": str(e)}, 500
 
 
 def animal_list_get(status=None):  # noqa: E501

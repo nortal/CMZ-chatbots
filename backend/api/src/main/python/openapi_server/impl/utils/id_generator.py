@@ -14,6 +14,33 @@ def generate_uuid():
     return str(uuid.uuid4())
 
 
+def generate_id(length=12, prefix=None):
+    """
+    Generate a random alphanumeric ID with optional prefix.
+    
+    Args:
+        length: Length of the generated ID (default: 12)
+        prefix: Optional prefix to prepend to the ID
+        
+    Returns:
+        str: Generated ID string
+    """
+    import random
+    import string
+    
+    if length <= 0:
+        raise ValueError("Length must be greater than 0")
+    
+    # Generate random alphanumeric string
+    chars = string.ascii_letters + string.digits
+    generated = ''.join(random.choices(chars, k=length))
+    
+    if prefix:
+        return f"{prefix}_{generated}"
+    
+    return generated
+
+
 def generate_prefixed_id(prefix):
     """Generate a UUID with a prefix (e.g., 'user_abc123')."""
     short_uuid = str(uuid.uuid4()).replace('-', '')[:8]
