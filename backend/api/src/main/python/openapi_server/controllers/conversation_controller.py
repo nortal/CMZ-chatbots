@@ -6,6 +6,7 @@ from typing import Union
 from openapi_server.models.convo_history import ConvoHistory  # noqa: E501
 from openapi_server.models.convo_turn_post200_response import ConvoTurnPost200Response  # noqa: E501
 from openapi_server.models.convo_turn_post_request import ConvoTurnPostRequest  # noqa: E501
+from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.summarize_convo_post200_response import SummarizeConvoPost200Response  # noqa: E501
 from openapi_server.models.summarize_convo_post_request import SummarizeConvoPostRequest  # noqa: E501
 from openapi_server import util
@@ -32,8 +33,7 @@ def convo_history_delete(session_id=None, user_id=None, animal_id=None, older_th
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     older_than = util.deserialize_datetime(older_than)
-    # Conversation functionality not yet implemented
-    return {"code": "not_implemented", "message": "Conversation functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def convo_history_get(animal_id=None, user_id=None, session_id=None, start_date=None, end_date=None, limit=None, offset=None, include_metadata=None):  # noqa: E501
@@ -62,8 +62,7 @@ def convo_history_get(animal_id=None, user_id=None, session_id=None, start_date=
     """
     start_date = util.deserialize_datetime(start_date)
     end_date = util.deserialize_datetime(end_date)
-    # Conversation functionality not yet implemented
-    return {"code": "not_implemented", "message": "Conversation functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def convo_turn_post(body):  # noqa: E501
@@ -79,8 +78,7 @@ def convo_turn_post(body):  # noqa: E501
     convo_turn_post_request = body
     if connexion.request.is_json:
         convo_turn_post_request = ConvoTurnPostRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    # Conversation functionality not yet implemented
-    return {"code": "not_implemented", "message": "Conversation functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def summarize_convo_post(body):  # noqa: E501
@@ -96,5 +94,4 @@ def summarize_convo_post(body):  # noqa: E501
     summarize_convo_post_request = body
     if connexion.request.is_json:
         summarize_convo_post_request = SummarizeConvoPostRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    # Conversation functionality not yet implemented
-    return {"code": "not_implemented", "message": "Conversation functionality not yet implemented"}, 501
+    return 'do some magic!'

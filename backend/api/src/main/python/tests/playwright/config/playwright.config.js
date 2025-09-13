@@ -27,18 +27,18 @@ module.exports = defineConfig({
   reporter: [
     // HTML report for detailed analysis
     ['html', { 
-      outputFolder: '../reports/html-report',
+      outputFolder: '../../../../../../../reports/playwright/html-report',
       open: 'never'
     }],
     
     // JUnit XML for GitLab CI integration
     ['junit', { 
-      outputFile: '../reports/junit-results.xml' 
+      outputFile: '../../../../../../../reports/playwright/junit-results.xml' 
     }],
     
     // JSON report for custom processing
     ['json', { 
-      outputFile: '../reports/test-results.json' 
+      outputFile: '../../../../../../../reports/playwright/test-results.json' 
     }],
     
     // Line reporter for console output
@@ -158,7 +158,7 @@ module.exports = defineConfig({
   ],
 
   // Test output directory
-  outputDir: '../reports/test-results',
+  outputDir: '../../../../../../../reports/playwright/test-results',
   
   // Global setup and teardown
   globalSetup: require.resolve('../fixtures/global-setup.js'),

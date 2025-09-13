@@ -2829,7 +2829,7 @@ components:
           description: Animal personality description with character validation
           maxLength: 1000
           minLength: 5
-          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-'\":()\\[\\]]+$"
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]]+$"
           title: personality
           type: string
         aiModel:

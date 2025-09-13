@@ -3,6 +3,7 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.media import Media  # noqa: E501
 from openapi_server.models.media_get200_response import MediaGet200Response  # noqa: E501
 from openapi_server import util
@@ -20,8 +21,7 @@ def media_delete(media_id, permanent=None):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    # Media functionality not yet implemented
-    return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E501
@@ -40,8 +40,7 @@ def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E5
 
     :rtype: Union[MediaGet200Response, Tuple[MediaGet200Response, int], Tuple[MediaGet200Response, int, Dict[str, str]]
     """
-    # Media functionality not yet implemented
-    return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
+    return 'do some magic!'
 
 
 def upload_media_post(file, title=None, animal_id=None, description=None, tags=None):  # noqa: E501
@@ -62,5 +61,4 @@ def upload_media_post(file, title=None, animal_id=None, description=None, tags=N
 
     :rtype: Union[Media, Tuple[Media, int], Tuple[Media, int, Dict[str, str]]
     """
-    # Media functionality not yet implemented
-    return {"code": "not_implemented", "message": "Media functionality not yet implemented"}, 501
+    return 'do some magic!'
