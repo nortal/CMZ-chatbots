@@ -1,0 +1,191 @@
+# Jira Stories for Playwright Validation
+
+## Story 1: DynamoDB Persistence Validation
+
+**Summary**: Validate Playwright E2E Tests with DynamoDB Persistence
+
+**Issue Type**: Task
+**Parent Epic**: PR003946-61
+**Story Points**: 8
+**Priority**: High
+**Labels**: backend, testing, dynamodb, playwright
+**Billable**: Billable
+
+**Description**:
+As a developer, I want comprehensive validation of Playwright end-to-end tests using DynamoDB as the persistence layer to ensure data integrity and proper CRUD operations during browser automation testing.
+
+### Background
+Currently our Playwright tests may not be fully validating the DynamoDB persistence layer integration. We need to ensure that all user interactions (login, family management, animal configurations, conversations) properly persist to and retrieve from DynamoDB tables during E2E testing.
+
+### Technical Context
+- API Backend: Flask/Connexion with OpenAPI-first development
+- Persistence: AWS DynamoDB with 10+ production tables
+- Test Environment: Playwright browser automation with 6 browser configurations
+- Tables: quest-dev-family, quest-dev-users, quest-dev-animals, quest-dev-conversations
+- Test Users: parent1@test.cmz.org, student1@test.cmz.org, test@cmz.org, user_parent_001@cmz.org
+- Environment: AWS_PROFILE=cmz, AWS_REGION=us-west-2
+
+### Scope/Endpoints
+All Playwright E2E tests that interact with backend API endpoints requiring DynamoDB persistence.
+
+### Acceptance Criteria
+
+**AC1: Login Flow DynamoDB Persistence**
+- **Given** a Playwright test runs login for parent1@test.cmz.org
+- **When** authentication succeeds and user accesses dashboard
+- **Then** verify user record exists in quest-dev-users table with correct JWT token hash
+- **And** verify login timestamp is recorded in DynamoDB within 5 seconds of test execution
+- **Test**: `aws dynamodb get-item --table-name quest-dev-users --key '{"userId":{"S":"parent1@test.cmz.org"}}'`
+
+**AC2: Family CRUD Operations Persistence**
+- **Given** a Playwright test creates a new family via the family management UI
+- **When** family data is submitted with familyName "Test Family E2E"
+- **Then** verify family record exists in quest-dev-family table with generated familyId
+- **And** verify created.at and modified.at timestamps are ISO format and within test execution time
+- **Test**: `aws dynamodb scan --table-name quest-dev-family --filter-expression "familyName = :name" --expression-attribute-values '{":name":{"S":"Test Family E2E"}}'`
+
+**AC3: Animal Configuration Persistence**
+- **Given** a Playwright test modifies animal chatbot settings for "Luna the Lion"
+- **When** configuration changes are saved (personality, response style, knowledge base)
+- **Then** verify updated animal record in quest-dev-animals table matches UI changes
+- **And** verify configuration version number incremented by 1
+- **Test**: `aws dynamodb get-item --table-name quest-dev-animals --key '{"animalId":{"S":"luna-lion"}}'` and compare config fields
+
+**AC4: Conversation History Persistence**
+- **Given** a Playwright test conducts a chat conversation with 3+ message exchanges
+- **When** each message is sent and received in the chat interface
+- **Then** verify complete conversation thread exists in quest-dev-conversations table
+- **And** verify message timestamps are sequential and within test execution window
+- **Test**: `aws dynamodb query --table-name quest-dev-conversations --key-condition-expression "sessionId = :sid"`
+
+**AC5: Cross-Browser DynamoDB Consistency**
+- **Given** Playwright tests run across all 6 browser configurations (Chrome, Firefox, Safari, Edge, Mobile Chrome, Mobile Safari)
+- **When** each browser performs identical login → family creation → animal interaction sequence
+- **Then** verify DynamoDB contains 6 distinct user sessions with unique sessionIds
+- **And** verify no data corruption or race conditions between concurrent browser sessions
+- **Test**: Count distinct sessionIds in quest-dev-conversations for test timeframe must equal 6
+
+**AC6: Test Data Isolation and Cleanup**
+- **Given** Playwright test suite runs with --workers=2 (concurrent execution)
+- **When** tests complete successfully or fail
+- **Then** verify test data is prefixed with "test-" or "e2e-" for identification
+- **And** verify automated cleanup removes all test records within 60 seconds of test completion
+- **Test**: `aws dynamodb scan --table-name quest-dev-family --filter-expression "begins_with(familyId, :prefix)" --expression-attribute-values '{":prefix":{"S":"test-"}}'` returns 0 items post-cleanup
+
+**AC7: DynamoDB Error Handling Validation**
+- **Given** DynamoDB table is temporarily unavailable (simulate with invalid credentials)
+- **When** Playwright test attempts family creation
+- **Then** verify UI displays "Data service temporarily unavailable" error message
+- **And** verify test doesn't crash and can recover when service restored
+- **Test**: Mock DynamoDB failure, verify error UI element exists, restore service, verify recovery
+
+---
+
+## Story 2: Local File Persistence Mode Validation
+
+**Summary**: Validate Playwright E2E Tests with Local File Persistence Mode
+
+**Issue Type**: Task
+**Parent Epic**: PR003946-61
+**Story Points**: 5
+**Priority**: Normal
+**Labels**: backend, testing, file-persistence, playwright
+**Billable**: Billable
+
+**Description**:
+As a developer, I want comprehensive validation of Playwright end-to-end tests using local file persistence mode (PERSISTENCE_MODE=file) to ensure data integrity and proper CRUD operations during browser automation testing in offline/development scenarios.
+
+### Background
+Our API supports both DynamoDB and local file persistence modes. We need to ensure Playwright E2E tests work correctly when the API is configured for local file persistence (PERSISTENCE_MODE=file), providing a complete testing solution for development environments without AWS dependencies.
+
+### Technical Context
+- API Backend: Flask/Connexion with OpenAPI-first development
+- Persistence: Local file system with JSON-based storage
+- Test Environment: Playwright browser automation with 6 browser configurations
+- Storage: Local files in configured directory structure
+- Test Users: Same authentication users but stored in local files
+- Environment: PERSISTENCE_MODE=file, no AWS dependencies required
+
+### Scope/Endpoints
+All Playwright E2E tests that interact with backend API endpoints, configured for local file persistence mode.
+
+### Acceptance Criteria
+
+**AC1: File-Based Login Persistence**
+- **Given** API runs with PERSISTENCE_MODE=file and Playwright test performs login
+- **When** parent1@test.cmz.org authenticates successfully
+- **Then** verify user data file exists at `./data/users/parent1@test.cmz.org.json`
+- **And** verify file contains valid JWT token hash and login timestamp
+- **Test**: `cat ./data/users/parent1@test.cmz.org.json | jq '.lastLogin'` returns timestamp within 5 seconds
+
+**AC2: File-Based Family CRUD Operations**
+- **Given** PERSISTENCE_MODE=file and Playwright test creates family "File Test Family"
+- **When** family creation form is submitted via UI
+- **Then** verify family file exists at `./data/families/{generated-uuid}.json`
+- **And** verify file contains familyName "File Test Family" and ISO timestamps
+- **Test**: `find ./data/families -name "*.json" -exec grep -l "File Test Family" {} \;` returns exactly 1 file
+
+**AC3: File-Based Animal Configuration**
+- **Given** PERSISTENCE_MODE=file and Playwright test modifies Luna's chatbot settings
+- **When** personality changes from "Friendly" to "Educational" via UI
+- **Then** verify `./data/animals/luna-lion.json` contains `"personality": "Educational"`
+- **And** verify configVersion incremented and modifiedAt updated
+- **Test**: `cat ./data/animals/luna-lion.json | jq '.personality'` equals "Educational"
+
+**AC4: File-Based Conversation Storage**
+- **Given** PERSISTENCE_MODE=file and Playwright test conducts 5-message conversation
+- **When** each message exchange completes in chat interface
+- **Then** verify conversation file exists at `./data/conversations/{sessionId}.json`
+- **And** verify file contains array of 5 message objects with sequential timestamps
+- **Test**: `cat ./data/conversations/{sessionId}.json | jq '.messages | length'` equals 5
+
+**AC5: Cross-Browser File Consistency**
+- **Given** PERSISTENCE_MODE=file and 3 concurrent browser sessions perform identical operations
+- **When** each browser creates family with same name "Concurrent Test Family"
+- **Then** verify 3 separate family files exist with unique UUIDs
+- **And** verify no file corruption or incomplete writes
+- **Test**: `find ./data/families -name "*.json" -exec grep -l "Concurrent Test Family" {} \; | wc -l` equals 3
+
+**AC6: File System Error Handling**
+- **Given** PERSISTENCE_MODE=file and data directory is read-only
+- **When** Playwright test attempts to create family
+- **Then** verify UI displays "Unable to save data" error message
+- **And** verify error logged contains "Permission denied" or similar file system error
+- **Test**: Set `chmod 444 ./data/families` before test, verify error UI element exists
+
+**AC7: File-Based Test Cleanup**
+- **Given** PERSISTENCE_MODE=file and Playwright test suite completes
+- **When** cleanup phase executes
+- **Then** verify all files with "test-" prefix are removed from all data directories
+- **And** verify production data files remain unchanged
+- **Test**: `find ./data -name "*test-*" | wc -l` equals 0 after cleanup
+
+**AC8: DynamoDB-to-File Mode Compatibility**
+- **Given** API switches from DynamoDB to PERSISTENCE_MODE=file mid-test
+- **When** existing session continues with file-based operations
+- **Then** verify same API responses and UI behavior as DynamoDB mode
+- **And** verify session continuity maintained across persistence mode switch
+- **Test**: Compare API response schemas between modes, verify identical structure
+
+**AC9: File Performance Under Load**
+- **Given** PERSISTENCE_MODE=file and 6 concurrent Playwright sessions
+- **When** each session performs 10 rapid CRUD operations
+- **Then** verify all 60 operations complete within 30 seconds
+- **And** verify no file locking conflicts or partial writes
+- **Test**: Measure operation completion time, verify all expected files exist and are valid JSON
+
+---
+
+## Creation Instructions
+
+These stories can be created in Jira using:
+
+1. **Manual Creation**: Copy the content above into new Jira tickets
+2. **Existing Scripts**: Use `/scripts/update_jira_simple.sh` workflow if it supports creation
+3. **Direct API**: Use the working Jira API authentication from your established patterns
+
+Remember to:
+- Set **Billable** field to "Billable"
+- Link to **Parent Epic**: PR003946-61
+- Add appropriate **Labels**: backend, testing, dynamodb/file-persistence, playwright
+- Set **Story Points**: 8 for DynamoDB story, 5 for file persistence story
