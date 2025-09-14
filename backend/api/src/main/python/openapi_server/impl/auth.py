@@ -182,38 +182,6 @@ def require_admin_role(user):
         )
 
 
-def refresh_jwt_token(current_token):
-    """
-    PR003946-88: Token refresh consistency
-
-    Refresh a JWT token by decoding the current one and issuing a new token.
-    """
-    try:
-        # Decode current token to get user info
-        payload = decode_jwt_token(current_token)
-
-        # Generate new token with same user info
-        new_token = generate_jwt_token(
-            user_id=payload['user_id'],
-            email=payload['email'],
-            role=payload['role'],
-            user_type=payload['user_type']
-        )
-
-        # Return response format for controller
-        return {
-            'token': new_token,
-            'user': {
-                'userId': payload['user_id'],
-                'email': payload['email'],
-                'role': payload['role'],
-                'userType': payload['user_type']
-            }
-        }
-
-    except Exception as e:
-        raise AuthenticationError(f"Token refresh failed: {str(e)}")
-
 
 def authenticate_user(email, password):
     """

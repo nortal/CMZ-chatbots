@@ -5,7 +5,6 @@ Ensures all controllers are properly connected to implementation modules
 Runs automatically after OpenAPI code generation
 """
 
-import os
 import re
 import sys
 from pathlib import Path
