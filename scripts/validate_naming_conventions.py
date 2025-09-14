@@ -239,7 +239,7 @@ if __name__ == "__main__":
         with open(script_path, 'w') as f:
             f.write(script_content)
 
-        os.chmod(script_path, 0o644)
+        os.chmod(script_path, 0o600)
         print(f"Created fix script: {script_path}")
 
     def validate(self) -> bool:
