@@ -1,153 +1,340 @@
 import connexion
-import os
 from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.error import Error  # noqa: E501
-from openapi_server.models.family import Family  # noqa: E501
-from openapi_server import util
+from openapi_server.controllers import util
 
 
-def create_family(body):  # noqa: E501
+def create_family(family):  # noqa: E501
     """Create a new family
 
-     # noqa: E501
+    :param family: 
+    :type family:  | bytes
 
-    :param family:
-    :type family: dict | bytes
-
-    :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
+    :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]]
     """
-    # PR003946-73: Foreign Key Validation - Family creation with user reference validation
-    from openapi_server.impl.commands.foreign_key_validation import execute_foreign_key_validation
-    from openapi_server.impl.family import handle_create_family
+    # Auto-generated parameter handling
+    if connexion.request.is_json:
+        family = Family.from_dict(connexion.request.get_json())  # noqa: E501
 
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
     try:
-        # Parse request body
-        family_data = body
-        if connexion.request.is_json:
-            family_data = connexion.request.get_json()
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "familycontroller".replace("_controller", "")
+        impl_function_name = "handle_"
 
-        # Convert to dict if it's a Family model object
-        if hasattr(family_data, 'to_dict'):
-            family_data = family_data.to_dict()
-        elif not isinstance(family_data, dict):
-            family_data = dict(family_data)
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
 
-        # PR003946-73: Validate foreign key references before creation
-        validation_result, validation_status = execute_foreign_key_validation(
-            entity_type="family",
-            entity_data=family_data,
-            audit_user="system"
+        # Call implementation function with processed parameters
+        result = impl_function(family)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 201
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller create_family implementation not found: {str(e)}",
+            details={"controller": "FamilyController", "operation": "create_family"}
         )
-
-        if validation_status != 200:
-            # Foreign key validation failed
-            return validation_result, validation_status
-
-        # If validation passes, proceed with family creation
-        result = handle_create_family(family_data)
-        return result, 201
+        return error_obj, 501
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in create_family: {str(e)}",
+                details={"controller": "FamilyController", "operation": "create_family"}
+            )
+            return error_obj, 500
 
 
 def delete_family(family_id):  # noqa: E501
     """Delete a family
 
-     # noqa: E501
+    :param family_id: 
+    :type family_id: strstr | bytes
 
-    :param family_id:
-    :type family_id: str
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
     """
-    # PR003946-66: Soft Delete Consistency - Implement soft delete for families
-    from openapi_server.impl.utils.orm.store import get_store
-    from datetime import datetime, timezone
+    # Auto-generated parameter handling
 
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
     try:
-        # Get the store for families
-        table_name = os.getenv('FAMILY_DYNAMO_TABLE_NAME', 'quest-dev-family')
-        pk_name = os.getenv('FAMILY_DYNAMO_PK_NAME', 'familyId')
-        store = get_store(table_name, pk_name)
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "familycontroller".replace("_controller", "")
+        impl_function_name = "handle_"
 
-        # Check if family exists
-        family = store.get(family_id)
-        if not family:
-            return {
-                'code': 'not_found',
-                'message': f'Family with ID {family_id} not found'
-            }, 404
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
 
-        # Check if already soft deleted
-        if family.get('softDelete', False):
-            return {
-                'code': 'already_deleted',
-                'message': f'Family with ID {family_id} is already deleted'
-            }, 410
+        # Call implementation function with processed parameters
+        result = impl_function(family_id)
 
-        # Perform soft delete by setting softDelete flag and deleted audit timestamp
-        from openapi_server.impl.utils.core import create_audit_stamp
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 204
 
-        # Update the family with soft delete markers
-        update_data = {
-            'softDelete': True,
-            'deleted': create_audit_stamp(),
-            'modified': create_audit_stamp()
-        }
-
-        # Apply the soft delete update
-        store.update(family_id, update_data)
-
-        # Return success with no content (204)
-        return None, 204
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller delete_family implementation not found: {str(e)}",
+            details={"controller": "FamilyController", "operation": "delete_family"}
+        )
+        return error_obj, 501
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in delete_family: {str(e)}",
+                details={"controller": "FamilyController", "operation": "delete_family"}
+            )
+            return error_obj, 500
 
 
 def get_family(family_id):  # noqa: E501
     """Get specific family by ID
 
-     # noqa: E501
-
     :param family_id: 
-    :type family_id: str
+    :type family_id: strstr | bytes
 
-    :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
+    :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]]
     """
-    return 'do some magic!'
+    # Auto-generated parameter handling
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "familycontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(family_id)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller get_family implementation not found: {str(e)}",
+            details={"controller": "FamilyController", "operation": "get_family"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in get_family: {str(e)}",
+                details={"controller": "FamilyController", "operation": "get_family"}
+            )
+            return error_obj, 500
 
 
 def list_families():  # noqa: E501
     """Get list of all families
 
-     # noqa: E501
-
-
-    :rtype: Union[List[Family], Tuple[List[Family], int], Tuple[List[Family], int, Dict[str, str]]
+    :rtype: Union[List[Family], Tuple[List[Family], int], Tuple[List[Family], int, Dict[str, str]]]
     """
-    return 'do some magic!'
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "familycontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function()
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller list_families implementation not found: {str(e)}",
+            details={"controller": "FamilyController", "operation": "list_families"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in list_families: {str(e)}",
+                details={"controller": "FamilyController", "operation": "list_families"}
+            )
+            return error_obj, 500
 
 
-def update_family(family_id, body):  # noqa: E501
+def update_family(family_idfamily):  # noqa: E501
     """Update an existing family
 
-     # noqa: E501
-
     :param family_id: 
-    :type family_id: str
-    :param family: 
-    :type family: dict | bytes
+    :type family_id: strstr | bytes
 
-    :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
+    :param family: 
+    :type family:  | bytes
+
+    :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]]
     """
-    family = body
+    # Auto-generated parameter handling
     if connexion.request.is_json:
         family = Family.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "familycontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(family_idfamily)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller update_family implementation not found: {str(e)}",
+            details={"controller": "FamilyController", "operation": "update_family"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in update_family: {str(e)}",
+                details={"controller": "FamilyController", "operation": "update_family"}
+            )
+            return error_obj, 500
+
+

@@ -3,45 +3,196 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.feature_flags_document import FeatureFlagsDocument  # noqa: E501
-from openapi_server.models.feature_flags_update import FeatureFlagsUpdate  # noqa: E501
-from openapi_server.models.system_health import SystemHealth  # noqa: E501
-from openapi_server import util
+from openapi_server.controllers import util
 
 
 def feature_flags_get():  # noqa: E501
     """Get feature flags
 
-     # noqa: E501
-
-
-    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]
+    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]]
     """
-    return 'do some magic!'
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "systemcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function()
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller feature_flags_get implementation not found: {str(e)}",
+            details={"controller": "SystemController", "operation": "feature_flags_get"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in feature_flags_get: {str(e)}",
+                details={"controller": "SystemController", "operation": "feature_flags_get"}
+            )
+            return error_obj, 500
 
 
-def feature_flags_patch(body):  # noqa: E501
+def feature_flags_patch(feature_flags_update):  # noqa: E501
     """Update feature flags
 
-     # noqa: E501
-
     :param feature_flags_update: 
-    :type feature_flags_update: dict | bytes
+    :type feature_flags_update:  | bytes
 
-    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]
+    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]]
     """
-    feature_flags_update = body
+    # Auto-generated parameter handling
     if connexion.request.is_json:
         feature_flags_update = FeatureFlagsUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "systemcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(feature_flags_update)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller feature_flags_patch implementation not found: {str(e)}",
+            details={"controller": "SystemController", "operation": "feature_flags_patch"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in feature_flags_patch: {str(e)}",
+                details={"controller": "SystemController", "operation": "feature_flags_patch"}
+            )
+            return error_obj, 500
 
 
 def system_health_get():  # noqa: E501
     """System/health check for status page
 
-     # noqa: E501
-
-
-    :rtype: Union[SystemHealth, Tuple[SystemHealth, int], Tuple[SystemHealth, int, Dict[str, str]]
+    :rtype: Union[SystemHealth, Tuple[SystemHealth, int], Tuple[SystemHealth, int, Dict[str, str]]]
     """
-    return 'do some magic!'
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "systemcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function()
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller system_health_get implementation not found: {str(e)}",
+            details={"controller": "SystemController", "operation": "system_health_get"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in system_health_get: {str(e)}",
+                details={"controller": "SystemController", "operation": "system_health_get"}
+            )
+            return error_obj, 500
+
+

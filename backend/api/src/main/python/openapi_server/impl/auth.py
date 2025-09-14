@@ -385,3 +385,64 @@ def refresh_jwt_token(current_token):
             'user_type': payload['user_type']
         }
     }
+# Auto-generated handler functions
+
+def handle_auth_logout_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_logout_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_logout_post not yet implemented",
+        details={"operation": "auth_logout_post", "handler": "handle_auth_logout_post"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_auth_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_post not yet implemented",
+        details={"operation": "auth_post", "handler": "handle_auth_post"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_auth_refresh_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_refresh_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_refresh_post not yet implemented",
+        details={"operation": "auth_refresh_post", "handler": "handle_auth_refresh_post"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_auth_reset_password_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_reset_password_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_reset_password_post not yet implemented",
+        details={"operation": "auth_reset_password_post", "handler": "handle_auth_reset_password_post"}
+    )
+    return error_obj.to_dict(), 501
+

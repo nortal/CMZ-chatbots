@@ -69,8 +69,13 @@ help:
 # =========================
 # 1) Generate Flask code from OpenAPI spec (with backup)
 # =========================
+.PHONY: validate-naming
+validate-naming:
+	@echo ">> Validating naming conventions..."
+	@python3 scripts/validate_naming_conventions_simple.py $(ROOT_DIR)
+
 .PHONY: generate-api
-generate-api: $(GEN_TMP_BASE)
+generate-api: validate-naming $(GEN_TMP_BASE)
 	@set -e; \
 	echo ">> Backing up existing app directory (if any)"; \
 	TS=$$(date +%Y%m%d_%H%M%S); \
@@ -114,6 +119,9 @@ sync-openapi:
 	       $(SRC_APP_DIR)/openapi_server/test/
 
 	@echo "=== Done: sync-openapi ==="
+	@echo "--- Running post-generation setup..."
+	python3 scripts/post_openapi_generation.py $(SRC_APP_DIR)
+	@echo "=== Done: post-generation setup ==="
 
 .PHONY: diff-api
 diff-api:

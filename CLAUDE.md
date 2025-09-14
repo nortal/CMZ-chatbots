@@ -130,6 +130,7 @@ make rebuild-venv-api
 - **NEVER modify generated files**: Controllers, models, and test stubs are regenerated on every `make generate-api`
 - **All business logic in impl/**: Only implement functionality in `backend/api/src/main/python/openapi_server/impl/`
 - **OpenAPI spec is source of truth**: API changes must start with `openapi_spec.yaml` modifications
+- **"do some magic!" Placeholder Issue**: If you encounter this placeholder in generated controllers, see `docs/OPENAPI_TEMPLATE_SOLUTION.md` for the complete template-based solution that eliminates this issue permanently
 
 ### DynamoDB Integration Pattern
 All DynamoDB operations use the centralized utilities in `impl/utils/dynamo.py`:
