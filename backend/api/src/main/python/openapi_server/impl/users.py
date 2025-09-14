@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import Any, Tuple
 
 # users.py - User CRUD operations implementation
 from openapi_server.impl.utils import (
@@ -249,3 +250,19 @@ def _validate_foreign_keys(data):
             validation_errors["familyId"] = [f"Could not validate family reference: {family_id}"]
     
     return validation_errors
+# Auto-generated handler functions
+
+def handle_me_get(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for me_get
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation me_get not yet implemented",
+        details={"operation": "me_get", "handler": "handle_me_get"}
+    )
+    return error_obj.to_dict(), 501
+

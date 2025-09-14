@@ -1,170 +1,266 @@
 import connexion
-import os
 from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.auth_request import AuthRequest  # noqa: E501
-from openapi_server.models.auth_response import AuthResponse  # noqa: E501
-from openapi_server.models.error import Error  # noqa: E501
-from openapi_server.models.password_reset_request import PasswordResetRequest  # noqa: E501
 from openapi_server import util
-
-# Constants for configuration
-DEFAULT_TOKEN_EXPIRY_SECONDS = 86400  # 24 hours
 
 
 def auth_logout_post():  # noqa: E501
     """Logout current user (invalidate token/session)
 
-     # noqa: E501
-
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
     """
-    # PR003946-71: JWT Token Validation - Logout endpoint
-    # For stateless JWT tokens, logout is client-side only
-    # In production, you might want to maintain a blacklist of revoked tokens
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
     try:
-        from openapi_server.impl.auth import extract_token_from_request
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
 
-        # Verify token exists and is valid format (but don't decode for logout)
-        token = extract_token_from_request()
-        if not token:
-            from openapi_server.impl.error_handler import AuthenticationError
-            raise AuthenticationError("No token to logout")
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
 
-        # For stateless JWT, successful logout is just confirmation
-        # Client should discard the token
-        return None, 204
+        # Call implementation function with processed parameters
+        result = impl_function()
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 204
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller auth_logout_post implementation not found: {str(e)}",
+            details={"controller": "AuthController", "operation": "auth_logout_post"}
+        )
+        return error_obj, 501
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in auth_logout_post: {str(e)}",
+                details={"controller": "AuthController", "operation": "auth_logout_post"}
+            )
+            return error_obj, 500
 
 
-def auth_post(body):  # noqa: E501
+def auth_post(auth_request):  # noqa: E501
     """Login or register
 
-     # noqa: E501
+    :param auth_request: 
+    :type auth_request:  | bytes
 
-    :param auth_request:
-    :type auth_request: dict | bytes
-
-    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
+    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]]
     """
-    # PR003946-71: JWT Token Validation - Simple authentication for TDD foundation
-    from openapi_server.impl.auth import generate_jwt_token
-    from datetime import datetime, timezone
+    # Auto-generated parameter handling
+    if connexion.request.is_json:
+        auth_request = AuthRequest.from_dict(connexion.request.get_json())  # noqa: E501
 
-    # For TDD foundation, create a simple test token endpoint
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
     try:
-        # Parse JSON request
-        if connexion.request.is_json:
-            data = connexion.request.get_json()
-            username = data.get('username', '')
-            password = data.get('password', '')
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(auth_request)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
         else:
-            # Fallback for dict body
-            username = body.get('username', '') if isinstance(body, dict) else ''
-            password = body.get('password', '') if isinstance(body, dict) else ''
+            return result, 200
 
-        # Simple validation for TDD foundation using environment variables
-        test_username = os.getenv('TDD_TEST_USERNAME', 'admin@cmz.org')
-        test_password = os.getenv('TDD_TEST_PASSWORD', 'admin123')
-
-        if username == test_username and password == test_password:
-            # Generate JWT token
-            token = generate_jwt_token(
-                user_id='admin_001',
-                email='admin@cmz.org',
-                role='admin',
-                user_type='none'
-            )
-
-            # Create response dict that satisfies AuthResponse schema
-            # Include all required fields with minimal audit data for TDD foundation
-            from openapi_server.impl.utils.core import create_audit_stamp
-            audit_stamp = create_audit_stamp()
-
-            response = {
-                'token': token,
-                'expiresIn': DEFAULT_TOKEN_EXPIRY_SECONDS,  # Note: camelCase for OpenAPI attribute mapping
-                'user': {
-                    'userId': 'admin_001',
-                    'email': 'admin@cmz.org',
-                    'displayName': 'Admin User',
-                    'role': 'admin',
-                    'userType': 'none',
-                    'softDelete': False,
-                    'created': audit_stamp,
-                    'modified': audit_stamp,
-                    'deleted': None,
-                    'phoneNumber': None,
-                    'age': None,
-                    'familyId': None
-                }
-            }
-
-            return response, 200
-        else:
-            return {
-                'code': 'authentication_error',
-                'message': 'Invalid credentials'
-            }, 401
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller auth_post implementation not found: {str(e)}",
+            details={"controller": "AuthController", "operation": "auth_post"}
+        )
+        return error_obj, 501
 
     except Exception as e:
-        return {
-            'code': 'internal_error',
-            'message': f'Authentication error: {str(e)}'
-        }, 500
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in auth_post: {str(e)}",
+                details={"controller": "AuthController", "operation": "auth_post"}
+            )
+            return error_obj, 500
 
 
 def auth_refresh_post():  # noqa: E501
     """Refresh access token
 
-     # noqa: E501
-
-
-    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
+    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]]
     """
-    from openapi_server.impl.auth import refresh_jwt_token, extract_token_from_request
-
-    # PR003946-71: JWT Token Validation - Token refresh endpoint
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
     try:
-        # Extract current token from Authorization header
-        current_token = extract_token_from_request()
-        if not current_token:
-            from openapi_server.impl.error_handler import AuthenticationError
-            raise AuthenticationError("Token is required for refresh")
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
 
-        # Refresh the token
-        refresh_result = refresh_jwt_token(current_token)
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
 
-        # For now, return simple dict format for TDD foundation
-        response = {
-            'token': refresh_result['token'],
-            'user': refresh_result['user']
-        }
+        # Call implementation function with processed parameters
+        result = impl_function()
 
-        return response, 200
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller auth_refresh_post implementation not found: {str(e)}",
+            details={"controller": "AuthController", "operation": "auth_refresh_post"}
+        )
+        return error_obj, 501
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in auth_refresh_post: {str(e)}",
+                details={"controller": "AuthController", "operation": "auth_refresh_post"}
+            )
+            return error_obj, 500
 
 
-def auth_reset_password_post(body):  # noqa: E501
+def auth_reset_password_post(password_reset_request):  # noqa: E501
     """Initiate password reset
 
-     # noqa: E501
-
     :param password_reset_request: 
-    :type password_reset_request: dict | bytes
+    :type password_reset_request:  | bytes
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
     """
-    password_reset_request = body
+    # Auto-generated parameter handling
     if connexion.request.is_json:
         password_reset_request = PasswordResetRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(password_reset_request)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 204
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller auth_reset_password_post implementation not found: {str(e)}",
+            details={"controller": "AuthController", "operation": "auth_reset_password_post"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in auth_reset_password_post: {str(e)}",
+                details={"controller": "AuthController", "operation": "auth_reset_password_post"}
+            )
+            return error_obj, 500
+
+

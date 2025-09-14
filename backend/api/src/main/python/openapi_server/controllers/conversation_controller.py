@@ -3,129 +3,310 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.convo_history import ConvoHistory  # noqa: E501
-from openapi_server.models.convo_turn_post200_response import ConvoTurnPost200Response  # noqa: E501
-from openapi_server.models.convo_turn_post_request import ConvoTurnPostRequest  # noqa: E501
-from openapi_server.models.error import Error  # noqa: E501
-from openapi_server.models.summarize_convo_post200_response import SummarizeConvoPost200Response  # noqa: E501
-from openapi_server.models.summarize_convo_post_request import SummarizeConvoPostRequest  # noqa: E501
 from openapi_server import util
 
 
-def convo_history_delete(session_id=None, user_id=None, animal_id=None, older_than=None, confirm_gdpr=None, audit_reason=None):  # noqa: E501
+def convo_history_delete(session_iduser_idanimal_idolder_thanconfirm_gdpraudit_reason):  # noqa: E501
     """Delete conversation history with enhanced GDPR compliance
 
-     # noqa: E501
-
     :param session_id: Specific conversation session to delete
-    :type session_id: str
+    :type session_id: strstr | bytes
+
     :param user_id: Delete all conversations for specific user (GDPR right to erasure)
-    :type user_id: str
+    :type user_id: strstr | bytes
+
     :param animal_id: Delete all conversations with specific animal
-    :type animal_id: str
+    :type animal_id: strstr | bytes
+
     :param older_than: Delete conversations older than specified date (ISO8601)
-    :type older_than: str
+    :type older_than: datetimedatetime | bytes
+
     :param confirm_gdpr: Required confirmation for bulk user data deletion
-    :type confirm_gdpr: bool
+    :type confirm_gdpr: boolbool | bytes
+
     :param audit_reason: Reason for deletion (for audit logs)
-    :type audit_reason: str
+    :type audit_reason: strstr | bytes
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
     """
-    older_than = util.deserialize_datetime(older_than)
-    return 'do some magic!'
+    # Auto-generated parameter handling
 
-
-def convo_history_get(animal_id=None, user_id=None, session_id=None, start_date=None, end_date=None, limit=None, offset=None, include_metadata=None):  # noqa: E501
-    """Get conversation history with enhanced filtering and pagination
-
-     # noqa: E501
-
-    :param animal_id: Filter conversations by animal identifier
-    :type animal_id: str
-    :param user_id: Filter conversations by user identifier
-    :type user_id: str
-    :param session_id: Get specific conversation session
-    :type session_id: str
-    :param start_date: Filter conversations from this date (ISO8601)
-    :type start_date: str
-    :param end_date: Filter conversations until this date (ISO8601)
-    :type end_date: str
-    :param limit: Maximum number of conversation turns to return
-    :type limit: int
-    :param offset: Number of conversation turns to skip (pagination)
-    :type offset: int
-    :param include_metadata: Include turn metadata (tokens, latency, etc.)
-    :type include_metadata: bool
-
-    :rtype: Union[ConvoHistory, Tuple[ConvoHistory, int], Tuple[ConvoHistory, int, Dict[str, str]]
-    """
-    start_date = util.deserialize_datetime(start_date)
-    end_date = util.deserialize_datetime(end_date)
-    return 'do some magic!'
-
-
-def convo_turn_post(body):  # noqa: E501
-    """Send conversation turn with enhanced validation and rate limiting
-
-     # noqa: E501
-
-    :param convo_turn_post_request:
-    :type convo_turn_post_request: dict | bytes
-
-    :rtype: Union[ConvoTurnPost200Response, Tuple[ConvoTurnPost200Response, int], Tuple[ConvoTurnPost200Response, int, Dict[str, str]]
-    """
-    # PR003946-73: Foreign Key Validation - Conversation turn with user/animal reference validation
-    from openapi_server.impl.commands.foreign_key_validation import execute_foreign_key_validation
-
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
     try:
-        # Parse request body
-        convo_data = body
-        if connexion.request.is_json:
-            convo_data = connexion.request.get_json()
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "conversationcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
 
-        # Convert to dict if it's a model object
-        if hasattr(convo_data, 'to_dict'):
-            convo_data = convo_data.to_dict()
-        elif not isinstance(convo_data, dict):
-            convo_data = dict(convo_data)
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
 
-        # PR003946-73: Validate foreign key references before processing conversation
-        validation_result, validation_status = execute_foreign_key_validation(
-            entity_type="conversation",
-            entity_data=convo_data,
-            audit_user="system"
+        # Call implementation function with processed parameters
+        result = impl_function(session_iduser_idanimal_idolder_thanconfirm_gdpraudit_reason)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 204
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller convo_history_delete implementation not found: {str(e)}",
+            details={"controller": "ConversationController", "operation": "convo_history_delete"}
         )
-
-        if validation_status != 200:
-            # Foreign key validation failed
-            return validation_result, validation_status
-
-        # If validation passes, proceed with conversation processing
-        # For TDD foundation, return simple response showing validation works
-        return {
-            "message": "Foreign key validation successful for conversation",
-            "validated_user": convo_data.get('userId'),
-            "validated_animal": convo_data.get('animalId'),
-            "session_id": convo_data.get('sessionId', 'demo_session')
-        }, 200
+        return error_obj, 501
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in convo_history_delete: {str(e)}",
+                details={"controller": "ConversationController", "operation": "convo_history_delete"}
+            )
+            return error_obj, 500
 
 
-def summarize_convo_post(body):  # noqa: E501
+def convo_history_get(animal_iduser_idsession_idstart_dateend_datelimitoffsetinclude_metadata):  # noqa: E501
+    """Get conversation history with enhanced filtering and pagination
+
+    :param animal_id: Filter conversations by animal identifier
+    :type animal_id: strstr | bytes
+
+    :param user_id: Filter conversations by user identifier
+    :type user_id: strstr | bytes
+
+    :param session_id: Get specific conversation session
+    :type session_id: strstr | bytes
+
+    :param start_date: Filter conversations from this date (ISO8601)
+    :type start_date: datetimedatetime | bytes
+
+    :param end_date: Filter conversations until this date (ISO8601)
+    :type end_date: datetimedatetime | bytes
+
+    :param limit: Maximum number of conversation turns to return
+    :type limit: intint | bytes
+
+    :param offset: Number of conversation turns to skip (pagination)
+    :type offset: intint | bytes
+
+    :param include_metadata: Include turn metadata (tokens, latency, etc.)
+    :type include_metadata: boolbool | bytes
+
+    :rtype: Union[ConvoHistory, Tuple[ConvoHistory, int], Tuple[ConvoHistory, int, Dict[str, str]]]
+    """
+    # Auto-generated parameter handling
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "conversationcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(animal_iduser_idsession_idstart_dateend_datelimitoffsetinclude_metadata)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller convo_history_get implementation not found: {str(e)}",
+            details={"controller": "ConversationController", "operation": "convo_history_get"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in convo_history_get: {str(e)}",
+                details={"controller": "ConversationController", "operation": "convo_history_get"}
+            )
+            return error_obj, 500
+
+
+def convo_turn_post(convo_turn_post_request):  # noqa: E501
+    """Send conversation turn with enhanced validation and rate limiting
+
+    :param convo_turn_post_request: 
+    :type convo_turn_post_request:  | bytes
+
+    :rtype: Union[ConvoTurnPost200Response, Tuple[ConvoTurnPost200Response, int], Tuple[ConvoTurnPost200Response, int, Dict[str, str]]]
+    """
+    # Auto-generated parameter handling
+    if connexion.request.is_json:
+        convo_turn_post_request = ConvoTurnPostRequest.from_dict(connexion.request.get_json())  # noqa: E501
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "conversationcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(convo_turn_post_request)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller convo_turn_post implementation not found: {str(e)}",
+            details={"controller": "ConversationController", "operation": "convo_turn_post"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in convo_turn_post: {str(e)}",
+                details={"controller": "ConversationController", "operation": "convo_turn_post"}
+            )
+            return error_obj, 500
+
+
+def summarize_convo_post(summarize_convo_post_request):  # noqa: E501
     """Advanced conversation summarization with personalization and analytics
 
-     # noqa: E501
-
     :param summarize_convo_post_request: 
-    :type summarize_convo_post_request: dict | bytes
+    :type summarize_convo_post_request:  | bytes
 
-    :rtype: Union[SummarizeConvoPost200Response, Tuple[SummarizeConvoPost200Response, int], Tuple[SummarizeConvoPost200Response, int, Dict[str, str]]
+    :rtype: Union[SummarizeConvoPost200Response, Tuple[SummarizeConvoPost200Response, int], Tuple[SummarizeConvoPost200Response, int, Dict[str, str]]]
     """
-    summarize_convo_post_request = body
+    # Auto-generated parameter handling
     if connexion.request.is_json:
         summarize_convo_post_request = SummarizeConvoPostRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "conversationcontroller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler
+            from openapi_server.controllers.impl import handlers
+            impl_function = getattr(handlers, impl_function_name, None)
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+
+        # Call implementation function with processed parameters
+        result = impl_function(summarize_convo_post_request)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.controllers.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller summarize_convo_post implementation not found: {str(e)}",
+            details={"controller": "ConversationController", "operation": "summarize_convo_post"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.controllers.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in summarize_convo_post: {str(e)}",
+                details={"controller": "ConversationController", "operation": "summarize_convo_post"}
+            )
+            return error_obj, 500
+
+

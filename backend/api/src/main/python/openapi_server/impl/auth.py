@@ -8,6 +8,7 @@ for the CMZ API endpoints.
 import jwt
 import os
 from datetime import datetime, timedelta, timezone
+from typing import Any, Tuple
 from functools import wraps
 from flask import request, g
 
@@ -163,8 +164,24 @@ def requires_keeper(f):
 
 
 def requires_parent(f):
-    """Decorator that requires parent role or higher.""" 
+    """Decorator that requires parent role or higher."""
     return requires_role('parent')(f)
+
+
+def require_admin_role(user):
+    """
+    PR003946-72: Role-based access control enforcement
+
+    Require admin role for the given user, raising AuthorizationError if insufficient.
+    """
+    user_role = user.get('role')
+    if not check_role_permission('admin', user_role):
+        raise AuthorizationError(
+            "This endpoint requires admin role",
+            required_role='admin',
+            details={"current_role": user_role}
+        )
+
 
 
 def authenticate_user(email, password):
@@ -337,3 +354,64 @@ def refresh_jwt_token(current_token):
             'user_type': payload['user_type']
         }
     }
+# Auto-generated handler functions
+
+def handle_auth_logout_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_logout_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_logout_post not yet implemented",
+        details={"operation": "auth_logout_post", "handler": "handle_auth_logout_post"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_auth_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_post not yet implemented",
+        details={"operation": "auth_post", "handler": "handle_auth_post"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_auth_refresh_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_refresh_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_refresh_post not yet implemented",
+        details={"operation": "auth_refresh_post", "handler": "handle_auth_refresh_post"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_auth_reset_password_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for auth_reset_password_post
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation auth_reset_password_post not yet implemented",
+        details={"operation": "auth_reset_password_post", "handler": "handle_auth_reset_password_post"}
+    )
+    return error_obj.to_dict(), 501
+

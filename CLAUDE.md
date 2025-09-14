@@ -130,6 +130,7 @@ make rebuild-venv-api
 - **NEVER modify generated files**: Controllers, models, and test stubs are regenerated on every `make generate-api`
 - **All business logic in impl/**: Only implement functionality in `backend/api/src/main/python/openapi_server/impl/`
 - **OpenAPI spec is source of truth**: API changes must start with `openapi_spec.yaml` modifications
+- **"do some magic!" Placeholder Issue**: If you encounter this placeholder in generated controllers, see `docs/OPENAPI_TEMPLATE_SOLUTION.md` for the complete template-based solution that eliminates this issue permanently
 
 ### DynamoDB Integration Pattern
 All DynamoDB operations use the centralized utilities in `impl/utils/dynamo.py`:
@@ -594,6 +595,22 @@ grep -A 5 -B 5 "paths:" backend/api/openapi_spec.yaml
 ls backend/api/src/main/python/openapi_server/impl/
 ```
 ```
+
+## Merge Request Preparation - MANDATORY PROCESS
+
+**Before creating any merge request, ALWAYS check:**
+1. **Command Guide**: `.claude/commands/prepare-merge-request.md` - Complete step-by-step process
+2. **Best Practices**: `MR-ADVICE.md` - Proven patterns and common pitfalls
+
+**MR Ready Criteria (All Must Be True):**
+- ✅ All comments resolved with specific documentation
+- ✅ All inline comments resolved with specific documentation
+- ✅ All quality gates passed (tests, linting, security)
+- ✅ All CodeQL issues addressed
+- ✅ API endpoints tested and working via cURL
+- ✅ Session history documented in `/history/` directory
+
+Use `/prepare-mr` command to systematically verify readiness.
 
 ## Key Learnings from /nextfive Implementation
 
