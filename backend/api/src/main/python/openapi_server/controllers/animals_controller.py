@@ -110,8 +110,8 @@ def animal_id_delete(id):  # noqa: E501
         return None, 204
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        from openapi_server.impl.error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
 
 
 def animal_id_get(id):  # noqa: E501
@@ -148,6 +148,9 @@ def animal_id_put(id, body):  # noqa: E501
 def animal_list_get(status=None):  # noqa: E501
     """List animals
 
+    PR003946-66: Soft delete flag consistency across all entities
+    PR003946-71: JWT Token Validation
+
      # noqa: E501
 
     :param status: Filter animals by status
@@ -155,23 +158,28 @@ def animal_list_get(status=None):  # noqa: E501
 
     :rtype: Union[List[Animal], Tuple[List[Animal], int], Tuple[List[Animal], int, Dict[str, str]]
     """
-    # PR003946-71: JWT Token Validation - Apply to protected endpoint
-    from openapi_server.impl.auth import get_current_user
     try:
-        # Validate JWT token
-        user = get_current_user()
+        from openapi_server.impl.auth import get_current_user, extract_token_from_request
+        from openapi_server.impl.animals import handle_list_animals
 
-        # For TDD foundation, return simple response showing auth works
-        return {
-            "message": "JWT token validation successful",
-            "authenticated_user": user['email'],
-            "user_role": user['role'],
-            "animals": []  # Placeholder for actual animal listing
-        }, 200
+        # PR003946-71: Validate JWT token if present (optional for this endpoint)
+        token = extract_token_from_request()
+        if token:
+            try:
+                user = get_current_user()  # Validate token if provided
+            except Exception as auth_error:
+                # If token is provided but invalid, return auth error
+                from openapi_server.impl.error_handler import handle_exception_for_controllers
+                return handle_exception_for_controllers(auth_error)
+
+        # PR003946-66: Get animals with soft delete filtering
+        animals = handle_list_animals(status=status)
+
+        return animals, 200
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        from openapi_server.impl.error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
 
 
 def animal_post(body):  # noqa: E501

@@ -39,8 +39,8 @@ def auth_logout_post():  # noqa: E501
         return None, 204
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        from openapi_server.impl.error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
 
 
 def auth_post(body):  # noqa: E501
@@ -150,8 +150,8 @@ def auth_refresh_post():  # noqa: E501
         return response, 200
 
     except Exception as e:
-        from openapi_server.impl.error_handler import handle_error
-        return handle_error(e)
+        from openapi_server.impl.error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
 
 
 def auth_reset_password_post(body):  # noqa: E501

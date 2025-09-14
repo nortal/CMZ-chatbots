@@ -166,6 +166,50 @@ def register_error_handlers(app):
         return jsonify(error_obj.to_dict()), 500
 
 
+def handle_exception_for_controllers(error):
+    """
+    Standalone error handler for controllers to return consistent error responses.
+    This mimics the Flask error handler behavior but can be used directly in controllers.
+    """
+    from flask import jsonify
+
+    # Handle authentication errors
+    if isinstance(error, AuthenticationError):
+        error_obj = Error(
+            code="unauthorized",
+            message=str(error) or "Authentication required",
+            details={"error_type": "AuthenticationError"}
+        )
+        return jsonify(error_obj.to_dict()), 401
+
+    # Handle authorization errors
+    if isinstance(error, AuthorizationError):
+        error_obj = Error(
+            code="forbidden",
+            message=str(error) or "Access forbidden",
+            details=getattr(error, 'details', {})
+        )
+        return jsonify(error_obj.to_dict()), 403
+
+    # Handle validation errors
+    if isinstance(error, ValidationError):
+        error_obj = Error(
+            code=getattr(error, 'error_code', 'validation_error'),
+            message=str(error) or "Validation failed",
+            details=getattr(error, 'details', {})
+        )
+        return jsonify(error_obj.to_dict()), 400
+
+    # Handle generic exceptions
+    error_obj = Error(
+        code="internal_error",
+        message="An unexpected error occurred",
+        details={"error_type": type(error).__name__, "message": str(error)}
+    )
+    logger.error(f"Unhandled exception in controller: {str(error)}", exc_info=True)
+    return jsonify(error_obj.to_dict()), 500
+
+
 class ValidationError(Exception):
     """Custom exception for validation errors that should return 400 with Error schema."""
     

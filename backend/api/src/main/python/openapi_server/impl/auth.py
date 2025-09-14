@@ -163,8 +163,56 @@ def requires_keeper(f):
 
 
 def requires_parent(f):
-    """Decorator that requires parent role or higher.""" 
+    """Decorator that requires parent role or higher."""
     return requires_role('parent')(f)
+
+
+def require_admin_role(user):
+    """
+    PR003946-72: Role-based access control enforcement
+
+    Require admin role for the given user, raising AuthorizationError if insufficient.
+    """
+    user_role = user.get('role')
+    if not check_role_permission('admin', user_role):
+        raise AuthorizationError(
+            "This endpoint requires admin role",
+            required_role='admin',
+            details={"current_role": user_role}
+        )
+
+
+def refresh_jwt_token(current_token):
+    """
+    PR003946-88: Token refresh consistency
+
+    Refresh a JWT token by decoding the current one and issuing a new token.
+    """
+    try:
+        # Decode current token to get user info
+        payload = decode_jwt_token(current_token)
+
+        # Generate new token with same user info
+        new_token = generate_jwt_token(
+            user_id=payload['user_id'],
+            email=payload['email'],
+            role=payload['role'],
+            user_type=payload['user_type']
+        )
+
+        # Return response format for controller
+        return {
+            'token': new_token,
+            'user': {
+                'userId': payload['user_id'],
+                'email': payload['email'],
+                'role': payload['role'],
+                'userType': payload['user_type']
+            }
+        }
+
+    except Exception as e:
+        raise AuthenticationError(f"Token refresh failed: {str(e)}")
 
 
 def authenticate_user(email, password):

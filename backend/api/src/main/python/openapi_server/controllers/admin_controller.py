@@ -15,17 +15,32 @@ from openapi_server import util
 def create_user(body):  # noqa: E501
     """Create a new user
 
+    PR003946-69: Server generates all entity IDs, rejects client-provided IDs
+    PR003946-70: Reject requests with client-provided IDs
+    PR003946-73: Foreign key constraint validation
+
      # noqa: E501
 
-    :param user_input: 
+    :param user_input:
     :type user_input: dict | bytes
 
     :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]
     """
-    user_input = body
-    if connexion.request.is_json:
-        user_input = UserInput.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    try:
+        from openapi_server.impl.users import handle_create_user
+
+        # Parse JSON body
+        user_input = body
+        if connexion.request.is_json:
+            user_input = connexion.request.get_json()
+
+        # Handle creation with impl module
+        result = handle_create_user(user_input)
+        return result, 201
+
+    except Exception as e:
+        from openapi_server.impl.error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
 
 
 def create_user_details(body):  # noqa: E501
@@ -110,12 +125,33 @@ def list_user_details():  # noqa: E501
 def list_users():  # noqa: E501
     """Get list of all users
 
+    PR003946-81: Pagination parameter validation
+    PR003946-72: Role-based access control enforcement
+
      # noqa: E501
 
 
     :rtype: Union[PagedUsers, Tuple[PagedUsers, int], Tuple[PagedUsers, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    try:
+        from openapi_server.impl.auth import get_current_user, require_admin_role
+        from openapi_server.impl.users import handle_list_users
+
+        # PR003946-72: Require admin role for user list
+        current_user = get_current_user()
+        require_admin_role(current_user)
+
+        # Get pagination parameters from query string
+        page = connexion.request.args.get('page')
+        page_size = connexion.request.args.get('pageSize')
+
+        # PR003946-81: Handle pagination parameter validation in impl
+        result = handle_list_users(page=page, page_size=page_size)
+        return result, 200
+
+    except Exception as e:
+        from openapi_server.impl.error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
 
 
 def update_user(user_id, body):  # noqa: E501
