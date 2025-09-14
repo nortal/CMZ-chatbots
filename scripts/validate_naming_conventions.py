@@ -191,20 +191,24 @@ def fix_file(file_path: Path) -> bool:
 
         original_content = content
 
-        # Apply conversions
+        # Apply conversions using safe string replacements
         for camel_case, snake_case in CONVERSION_MAP.items():
             # Simple string replacements in specific contexts
             # Dictionary keys
             content = content.replace(f'"{camel_case}"', f'"{snake_case}"')
             content = content.replace(f"'{camel_case}'", f"'{snake_case}'")
 
-            # Parameter assignments
-            content = re.sub(rf'\\b{re.escape(camel_case)}\\s*=', f'{snake_case}=', content)
+            # Parameter assignments - use safer replacement approach
+            param_pattern = f'{camel_case}='
+            param_replacement = f'{snake_case}='
+            content = content.replace(param_pattern, param_replacement)
 
-            # DynamoDB operations - be more specific
+            # DynamoDB operations - use simple string replacement
             for op in ['get_item', 'put_item', 'query', 'scan']:
-                pattern = f'{op}(.*){re.escape(camel_case)}'
-                content = re.sub(pattern, lambda m: m.group(0).replace(camel_case, snake_case), content)
+                # Replace within operation context using string replacement
+                old_pattern = f'{op}({camel_case}'
+                new_pattern = f'{op}({snake_case}'
+                content = content.replace(old_pattern, new_pattern)
 
         if content != original_content:
             with open(file_path, 'w') as f:
