@@ -1,0 +1,28 @@
+CMZ TDD FRAMEWORK VALIDATION REPORT
+Generated: Sat Sep 13 18:15:14 PDT 2025
+==================================
+
+PASS: Main tests directory - tests/ directory exists
+PASS: integration directory -       34 ticket directories found
+PASS: unit directory -       62 ticket directories found
+PASS: playwright directory -        5 ticket directories found
+PASS: security directory -        6 ticket directories found
+PASS: Batch reports directory - tests/batch_reports exists
+PASS: Test executor script - execute_test.py exists and executable
+PASS: Batch runner script - run_batch_tests.py exists and executable
+PASS: Dashboard generator - tdd_dashboard.py exists and executable
+INFO: Test specifications coverage - 107/107 tickets (100%)
+PASS: Specification completeness - Excellent coverage (≥90%)
+PASS: Jira ticket list -      107 tickets in all_tickets_complete.txt
+PASS: Jira ticket data - all_tickets_consolidated.json exists
+PASS: Jira integration guide - NORTAL-JIRA-ADVICE.md exists
+PASS: Test executor help - execute_test.py shows usage information
+PASS: Batch runner help - run_batch_tests.py responds to --help
+PASS: Dashboard generator - tdd_dashboard.py can be imported/executed
+PASS: Sample ticket found - PR003946-120 available for testing
+PASS: Prerequisites check - curl available for API testing
+PASS: Environment configuration - .env.local exists
+
+SUMMARY:
+Passed: 19, Failed: 0, Warnings: 0, Info: 1
+Pass Rate: 95%
