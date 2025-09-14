@@ -306,6 +306,7 @@ const AnimalConfig: React.FC = () => {
                   <div>
                     <label className="flex items-center">
                       <input
+                        id="animal-active-checkbox"
                         type="checkbox"
                         defaultChecked={animalConfig?.active || false}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
@@ -316,6 +317,7 @@ const AnimalConfig: React.FC = () => {
                   <div>
                     <label className="flex items-center">
                       <input
+                        id="educational-focus-checkbox"
                         type="checkbox"
                         defaultChecked={animalConfig?.conversationSettings?.educationalFocus || false}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
@@ -326,6 +328,7 @@ const AnimalConfig: React.FC = () => {
                   <div>
                     <label className="flex items-center">
                       <input
+                        id="age-appropriate-checkbox"
                         type="checkbox"
                         defaultChecked={animalConfig?.conversationSettings?.ageAppropriate || false}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
@@ -462,6 +465,7 @@ const AnimalConfig: React.FC = () => {
                         Max Response Length
                       </label>
                       <input
+                        id="max-response-length-input"
                         type="number"
                         value={animalConfig?.conversationSettings?.maxResponseLength || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -472,7 +476,8 @@ const AnimalConfig: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Scientific Accuracy
                       </label>
-                      <select 
+                      <select
+                        id="scientific-accuracy-select"
                         value={animalConfig?.conversationSettings?.scientificAccuracy || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
@@ -485,6 +490,7 @@ const AnimalConfig: React.FC = () => {
                     <div>
                       <label className="flex items-center">
                         <input
+                          id="allow-personal-questions-checkbox"
                           type="checkbox"
                           defaultChecked={animalConfig?.conversationSettings?.allowPersonalQuestions || false}
                           className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
@@ -501,7 +507,8 @@ const AnimalConfig: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Tone
                       </label>
-                      <select 
+                      <select
+                        id="tone-select"
                         value={animalConfig?.voiceSettings?.tone || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
@@ -517,7 +524,8 @@ const AnimalConfig: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Formality
                       </label>
-                      <select 
+                      <select
+                        id="formality-select"
                         value={animalConfig?.voiceSettings?.formality || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
@@ -532,6 +540,7 @@ const AnimalConfig: React.FC = () => {
                         Enthusiasm Level ({animalConfig?.voiceSettings?.enthusiasm || 0}/10)
                       </label>
                       <input
+                        id="enthusiasm-range"
                         type="range"
                         min="1"
                         max="10"

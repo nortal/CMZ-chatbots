@@ -94,59 +94,104 @@ export function useSecureFormHandling(
 }
 
 /**
- * Secure DOM element value extraction
+ * Secure DOM element value extraction with optional existence check
  */
-export function getSecureElementValue(elementId: string): string {
+export function getSecureElementValue(elementId: string, required: boolean = true): string | null {
   const element = document.getElementById(elementId);
-  
+
   if (!element) {
-    throw new ValidationError(`Element with ID '${elementId}' not found`);
+    if (required) {
+      throw new ValidationError(`Element with ID '${elementId}' not found`);
+    }
+    return null; // Element doesn't exist, return null for optional elements
   }
-  
-  if (element instanceof HTMLInputElement || 
-      element instanceof HTMLTextAreaElement || 
+
+  if (element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement ||
       element instanceof HTMLSelectElement) {
     return element.value.trim();
   }
-  
+
   throw new ValidationError(`Element '${elementId}' is not a form input`);
 }
 
 /**
- * Secure checkbox value extraction
+ * Secure checkbox value extraction with optional existence check
  */
-export function getSecureCheckboxValue(elementId: string): boolean {
+export function getSecureCheckboxValue(elementId: string, required: boolean = true): boolean | null {
   const element = document.getElementById(elementId);
-  
+
   if (!element) {
-    throw new ValidationError(`Checkbox with ID '${elementId}' not found`);
+    if (required) {
+      throw new ValidationError(`Checkbox with ID '${elementId}' not found`);
+    }
+    return null; // Element doesn't exist, return null for optional elements
   }
-  
+
   if (element instanceof HTMLInputElement && element.type === 'checkbox') {
     return element.checked;
   }
-  
+
   throw new ValidationError(`Element '${elementId}' is not a checkbox`);
 }
 
 /**
- * Secure form data collection from animal configuration form
+ * Secure form data collection from animal configuration form with tab-aware extraction
  */
 export function getSecureAnimalConfigData(): any {
   try {
-    return {
-      name: getSecureElementValue('animal-name-input') || '',
-      species: getSecureElementValue('animal-species-input') || '',
-      personality: getSecureElementValue('personality-textarea') || '',
-      active: getSecureCheckboxValue('animal-active-checkbox'),
-      educationalFocus: getSecureCheckboxValue('educational-focus-checkbox'),
-      ageAppropriate: getSecureCheckboxValue('age-appropriate-checkbox'),
-      maxResponseLength: parseInt(getSecureElementValue('max-response-length-input') || '500', 10),
-      scientificAccuracy: getSecureElementValue('scientific-accuracy-select') || 'moderate',
-      tone: getSecureElementValue('tone-select') || 'friendly',
-      formality: getSecureElementValue('formality-select') || 'friendly',
-      enthusiasm: parseInt(getSecureElementValue('enthusiasm-range') || '5', 10),
-    };
+    // Collect data from elements that exist in the current tab
+    // Basic Info Tab elements (may not be in DOM if Settings tab is active)
+    const name = getSecureElementValue('animal-name-input', false);
+    const species = getSecureElementValue('animal-species-input', false);
+    const personality = getSecureElementValue('personality-textarea', false);
+    const active = getSecureCheckboxValue('animal-active-checkbox', false);
+    const educationalFocus = getSecureCheckboxValue('educational-focus-checkbox', false);
+    const ageAppropriate = getSecureCheckboxValue('age-appropriate-checkbox', false);
+
+    // Settings Tab elements (may not be in DOM if Basic Info tab is active)
+    const maxResponseLengthStr = getSecureElementValue('max-response-length-input', false);
+    const scientificAccuracy = getSecureElementValue('scientific-accuracy-select', false);
+    const tone = getSecureElementValue('tone-select', false);
+    const formality = getSecureElementValue('formality-select', false);
+    const enthusiasmStr = getSecureElementValue('enthusiasm-range', false);
+    const allowPersonalQuestions = getSecureCheckboxValue('allow-personal-questions-checkbox', false);
+
+    // Build result object with only the data we can collect
+    const result: any = {};
+
+    // Add Basic Info data if available
+    if (name !== null) result.name = name || '';
+    if (species !== null) result.species = species || '';
+    if (personality !== null) result.personality = personality || '';
+    if (active !== null) result.active = active;
+    if (educationalFocus !== null) result.educationalFocus = educationalFocus;
+    if (ageAppropriate !== null) result.ageAppropriate = ageAppropriate;
+
+    // Add Settings data if available
+    if (maxResponseLengthStr !== null) {
+      result.maxResponseLength = parseInt(maxResponseLengthStr || '500', 10);
+    }
+    if (scientificAccuracy !== null) {
+      result.scientificAccuracy = scientificAccuracy || 'moderate';
+    }
+    if (tone !== null) result.tone = tone || 'friendly';
+    if (formality !== null) result.formality = formality || 'friendly';
+    if (enthusiasmStr !== null) {
+      result.enthusiasm = parseInt(enthusiasmStr || '5', 10);
+    }
+    if (allowPersonalQuestions !== null) result.allowPersonalQuestions = allowPersonalQuestions;
+
+    // Validate that we collected at least some data
+    if (Object.keys(result).length === 0) {
+      throw new ValidationError('No form data could be collected from any tab');
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('[DEBUG] Tab-aware form data collected:', Object.keys(result));
+    }
+
+    return result;
   } catch (error) {
     if (error instanceof ValidationError) {
       throw error;
