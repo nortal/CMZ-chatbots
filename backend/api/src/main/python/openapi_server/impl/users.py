@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import Any, Tuple
 
 # users.py - User CRUD operations implementation
 from openapi_server.impl.utils import (

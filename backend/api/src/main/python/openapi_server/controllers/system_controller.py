@@ -3,7 +3,7 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+from openapi_server import util
 
 
 def feature_flags_get():  # noqa: E501

@@ -3,7 +3,7 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+from openapi_server import util
 
 
 def convo_history_delete(session_iduser_idanimal_idolder_thanconfirm_gdpraudit_reason):  # noqa: E501

@@ -596,6 +596,22 @@ ls backend/api/src/main/python/openapi_server/impl/
 ```
 ```
 
+## Merge Request Preparation - MANDATORY PROCESS
+
+**Before creating any merge request, ALWAYS check:**
+1. **Command Guide**: `.claude/commands/prepare-merge-request.md` - Complete step-by-step process
+2. **Best Practices**: `MR-ADVICE.md` - Proven patterns and common pitfalls
+
+**MR Ready Criteria (All Must Be True):**
+- ✅ All comments resolved with specific documentation
+- ✅ All inline comments resolved with specific documentation
+- ✅ All quality gates passed (tests, linting, security)
+- ✅ All CodeQL issues addressed
+- ✅ API endpoints tested and working via cURL
+- ✅ Session history documented in `/history/` directory
+
+Use `/prepare-mr` command to systematically verify readiness.
+
 ## Key Learnings from /nextfive Implementation
 
 **CRITICAL DISCOVERY**: Most tickets were already working - success came from comprehensive enhancement strategy rather than fixing individual failures.
