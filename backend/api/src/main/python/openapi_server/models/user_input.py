@@ -16,21 +16,21 @@ class UserInput(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, email=None, role=None, user_id=None, display_name=None, phone_number=None, age=None, user_type='none', family_id=None, created=None, modified=None, deleted=None, soft_delete=False):  # noqa: E501
+    def __init__(self, user_id=None, email=None, display_name=None, phone_number=None, age=None, role=None, user_type='none', family_id=None, created=None, modified=None, deleted=None, soft_delete=False):  # noqa: E501
         """UserInput - a model defined in OpenAPI
 
-        :param email: The email of this UserInput.  # noqa: E501
-        :type email: str
-        :param role: The role of this UserInput.  # noqa: E501
-        :type role: str
         :param user_id: The user_id of this UserInput.  # noqa: E501
         :type user_id: str
+        :param email: The email of this UserInput.  # noqa: E501
+        :type email: str
         :param display_name: The display_name of this UserInput.  # noqa: E501
         :type display_name: str
         :param phone_number: The phone_number of this UserInput.  # noqa: E501
         :type phone_number: str
         :param age: The age of this UserInput.  # noqa: E501
         :type age: int
+        :param role: The role of this UserInput.  # noqa: E501
+        :type role: str
         :param user_type: The user_type of this UserInput.  # noqa: E501
         :type user_type: str
         :param family_id: The family_id of this UserInput.  # noqa: E501
@@ -45,12 +45,12 @@ class UserInput(Model):
         :type soft_delete: bool
         """
         self.openapi_types = {
-            'email': str,
-            'role': str,
             'user_id': str,
+            'email': str,
             'display_name': str,
             'phone_number': str,
             'age': int,
+            'role': str,
             'user_type': str,
             'family_id': str,
             'created': AuditStamp,
@@ -60,12 +60,12 @@ class UserInput(Model):
         }
 
         self.attribute_map = {
-            'email': 'email',
-            'role': 'role',
             'user_id': 'userId',
+            'email': 'email',
             'display_name': 'displayName',
             'phone_number': 'phoneNumber',
             'age': 'age',
+            'role': 'role',
             'user_type': 'userType',
             'family_id': 'familyId',
             'created': 'created',
@@ -74,12 +74,12 @@ class UserInput(Model):
             'soft_delete': 'softDelete'
         }
 
-        self._email = email
-        self._role = role
         self._user_id = user_id
+        self._email = email
         self._display_name = display_name
         self._phone_number = phone_number
         self._age = age
+        self._role = role
         self._user_type = user_type
         self._family_id = family_id
         self._created = created
@@ -97,6 +97,27 @@ class UserInput(Model):
         :rtype: UserInput
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def user_id(self) -> str:
+        """Gets the user_id of this UserInput.
+
+
+        :return: The user_id of this UserInput.
+        :rtype: str
+        """
+        return self._user_id
+
+    @user_id.setter
+    def user_id(self, user_id: str):
+        """Sets the user_id of this UserInput.
+
+
+        :param user_id: The user_id of this UserInput.
+        :type user_id: str
+        """
+
+        self._user_id = user_id
 
     @property
     def email(self) -> str:
@@ -120,54 +141,6 @@ class UserInput(Model):
             raise ValueError("Invalid value for `email`, must not be `None`")  # noqa: E501
 
         self._email = email
-
-    @property
-    def role(self) -> str:
-        """Gets the role of this UserInput.
-
-
-        :return: The role of this UserInput.
-        :rtype: str
-        """
-        return self._role
-
-    @role.setter
-    def role(self, role: str):
-        """Sets the role of this UserInput.
-
-
-        :param role: The role of this UserInput.
-        :type role: str
-        """
-        allowed_values = ["visitor", "user", "member", "editor", "admin"]  # noqa: E501
-        if role not in allowed_values:
-            raise ValueError(
-                "Invalid value for `role` ({0}), must be one of {1}"
-                .format(role, allowed_values)
-            )
-
-        self._role = role
-
-    @property
-    def user_id(self) -> str:
-        """Gets the user_id of this UserInput.
-
-
-        :return: The user_id of this UserInput.
-        :rtype: str
-        """
-        return self._user_id
-
-    @user_id.setter
-    def user_id(self, user_id: str):
-        """Sets the user_id of this UserInput.
-
-
-        :param user_id: The user_id of this UserInput.
-        :type user_id: str
-        """
-
-        self._user_id = user_id
 
     @property
     def display_name(self) -> str:
@@ -249,6 +222,33 @@ class UserInput(Model):
             raise ValueError("Invalid value for `age`, must be a value greater than or equal to `3`")  # noqa: E501
 
         self._age = age
+
+    @property
+    def role(self) -> str:
+        """Gets the role of this UserInput.
+
+
+        :return: The role of this UserInput.
+        :rtype: str
+        """
+        return self._role
+
+    @role.setter
+    def role(self, role: str):
+        """Sets the role of this UserInput.
+
+
+        :param role: The role of this UserInput.
+        :type role: str
+        """
+        allowed_values = ["visitor", "user", "member", "editor", "admin"]  # noqa: E501
+        if role not in allowed_values:
+            raise ValueError(
+                "Invalid value for `role` ({0}), must be one of {1}"
+                .format(role, allowed_values)
+            )
+
+        self._role = role
 
     @property
     def user_type(self) -> str:

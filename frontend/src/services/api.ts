@@ -36,6 +36,7 @@ export interface AnimalConfig {
   animalConfigId?: string;
   voice?: string;
   personality?: string;
+  systemPrompt?: string;
   aiModel?: string;
   temperature?: number;
   topP?: number;
@@ -126,6 +127,22 @@ export const animalApi = {
   },
 
   /**
+   * Update animal basic info (name, species, status)
+   */
+  async updateAnimal(animalId: string, updates: Partial<Animal>): Promise<Animal> {
+    if (!animalId?.trim()) {
+      throw new Error('Animal ID is required');
+    }
+    if (!updates || Object.keys(updates).length === 0) {
+      throw new Error('Animal updates are required');
+    }
+    return apiRequest<Animal>(`/animal/${encodeURIComponent(animalId)}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
+
+  /**
    * Update animal configuration
    */
   async updateAnimalConfig(animalId: string, config: Partial<AnimalConfig>): Promise<AnimalConfig> {
@@ -144,18 +161,6 @@ export const animalApi = {
 
 // Utility functions
 export const utils = {
-  /**
-   * Check if API is available
-   */
-  async healthCheck(): Promise<boolean> {
-    try {
-      await apiRequest('/');
-      return true;
-    } catch {
-      return false;
-    }
-  },
-
   /**
    * Convert backend Animal to frontend format
    */
@@ -185,7 +190,7 @@ export const utils = {
       },
       // Initialize empty arrays for optional properties
       knowledgeBase: [],
-      guardrails: []
+      guardrails: {}
     };
   },
 
@@ -195,6 +200,7 @@ export const utils = {
   transformConfigForBackend(frontendConfig: any): Partial<AnimalConfig> {
     return {
       personality: frontendConfig.personality,
+      systemPrompt: frontendConfig.systemPrompt, // Added systemPrompt field
       voice: frontendConfig.voiceSettings?.tone || 'default',
       aiModel: 'claude-3-sonnet', // Default model
       temperature: frontendConfig.conversationSettings?.enthusiasm || 0.7,

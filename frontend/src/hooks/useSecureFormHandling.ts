@@ -6,10 +6,9 @@
  */
 
 import { useState, useCallback } from 'react';
-import { 
-  validateAnimalConfig, 
-  ValidationError, 
-  formRateLimiter 
+import {
+  ValidationError,
+  formRateLimiter
 } from '../utils/inputValidation';
 
 interface FormError {
@@ -48,8 +47,8 @@ export function useSecureFormHandling(
       // Rate limiting check
       formRateLimiter.checkRateLimit();
 
-      // Validate and sanitize the form data
-      const validatedData = validateAnimalConfig(formData);
+      // Validate and sanitize the form data using the new method
+      const validatedData = validateSecureAnimalConfigData(formData);
 
       // Submit the validated data
       const result = await onSubmit(validatedData);
@@ -136,59 +135,50 @@ export function getSecureCheckboxValue(elementId: string, required: boolean = tr
 }
 
 /**
- * Secure form data collection from animal configuration form with tab-aware extraction
+ * Secure form data validation for directly passed form data (no DOM extraction needed)
+ * This replaces the previous DOM-dependent method with direct data validation.
  */
-export function getSecureAnimalConfigData(): any {
+export function validateSecureAnimalConfigData(formData: any): any {
   try {
-    // Collect data from elements that exist in the current tab
-    // Basic Info Tab elements (may not be in DOM if Settings tab is active)
-    const name = getSecureElementValue('animal-name-input', false);
-    const species = getSecureElementValue('animal-species-input', false);
-    const personality = getSecureElementValue('personality-textarea', false);
-    const active = getSecureCheckboxValue('animal-active-checkbox', false);
-    const educationalFocus = getSecureCheckboxValue('educational-focus-checkbox', false);
-    const ageAppropriate = getSecureCheckboxValue('age-appropriate-checkbox', false);
-
-    // Settings Tab elements (may not be in DOM if Basic Info tab is active)
-    const maxResponseLengthStr = getSecureElementValue('max-response-length-input', false);
-    const scientificAccuracy = getSecureElementValue('scientific-accuracy-select', false);
-    const tone = getSecureElementValue('tone-select', false);
-    const formality = getSecureElementValue('formality-select', false);
-    const enthusiasmStr = getSecureElementValue('enthusiasm-range', false);
-    const allowPersonalQuestions = getSecureCheckboxValue('allow-personal-questions-checkbox', false);
-
-    // Build result object with only the data we can collect
-    const result: any = {};
-
-    // Add Basic Info data if available
-    if (name !== null) result.name = name || '';
-    if (species !== null) result.species = species || '';
-    if (personality !== null) result.personality = personality || '';
-    if (active !== null) result.active = active;
-    if (educationalFocus !== null) result.educationalFocus = educationalFocus;
-    if (ageAppropriate !== null) result.ageAppropriate = ageAppropriate;
-
-    // Add Settings data if available
-    if (maxResponseLengthStr !== null) {
-      result.maxResponseLength = parseInt(maxResponseLengthStr || '500', 10);
+    if (!formData || typeof formData !== 'object') {
+      throw new ValidationError('Invalid form data provided');
     }
-    if (scientificAccuracy !== null) {
-      result.scientificAccuracy = scientificAccuracy || 'moderate';
-    }
-    if (tone !== null) result.tone = tone || 'friendly';
-    if (formality !== null) result.formality = formality || 'friendly';
-    if (enthusiasmStr !== null) {
-      result.enthusiasm = parseInt(enthusiasmStr || '5', 10);
-    }
-    if (allowPersonalQuestions !== null) result.allowPersonalQuestions = allowPersonalQuestions;
 
-    // Validate that we collected at least some data
-    if (Object.keys(result).length === 0) {
-      throw new ValidationError('No form data could be collected from any tab');
-    }
+    // Validate and sanitize the form data
+    const result = {
+      name: (formData.name || '').toString().trim(),
+      species: (formData.species || '').toString().trim(),
+      personality: (formData.personality || '').toString().trim(),
+      active: Boolean(formData.active),
+      educationalFocus: Boolean(formData.educationalFocus),
+      scientificAccuracy: ['strict', 'moderate', 'flexible'].includes(formData.scientificAccuracy)
+        ? formData.scientificAccuracy : 'moderate',
+      tone: ['playful', 'wise', 'energetic', 'calm', 'mysterious'].includes(formData.tone)
+        ? formData.tone : 'friendly',
+      formality: ['casual', 'friendly', 'professional'].includes(formData.formality)
+        ? formData.formality : 'friendly',
+      enthusiasm: Math.max(1, Math.min(10, parseInt(formData.enthusiasm) || 5)),
+      allowPersonalQuestions: Boolean(formData.allowPersonalQuestions),
+      // AI Model Settings - ensure numeric types for temperature and topP
+      voice: (formData.voice || 'alloy').toString().trim(),
+      aiModel: (formData.aiModel || 'gpt-4o-mini').toString().trim(),
+      temperature: typeof formData.temperature === 'number'
+        ? formData.temperature
+        : parseFloat(formData.temperature || '0.7'),
+      topP: typeof formData.topP === 'number'
+        ? formData.topP
+        : parseFloat(formData.topP || '1.0'),
+      toolsEnabled: Array.isArray(formData.toolsEnabled) ? formData.toolsEnabled : ['facts', 'media_lookup'],
+      // Structure guardrails properly for backend
+      guardrails: {
+        safe_mode: Boolean(formData.ageAppropriate),
+        content_filter: Boolean(formData.contentFiltering || formData.educationalFocus),
+        response_length_limit: Math.max(50, Math.min(2000, parseInt(formData.maxResponseLength) || 500))
+      }
+    };
 
     if (process.env.NODE_ENV === 'development') {
-      console.debug('[DEBUG] Tab-aware form data collected:', Object.keys(result));
+      console.debug('[DEBUG] Form data validated successfully:', Object.keys(result));
     }
 
     return result;
@@ -196,6 +186,22 @@ export function getSecureAnimalConfigData(): any {
     if (error instanceof ValidationError) {
       throw error;
     }
-    throw new ValidationError('Failed to extract form data safely');
+    throw new ValidationError('Failed to validate form data safely');
   }
+}
+
+/**
+ * @deprecated Use validateSecureAnimalConfigData instead
+ * Secure form data collection from animal configuration form with tab-aware extraction
+ * This function is kept for backward compatibility but should not be used with the new form implementation.
+ */
+export function getSecureAnimalConfigData(): any {
+  console.warn('[DEPRECATED] getSecureAnimalConfigData is deprecated. Use validateSecureAnimalConfigData with direct form data instead.');
+
+  // Return a migration hint object for backward compatibility
+  return {
+    __deprecated__: true,
+    message: 'DOM extraction is no longer supported. Please pass form data directly to validateSecureAnimalConfigData.',
+    migrationGuide: 'Replace getSecureAnimalConfigData() with validateSecureAnimalConfigData(formData) where formData is your React state.',
+  };
 }

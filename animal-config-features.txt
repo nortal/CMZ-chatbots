@@ -1,0 +1,31 @@
+###Basic Info Tab
+Animal Name
+Species
+Personality and Behavior
+Active
+Educational Focus
+Age Appropriate
+###System Prompt Tab
+System Prompt
+###Knowledge Base
+Add Entry
+###Guardrails
+Add Guardrail
+Guardrail enabled
+Guardrail edit
+###Settings
+Voice
+AI Model
+Temperature
+Top P
+##Enabled Tools
+Facts Lookup
+Media Lookup
+##Conversation Settings
+Max Response Length
+Scientific Accuracy
+Allow Personal Questions
+##Voice and personality
+Tone
+Formality
+

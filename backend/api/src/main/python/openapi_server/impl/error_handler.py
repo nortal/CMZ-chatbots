@@ -173,7 +173,68 @@ def handle_exception_for_controllers(error):
     """
     from flask import jsonify
 
-    # Handle authentication errors
+    # Import domain exceptions to handle them
+    try:
+        from .domain.common.exceptions import (
+            ValidationError as DomainValidationError,
+            NotFoundError as DomainNotFoundError,
+            ConflictError as DomainConflictError,
+            BusinessRuleError,
+            InvalidStateError
+        )
+    except ImportError:
+        DomainValidationError = None
+        DomainNotFoundError = None
+        DomainConflictError = None
+        BusinessRuleError = None
+        InvalidStateError = None
+
+    # Handle domain validation errors
+    if DomainValidationError and isinstance(error, DomainValidationError):
+        error_obj = Error(
+            code="validation_error",
+            message=str(error) or "Validation failed",
+            details={"validation_detail": str(error)}
+        )
+        return error_obj.to_dict(), 400
+
+    # Handle domain not found errors
+    if DomainNotFoundError and isinstance(error, DomainNotFoundError):
+        error_obj = Error(
+            code="not_found",
+            message=str(error) or "Resource not found",
+            details={"error": str(error)}
+        )
+        return error_obj.to_dict(), 404
+
+    # Handle domain conflict errors
+    if DomainConflictError and isinstance(error, DomainConflictError):
+        error_obj = Error(
+            code="conflict",
+            message=str(error) or "Resource conflict",
+            details={"conflict_detail": str(error)}
+        )
+        return error_obj.to_dict(), 409
+
+    # Handle domain business rule errors
+    if BusinessRuleError and isinstance(error, BusinessRuleError):
+        error_obj = Error(
+            code="business_rule_violation",
+            message=str(error) or "Business rule violation",
+            details={"business_rule": str(error)}
+        )
+        return error_obj.to_dict(), 400
+
+    # Handle domain invalid state errors
+    if InvalidStateError and isinstance(error, InvalidStateError):
+        error_obj = Error(
+            code="invalid_state",
+            message=str(error) or "Invalid state",
+            details={"state_detail": str(error)}
+        )
+        return error_obj.to_dict(), 400
+
+    # Handle authentication errors (local to this module)
     if isinstance(error, AuthenticationError):
         error_obj = Error(
             code="unauthorized",
@@ -182,7 +243,7 @@ def handle_exception_for_controllers(error):
         )
         return jsonify(error_obj.to_dict()), 401
 
-    # Handle authorization errors
+    # Handle authorization errors (local to this module)
     if isinstance(error, AuthorizationError):
         error_obj = Error(
             code="forbidden",
@@ -191,7 +252,7 @@ def handle_exception_for_controllers(error):
         )
         return jsonify(error_obj.to_dict()), 403
 
-    # Handle validation errors
+    # Handle validation errors (local to this module)
     if isinstance(error, ValidationError):
         error_obj = Error(
             code=getattr(error, 'error_code', 'validation_error'),

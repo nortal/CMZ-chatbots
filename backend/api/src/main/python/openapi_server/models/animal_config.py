@@ -14,7 +14,7 @@ class AnimalConfig(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, animal_config_id=None, voice=None, personality=None, ai_model=None, temperature=0.7, top_p=1, tools_enabled=None, guardrails=None):  # noqa: E501
+    def __init__(self, created=None, modified=None, deleted=None, soft_delete=False, animal_config_id=None, voice=None, personality=None, system_prompt=None, ai_model=None, temperature=0.7, top_p=1, tools_enabled=None, guardrails=None):  # noqa: E501
         """AnimalConfig - a model defined in OpenAPI
 
         :param created: The created of this AnimalConfig.  # noqa: E501
@@ -31,6 +31,8 @@ class AnimalConfig(Model):
         :type voice: str
         :param personality: The personality of this AnimalConfig.  # noqa: E501
         :type personality: str
+        :param system_prompt: The system_prompt of this AnimalConfig.  # noqa: E501
+        :type system_prompt: str
         :param ai_model: The ai_model of this AnimalConfig.  # noqa: E501
         :type ai_model: str
         :param temperature: The temperature of this AnimalConfig.  # noqa: E501
@@ -50,6 +52,7 @@ class AnimalConfig(Model):
             'animal_config_id': str,
             'voice': str,
             'personality': str,
+            'system_prompt': str,
             'ai_model': str,
             'temperature': float,
             'top_p': float,
@@ -65,6 +68,7 @@ class AnimalConfig(Model):
             'animal_config_id': 'animalConfigId',
             'voice': 'voice',
             'personality': 'personality',
+            'system_prompt': 'systemPrompt',
             'ai_model': 'aiModel',
             'temperature': 'temperature',
             'top_p': 'topP',
@@ -79,6 +83,7 @@ class AnimalConfig(Model):
         self._animal_config_id = animal_config_id
         self._voice = voice
         self._personality = personality
+        self._system_prompt = system_prompt
         self._ai_model = ai_model
         self._temperature = temperature
         self._top_p = top_p
@@ -242,6 +247,29 @@ class AnimalConfig(Model):
         """
 
         self._personality = personality
+
+    @property
+    def system_prompt(self) -> str:
+        """Gets the system_prompt of this AnimalConfig.
+
+        System prompt that defines the AI behavior for this animal  # noqa: E501
+
+        :return: The system_prompt of this AnimalConfig.
+        :rtype: str
+        """
+        return self._system_prompt
+
+    @system_prompt.setter
+    def system_prompt(self, system_prompt: str):
+        """Sets the system_prompt of this AnimalConfig.
+
+        System prompt that defines the AI behavior for this animal  # noqa: E501
+
+        :param system_prompt: The system_prompt of this AnimalConfig.
+        :type system_prompt: str
+        """
+
+        self._system_prompt = system_prompt
 
     @property
     def ai_model(self) -> str:

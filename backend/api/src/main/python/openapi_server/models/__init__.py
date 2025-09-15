@@ -53,6 +53,7 @@ from openapi_server.models.summarize_request import SummarizeRequest
 from openapi_server.models.summary import Summary
 from openapi_server.models.system_health import SystemHealth
 from openapi_server.models.system_health_checks_inner import SystemHealthChecksInner
+from openapi_server.models.system_health_frontend_compatibility import SystemHealthFrontendCompatibility
 from openapi_server.models.usage_summary import UsageSummary
 from openapi_server.models.user import User
 from openapi_server.models.user_details import UserDetails

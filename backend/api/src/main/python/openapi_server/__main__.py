@@ -14,10 +14,14 @@ def main():
     app = connexion.App(__name__, specification_dir='./openapi/')
     app.app.json_encoder = encoder.JSONEncoder
 
-    # Enable CORS for frontend communication
-    CORS(app.app, origins=["http://localhost:3000", "http://localhost:3001"])
+    # CMZ Template: Auto-enable CORS for local development
+    CORS(app.app, origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002"  # Allow common development ports
+    ])
 
-    # PR003946-90: Custom Connexion error handler for validation errors
+    # CMZ API Custom error handler for validation errors
     def handle_connexion_validation_error(exception):
         """Handle Connexion validation errors with our Error schema"""
         if isinstance(exception, ProblemException):
@@ -34,9 +38,13 @@ def main():
                 pythonic_params=True,
                 validate_responses=True)
 
-    # PR003946-90: Register consistent error schema handlers
-    register_error_handlers(app.app)
-    register_custom_error_handlers(app.app)
+    # Register consistent error schema handlers
+    try:
+        register_error_handlers(app.app)
+        register_custom_error_handlers(app.app)
+    except ImportError:
+        # Error handlers not yet implemented - this is expected in development
+        pass
 
     # Register Connexion-specific error handler
     app.add_error_handler(ProblemException, handle_connexion_validation_error)

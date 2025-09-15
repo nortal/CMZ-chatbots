@@ -20,17 +20,17 @@ class MediaGet200Response(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, media_id=None, url=None, kind=None, title=None, animal_id=None, description=None, tags=None, file_size=None, mime_type=None, duration=None, dimensions=None, created=None, modified=None, deleted=None, soft_delete=False):  # noqa: E501
+    def __init__(self, media_id=None, title=None, url=None, kind=None, animal_id=None, description=None, tags=None, file_size=None, mime_type=None, duration=None, dimensions=None, created=None, modified=None, deleted=None, soft_delete=False):  # noqa: E501
         """MediaGet200Response - a model defined in OpenAPI
 
         :param media_id: The media_id of this MediaGet200Response.  # noqa: E501
         :type media_id: str
+        :param title: The title of this MediaGet200Response.  # noqa: E501
+        :type title: str
         :param url: The url of this MediaGet200Response.  # noqa: E501
         :type url: str
         :param kind: The kind of this MediaGet200Response.  # noqa: E501
         :type kind: str
-        :param title: The title of this MediaGet200Response.  # noqa: E501
-        :type title: str
         :param animal_id: The animal_id of this MediaGet200Response.  # noqa: E501
         :type animal_id: str
         :param description: The description of this MediaGet200Response.  # noqa: E501
@@ -56,9 +56,9 @@ class MediaGet200Response(Model):
         """
         self.openapi_types = {
             'media_id': str,
+            'title': str,
             'url': str,
             'kind': str,
-            'title': str,
             'animal_id': str,
             'description': str,
             'tags': List[str],
@@ -74,9 +74,9 @@ class MediaGet200Response(Model):
 
         self.attribute_map = {
             'media_id': 'mediaId',
+            'title': 'title',
             'url': 'url',
             'kind': 'kind',
-            'title': 'title',
             'animal_id': 'animalId',
             'description': 'description',
             'tags': 'tags',
@@ -91,9 +91,9 @@ class MediaGet200Response(Model):
         }
 
         self._media_id = media_id
+        self._title = title
         self._url = url
         self._kind = kind
-        self._title = title
         self._animal_id = animal_id
         self._description = description
         self._tags = tags
@@ -143,6 +143,33 @@ class MediaGet200Response(Model):
             raise ValueError(r"Invalid value for `media_id`, must be a follow pattern or equal to `/^[a-zA-Z0-9_-]+$/`")  # noqa: E501
 
         self._media_id = media_id
+
+    @property
+    def title(self) -> str:
+        """Gets the title of this MediaGet200Response.
+
+        Human-readable title for the media  # noqa: E501
+
+        :return: The title of this MediaGet200Response.
+        :rtype: str
+        """
+        return self._title
+
+    @title.setter
+    def title(self, title: str):
+        """Sets the title of this MediaGet200Response.
+
+        Human-readable title for the media  # noqa: E501
+
+        :param title: The title of this MediaGet200Response.
+        :type title: str
+        """
+        if title is not None and len(title) > 200:
+            raise ValueError("Invalid value for `title`, length must be less than or equal to `200`")  # noqa: E501
+        if title is not None and len(title) < 1:
+            raise ValueError("Invalid value for `title`, length must be greater than or equal to `1`")  # noqa: E501
+
+        self._title = title
 
     @property
     def url(self) -> str:
@@ -197,33 +224,6 @@ class MediaGet200Response(Model):
             )
 
         self._kind = kind
-
-    @property
-    def title(self) -> str:
-        """Gets the title of this MediaGet200Response.
-
-        Human-readable title for the media  # noqa: E501
-
-        :return: The title of this MediaGet200Response.
-        :rtype: str
-        """
-        return self._title
-
-    @title.setter
-    def title(self, title: str):
-        """Sets the title of this MediaGet200Response.
-
-        Human-readable title for the media  # noqa: E501
-
-        :param title: The title of this MediaGet200Response.
-        :type title: str
-        """
-        if title is not None and len(title) > 200:
-            raise ValueError("Invalid value for `title`, length must be less than or equal to `200`")  # noqa: E501
-        if title is not None and len(title) < 1:
-            raise ValueError("Invalid value for `title`, length must be greater than or equal to `1`")  # noqa: E501
-
-        self._title = title
 
     @property
     def animal_id(self) -> str:

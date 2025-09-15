@@ -21,17 +21,47 @@ This is a Python Flask-based API server for the Cougar Mountain Zoo digital amba
 - **Conversations**: Chat session tracking and analytics
 - **Knowledge Base**: Educational content and media management
 
+## ⚠️ CRITICAL: OpenAPI Generation Validation
+
+**MANDATORY AFTER EVERY OPENAPI SPEC CHANGE:**
+```bash
+# ❌ NEVER use just 'make generate-api' alone - IT WILL BREAK YOUR CODE
+# ✅ ALWAYS use the validated generation:
+make post-generate
+
+# This prevents:
+# - Lost controller implementations (30+ failures per regeneration)
+# - Missing body parameters in function signatures
+# - Frontend-backend endpoint mismatches
+# - Hours of debugging "do some magic!" placeholders
+```
+
+**Why validation is CRITICAL:**
+- OpenAPI Generator **destroys implementations** without warning
+- Body parameters are **systematically omitted** from controllers
+- Frontend-backend contracts **drift silently** until runtime failures
+- Manual fixing is **error-prone** and takes 1-2 hours per incident
+
+**If you see these errors, validation was skipped:**
+- `TypeError: auth_login_post() takes 0 positional arguments but 1 was given`
+- `"do some magic!"` in any controller
+- `501 Not Implemented` responses
+- Frontend getting 404s for valid endpoints
+
 ## Development Commands
 
 ### Core Workflow
 ```bash
-# Complete regeneration and deployment cycle
-make generate-api && make build-api && make run-api
+# Complete regeneration and deployment cycle (VALIDATED)
+make post-generate && make build-api && make run-api
 
 # Quick development iteration (after OpenAPI spec changes)
-make generate-api
+make post-generate  # NEVER use generate-api alone!
 make build-api
 make run-api
+
+# Validate without regenerating
+make validate-api
 
 # Monitor running container
 make logs-api
@@ -131,6 +161,7 @@ make rebuild-venv-api
 - **All business logic in impl/**: Only implement functionality in `backend/api/src/main/python/openapi_server/impl/`
 - **OpenAPI spec is source of truth**: API changes must start with `openapi_spec.yaml` modifications
 - **"do some magic!" Placeholder Issue**: If you encounter this placeholder in generated controllers, see `docs/OPENAPI_TEMPLATE_SOLUTION.md` for the complete template-based solution that eliminates this issue permanently
+- **Controller-Handler Connection Issues**: If you encounter "cannot import name 'handlers'" or 501 Not Implemented errors after regeneration, see `ANIMAL-CONFIG-FLAKINESS-ADVICE.md` for root cause and permanent fix
 
 ### DynamoDB Integration Pattern
 All DynamoDB operations use the centralized utilities in `impl/utils/dynamo.py`:
@@ -178,7 +209,13 @@ def handle_operation(body):
 
 ## AWS & MCP Integration
 
-The project includes comprehensive AWS tooling via 24 MCP servers:
+The project includes comprehensive AWS tooling via 24 MCP servers plus SnapClick MCP for SMS messaging:
+
+**SMS Messaging**: Use SnapClick MCP with CLICKSEND_USERNAME and CLICKSEND_API_KEY environment variables for sending SMS messages to parents/students.
+  - **Phone Format**: Use international format with country code (e.g., +1234567890 for US numbers)
+  - **Common Issues**: "COUNTRY_NOT_ENABLED" error usually requires account verification in ClickSend dashboard
+  - **Troubleshooting**: Check SMS > Countries in ClickSend dashboard to verify destination country is enabled
+  - **Documentation**: Additional help available at https://developers.clicksend.com/docs or its links
 
 **Core AWS Services (11 servers):**
 - DynamoDB, S3, Athena, Cognito, Cost Explorer, Resources
@@ -665,3 +702,92 @@ The project includes a working Jira automation script at `/scripts/update_jira_s
 - Uses existing `JIRA_API_TOKEN` environment variable
 - Requires `kc.stegbauer@nortal.com` email for Basic Auth
 - Script handles base64 encoding automatically
+
+## Version Tracking System
+For comprehensive API version validation and frontend compatibility checking, see:
+- `.claude/commands/create_tracking_version.md` - Implementation command with sequential reasoning
+- `CREATE-TRACKING-VERSION-ADVICE.md` - Best practices and troubleshooting guide.  Use this system in testing to validate that tests are being done on the correct version of the code.
+
+## Data Persistence Validation
+For comprehensive end-to-end validation of data flow from UI interactions to DynamoDB storage, see:
+- `.claude/commands/validate-data-persistence.md` - Complete data persistence validation with systematic 4-phase approach
+- `VALIDATE-DATA-PERSISTENCE-ADVICE.md` - Implementation guidance, troubleshooting, and best practices for data integrity testing
+- `.claude/commands/validate-animal-config-persistence.md` - Focused validation for Animal Config endpoint data persistence
+- `VALIDATE-ANIMAL-CONFIG-PERSISTENCE-ADVICE.md` - Best practices for Animal Config persistence validation
+- `.claude/commands/validate-full-animal-config.md` - Comprehensive E2E testing of all 30 Animal Config dialog components with TDD approach
+- `VALIDATE-ANIMAL-CONFIG-COMPONENTS-ADVICE.md` - Component-specific testing advice and valid values discovered during validation
+
+## Backend Health Validation
+For systematic validation of backend service health and user-friendly error messaging, see:
+- `.claude/commands/validate-backend-health.md` - Comprehensive backend health detection with error message differentiation
+- `VALIDATE-BACKEND-HEALTH-ADVICE.md` - Testing methodology, service management, and troubleshooting guide for backend health validation
+
+### Backend Health Testing Overview
+The backend health validation system ensures users receive appropriate error messages based on actual system status:
+
+**Key Scenarios Validated**:
+- **Healthy Backend + Valid Credentials**: Successful login with dashboard redirect
+- **Healthy Backend + Invalid Credentials**: "Invalid email or password" message
+- **Backend Down + Any Credentials**: "Service temporarily unavailable" message
+- **Service Recovery**: Automatic detection when backend comes back online
+
+**Critical Success Criteria**:
+- Users never see authentication errors when the backend is down
+- Clear distinction between login failures and service unavailability
+- User-friendly messaging appropriate for zoo visitors
+- Fast health check responses (< 2 seconds)
+- Cross-browser compatibility for error message display
+
+**Testing Requirements**:
+- Must use Playwright MCP with visible browser for user confidence
+- Service start/stop simulation for realistic failure scenarios
+- Performance benchmarking for health check endpoints
+- Error message consistency validation across browsers
+
+## Meta-Prompt System
+For generating new systematic command prompts with sequential reasoning and comprehensive documentation:
+- `.claude/commands/create-solution.md` - Meta-prompt generator using `/create-solution <description>`
+- `CREATE-SOLUTION-ADVICE.md` - Best practices and lessons learned for prompt creation
+
+## MR Review System
+For automated review and validation of GitHub Pull Requests:
+- `.claude/commands/review-mr.md` - Comprehensive MR review command using `/review-mr <pr-number>`
+- `REVIEW-MR-ADVICE.md` - Best practices for automated PR review and comment resolution
+- **Key Features**: Analyzes Copilot/security comments, validates gating functions, generates actionable reports
+- **Integration**: Use after Step 9 (Review Phase) in Complete Workflow to automate review checking
+
+## MR Resolution System
+For automated resolution of issues identified in PR reviews:
+- `.claude/commands/resolve-mr.md` - Automated issue resolution using `/resolve-mr [pr-number]`
+- `RESOLVE-MR-ADVICE.md` - Best practices for automated fix application and comment resolution
+- **Key Features**: Parses review-mr output, applies categorized fixes, validates corrections, marks comments resolved
+- **Integration**: Use after `/review-mr` to automatically fix identified issues before merge
+
+## Infrastructure Hardening (Updated 2025-01-14)
+For systematic resolution of recurring development workflow issues:
+- `.claude/commands/systematic-cmz-infrastructure-hardening.md` - Permanent infrastructure improvements with TDD validation
+- `SYSTEMATIC-CMZ-INFRASTRUCTURE-HARDENING-ADVICE.md` - Implementation guidance and troubleshooting
+
+### Automated Environment Management
+- `make start-dev` - Start complete development environment with health checks
+- `make stop-dev` - Stop all development services
+- `make status` - Show complete system status
+- `make health-check` - Verify all services are healthy
+
+### Quality Automation
+- `make quality-check` - Run all quality gates before MR creation
+- `make fix-common` - Automatically fix common development issues
+- `make pre-mr` - Complete pre-MR workflow (quality + branch creation)
+
+### Infrastructure Commands
+- `scripts/start_development_environment.sh` - Comprehensive startup with validation
+- `scripts/stop_development_environment.sh` - Clean shutdown of all services
+- `scripts/quality_gates.sh` - Complete quality validation
+- `scripts/fix_common_issues.sh` - Automated issue resolution
+- `scripts/create_mr.sh` - Proper MR creation targeting dev branch
+
+### Key Improvements
+- **OpenAPI Template Fix**: Uses custom templates to eliminate controller-implementation mismatches permanently
+- **Automated Environment**: No more manual service startup or port conflicts
+- **Quality Gates**: Proactive issue detection and automated fixes
+- **Git Workflow**: Enforced branch targeting and naming conventions with pre-commit hooks

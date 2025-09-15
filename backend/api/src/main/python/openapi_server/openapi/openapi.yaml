@@ -1492,6 +1492,13 @@ paths:
             application/json:
               example:
                 status: ok
+                timestamp: 2025-09-14T19:47:00Z
+                apiVersionUuid: 01293541-4175-4109-a6c2-c5da286aa4e9
+                frontendCompatibility:
+                  version: "1.0"
+                  minVersion: "1.0"
+                  maxVersion: "1.1"
+                gitCommitHash: f4de03049a1d23244f15ed0c9deb069baa7fcab5
                 checks:
                 - name: db
                   status: ok
@@ -2734,6 +2741,9 @@ components:
             type: string
           personality:
             type: string
+          systemPrompt:
+            description: System prompt that defines the AI behavior for this animal
+            type: string
           aiModel:
             type: string
           temperature:
@@ -2757,6 +2767,17 @@ components:
       - $ref: "#/components/schemas/AuditFields"
       example:
         voice: voice
+        created:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        toolsEnabled:
+        - toolsEnabled
+        - toolsEnabled
+        topP: 0.6027456183070403
+        systemPrompt: systemPrompt
         animalConfigId: animalConfigId
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
@@ -2766,16 +2787,7 @@ components:
             email: email
         personality: personality
         softDelete: false
-        created:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
         temperature: 0.1601656380922023
-        toolsEnabled:
-        - toolsEnabled
-        - toolsEnabled
         guardrails:
           key: ""
         modified:
@@ -2785,7 +2797,6 @@ components:
             displayName: displayName
             email: email
         aiModel: aiModel
-        topP: 0.6027456183070403
       title: AnimalConfig
     AnimalConfigUpdate:
       example:
@@ -2836,6 +2847,8 @@ components:
           enum:
           - gpt-4o-mini
           - gpt-4o
+          - gpt-4
+          - gpt-3.5-turbo
           - claude-3-sonnet
           - claude-3-haiku
           - claude-3-opus
@@ -3281,6 +3294,10 @@ components:
       type: object
     SystemHealth:
       example:
+        frontendCompatibility:
+          minVersion: minVersion
+          maxVersion: maxVersion
+          version: version
         checks:
         - name: name
           detail: detail
@@ -3288,7 +3305,10 @@ components:
         - name: name
           detail: detail
           status: ok
+        gitCommitHash: gitCommitHash
         status: ok
+        timestamp: 2000-01-23T04:56:07.000+00:00
+        apiVersionUuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         status:
           enum:
@@ -3302,6 +3322,22 @@ components:
             $ref: "#/components/schemas/SystemHealth_checks_inner"
           title: checks
           type: array
+        timestamp:
+          description: Current server timestamp
+          format: date-time
+          title: timestamp
+          type: string
+        apiVersionUuid:
+          description: Unique identifier for this API version
+          format: uuid
+          title: apiVersionUuid
+          type: string
+        frontendCompatibility:
+          $ref: "#/components/schemas/SystemHealth_frontendCompatibility"
+        gitCommitHash:
+          description: Git commit hash of the current deployment
+          title: gitCommitHash
+          type: string
       title: SystemHealth
       type: object
     FeatureFlags:
@@ -3882,6 +3918,27 @@ components:
           title: detail
           type: string
       title: SystemHealth_checks_inner
+      type: object
+    SystemHealth_frontendCompatibility:
+      description: Frontend version compatibility information
+      example:
+        minVersion: minVersion
+        maxVersion: maxVersion
+        version: version
+      properties:
+        version:
+          description: Current frontend compatibility version
+          title: version
+          type: string
+        minVersion:
+          description: Minimum supported frontend version
+          title: minVersion
+          type: string
+        maxVersion:
+          description: Maximum supported frontend version
+          title: maxVersion
+          type: string
+      title: SystemHealth_frontendCompatibility
       type: object
     FeatureFlags_value:
       example:

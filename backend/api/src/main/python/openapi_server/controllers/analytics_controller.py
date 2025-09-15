@@ -30,12 +30,13 @@ def billing_get(period):  # noqa: E501
             impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(period)
@@ -48,7 +49,7 @@ def billing_get(period):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller billing_get implementation not found: {str(e)}",
@@ -59,11 +60,11 @@ def billing_get(period):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in billing_get: {str(e)}",
@@ -72,7 +73,7 @@ def billing_get(period):  # noqa: E501
             return error_obj, 500
 
 
-def logs_get(levelstartendpagepage_size):  # noqa: E501
+def logs_get(level, start, end, page, page_size):  # noqa: E501
     """Application logs (paged/filtered)
 
     :param level: 
@@ -108,12 +109,13 @@ def logs_get(levelstartendpagepage_size):  # noqa: E501
             impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(levelstartendpagepage_size)
@@ -126,7 +128,7 @@ def logs_get(levelstartendpagepage_size):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller logs_get implementation not found: {str(e)}",
@@ -137,11 +139,11 @@ def logs_get(levelstartendpagepage_size):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in logs_get: {str(e)}",
@@ -150,7 +152,7 @@ def logs_get(levelstartendpagepage_size):  # noqa: E501
             return error_obj, 500
 
 
-def performance_metrics_get(startend):  # noqa: E501
+def performance_metrics_get(start, end):  # noqa: E501
     """Performance metrics between dates
 
     :param start: ISO8601 start (inclusive)
@@ -177,12 +179,13 @@ def performance_metrics_get(startend):  # noqa: E501
             impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(startend)
@@ -195,7 +198,7 @@ def performance_metrics_get(startend):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller performance_metrics_get implementation not found: {str(e)}",
@@ -206,11 +209,11 @@ def performance_metrics_get(startend):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in performance_metrics_get: {str(e)}",

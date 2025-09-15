@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, MessageSquare, Database, AlertTriangle } from 'lucide-react';
-import { useAnimals, useAnimalConfig, useApiHealth } from '../hooks/useAnimals';
+import { useAnimals, useAnimalConfig } from '../hooks/useAnimals';
 import { Animal as BackendAnimal, AnimalConfig as BackendAnimalConfig } from '../services/api';
 import { utils } from '../services/api';
-import { useSecureFormHandling, getSecureAnimalConfigData } from '../hooks/useSecureFormHandling';
+import { useSecureFormHandling } from '../hooks/useSecureFormHandling';
 import { ValidationError } from '../utils/inputValidation';
 
 interface KnowledgeEntry {
@@ -32,7 +32,7 @@ interface Animal extends BackendAnimal {
   personality?: string;
   systemPrompt?: string;
   knowledgeBase?: KnowledgeEntry[];
-  guardrails?: Guardrail[];
+  guardrails?: Record<string, any>;
   conversationSettings?: {
     maxResponseLength: number;
     educationalFocus: boolean;
@@ -50,7 +50,6 @@ interface Animal extends BackendAnimal {
 const AnimalConfig: React.FC = () => {
   // Use our API hooks
   const { animals: backendAnimals, loading: animalsLoading, error: animalsError, refetch } = useAnimals();
-  const { isHealthy, checkHealth } = useApiHealth();
   
   // Transform backend animals to frontend format
   const [animals, setAnimals] = useState<Animal[]>([]);
@@ -68,13 +67,14 @@ const AnimalConfig: React.FC = () => {
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   
   // Use the animal config hook for the selected animal
-  const { 
-    config: animalConfig, 
-    loading: configLoading, 
-    error: configError, 
+  const {
+    config: animalConfig,
+    loading: configLoading,
+    error: configError,
     updateConfig,
+    updateAnimal,
     saving: configSaving,
-    saveError 
+    saveError
   } = useAnimalConfig(selectedAnimalId);
   
   // Handle animal selection
@@ -86,7 +86,29 @@ const AnimalConfig: React.FC = () => {
   // Handle configuration save with secure error handling
   const handleSaveConfig = async (configData: any) => {
     try {
-      await updateConfig(configData);
+      // Separate Animal fields from AnimalConfig fields
+      const { name, species, status, ...configFields } = configData;
+
+      // Update Animal fields (name, species, status) if they have changed
+      const animalUpdates: any = {};
+      if (name !== selectedAnimal?.name) animalUpdates.name = name;
+      if (species !== selectedAnimal?.species) animalUpdates.species = species;
+      if (status !== undefined && status !== selectedAnimal?.status) animalUpdates.status = status;
+
+      // Update both entities in parallel
+      const promises = [];
+
+      // Only update Animal if there are changes
+      if (Object.keys(animalUpdates).length > 0) {
+        promises.push(updateAnimal(animalUpdates));
+      }
+
+      // Update AnimalConfig with remaining fields
+      promises.push(updateConfig(configFields));
+
+      // Wait for both updates to complete
+      await Promise.all(promises);
+
       // Refresh the animals list to get updated data
       refetch();
     } catch (error) {
@@ -170,13 +192,91 @@ const AnimalConfig: React.FC = () => {
 
   const ConfigurationModal: React.FC = () => {
     if (!selectedAnimal) return null;
-    
-    // Use secure form handling
+
+    // Form state management - maintain state across all tabs
+    const [formData, setFormData] = useState({
+      name: '',
+      species: '',
+      personality: '',
+      systemPrompt: '', // Added systemPrompt to formData
+      active: false,
+      educationalFocus: false,
+      ageAppropriate: false,
+      // AI Model Settings (required by API)
+      voice: 'alloy',
+      aiModel: 'gpt-4o-mini',
+      temperature: 0.7,
+      topP: 1.0,
+      toolsEnabled: ['facts', 'media_lookup'],
+      guardrails: {},
+      // Conversation Settings
+      maxResponseLength: 500,
+      scientificAccuracy: 'moderate',
+      tone: 'friendly',
+      formality: 'friendly',
+      enthusiasm: 5,
+      allowPersonalQuestions: false
+    });
+
+    // Initialize form data when config loads or selectedAnimal changes
+    useEffect(() => {
+      // Don't reset form if we're in the middle of saving
+      if (configSaving) {
+        return;
+      }
+
+      // Only update form data if we have actual data to update with
+      // This prevents clearing the form when animalConfig temporarily becomes null during refetch
+      if (!selectedAnimal && !animalConfig) {
+        return;
+      }
+
+      // Use selectedAnimal for name and species since they're not in animalConfig
+      // Use animalConfig for all other configuration fields
+      setFormData(prevData => ({
+        name: selectedAnimal?.name || prevData.name || '',
+        species: selectedAnimal?.species || prevData.species || '',
+        personality: animalConfig?.personality || selectedAnimal?.personality || prevData.personality || '',
+        systemPrompt: animalConfig?.systemPrompt || prevData.systemPrompt || '', // Added systemPrompt initialization
+        active: animalConfig?.active !== undefined ? animalConfig.active : (selectedAnimal?.active !== undefined ? selectedAnimal.active : prevData.active),
+        educationalFocus: animalConfig?.conversationSettings?.educationalFocus !== undefined ?
+          animalConfig.conversationSettings.educationalFocus : prevData.educationalFocus,
+        ageAppropriate: animalConfig?.conversationSettings?.ageAppropriate !== undefined ?
+          animalConfig.conversationSettings.ageAppropriate : prevData.ageAppropriate,
+        // AI Model Settings (required by API)
+        voice: animalConfig?.voice || prevData.voice || 'alloy',
+        aiModel: animalConfig?.aiModel || prevData.aiModel || 'gpt-4o-mini',
+        temperature: animalConfig?.temperature !== undefined ?
+          (typeof animalConfig.temperature === 'number' ? animalConfig.temperature : parseFloat(animalConfig.temperature))
+          : (prevData.temperature || 0.7),
+        topP: animalConfig?.topP !== undefined ?
+          (typeof animalConfig.topP === 'number' ? animalConfig.topP : parseFloat(animalConfig.topP))
+          : (prevData.topP || 1.0),
+        toolsEnabled: animalConfig?.toolsEnabled || prevData.toolsEnabled || ['facts', 'media_lookup'],
+        guardrails: animalConfig?.guardrails || prevData.guardrails || {},
+        // Conversation Settings
+        maxResponseLength: animalConfig?.conversationSettings?.maxResponseLength || prevData.maxResponseLength || 500,
+        scientificAccuracy: animalConfig?.conversationSettings?.scientificAccuracy || prevData.scientificAccuracy || 'moderate',
+        tone: animalConfig?.voiceSettings?.tone || prevData.tone || 'friendly',
+        formality: animalConfig?.voiceSettings?.formality || prevData.formality || 'friendly',
+        enthusiasm: animalConfig?.voiceSettings?.enthusiasm || prevData.enthusiasm || 5,
+        allowPersonalQuestions: animalConfig?.conversationSettings?.allowPersonalQuestions !== undefined ?
+          animalConfig.conversationSettings.allowPersonalQuestions : prevData.allowPersonalQuestions
+      }));
+    }, [animalConfig, selectedAnimal, configSaving]);
+
+    // Use secure form handling with our form data
     const { isSubmitting, submitForm, clearErrors, getFieldError } = useSecureFormHandling(
       handleSaveConfig
     );
 
     const [activeTab, setActiveTab] = useState<'basic' | 'prompt' | 'knowledge' | 'guardrails' | 'settings'>('basic');
+
+    // Form field update handler
+    const updateField = (field: string, value: any) => {
+      setFormData(prev => ({ ...prev, [field]: value }));
+      clearErrors();
+    };
 
     const getSeverityColor = (severity: string) => {
       switch (severity) {
@@ -260,8 +360,8 @@ const AnimalConfig: React.FC = () => {
                     <input
                       id="animal-name-input"
                       type="text"
-                      value={animalConfig?.name || ''}
-                      onChange={(e) => clearErrors()}
+                      value={formData.name}
+                      onChange={(e) => updateField('name', e.target.value)}
                       className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                         getFieldError('name') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
                       }`}
@@ -275,8 +375,8 @@ const AnimalConfig: React.FC = () => {
                     <input
                       id="animal-species-input"
                       type="text"
-                      value={animalConfig?.species || ''}
-                      onChange={(e) => clearErrors()}
+                      value={formData.species}
+                      onChange={(e) => updateField('species', e.target.value)}
                       className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                         getFieldError('species') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
                       }`}
@@ -291,8 +391,8 @@ const AnimalConfig: React.FC = () => {
                   </label>
                   <textarea
                     rows={4}
-                    value={animalConfig?.personality || ''}
-                    onChange={(e) => clearErrors()}
+                    value={formData.personality}
+                    onChange={(e) => updateField('personality', e.target.value)}
                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                       getFieldError('personality') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'
                     }`}
@@ -308,7 +408,8 @@ const AnimalConfig: React.FC = () => {
                       <input
                         id="animal-active-checkbox"
                         type="checkbox"
-                        defaultChecked={animalConfig?.active || false}
+                        checked={formData.active}
+                        onChange={(e) => updateField('active', e.target.checked)}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                       />
                       <span className="text-sm font-medium text-gray-700">Active</span>
@@ -319,7 +420,8 @@ const AnimalConfig: React.FC = () => {
                       <input
                         id="educational-focus-checkbox"
                         type="checkbox"
-                        defaultChecked={animalConfig?.conversationSettings?.educationalFocus || false}
+                        checked={formData.educationalFocus}
+                        onChange={(e) => updateField('educationalFocus', e.target.checked)}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                       />
                       <span className="text-sm font-medium text-gray-700">Educational Focus</span>
@@ -330,7 +432,8 @@ const AnimalConfig: React.FC = () => {
                       <input
                         id="age-appropriate-checkbox"
                         type="checkbox"
-                        defaultChecked={animalConfig?.conversationSettings?.ageAppropriate || false}
+                        checked={formData.ageAppropriate}
+                        onChange={(e) => updateField('ageAppropriate', e.target.checked)}
                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                       />
                       <span className="text-sm font-medium text-gray-700">Age Appropriate</span>
@@ -348,7 +451,8 @@ const AnimalConfig: React.FC = () => {
                   </label>
                   <textarea
                     rows={12}
-                    value={animalConfig?.systemPrompt || ''}
+                    value={formData.systemPrompt}
+                    onChange={(e) => updateField('systemPrompt', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 font-mono text-sm"
                     placeholder="System prompt that defines how the AI should behave as this animal..."
                   />
@@ -411,7 +515,7 @@ const AnimalConfig: React.FC = () => {
             {activeTab === 'guardrails' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Safety Guardrails ({animalConfig?.guardrails?.length || 0} active)</h3>
+                  <h3 className="text-lg font-medium">Safety Guardrails ({animalConfig?.guardrails ? Object.keys(animalConfig.guardrails).length : 0} active)</h3>
                   <button className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Guardrail
@@ -419,43 +523,161 @@ const AnimalConfig: React.FC = () => {
                 </div>
                 
                 <div className="space-y-4">
-                  {animalConfig?.guardrails?.map(guardrail => (
-                    <div key={guardrail.id} className="bg-gray-50 rounded-lg p-4 border">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(guardrail.severity)}`}>
-                              {guardrail.severity} priority
-                            </span>
-                            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                              {guardrail.type}
-                            </span>
+                  {animalConfig?.guardrails && Object.keys(animalConfig.guardrails).length > 0 ? (
+                    Object.entries(animalConfig.guardrails).map(([key, value]) => (
+                      <div key={key} className="bg-gray-50 rounded-lg p-4 border">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                {key}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-900">
+                              {typeof value === 'boolean' ? (value ? 'Enabled' : 'Disabled') : String(value)}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-900">{guardrail.rule}</p>
-                        </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="sr-only peer"
-                              checked={guardrail.enabled}
-                              readOnly
-                            />
-                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
-                          </label>
-                          <button className="p-2 text-gray-400 hover:text-gray-600">
-                            <Edit className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center space-x-2 ml-4">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={typeof value === 'boolean' ? value : false}
+                                readOnly
+                              />
+                              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                            </label>
+                            <button className="p-2 text-gray-400 hover:text-gray-600">
+                              <Edit className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No guardrails configured</p>
+                      <p className="text-sm">Click "Add Guardrail" to create safety rules</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             )}
 
             {activeTab === 'settings' && (
               <div className="space-y-6">
+                {/* AI Model Settings Section */}
+                <div className="border-b pb-6">
+                  <h3 className="text-lg font-medium mb-4">AI Model Settings</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Voice
+                      </label>
+                      <select
+                        value={formData.voice}
+                        onChange={(e) => updateField('voice', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="alloy">Alloy</option>
+                        <option value="echo">Echo</option>
+                        <option value="fable">Fable</option>
+                        <option value="onyx">Onyx</option>
+                        <option value="nova">Nova</option>
+                        <option value="shimmer">Shimmer</option>
+                        <option value="ruth">Ruth</option>
+                        <option value="joanna">Joanna</option>
+                        <option value="matthew">Matthew</option>
+                        <option value="amy">Amy</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        AI Model
+                      </label>
+                      <select
+                        value={formData.aiModel}
+                        onChange={(e) => updateField('aiModel', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="gpt-4o-mini">GPT-4o Mini</option>
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                        <option value="claude-3-haiku">Claude 3 Haiku</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Temperature ({formData.temperature})
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="2"
+                        step="0.1"
+                        value={formData.temperature}
+                        onChange={(e) => updateField('temperature', parseFloat(e.target.value))}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>Deterministic</span>
+                        <span>Creative</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Top P ({formData.topP})
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={formData.topP}
+                        onChange={(e) => updateField('topP', parseFloat(e.target.value))}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Enabled Tools
+                      </label>
+                      <div className="space-y-2">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.toolsEnabled.includes('facts')}
+                            onChange={(e) => {
+                              const tools = e.target.checked
+                                ? [...formData.toolsEnabled, 'facts']
+                                : formData.toolsEnabled.filter(t => t !== 'facts');
+                              updateField('toolsEnabled', tools);
+                            }}
+                            className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className="text-sm">Facts Lookup</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.toolsEnabled.includes('media_lookup')}
+                            onChange={(e) => {
+                              const tools = e.target.checked
+                                ? [...formData.toolsEnabled, 'media_lookup']
+                                : formData.toolsEnabled.filter(t => t !== 'media_lookup');
+                              updateField('toolsEnabled', tools);
+                            }}
+                            className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className="text-sm">Media Lookup</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Conversation Settings</h3>
@@ -467,7 +689,8 @@ const AnimalConfig: React.FC = () => {
                       <input
                         id="max-response-length-input"
                         type="number"
-                        value={animalConfig?.conversationSettings?.maxResponseLength || ''}
+                        value={formData.maxResponseLength}
+                        onChange={(e) => updateField('maxResponseLength', parseInt(e.target.value) || 500)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
@@ -478,7 +701,8 @@ const AnimalConfig: React.FC = () => {
                       </label>
                       <select
                         id="scientific-accuracy-select"
-                        value={animalConfig?.conversationSettings?.scientificAccuracy || ''}
+                        value={formData.scientificAccuracy}
+                        onChange={(e) => updateField('scientificAccuracy', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         <option value="strict">Strict</option>
@@ -492,7 +716,8 @@ const AnimalConfig: React.FC = () => {
                         <input
                           id="allow-personal-questions-checkbox"
                           type="checkbox"
-                          defaultChecked={animalConfig?.conversationSettings?.allowPersonalQuestions || false}
+                          checked={formData.allowPersonalQuestions}
+                          onChange={(e) => updateField('allowPersonalQuestions', e.target.checked)}
                           className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                         />
                         <span className="text-sm font-medium text-gray-700">Allow Personal Questions</span>
@@ -509,7 +734,8 @@ const AnimalConfig: React.FC = () => {
                       </label>
                       <select
                         id="tone-select"
-                        value={animalConfig?.voiceSettings?.tone || ''}
+                        value={formData.tone}
+                        onChange={(e) => updateField('tone', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         <option value="playful">Playful</option>
@@ -526,7 +752,8 @@ const AnimalConfig: React.FC = () => {
                       </label>
                       <select
                         id="formality-select"
-                        value={animalConfig?.voiceSettings?.formality || ''}
+                        value={formData.formality}
+                        onChange={(e) => updateField('formality', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         <option value="casual">Casual</option>
@@ -537,14 +764,15 @@ const AnimalConfig: React.FC = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Enthusiasm Level ({animalConfig?.voiceSettings?.enthusiasm || 0}/10)
+                        Enthusiasm Level ({formData.enthusiasm}/10)
                       </label>
                       <input
                         id="enthusiasm-range"
                         type="range"
                         min="1"
                         max="10"
-                        value={animalConfig?.voiceSettings?.enthusiasm || ''}
+                        value={formData.enthusiasm}
+                        onChange={(e) => updateField('enthusiasm', parseInt(e.target.value))}
                         className="w-full"
                       />
                     </div>
@@ -568,11 +796,11 @@ const AnimalConfig: React.FC = () => {
               <button className="px-6 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
                 Test Chatbot
               </button>
-              <button 
+              <button
                 onClick={() => {
                   try {
-                    const configData = getSecureAnimalConfigData();
-                    submitForm(configData);
+                    // Use our managed form data instead of DOM extraction
+                    submitForm(formData);
                   } catch (error) {
                     if (error instanceof ValidationError) {
                       console.debug('Form validation error:', error.message);
@@ -605,23 +833,6 @@ const AnimalConfig: React.FC = () => {
         </button>
       </div>
 
-      {/* API Status Indicator */}
-      {!isHealthy && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex items-center">
-            <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2" />
-            <span className="text-sm text-yellow-800">
-              Backend API unavailable. Using offline mode with limited functionality.
-            </span>
-            <button 
-              onClick={checkHealth}
-              className="ml-auto text-sm text-yellow-600 hover:text-yellow-800 underline"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      )}
       
       {/* Error handling */}
       {animalsError && (
@@ -633,6 +844,16 @@ const AnimalConfig: React.FC = () => {
         </div>
       )}
       
+      {/* Configuration error handling */}
+      {configError && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2" />
+            <span className="text-sm text-yellow-800">Error loading configuration: {configError}</span>
+          </div>
+        </div>
+      )}
+
       {/* Save error handling */}
       {saveError && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
