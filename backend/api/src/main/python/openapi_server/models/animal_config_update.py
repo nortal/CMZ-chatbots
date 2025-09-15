@@ -159,7 +159,7 @@ class AnimalConfigUpdate(Model):
         :param ai_model: The ai_model of this AnimalConfigUpdate.
         :type ai_model: str
         """
-        allowed_values = ["gpt-4o-mini", "gpt-4o", "claude-3-sonnet", "claude-3-haiku", "claude-3-opus"]  # noqa: E501
+        allowed_values = ["gpt-4o-mini", "gpt-4o", "gpt-4", "gpt-3.5-turbo", "claude-3-sonnet", "claude-3-haiku", "claude-3-opus"]  # noqa: E501
         if ai_model not in allowed_values:
             raise ValueError(
                 "Invalid value for `ai_model` ({0}), must be one of {1}"

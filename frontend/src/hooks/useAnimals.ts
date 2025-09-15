@@ -53,6 +53,7 @@ export interface UseAnimalConfigResult {
   loading: boolean;
   error: string | null;
   updateConfig: (updates: Partial<AnimalConfig>) => Promise<void>;
+  updateAnimal: (updates: Partial<Animal>) => Promise<void>;
   saving: boolean;
   saveError: string | null;
 }
@@ -102,6 +103,27 @@ export function useAnimalConfig(animalId: string | null): UseAnimalConfigResult 
     }
   }, [animalId]);
 
+  const updateAnimal = useCallback(async (updates: Partial<Animal>) => {
+    if (!animalId) {
+      setSaveError('No animal ID provided');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setSaveError(null);
+      const updatedAnimal = await animalApi.updateAnimal(animalId, updates);
+      console.log('Animal details updated successfully');
+      return updatedAnimal;
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to update animal details');
+      console.error('Error updating animal details:', err);
+      throw err; // Re-throw to allow component to handle
+    } finally {
+      setSaving(false);
+    }
+  }, [animalId]);
+
   useEffect(() => {
     if (animalId) {
       fetchConfig(animalId);
@@ -116,6 +138,7 @@ export function useAnimalConfig(animalId: string | null): UseAnimalConfigResult 
     loading,
     error,
     updateConfig,
+    updateAnimal,
     saving,
     saveError,
   };

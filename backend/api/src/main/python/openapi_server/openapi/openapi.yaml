@@ -2741,6 +2741,9 @@ components:
             type: string
           personality:
             type: string
+          systemPrompt:
+            description: System prompt that defines the AI behavior for this animal
+            type: string
           aiModel:
             type: string
           temperature:
@@ -2764,6 +2767,17 @@ components:
       - $ref: "#/components/schemas/AuditFields"
       example:
         voice: voice
+        created:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        toolsEnabled:
+        - toolsEnabled
+        - toolsEnabled
+        topP: 0.6027456183070403
+        systemPrompt: systemPrompt
         animalConfigId: animalConfigId
         deleted:
           at: 2000-01-23T04:56:07.000+00:00
@@ -2773,16 +2787,7 @@ components:
             email: email
         personality: personality
         softDelete: false
-        created:
-          at: 2000-01-23T04:56:07.000+00:00
-          by:
-            actorId: actorId
-            displayName: displayName
-            email: email
         temperature: 0.1601656380922023
-        toolsEnabled:
-        - toolsEnabled
-        - toolsEnabled
         guardrails:
           key: ""
         modified:
@@ -2792,7 +2797,6 @@ components:
             displayName: displayName
             email: email
         aiModel: aiModel
-        topP: 0.6027456183070403
       title: AnimalConfig
     AnimalConfigUpdate:
       example:
@@ -2843,6 +2847,8 @@ components:
           enum:
           - gpt-4o-mini
           - gpt-4o
+          - gpt-4
+          - gpt-3.5-turbo
           - claude-3-sonnet
           - claude-3-haiku
           - claude-3-opus

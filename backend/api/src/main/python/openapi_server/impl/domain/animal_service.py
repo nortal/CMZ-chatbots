@@ -232,76 +232,104 @@ class AnimalService:
     def get_animal_configuration(self, animal_id: str) -> Dict[str, Any]:
         """
         Get animal configuration with business logic
-        
+
         Args:
             animal_id: Animal identifier
-            
+
         Returns:
             Dict[str, Any]: Animal configuration data
-            
+
         Raises:
             NotFoundError: If animal not found
         """
         animal = self.get_animal(animal_id)
-        
-        # Business rule: Return configuration with defaults
-        config = animal.configuration.copy() if animal.configuration else {}
-        
-        # Apply configuration defaults
-        config.setdefault("voice", "default")
-        config.setdefault("personality", animal.personality or {})
-        config.setdefault("ai_model", "claude-3-sonnet")
-        config.setdefault("temperature", 0.7)
-        config.setdefault("top_p", 1.0)
-        config.setdefault("tools_enabled", [])
-        config.setdefault("guardrails", {})
-        config.setdefault("status", "active")
-        
+
+        # Build configuration response for API matching OpenAPI spec
+        config = {
+            "animalConfigId": f"config-{animal_id}",
+            "voice": animal.configuration.get("voice", "alloy") if animal.configuration else "alloy",
+            "personality": animal.personality.get("description", "") if isinstance(animal.personality, dict) else str(animal.personality or ""),
+            "aiModel": animal.configuration.get("aiModel", "gpt-4o-mini") if animal.configuration else "gpt-4o-mini",
+            "temperature": round(float(animal.configuration.get("temperature", 0.7) or 0.7) * 10) / 10 if animal.configuration else 0.7,
+            "topP": round(float(animal.configuration.get("topP", 1.0) or 1.0) * 100) / 100 if animal.configuration else 1.0,
+            "toolsEnabled": animal.configuration.get("toolsEnabled", ["facts", "media_lookup"]) if animal.configuration else ["facts", "media_lookup"],
+            "guardrails": animal.configuration.get("guardrails", {}) if animal.configuration else {},
+            "softDelete": animal.soft_delete
+        }
+
+        # Add audit information if available
+        if animal.created:
+            config["created"] = serialize_audit_stamp(animal.created)
+        if animal.modified:
+            config["modified"] = serialize_audit_stamp(animal.modified)
+
         return config
     
     def update_animal_configuration(self, animal_id: str, config_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Update animal configuration with business logic validation
-        
+
         Args:
             animal_id: Animal identifier
-            config_data: Configuration update data
-            
+            config_data: Configuration update data from API
+
         Returns:
             Dict[str, Any]: Updated configuration
-            
+
         Raises:
             NotFoundError: If animal not found
             ValidationError: If configuration is invalid
         """
         animal = self.get_animal(animal_id)
-        
-        # Business validation for configuration
-        self._validate_configuration(config_data)
-        
+
+        # Prepare update data for the animal entity
+        update_data = {}
+
         # Get current configuration
         current_config = animal.configuration.copy() if animal.configuration else {}
-        
-        # Merge configuration updates
-        current_config.update(config_data)
-        
-        # Update the animal with new configuration
-        update_data = {
-            "configuration": current_config,
-            "personality": config_data.get("personality", animal.personality)
-        }
-        
+
+        # Map API fields to internal configuration fields
+        # Only update fields that are provided and not None
+        if "voice" in config_data and config_data["voice"] is not None:
+            current_config["voice"] = config_data["voice"]
+        if "aiModel" in config_data and config_data["aiModel"] is not None:
+            current_config["aiModel"] = config_data["aiModel"]
+        if "temperature" in config_data and config_data["temperature"] is not None:
+            current_config["temperature"] = float(config_data["temperature"])
+        if "topP" in config_data and config_data["topP"] is not None:
+            current_config["topP"] = float(config_data["topP"])
+        if "toolsEnabled" in config_data and config_data["toolsEnabled"] is not None:
+            current_config["toolsEnabled"] = config_data["toolsEnabled"]
+        if "guardrails" in config_data and config_data["guardrails"] is not None:
+            current_config["guardrails"] = config_data["guardrails"]
+
+        # Handle personality - store as dict with description
+        if "personality" in config_data:
+            personality_value = config_data["personality"]
+            if isinstance(personality_value, str):
+                update_data["personality"] = {"description": personality_value}
+            else:
+                update_data["personality"] = personality_value
+
+        # Business validation for configuration
+        self._validate_configuration(current_config)
+
+        # Update the configuration
+        update_data["configuration"] = current_config
+
+        # Update the animal entity
         updated_animal = self.update_animal(animal_id, update_data)
-        
+
+        # Return the updated configuration in API format
         return self.get_animal_configuration(animal_id)
     
     def _validate_configuration(self, config_data: Dict[str, Any]) -> None:
         """
         Validate animal configuration data
-        
+
         Args:
             config_data: Configuration to validate
-            
+
         Raises:
             ValidationError: If configuration is invalid
         """
@@ -310,31 +338,41 @@ class AnimalService:
             temp = config_data["temperature"]
             if not isinstance(temp, (int, float)) or temp < 0 or temp > 2:
                 raise ValidationError("Temperature must be a number between 0 and 2")
-        
-        # Validate top_p
-        if "top_p" in config_data:
-            top_p = config_data["top_p"]
+            # Round to nearest 0.1 to handle floating point precision issues
+            config_data["temperature"] = round(temp * 10) / 10
+
+        # Validate topP (internal name for top_p)
+        if "topP" in config_data:
+            top_p = config_data["topP"]
             if not isinstance(top_p, (int, float)) or top_p < 0 or top_p > 1:
-                raise ValidationError("top_p must be a number between 0 and 1")
-        
+                raise ValidationError("topP must be a number between 0 and 1")
+            # Round to nearest 0.01 to handle floating point precision issues
+            config_data["topP"] = round(top_p * 100) / 100
+
         # Validate AI model
-        if "ai_model" in config_data:
-            valid_models = ["claude-3-sonnet", "claude-3-haiku", "claude-3-opus", "gpt-4", "gpt-3.5-turbo"]
-            if config_data["ai_model"] not in valid_models:
+        if "aiModel" in config_data and config_data["aiModel"] is not None:
+            valid_models = ["gpt-4o-mini", "gpt-4", "gpt-3.5-turbo", "claude-3-sonnet", "claude-3-haiku", "claude-3-opus"]
+            if config_data["aiModel"] not in valid_models:
                 raise ValidationError(f"Invalid AI model. Must be one of: {valid_models}")
-        
-        # Validate status
-        if "status" in config_data:
+
+        # Validate voice
+        if "voice" in config_data and config_data["voice"] is not None:
+            valid_voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
+            if config_data["voice"] not in valid_voices:
+                raise ValidationError(f"Invalid voice. Must be one of: {valid_voices}")
+
+        # Validate status (if used in configuration)
+        if "status" in config_data and config_data["status"] is not None:
             valid_statuses = ["active", "inactive", "maintenance", "deleted"]
             if config_data["status"] not in valid_statuses:
                 raise ValidationError(f"Invalid status. Must be one of: {valid_statuses}")
-        
-        # Validate tools_enabled is a list
-        if "tools_enabled" in config_data:
-            if not isinstance(config_data["tools_enabled"], list):
-                raise ValidationError("tools_enabled must be a list")
-        
+
+        # Validate toolsEnabled is a list
+        if "toolsEnabled" in config_data and config_data["toolsEnabled"] is not None:
+            if not isinstance(config_data["toolsEnabled"], list):
+                raise ValidationError("toolsEnabled must be a list")
+
         # Validate guardrails is a dict
-        if "guardrails" in config_data:
+        if "guardrails" in config_data and config_data["guardrails"] is not None:
             if not isinstance(config_data["guardrails"], dict):
                 raise ValidationError("guardrails must be a dictionary")

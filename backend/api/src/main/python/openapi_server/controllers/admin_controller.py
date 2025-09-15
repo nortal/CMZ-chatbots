@@ -29,7 +29,7 @@ def create_user(user_input):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -98,7 +98,7 @@ def create_user_details(user_details_input):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -165,7 +165,7 @@ def delete_user(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -232,7 +232,7 @@ def delete_user_details(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -299,7 +299,7 @@ def get_user(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -366,7 +366,7 @@ def get_user_details(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -428,7 +428,7 @@ def list_user_details():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -490,7 +490,7 @@ def list_users():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -536,7 +536,7 @@ def list_users():  # noqa: E501
             return error_obj, 500
 
 
-def update_user(user_iduser):  # noqa: E501
+def update_user(user_id, user):  # noqa: E501
     """Update a user
 
     :param user_id: 
@@ -562,7 +562,7 @@ def update_user(user_iduser):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -608,7 +608,7 @@ def update_user(user_iduser):  # noqa: E501
             return error_obj, 500
 
 
-def update_user_details(user_iduser_details_input):  # noqa: E501
+def update_user_details(user_id, user_details_input):  # noqa: E501
     """Update user details
 
     :param user_id: 
@@ -634,7 +634,7 @@ def update_user_details(user_iduser_details_input):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing

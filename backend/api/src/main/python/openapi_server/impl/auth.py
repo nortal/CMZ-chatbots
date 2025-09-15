@@ -26,79 +26,60 @@ def handle_auth_logout_post(*args, **kwargs) -> Tuple[Any, int]:
     return not_implemented_error("auth_logout_post")
 
 
-def handle_auth_post(body: Dict[str, Any]) -> Tuple[Any, int]:
+def handle_auth_post(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for auth_post (login/register)
-
-    For now, this is a simple mock authentication that accepts any valid email/password.
-    In production, this would validate against the database.
+    Implementation handler for auth_post
+    Mock authentication for testing
     """
-    # Extract username (email) and password from body
-    if not body:
-        error_obj = Error(
-            code="invalid_request",
-            message="Request body is required",
-            details={"required": ["username", "password"]}
-        )
-        return error_obj.to_dict(), 400
+    import jwt
+    import datetime
 
-    username = body.get("username")  # This is an email per OpenAPI spec
-    password = body.get("password")
+    # Extract auth_request from args or kwargs
+    auth_request = args[0] if args else kwargs.get('auth_request', {})
 
-    if not username or not password:
-        error_obj = Error(
-            code="invalid_request",
-            message="Username and password are required",
-            details={"required": ["username", "password"]}
-        )
-        return error_obj.to_dict(), 400
+    # Mock user credentials for testing
+    # Roles must be one of: visitor, user, member, editor, admin
+    mock_users = {
+        'admin@cmz.org': {'password': 'admin123', 'role': 'admin', 'userId': 'admin'},
+        'zookeeper@cmz.org': {'password': 'keeper123', 'role': 'editor', 'userId': 'zookeeper'},
+        'student@cmz.org': {'password': 'student123', 'role': 'member', 'userId': 'student1'},
+        'visitor@cmz.org': {'password': 'visitor123', 'role': 'visitor', 'userId': 'visitor1'},
+        'user@cmz.org': {'password': 'user123', 'role': 'user', 'userId': 'user1'},
+    }
 
-    # Mock successful authentication - in production this would check the database
-    # For testing, we'll accept the admin@cmz.org account
-    if username == "admin@cmz.org" and password == "admin123":
-        # Return a mock JWT token and user info
-        # Create a proper JWT payload that matches frontend expectations
-        import base64
-        import json
+    email = auth_request.get('username') if hasattr(auth_request, 'get') else getattr(auth_request, 'username', None)
+    password = auth_request.get('password') if hasattr(auth_request, 'get') else getattr(auth_request, 'password', None)
 
-        jwt_payload = {
-            "user_id": "admin-001",
-            "email": "admin@cmz.org",
-            "role": "admin",
-            "user_type": "admin",
-            "exp": 1757900000,  # Future expiry
-            "iat": 1625000000   # Issued at time
+    if email in mock_users and mock_users[email]['password'] == password:
+        user_data = mock_users[email]
+        # Debug logging
+        print(f"DEBUG: Auth for {email}, role from mock_users: {user_data['role']}")
+
+        # Generate a mock JWT token
+        token_payload = {
+            'user_id': user_data['userId'],
+            'email': email,
+            'role': user_data['role'],
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
         }
-
-        # Create a mock JWT token with proper structure
-        # Header (algorithm and type)
-        header = {"alg": "HS256", "typ": "JWT"}
-        header_encoded = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')
-
-        # Payload
-        payload_encoded = base64.urlsafe_b64encode(json.dumps(jwt_payload).encode()).decode().rstrip('=')
-
-        # Mock signature
-        signature = "mock_signature_for_testing"
-
-        token = f"{header_encoded}.{payload_encoded}.{signature}"
+        token = jwt.encode(token_payload, 'secret_key', algorithm='HS256')
 
         response = {
-            "token": token,
-            "expiresIn": 3600,  # 1 hour in seconds
-            "user": {
-                "userId": "admin-001",
-                "email": "admin@cmz.org",
-                "displayName": "Admin User",
-                "role": "admin"
+            'token': token,
+            'expiresIn': 3600,  # 1 hour in seconds
+            'user': {
+                'userId': user_data['userId'],
+                'email': email,
+                'role': user_data['role']
             }
         }
+        print(f"DEBUG: Returning response with role: {response['user']['role']}")
         return response, 200
     else:
         error_obj = Error(
             code="authentication_failed",
-            message="Invalid username or password",
-            details={"username": username}
+            message="Invalid email or password",
+            details={"email": email}
         )
         return error_obj.to_dict(), 401
 
@@ -119,9 +100,4 @@ def handle_auth_reset_password_post(*args, **kwargs) -> Tuple[Any, int]:
     TODO: Implement business logic for this operation
     """
     return not_implemented_error("auth_reset_password_post")
-
-
-# Aliases for backward compatibility with existing handlers.py
-login_post = handle_auth_post
-logout_post = handle_auth_logout_post
 

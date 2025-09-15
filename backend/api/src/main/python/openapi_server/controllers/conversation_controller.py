@@ -6,7 +6,7 @@ from typing import Union
 from openapi_server import util
 
 
-def convo_history_delete(session_iduser_idanimal_idolder_thanconfirm_gdpraudit_reason):  # noqa: E501
+def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdpr, audit_reason):  # noqa: E501
     """Delete conversation history with enhanced GDPR compliance
 
     :param session_id: Specific conversation session to delete
@@ -42,7 +42,7 @@ def convo_history_delete(session_iduser_idanimal_idolder_thanconfirm_gdpraudit_r
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -88,7 +88,7 @@ def convo_history_delete(session_iduser_idanimal_idolder_thanconfirm_gdpraudit_r
             return error_obj, 500
 
 
-def convo_history_get(animal_iduser_idsession_idstart_dateend_datelimitoffsetinclude_metadata):  # noqa: E501
+def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limit, offset, include_metadata):  # noqa: E501
     """Get conversation history with enhanced filtering and pagination
 
     :param animal_id: Filter conversations by animal identifier
@@ -130,7 +130,7 @@ def convo_history_get(animal_iduser_idsession_idstart_dateend_datelimitoffsetinc
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -199,7 +199,7 @@ def convo_turn_post(convo_turn_post_request):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -268,7 +268,7 @@ def summarize_convo_post(summarize_convo_post_request):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing

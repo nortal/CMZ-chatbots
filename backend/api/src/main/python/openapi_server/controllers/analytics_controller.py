@@ -27,7 +27,7 @@ def billing_get(period):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -73,7 +73,7 @@ def billing_get(period):  # noqa: E501
             return error_obj, 500
 
 
-def logs_get(levelstartendpagepage_size):  # noqa: E501
+def logs_get(level, start, end, page, page_size):  # noqa: E501
     """Application logs (paged/filtered)
 
     :param level: 
@@ -106,7 +106,7 @@ def logs_get(levelstartendpagepage_size):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -152,7 +152,7 @@ def logs_get(levelstartendpagepage_size):  # noqa: E501
             return error_obj, 500
 
 
-def performance_metrics_get(startend):  # noqa: E501
+def performance_metrics_get(start, end):  # noqa: E501
     """Performance metrics between dates
 
     :param start: ISO8601 start (inclusive)
@@ -176,7 +176,7 @@ def performance_metrics_get(startend):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing

@@ -32,7 +32,7 @@ interface Animal extends BackendAnimal {
   personality?: string;
   systemPrompt?: string;
   knowledgeBase?: KnowledgeEntry[];
-  guardrails?: Guardrail[];
+  guardrails?: Record<string, any>;
   conversationSettings?: {
     maxResponseLength: number;
     educationalFocus: boolean;
@@ -67,13 +67,14 @@ const AnimalConfig: React.FC = () => {
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   
   // Use the animal config hook for the selected animal
-  const { 
-    config: animalConfig, 
-    loading: configLoading, 
-    error: configError, 
+  const {
+    config: animalConfig,
+    loading: configLoading,
+    error: configError,
     updateConfig,
+    updateAnimal,
     saving: configSaving,
-    saveError 
+    saveError
   } = useAnimalConfig(selectedAnimalId);
   
   // Handle animal selection
@@ -85,7 +86,29 @@ const AnimalConfig: React.FC = () => {
   // Handle configuration save with secure error handling
   const handleSaveConfig = async (configData: any) => {
     try {
-      await updateConfig(configData);
+      // Separate Animal fields from AnimalConfig fields
+      const { name, species, status, ...configFields } = configData;
+
+      // Update Animal fields (name, species, status) if they have changed
+      const animalUpdates: any = {};
+      if (name !== selectedAnimal?.name) animalUpdates.name = name;
+      if (species !== selectedAnimal?.species) animalUpdates.species = species;
+      if (status !== undefined && status !== selectedAnimal?.status) animalUpdates.status = status;
+
+      // Update both entities in parallel
+      const promises = [];
+
+      // Only update Animal if there are changes
+      if (Object.keys(animalUpdates).length > 0) {
+        promises.push(updateAnimal(animalUpdates));
+      }
+
+      // Update AnimalConfig with remaining fields
+      promises.push(updateConfig(configFields));
+
+      // Wait for both updates to complete
+      await Promise.all(promises);
+
       // Refresh the animals list to get updated data
       refetch();
     } catch (error) {
@@ -175,6 +198,7 @@ const AnimalConfig: React.FC = () => {
       name: '',
       species: '',
       personality: '',
+      systemPrompt: '', // Added systemPrompt to formData
       active: false,
       educationalFocus: false,
       ageAppropriate: false,
@@ -184,6 +208,7 @@ const AnimalConfig: React.FC = () => {
       temperature: 0.7,
       topP: 1.0,
       toolsEnabled: ['facts', 'media_lookup'],
+      guardrails: {},
       // Conversation Settings
       maxResponseLength: 500,
       scientificAccuracy: 'moderate',
@@ -193,32 +218,52 @@ const AnimalConfig: React.FC = () => {
       allowPersonalQuestions: false
     });
 
-    // Initialize form data when config loads
+    // Initialize form data when config loads or selectedAnimal changes
     useEffect(() => {
-      if (animalConfig) {
-        setFormData({
-          name: animalConfig.name || '',
-          species: animalConfig.species || '',
-          personality: animalConfig.personality || '',
-          active: animalConfig.active || false,
-          educationalFocus: animalConfig.conversationSettings?.educationalFocus || false,
-          ageAppropriate: animalConfig.conversationSettings?.ageAppropriate || false,
-          // AI Model Settings (required by API)
-          voice: animalConfig.voice || 'alloy',
-          aiModel: animalConfig.aiModel || 'gpt-4o-mini',
-          temperature: typeof animalConfig.temperature === 'number' ? animalConfig.temperature : parseFloat(animalConfig.temperature || '0.7'),
-          topP: typeof animalConfig.topP === 'number' ? animalConfig.topP : parseFloat(animalConfig.topP || '1.0'),
-          toolsEnabled: animalConfig.toolsEnabled || ['facts', 'media_lookup'],
-          // Conversation Settings
-          maxResponseLength: animalConfig.conversationSettings?.maxResponseLength || 500,
-          scientificAccuracy: animalConfig.conversationSettings?.scientificAccuracy || 'moderate',
-          tone: animalConfig.voiceSettings?.tone || 'friendly',
-          formality: animalConfig.voiceSettings?.formality || 'friendly',
-          enthusiasm: animalConfig.voiceSettings?.enthusiasm || 5,
-          allowPersonalQuestions: animalConfig.conversationSettings?.allowPersonalQuestions || false
-        });
+      // Don't reset form if we're in the middle of saving
+      if (configSaving) {
+        return;
       }
-    }, [animalConfig]);
+
+      // Only update form data if we have actual data to update with
+      // This prevents clearing the form when animalConfig temporarily becomes null during refetch
+      if (!selectedAnimal && !animalConfig) {
+        return;
+      }
+
+      // Use selectedAnimal for name and species since they're not in animalConfig
+      // Use animalConfig for all other configuration fields
+      setFormData(prevData => ({
+        name: selectedAnimal?.name || prevData.name || '',
+        species: selectedAnimal?.species || prevData.species || '',
+        personality: animalConfig?.personality || selectedAnimal?.personality || prevData.personality || '',
+        systemPrompt: animalConfig?.systemPrompt || prevData.systemPrompt || '', // Added systemPrompt initialization
+        active: animalConfig?.active !== undefined ? animalConfig.active : (selectedAnimal?.active !== undefined ? selectedAnimal.active : prevData.active),
+        educationalFocus: animalConfig?.conversationSettings?.educationalFocus !== undefined ?
+          animalConfig.conversationSettings.educationalFocus : prevData.educationalFocus,
+        ageAppropriate: animalConfig?.conversationSettings?.ageAppropriate !== undefined ?
+          animalConfig.conversationSettings.ageAppropriate : prevData.ageAppropriate,
+        // AI Model Settings (required by API)
+        voice: animalConfig?.voice || prevData.voice || 'alloy',
+        aiModel: animalConfig?.aiModel || prevData.aiModel || 'gpt-4o-mini',
+        temperature: animalConfig?.temperature !== undefined ?
+          (typeof animalConfig.temperature === 'number' ? animalConfig.temperature : parseFloat(animalConfig.temperature))
+          : (prevData.temperature || 0.7),
+        topP: animalConfig?.topP !== undefined ?
+          (typeof animalConfig.topP === 'number' ? animalConfig.topP : parseFloat(animalConfig.topP))
+          : (prevData.topP || 1.0),
+        toolsEnabled: animalConfig?.toolsEnabled || prevData.toolsEnabled || ['facts', 'media_lookup'],
+        guardrails: animalConfig?.guardrails || prevData.guardrails || {},
+        // Conversation Settings
+        maxResponseLength: animalConfig?.conversationSettings?.maxResponseLength || prevData.maxResponseLength || 500,
+        scientificAccuracy: animalConfig?.conversationSettings?.scientificAccuracy || prevData.scientificAccuracy || 'moderate',
+        tone: animalConfig?.voiceSettings?.tone || prevData.tone || 'friendly',
+        formality: animalConfig?.voiceSettings?.formality || prevData.formality || 'friendly',
+        enthusiasm: animalConfig?.voiceSettings?.enthusiasm || prevData.enthusiasm || 5,
+        allowPersonalQuestions: animalConfig?.conversationSettings?.allowPersonalQuestions !== undefined ?
+          animalConfig.conversationSettings.allowPersonalQuestions : prevData.allowPersonalQuestions
+      }));
+    }, [animalConfig, selectedAnimal, configSaving]);
 
     // Use secure form handling with our form data
     const { isSubmitting, submitForm, clearErrors, getFieldError } = useSecureFormHandling(
@@ -406,7 +451,8 @@ const AnimalConfig: React.FC = () => {
                   </label>
                   <textarea
                     rows={12}
-                    value={animalConfig?.systemPrompt || ''}
+                    value={formData.systemPrompt}
+                    onChange={(e) => updateField('systemPrompt', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 font-mono text-sm"
                     placeholder="System prompt that defines how the AI should behave as this animal..."
                   />
@@ -469,7 +515,7 @@ const AnimalConfig: React.FC = () => {
             {activeTab === 'guardrails' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Safety Guardrails ({animalConfig?.guardrails?.length || 0} active)</h3>
+                  <h3 className="text-lg font-medium">Safety Guardrails ({animalConfig?.guardrails ? Object.keys(animalConfig.guardrails).length : 0} active)</h3>
                   <button className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Guardrail
@@ -477,37 +523,43 @@ const AnimalConfig: React.FC = () => {
                 </div>
                 
                 <div className="space-y-4">
-                  {animalConfig?.guardrails?.map(guardrail => (
-                    <div key={guardrail.id} className="bg-gray-50 rounded-lg p-4 border">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(guardrail.severity)}`}>
-                              {guardrail.severity} priority
-                            </span>
-                            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                              {guardrail.type}
-                            </span>
+                  {animalConfig?.guardrails && Object.keys(animalConfig.guardrails).length > 0 ? (
+                    Object.entries(animalConfig.guardrails).map(([key, value]) => (
+                      <div key={key} className="bg-gray-50 rounded-lg p-4 border">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                {key}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-900">
+                              {typeof value === 'boolean' ? (value ? 'Enabled' : 'Disabled') : String(value)}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-900">{guardrail.rule}</p>
-                        </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="sr-only peer"
-                              checked={guardrail.enabled}
-                              readOnly
-                            />
-                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
-                          </label>
-                          <button className="p-2 text-gray-400 hover:text-gray-600">
-                            <Edit className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center space-x-2 ml-4">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={typeof value === 'boolean' ? value : false}
+                                readOnly
+                              />
+                              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                            </label>
+                            <button className="p-2 text-gray-400 hover:text-gray-600">
+                              <Edit className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No guardrails configured</p>
+                      <p className="text-sm">Click "Add Guardrail" to create safety rules</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             )}

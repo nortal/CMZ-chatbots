@@ -1,0 +1,57 @@
+{
+  "timestamp": "2025-09-14T10:00:00Z",
+  "environment": {
+    "backend_url": "http://localhost:8080",
+    "frontend_url": "http://localhost:3001",
+    "aws_region": "us-west-2",
+    "dynamodb_tables": {
+      "animal": "quest-dev-animal",
+      "family": "quest-dev-family",
+      "user": "quest-dev-user"
+    }
+  },
+  "baseline_data": {
+    "animals": {
+      "count": 7,
+      "sample_records": [
+        {
+          "animalId": "leo_001",
+          "name": "Leo the Lion",
+          "voice": null,
+          "guardrails": null,
+          "personality": {
+            "description": "Majestic and wise, I am the king of the savanna. I love sharing stories about pride life and teaching about leadership in the animal kingdom."
+          }
+        },
+        {
+          "animalId": "animal_003",
+          "name": "Maya the Monkey",
+          "voice": null,
+          "guardrails": null,
+          "personality": null
+        }
+      ]
+    }
+  },
+  "test_scenarios": {
+    "animal_config_update": {
+      "target_id": "leo_001",
+      "test_data": {
+        "voice": {
+          "provider": "elevenlabs",
+          "voiceId": "test_voice_123",
+          "modelId": "eleven_turbo_v2",
+          "stability": 0.5,
+          "similarityBoost": 0.75,
+          "style": 0.0,
+          "useSpeakerBoost": true
+        },
+        "guardrails": {
+          "contentFilters": ["educational", "age-appropriate"],
+          "responseMaxLength": 500,
+          "topicRestrictions": ["violence", "inappropriate"]
+        }
+      }
+    }
+  }
+}

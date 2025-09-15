@@ -29,7 +29,7 @@ def create_family(family):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -96,7 +96,7 @@ def delete_family(family_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -163,7 +163,7 @@ def get_family(family_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -225,7 +225,7 @@ def list_families():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -271,7 +271,7 @@ def list_families():  # noqa: E501
             return error_obj, 500
 
 
-def update_family(family_idfamily):  # noqa: E501
+def update_family(family_id, family):  # noqa: E501
     """Update an existing family
 
     :param family_id: 
@@ -297,7 +297,7 @@ def update_family(family_idfamily):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing

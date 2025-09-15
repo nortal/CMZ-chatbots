@@ -6,7 +6,7 @@ from typing import Union
 from openapi_server import util
 
 
-def media_delete(media_idpermanent):  # noqa: E501
+def media_delete(media_id, permanent):  # noqa: E501
     """Delete media by id (soft delete with validation)
 
     :param media_id: Media identifier to delete
@@ -30,7 +30,7 @@ def media_delete(media_idpermanent):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -76,7 +76,7 @@ def media_delete(media_idpermanent):  # noqa: E501
             return error_obj, 500
 
 
-def media_get(media_idanimal_idkindlimit):  # noqa: E501
+def media_get(media_id, animal_id, kind, limit):  # noqa: E501
     """Fetch media metadata by id with enhanced filters
 
     :param media_id: Specific media identifier to retrieve
@@ -106,7 +106,7 @@ def media_get(media_idanimal_idkindlimit):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -152,7 +152,7 @@ def media_get(media_idanimal_idkindlimit):  # noqa: E501
             return error_obj, 500
 
 
-def upload_media_post(filetitleanimal_iddescriptiontags):  # noqa: E501
+def upload_media_post(file, title, animal_id, description, tags):  # noqa: E501
     """Upload media (image/audio/video) with enhanced validation
 
     :param file: Media file to upload (max 50MB)
@@ -185,7 +185,7 @@ def upload_media_post(filetitleanimal_iddescriptiontags):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -197,7 +197,7 @@ def upload_media_post(filetitleanimal_iddescriptiontags):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function()
+        result = impl_function(filetitleanimal_iddescriptiontags)
 
         # Handle different return types
         if isinstance(result, tuple):

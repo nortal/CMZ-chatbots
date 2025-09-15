@@ -35,6 +35,7 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'animal_details_post': handle_animal_details_post,
             'animal_details_patch': handle_animal_details_patch,
             'animal_details_delete': handle_animal_details_delete,
+            'animal_id_put': handle_animal_id_put,
             'user_list_get': handle_user_list_get,
             'user_details_get': handle_user_details_get,
             'user_details_post': handle_user_details_post,
@@ -153,6 +154,17 @@ def handle_animal_details_delete(animal_id: str) -> Tuple[Any, int]:
         return handle_exception_for_controllers(e)
 
 
+def handle_animal_id_put(id_: str, body: Dict[str, Any]) -> Tuple[Any, int]:
+    """Update animal via PUT /animal/{id}"""
+    try:
+        animal_handler = create_flask_animal_handler()
+        # Connexion passes id_ but our handler expects animal_id
+        return animal_handler.update_animal(id_, body)
+    except Exception as e:
+        from .error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
+
+
 # User handlers
 def handle_user_list_get() -> Tuple[Any, int]:
     """Get list of users"""
@@ -238,8 +250,8 @@ def handle_family_details_delete(family_id: str) -> Tuple[Any, int]:
 # Auth handlers
 def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
     """User login"""
-    from .auth import login_post
-    return login_post(body)
+    from .auth import handle_auth_post
+    return handle_auth_post(body)
 
 
 def handle_auth_post(body: Dict[str, Any]) -> Tuple[Any, int]:

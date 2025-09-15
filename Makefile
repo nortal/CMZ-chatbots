@@ -25,7 +25,7 @@ OPENAPI_GEN_IMAGE ?= openapitools/openapi-generator-cli:latest
 OPENAPI_GENERATOR ?= python-flask
 
 # Optional extra OpenAPI generator opts (space-separated)
-OPENAPI_GEN_OPTS ?= --template-dir /local/backend/api/templates/python-flask
+OPENAPI_GEN_OPTS ?= --template-dir /local/backend/api/templates/python-flask --additional-properties=packageName=openapi_server
 
 # ----- Local Python tooling (UV virtualenv) -----
 UV ?= uv
@@ -300,6 +300,17 @@ quality-check: ## Run all quality gates
 
 fix-common: ## Fix common development issues
 	@scripts/fix_common_issues.sh
+
+validate-api: ## Validate API generation and frontend-backend contract
+	@echo "🔍 Running comprehensive API validation..."
+	@python3 scripts/post_generation_validation.py
+	@echo "🔧 Fixing controller signatures if needed..."
+	@python3 scripts/fix_controller_signatures.py
+	@echo "📝 Testing frontend-backend contract..."
+	@python3 scripts/frontend_backend_contract_test.py || echo "⚠️ Contract tests failed - backend may not be running"
+
+post-generate: generate-api validate-api ## Generate API and validate/fix issues
+	@echo "✅ API generation and validation complete"
 
 pre-mr: ## Prepare for MR creation (quality check + branch push)
 	@scripts/quality_gates.sh && scripts/create_mr.sh

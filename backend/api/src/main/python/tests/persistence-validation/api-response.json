@@ -1,0 +1,32 @@
+{
+  "aiModel": "gpt-3.5-turbo",
+  "animalConfigId": "config-leo_001",
+  "created": {
+    "at": "2025-09-13T02:15:22.104641+00:00",
+    "by": {
+      "displayName": "System",
+      "email": "system@cmz.org"
+    }
+  },
+  "guardrails": {
+    "ageAppropriate": true,
+    "contentFiltering": true,
+    "maxResponseLength": 500
+  },
+  "modified": {
+    "at": "2025-09-15T04:18:03.030383+00:00",
+    "by": {
+      "displayName": "System",
+      "email": "system@cmz.org"
+    }
+  },
+  "personality": "Majestic king of the savanna who loves sharing wisdom about wildlife conservation and leadership",
+  "softDelete": false,
+  "temperature": 0.8,
+  "toolsEnabled": [
+    "facts",
+    "media_lookup"
+  ],
+  "topP": 1.0,
+  "voice": "nova"
+}

@@ -40,11 +40,29 @@ class FlaskAnimalHandler:
             return response, 201
             
         except ValidationError as e:
-            return {"error": "Validation error", "detail": str(e)}, 400
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="validation_error",
+                message=str(e),
+                details={"validation_detail": str(e)}
+            )
+            return error_obj.to_dict(), 400
         except ConflictError as e:
-            return {"error": "Conflict", "detail": str(e)}, 409
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="conflict",
+                message=str(e),
+                details={"conflict_detail": str(e)}
+            )
+            return error_obj.to_dict(), 409
         except Exception as e:
-            return {"error": "Internal server error", "detail": str(e)}, 500
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error: {str(e)}",
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 500
     
     def get_animal(self, animal_id: str) -> Tuple[Any, int]:
         """
@@ -66,9 +84,21 @@ class FlaskAnimalHandler:
             return response, 200
             
         except NotFoundError as e:
-            return {"error": "Not found", "detail": str(e)}, 404
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="not_found",
+                message=str(e),
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 404
         except Exception as e:
-            return {"error": "Internal server error", "detail": str(e)}, 500
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message="Internal server error",
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 500
     
     def list_animals(self, status: str = None) -> Tuple[List[Any], int]:
         """
@@ -95,7 +125,13 @@ class FlaskAnimalHandler:
             return response_items, 200
             
         except Exception as e:
-            return {"error": "Internal server error", "detail": str(e)}, 500
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message="Internal server error",
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 500
     
     def update_animal(self, animal_id: str, body: Any) -> Tuple[Any, int]:
         """
@@ -121,15 +157,45 @@ class FlaskAnimalHandler:
             return response, 200
             
         except NotFoundError as e:
-            return {"error": "Not found", "detail": str(e)}, 404
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="not_found",
+                message=str(e),
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 404
         except ValidationError as e:
-            return {"error": "Validation error", "detail": str(e)}, 400
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="validation_error",
+                message=str(e),
+                details={"validation_detail": str(e)}
+            )
+            return error_obj.to_dict(), 400
         except ConflictError as e:
-            return {"error": "Conflict", "detail": str(e)}, 409
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="conflict",
+                message=str(e),
+                details={"conflict_detail": str(e)}
+            )
+            return error_obj.to_dict(), 409
         except InvalidStateError as e:
-            return {"error": "Invalid state", "detail": str(e)}, 400
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="invalid_state",
+                message=str(e),
+                details={"state_detail": str(e)}
+            )
+            return error_obj.to_dict(), 400
         except Exception as e:
-            return {"error": "Internal server error", "detail": str(e)}, 500
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message="Internal server error",
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 500
     
     def delete_animal(self, animal_id: str) -> Tuple[None, int]:
         """
@@ -148,13 +214,37 @@ class FlaskAnimalHandler:
             return None, 204
             
         except NotFoundError as e:
-            return {"error": "Not found", "detail": str(e)}, 404
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="not_found",
+                message=str(e),
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 404
         except ValidationError as e:
-            return {"error": "Validation error", "detail": str(e)}, 400
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="validation_error",
+                message=str(e),
+                details={"validation_detail": str(e)}
+            )
+            return error_obj.to_dict(), 400
         except BusinessRuleError as e:
-            return {"error": "Business rule violation", "detail": str(e)}, 400
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="business_rule_violation",
+                message=str(e),
+                details={"business_rule": str(e)}
+            )
+            return error_obj.to_dict(), 400
         except Exception as e:
-            return {"error": "Internal server error", "detail": str(e)}, 500
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message="Internal server error",
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 500
     
     def get_animal_config(self, animal_id: str) -> Tuple[Any, int]:
         """
@@ -176,36 +266,73 @@ class FlaskAnimalHandler:
             return response, 200
             
         except NotFoundError as e:
-            return {"error": "Not found", "detail": str(e)}, 404
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="not_found",
+                message=str(e),
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 404
         except Exception as e:
-            return {"error": "Internal server error", "detail": str(e)}, 500
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message="Internal server error",
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 500
     
     def update_animal_config(self, animal_id: str, body: Any) -> Tuple[Any, int]:
         """
         Flask handler for animal configuration update
-        
+
         Args:
             animal_id: Animal identifier
             body: OpenAPI AnimalConfig model or dict with config updates
-            
+
         Returns:
             Tuple of (response_body, http_status_code)
         """
         try:
+            # Debug logging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"Received body type: {type(body)}")
+            logger.info(f"Received body: {body}")
+
             # Convert OpenAPI model to business dict
             config_data = self._config_serializer.from_openapi(body)
-            
+            logger.info(f"Converted config_data: {config_data}")
+
             # Execute business logic
             updated_config = self._animal_service.update_animal_configuration(animal_id, config_data)
-            
+
             # Convert to OpenAPI response
             response = self._config_serializer.to_openapi(updated_config)
-            
+
             return response, 200
-            
+
         except NotFoundError as e:
-            return {"error": "Not found", "detail": str(e)}, 404
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="not_found",
+                message=str(e),
+                details={"animal_id": animal_id}
+            )
+            return error_obj.to_dict(), 404
         except ValidationError as e:
-            return {"error": "Validation error", "detail": str(e)}, 400
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="validation_error",
+                message=str(e),
+                details={"validation_detail": str(e)}
+            )
+            return error_obj.to_dict(), 400
         except Exception as e:
-            return {"error": "Internal server error", "detail": str(e)}, 500
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error: {str(e)}",
+                details={"error": str(e)}
+            )
+            return error_obj.to_dict(), 500

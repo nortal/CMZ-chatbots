@@ -6,8 +6,8 @@ from flask import jsonify
 from flask_cors import CORS
 
 from openapi_server import encoder
-from .impl.error_handler import register_error_handlers, register_custom_error_handlers
-from .models.error import Error
+from openapi_server.impl.error_handler import register_error_handlers, register_custom_error_handlers
+from openapi_server.models.error import Error
 
 
 def main():

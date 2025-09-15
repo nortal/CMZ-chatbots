@@ -8,6 +8,7 @@ from openapi_server.models.auth_request import AuthRequest
 from openapi_server.models.auth_response import AuthResponse
 from openapi_server.models.password_reset_request import PasswordResetRequest
 
+
 def auth_logout_post():  # noqa: E501
     """Logout current user (invalidate token/session)
 
@@ -24,7 +25,7 @@ def auth_logout_post():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -70,17 +71,17 @@ def auth_logout_post():  # noqa: E501
             return error_obj, 500
 
 
-def auth_post():  # noqa: E501
+def auth_post(body=None):  # noqa: E501
     """Login or register
 
-    :param auth_request:
-    :type auth_request:  | bytes
+    :param body:
+    :type body: dict | bytes
 
     :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        auth_request = AuthRequest.from_dict(connexion.request.get_json())  # noqa: E501
+        body = AuthRequest.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
@@ -93,20 +94,18 @@ def auth_post():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
             from openapi_server.impl import handlers
-            # Use the generic handle_ function that routes based in caller name
+            # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        # The handlers expect the raw JSON body
-        body = connexion.request.get_json()
         result = impl_function(body)
 
         # Handle different return types
@@ -157,7 +156,7 @@ def auth_refresh_post():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -203,17 +202,17 @@ def auth_refresh_post():  # noqa: E501
             return error_obj, 500
 
 
-def auth_reset_password_post(password_reset_request):  # noqa: E501
+def auth_reset_password_post(body=None):  # noqa: E501
     """Initiate password reset
 
-    :param password_reset_request: 
-    :type password_reset_request:  | bytes
+    :param body:
+    :type body: dict | bytes
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        password_reset_request = PasswordResetRequest.from_dict(connexion.request.get_json())  # noqa: E501
+        body = PasswordResetRequest.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
@@ -226,7 +225,7 @@ def auth_reset_password_post(password_reset_request):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -238,7 +237,7 @@ def auth_reset_password_post(password_reset_request):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(password_reset_request)
+        result = impl_function(body)
 
         # Handle different return types
         if isinstance(result, tuple):

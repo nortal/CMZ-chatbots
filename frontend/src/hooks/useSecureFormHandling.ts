@@ -151,8 +151,6 @@ export function validateSecureAnimalConfigData(formData: any): any {
       personality: (formData.personality || '').toString().trim(),
       active: Boolean(formData.active),
       educationalFocus: Boolean(formData.educationalFocus),
-      ageAppropriate: Boolean(formData.ageAppropriate),
-      maxResponseLength: Math.max(50, Math.min(2000, parseInt(formData.maxResponseLength) || 500)),
       scientificAccuracy: ['strict', 'moderate', 'flexible'].includes(formData.scientificAccuracy)
         ? formData.scientificAccuracy : 'moderate',
       tone: ['playful', 'wise', 'energetic', 'calm', 'mysterious'].includes(formData.tone)
@@ -170,7 +168,13 @@ export function validateSecureAnimalConfigData(formData: any): any {
       topP: typeof formData.topP === 'number'
         ? formData.topP
         : parseFloat(formData.topP || '1.0'),
-      toolsEnabled: Array.isArray(formData.toolsEnabled) ? formData.toolsEnabled : ['facts', 'media_lookup']
+      toolsEnabled: Array.isArray(formData.toolsEnabled) ? formData.toolsEnabled : ['facts', 'media_lookup'],
+      // Structure guardrails properly for backend
+      guardrails: {
+        safe_mode: Boolean(formData.ageAppropriate),
+        content_filter: Boolean(formData.contentFiltering || formData.educationalFocus),
+        response_length_limit: Math.max(50, Math.min(2000, parseInt(formData.maxResponseLength) || 500))
+      }
     };
 
     if (process.env.NODE_ENV === 'development') {

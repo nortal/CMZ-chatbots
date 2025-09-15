@@ -9,7 +9,7 @@ from typing import Union
 {{#operations}}
 
 {{#operation}}
-def {{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}):  # noqa: E501
+def {{operationId}}({{#allParams}}{{paramName}}{{^-last}}, {{/-last}}{{/allParams}}):  # noqa: E501
     """{{summary}}{{#notes}}
 
     {{notes}}{{/notes}}
@@ -54,7 +54,7 @@ def {{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allP
 
         # Call implementation function with processed parameters
         {{#hasParams}}
-        result = impl_function({{#allParams}}{{#isPathParam}}{{paramName}}{{/isPathParam}}{{#isQueryParam}}{{paramName}}{{/isQueryParam}}{{#isBodyParam}}{{paramName}}{{/isBodyParam}}{{#isHeaderParam}}{{paramName}}{{/isHeaderParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        result = impl_function({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
         {{/hasParams}}
         {{^hasParams}}
         result = impl_function()
