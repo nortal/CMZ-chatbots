@@ -197,5 +197,11 @@ export function validateSecureAnimalConfigData(formData: any): any {
  */
 export function getSecureAnimalConfigData(): any {
   console.warn('[DEPRECATED] getSecureAnimalConfigData is deprecated. Use validateSecureAnimalConfigData with direct form data instead.');
-  throw new ValidationError('DOM extraction is no longer supported. Please pass form data directly to validateSecureAnimalConfigData.');
+
+  // Return a migration hint object for backward compatibility
+  return {
+    __deprecated__: true,
+    message: 'DOM extraction is no longer supported. Please pass form data directly to validateSecureAnimalConfigData.',
+    migrationGuide: 'Replace getSecureAnimalConfigData() with validateSecureAnimalConfigData(formData) where formData is your React state.',
+  };
 }

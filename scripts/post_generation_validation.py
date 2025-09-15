@@ -63,6 +63,13 @@ class APIValidation:
         generated_path = self.backend_path / "generated/app/openapi_server/controllers"
         source_path = self.backend_path / "src/main/python/openapi_server/controllers"
 
+        # Validate that at least one controllers path exists
+        if not source_path.exists() and not generated_path.exists():
+            self.errors.append(
+                f"Neither source controllers path ({source_path}) nor generated controllers path ({generated_path}) exists."
+            )
+            return
+
         # Use source if it exists, otherwise use generated
         controllers_path = source_path if source_path.exists() else generated_path
 

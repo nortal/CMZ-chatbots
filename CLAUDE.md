@@ -749,6 +749,20 @@ For generating new systematic command prompts with sequential reasoning and comp
 - `.claude/commands/create-solution.md` - Meta-prompt generator using `/create-solution <description>`
 - `CREATE-SOLUTION-ADVICE.md` - Best practices and lessons learned for prompt creation
 
+## MR Review System
+For automated review and validation of GitHub Pull Requests:
+- `.claude/commands/review-mr.md` - Comprehensive MR review command using `/review-mr <pr-number>`
+- `REVIEW-MR-ADVICE.md` - Best practices for automated PR review and comment resolution
+- **Key Features**: Analyzes Copilot/security comments, validates gating functions, generates actionable reports
+- **Integration**: Use after Step 9 (Review Phase) in Complete Workflow to automate review checking
+
+## MR Resolution System
+For automated resolution of issues identified in PR reviews:
+- `.claude/commands/resolve-mr.md` - Automated issue resolution using `/resolve-mr [pr-number]`
+- `RESOLVE-MR-ADVICE.md` - Best practices for automated fix application and comment resolution
+- **Key Features**: Parses review-mr output, applies categorized fixes, validates corrections, marks comments resolved
+- **Integration**: Use after `/review-mr` to automatically fix identified issues before merge
+
 ## Infrastructure Hardening (Updated 2025-01-14)
 For systematic resolution of recurring development workflow issues:
 - `.claude/commands/systematic-cmz-infrastructure-hardening.md` - Permanent infrastructure improvements with TDD validation

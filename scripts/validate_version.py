@@ -17,12 +17,24 @@ import json
 import sys
 import requests
 import os
+from pathlib import Path
 from typing import Dict, Any, Tuple
 
 
-def load_version_file() -> Tuple[Dict[str, Any], str]:
-    """Load version.json from project root"""
-    version_path = os.path.join(os.getcwd(), "version.json")
+def load_version_file(version_file_path: str = None) -> Tuple[Dict[str, Any], str]:
+    """Load version.json from specified path or project root
+
+    Args:
+        version_file_path: Optional path to version.json file. If not provided,
+                          uses Path(__file__).parent.parent / "version.json"
+    """
+    if version_file_path:
+        version_path = Path(version_file_path)
+    else:
+        # Use script location to find project root, not current working directory
+        script_dir = Path(__file__).parent
+        project_root = script_dir.parent  # Go up one level to project root
+        version_path = project_root / "version.json"
 
     try:
         with open(version_path, 'r') as f:
@@ -121,15 +133,28 @@ def print_validation_results(success: bool, message: str, version_data: Dict[str
 
 def main():
     """Main validation logic"""
-    # Default API URL
-    api_url = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8080"
+    # Parse command line arguments
+    api_url = "http://localhost:8080"
+    version_file_path = None
+
+    # Simple argument parsing
+    args = sys.argv[1:]
+    for i, arg in enumerate(args):
+        if arg.startswith("http"):
+            api_url = arg
+        elif arg == "--version-file" and i + 1 < len(args):
+            version_file_path = args[i + 1]
+        elif not arg.startswith("--") and i == 0:
+            # First non-flag argument is API URL for backward compatibility
+            api_url = arg
 
     print(f"🔍 Validating version consistency...")
     print(f"API URL: {api_url}")
-    print(f"Working Directory: {os.getcwd()}")
+    if version_file_path:
+        print(f"Version File: {version_file_path}")
 
     # Load version file
-    version_data, version_error = load_version_file()
+    version_data, version_error = load_version_file(version_file_path)
     if version_error:
         print(f"❌ ERROR: {version_error}")
         return 1

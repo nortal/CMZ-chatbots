@@ -844,6 +844,16 @@ const AnimalConfig: React.FC = () => {
         </div>
       )}
       
+      {/* Configuration error handling */}
+      {configError && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2" />
+            <span className="text-sm text-yellow-800">Error loading configuration: {configError}</span>
+          </div>
+        </div>
+      )}
+
       {/* Save error handling */}
       {saveError && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">

@@ -9,6 +9,8 @@ from typing import Union
 {{#operations}}
 
 {{#operation}}
+{{! The following uses Mustache's {{^-last}} block to insert a comma between parameters except after the last one. }}
+{{! This prevents trailing commas in function signatures which can cause syntax errors. }}
 def {{operationId}}({{#allParams}}{{paramName}}{{^-last}}, {{/-last}}{{/allParams}}):  # noqa: E501
     """{{summary}}{{#notes}}
 

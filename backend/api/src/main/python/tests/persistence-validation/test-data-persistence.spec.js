@@ -311,20 +311,3 @@ test.describe('Data Persistence Validation', () => {
     }
   });
 });
-
-// Helper function to compare data
-function compareData(expected, actual) {
-  const differences = [];
-
-  for (const key in expected) {
-    if (expected[key] !== actual[key]) {
-      differences.push({
-        field: key,
-        expected: expected[key],
-        actual: actual[key]
-      });
-    }
-  }
-
-  return differences;
-}
