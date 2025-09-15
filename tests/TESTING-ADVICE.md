@@ -5,6 +5,8 @@ Systematic test-driven development approach for CMZ AI-Based Animal Interaction 
 
 **Project Context**: Flask-based API server with OpenAPI-driven development, DynamoDB persistence, Docker containerization, and comprehensive AWS integration for zoo digital ambassador chatbot platform.
 
+**Critical**:  Make sure the front and backend are running before starting tests and validate the versions of both.  If they are not running start them.  If you encounter problems starting them use sequential reasoning to resolve the problem and start the services.  If they cannot be resolved do not continue testing but inform the user.
+
 ## Testing Philosophy
 - **Evidence-Based**: All test results must be reproducible and measurable
 - **Comprehensive Coverage**: Every testable Jira ticket gets systematic test specifications

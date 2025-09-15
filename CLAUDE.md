@@ -131,6 +131,7 @@ make rebuild-venv-api
 - **All business logic in impl/**: Only implement functionality in `backend/api/src/main/python/openapi_server/impl/`
 - **OpenAPI spec is source of truth**: API changes must start with `openapi_spec.yaml` modifications
 - **"do some magic!" Placeholder Issue**: If you encounter this placeholder in generated controllers, see `docs/OPENAPI_TEMPLATE_SOLUTION.md` for the complete template-based solution that eliminates this issue permanently
+- **Controller-Handler Connection Issues**: If you encounter "cannot import name 'handlers'" or 501 Not Implemented errors after regeneration, see `ANIMAL-CONFIG-FLAKINESS-ADVICE.md` for root cause and permanent fix
 
 ### DynamoDB Integration Pattern
 All DynamoDB operations use the centralized utilities in `impl/utils/dynamo.py`:
@@ -178,7 +179,13 @@ def handle_operation(body):
 
 ## AWS & MCP Integration
 
-The project includes comprehensive AWS tooling via 24 MCP servers:
+The project includes comprehensive AWS tooling via 24 MCP servers plus SnapClick MCP for SMS messaging:
+
+**SMS Messaging**: Use SnapClick MCP with CLICKSEND_USERNAME and CLICKSEND_API_KEY environment variables for sending SMS messages to parents/students.
+  - **Phone Format**: Use international format with country code (e.g., +1234567890 for US numbers)
+  - **Common Issues**: "COUNTRY_NOT_ENABLED" error usually requires account verification in ClickSend dashboard
+  - **Troubleshooting**: Check SMS > Countries in ClickSend dashboard to verify destination country is enabled
+  - **Documentation**: Additional help available at https://developers.clicksend.com/docs or its links
 
 **Core AWS Services (11 servers):**
 - DynamoDB, S3, Athena, Cognito, Cost Explorer, Resources
@@ -665,3 +672,42 @@ The project includes a working Jira automation script at `/scripts/update_jira_s
 - Uses existing `JIRA_API_TOKEN` environment variable
 - Requires `kc.stegbauer@nortal.com` email for Basic Auth
 - Script handles base64 encoding automatically
+
+## Version Tracking System
+For comprehensive API version validation and frontend compatibility checking, see:
+- `.claude/commands/create_tracking_version.md` - Implementation command with sequential reasoning
+- `CREATE-TRACKING-VERSION-ADVICE.md` - Best practices and troubleshooting guide.  Use this system in testing to validate that tests are being done on the correct version of the code.
+
+## Meta-Prompt System
+For generating new systematic command prompts with sequential reasoning and comprehensive documentation:
+- `.claude/commands/create-solution.md` - Meta-prompt generator using `/create-solution <description>`
+- `CREATE-SOLUTION-ADVICE.md` - Best practices and lessons learned for prompt creation
+
+## Infrastructure Hardening (Updated 2025-01-14)
+For systematic resolution of recurring development workflow issues:
+- `.claude/commands/systematic-cmz-infrastructure-hardening.md` - Permanent infrastructure improvements with TDD validation
+- `SYSTEMATIC-CMZ-INFRASTRUCTURE-HARDENING-ADVICE.md` - Implementation guidance and troubleshooting
+
+### Automated Environment Management
+- `make start-dev` - Start complete development environment with health checks
+- `make stop-dev` - Stop all development services
+- `make status` - Show complete system status
+- `make health-check` - Verify all services are healthy
+
+### Quality Automation
+- `make quality-check` - Run all quality gates before MR creation
+- `make fix-common` - Automatically fix common development issues
+- `make pre-mr` - Complete pre-MR workflow (quality + branch creation)
+
+### Infrastructure Commands
+- `scripts/start_development_environment.sh` - Comprehensive startup with validation
+- `scripts/stop_development_environment.sh` - Clean shutdown of all services
+- `scripts/quality_gates.sh` - Complete quality validation
+- `scripts/fix_common_issues.sh` - Automated issue resolution
+- `scripts/create_mr.sh` - Proper MR creation targeting dev branch
+
+### Key Improvements
+- **OpenAPI Template Fix**: Uses custom templates to eliminate controller-implementation mismatches permanently
+- **Automated Environment**: No more manual service startup or port conflicts
+- **Quality Gates**: Proactive issue detection and automated fixes
+- **Git Workflow**: Enforced branch targeting and naming conventions with pre-commit hooks

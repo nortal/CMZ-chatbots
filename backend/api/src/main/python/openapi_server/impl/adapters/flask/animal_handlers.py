@@ -84,15 +84,13 @@ class FlaskAnimalHandler:
             # Execute business logic
             animals = self._animal_service.list_animals(status_filter=status)
             
-            # Convert domain entities to OpenAPI response
+            # Convert domain entities to API response format
             response_items = []
             for animal in animals:
-                animal_model = self._animal_serializer.to_openapi(animal)
-                # Convert OpenAPI model back to dict for JSON response
-                if hasattr(animal_model, "to_dict"):
-                    response_items.append(animal_model.to_dict())
-                else:
-                    response_items.append(animal_model)
+                # Use domain serializer directly to get properly formatted dict
+                from ...domain.common.serializers import serialize_animal
+                animal_dict = serialize_animal(animal, include_api_id=True)
+                response_items.append(animal_dict)
             
             return response_items, 200
             

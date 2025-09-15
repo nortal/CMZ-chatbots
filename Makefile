@@ -25,7 +25,7 @@ OPENAPI_GEN_IMAGE ?= openapitools/openapi-generator-cli:latest
 OPENAPI_GENERATOR ?= python-flask
 
 # Optional extra OpenAPI generator opts (space-separated)
-OPENAPI_GEN_OPTS ?= --config /local/backend/api/config-python-flask.yaml
+OPENAPI_GEN_OPTS ?= --template-dir /local/backend/api/templates/python-flask
 
 # ----- Local Python tooling (UV virtualenv) -----
 UV ?= uv
@@ -279,3 +279,44 @@ install-api: venv-api
 	echo ">> Installing Python packages from '$(REQUIREMENTS_FILE)' into '$(VENV_DIR)'"; \
 	"$(UV)" pip install -r "$(REQUIREMENTS_FILE)" -p "$(VENV_DIR)/bin/python"; \
 	echo ">> Installed. Activate with: source $(VENV_DIR)/bin/activate"
+
+# Development environment management
+start-dev: ## Start complete development environment
+	@scripts/start_development_environment.sh
+
+stop-dev: ## Stop complete development environment
+	@scripts/stop_development_environment.sh
+
+health-check: ## Check system health
+	@echo "🔍 System Health Check"
+	@curl -f http://localhost:8080/health && echo "✅ Backend: OK" || echo "❌ Backend: FAIL"
+	@curl -f http://localhost:3000 >/dev/null 2>&1 && echo "✅ Frontend (3000): OK" || echo "❌ Frontend (3000): FAIL"
+	@curl -f http://localhost:3001 >/dev/null 2>&1 && echo "✅ Frontend (3001): OK" || echo "❌ Frontend (3001): FAIL"
+	@aws dynamodb list-tables --region us-west-2 --profile cmz >/dev/null 2>&1 && echo "✅ DynamoDB: OK" || echo "❌ DynamoDB: FAIL"
+
+# Quality gates
+quality-check: ## Run all quality gates
+	@scripts/quality_gates.sh
+
+fix-common: ## Fix common development issues
+	@scripts/fix_common_issues.sh
+
+pre-mr: ## Prepare for MR creation (quality check + branch push)
+	@scripts/quality_gates.sh && scripts/create_mr.sh
+
+status: ## Show complete system status
+	@echo "🏗️  CMZ Infrastructure Status"
+	@echo "================================"
+	@echo "Services:"
+	@curl -f http://localhost:8080/health >/dev/null 2>&1 && echo "  ✅ Backend API (8080)" || echo "  ❌ Backend API (8080)"
+	@curl -f http://localhost:3000 >/dev/null 2>&1 && echo "  ✅ Frontend (3000)" || echo "  ❌ Frontend (3000)"
+	@curl -f http://localhost:3001 >/dev/null 2>&1 && echo "  ✅ Frontend (3001)" || echo "  ❌ Frontend (3001)"
+	@aws dynamodb list-tables --region us-west-2 --profile cmz >/dev/null 2>&1 && echo "  ✅ DynamoDB" || echo "  ❌ DynamoDB"
+	@echo ""
+	@echo "Git Status:"
+	@echo "  Branch: $$(git branch --show-current)"
+	@echo "  Status: $$(git status --porcelain | wc -l) uncommitted changes"
+	@echo ""
+	@echo "Quality Status:"
+	@python -c "from openapi_server.models import *" 2>/dev/null && echo "  ✅ Python imports" || echo "  ❌ Python imports"
+	@black --check backend/api/src/main/python/openapi_server/impl/ >/dev/null 2>&1 && echo "  ✅ Code formatting" || echo "  ❌ Code formatting"

@@ -29,15 +29,16 @@ def create_user(user_input):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_input)
@@ -50,7 +51,7 @@ def create_user(user_input):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller create_user implementation not found: {str(e)}",
@@ -61,11 +62,11 @@ def create_user(user_input):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in create_user: {str(e)}",
@@ -97,15 +98,16 @@ def create_user_details(user_details_input):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_details_input)
@@ -118,7 +120,7 @@ def create_user_details(user_details_input):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller create_user_details implementation not found: {str(e)}",
@@ -129,11 +131,11 @@ def create_user_details(user_details_input):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in create_user_details: {str(e)}",
@@ -163,15 +165,16 @@ def delete_user(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -184,7 +187,7 @@ def delete_user(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller delete_user implementation not found: {str(e)}",
@@ -195,11 +198,11 @@ def delete_user(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in delete_user: {str(e)}",
@@ -229,15 +232,16 @@ def delete_user_details(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -250,7 +254,7 @@ def delete_user_details(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller delete_user_details implementation not found: {str(e)}",
@@ -261,11 +265,11 @@ def delete_user_details(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in delete_user_details: {str(e)}",
@@ -295,15 +299,16 @@ def get_user(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -316,7 +321,7 @@ def get_user(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller get_user implementation not found: {str(e)}",
@@ -327,11 +332,11 @@ def get_user(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in get_user: {str(e)}",
@@ -361,15 +366,16 @@ def get_user_details(user_id):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -382,7 +388,7 @@ def get_user_details(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller get_user_details implementation not found: {str(e)}",
@@ -393,11 +399,11 @@ def get_user_details(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in get_user_details: {str(e)}",
@@ -422,15 +428,16 @@ def list_user_details():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -443,7 +450,7 @@ def list_user_details():  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller list_user_details implementation not found: {str(e)}",
@@ -454,11 +461,11 @@ def list_user_details():  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in list_user_details: {str(e)}",
@@ -483,15 +490,16 @@ def list_users():  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -504,7 +512,7 @@ def list_users():  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller list_users implementation not found: {str(e)}",
@@ -515,11 +523,11 @@ def list_users():  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in list_users: {str(e)}",
@@ -554,15 +562,16 @@ def update_user(user_iduser):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_iduser)
@@ -575,7 +584,7 @@ def update_user(user_iduser):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller update_user implementation not found: {str(e)}",
@@ -586,11 +595,11 @@ def update_user(user_iduser):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in update_user: {str(e)}",
@@ -625,15 +634,16 @@ def update_user_details(user_iduser_details_input):  # noqa: E501
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
-            # Pattern 2: Generic handler
-            from openapi_server.controllers.impl import handlers
-            impl_function = getattr(handlers, impl_function_name, None)
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function '{impl_function_name}' not found in expected modules")
+                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
         result = impl_function(user_iduser_details_input)
@@ -646,7 +656,7 @@ def update_user_details(user_iduser_details_input):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.controllers.models.error import Error
+        from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller update_user_details implementation not found: {str(e)}",
@@ -657,11 +667,11 @@ def update_user_details(user_iduser_details_input):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.controllers.models.error import Error
+            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in update_user_details: {str(e)}",

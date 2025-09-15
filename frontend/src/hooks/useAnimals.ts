@@ -121,45 +121,5 @@ export function useAnimalConfig(animalId: string | null): UseAnimalConfigResult 
   };
 }
 
-export interface UseApiHealthResult {
-  isHealthy: boolean;
-  checking: boolean;
-  lastChecked: Date | null;
-  checkHealth: () => Promise<void>;
-}
-
-/**
- * Hook to check API health status
- */
-export function useApiHealth(): UseApiHealthResult {
-  const [isHealthy, setIsHealthy] = useState(false);
-  const [checking, setChecking] = useState(false);
-  const [lastChecked, setLastChecked] = useState<Date | null>(null);
-
-  const checkHealth = useCallback(async () => {
-    try {
-      setChecking(true);
-      const healthy = await utils.healthCheck();
-      setIsHealthy(healthy);
-      setLastChecked(new Date());
-    } catch (err) {
-      setIsHealthy(false);
-      console.error('API health check failed:', err);
-    } finally {
-      setChecking(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkHealth();
-  }, [checkHealth]);
-
-  return {
-    isHealthy,
-    checking,
-    lastChecked,
-    checkHealth,
-  };
-}
 
 export default useAnimals;

@@ -145,18 +145,6 @@ export const animalApi = {
 // Utility functions
 export const utils = {
   /**
-   * Check if API is available
-   */
-  async healthCheck(): Promise<boolean> {
-    try {
-      await apiRequest('/');
-      return true;
-    } catch {
-      return false;
-    }
-  },
-
-  /**
    * Convert backend Animal to frontend format
    */
   transformAnimalForFrontend(backendAnimal: Animal) {
