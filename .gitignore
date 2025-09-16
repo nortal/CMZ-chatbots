@@ -231,8 +231,6 @@ yarn-error.log*
 package-lock.json
 
 # Development Tools
-.claude/
-.mcp.json
 .vscode/
 .idea/
 

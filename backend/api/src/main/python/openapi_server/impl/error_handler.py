@@ -241,7 +241,7 @@ def handle_exception_for_controllers(error):
             message=str(error) or "Authentication required",
             details={"error_type": "AuthenticationError"}
         )
-        return jsonify(error_obj.to_dict()), 401
+        return error_obj.to_dict(), 401
 
     # Handle authorization errors (local to this module)
     if isinstance(error, AuthorizationError):
@@ -250,7 +250,7 @@ def handle_exception_for_controllers(error):
             message=str(error) or "Access forbidden",
             details=getattr(error, 'details', {})
         )
-        return jsonify(error_obj.to_dict()), 403
+        return error_obj.to_dict(), 403
 
     # Handle validation errors (local to this module)
     if isinstance(error, ValidationError):
@@ -259,16 +259,42 @@ def handle_exception_for_controllers(error):
             message=str(error) or "Validation failed",
             details=getattr(error, 'details', {})
         )
-        return jsonify(error_obj.to_dict()), 400
+        return error_obj.to_dict(), 400
 
     # Handle generic exceptions
+    import json
+    import traceback
+
+    # Log the full traceback for debugging
+    full_traceback = traceback.format_exc()
+    logger.error(f"Full traceback:\n{full_traceback}")
+
+    error_details = {"error_type": type(error).__name__, "message": str(error)}
+
+    # Debug: Check if the error details are serializable
+    try:
+        json.dumps(error_details)
+    except Exception as json_err:
+        logger.error(f"Error details not JSON serializable: {json_err}")
+        error_details = {"error": "Internal error", "type": "Exception"}
+
     error_obj = Error(
         code="internal_error",
-        message="An unexpected error occurred",
-        details={"error_type": type(error).__name__, "message": str(error)}
+        message="Internal server error",
+        details=error_details
     )
     logger.error(f"Unhandled exception in controller: {str(error)}", exc_info=True)
-    return jsonify(error_obj.to_dict()), 500
+
+    # Debug: Ensure to_dict() returns serializable data
+    result_dict = error_obj.to_dict()
+    try:
+        json.dumps(result_dict)
+    except Exception as json_err:
+        logger.error(f"Error object to_dict() not JSON serializable: {json_err}")
+        logger.error(f"Result dict: {result_dict}")
+        return {"code": "internal_error", "message": "Internal server error", "details": {"error": str(error), "type": type(error).__name__}}, 500
+
+    return result_dict, 500
 
 
 class ValidationError(Exception):

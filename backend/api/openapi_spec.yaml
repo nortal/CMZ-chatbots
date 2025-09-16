@@ -79,6 +79,7 @@ paths:
   /auth:
     post:
       operationId: authPost
+      x-body-name: auth_request
       tags:
       - Auth
       summary: Login or register
@@ -152,6 +153,7 @@ paths:
   /auth/reset_password:
     post:
       operationId: authResetPasswordPost
+      x-body-name: password_reset_request
       tags:
       - Auth
       summary: Initiate password reset
@@ -1093,6 +1095,7 @@ paths:
       - Animals
       summary: Update an existing animal
       operationId: animal_id_put
+      x-body-name: animal_update
       security: []
       parameters:
       - in: path
@@ -2243,6 +2246,10 @@ components:
           enum:
           - active
           - hidden
+        personality:
+          type: string
+          description: The personality description of the animal
+          maxLength: 500
     AnimalDetails:
       allOf:
       - $ref: '#/components/schemas/Animal'

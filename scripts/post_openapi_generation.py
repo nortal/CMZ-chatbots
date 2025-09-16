@@ -45,14 +45,32 @@ def ensure_implementation_modules(impl_dir: Path, controller_functions: Dict[str
         impl_file = impl_dir / f"{impl_module_name}.py"
 
         if not impl_file.exists():
-            print(f"Creating implementation module: {impl_file}")
+            print(f"Creating NEW implementation module: {impl_file}")
+            # Only create stub file if it doesn't exist at all
             create_impl_module(impl_file, impl_module_name, functions)
         else:
-            print(f"Implementation module exists: {impl_file}")
+            print(f"Implementation module EXISTS (preserving): {impl_file}")
+            # NEVER overwrite existing implementations
+            # Only add missing handler functions if needed
             ensure_handler_functions(impl_file, functions)
 
 def create_impl_module(impl_file: Path, module_name: str, functions: List[str]) -> None:
-    """Create a new implementation module with handler function stubs"""
+    """Create a new implementation module with handler function stubs
+
+    CRITICAL: This function should ONLY be called for non-existent files.
+    Never overwrite existing implementations!
+    """
+
+    # CRITICAL SAFETY CHECK - Never overwrite critical implementation files
+    critical_files = ['auth.py', 'handlers.py', 'animals.py', 'family.py', 'users.py']
+    if impl_file.name in critical_files and impl_file.exists():
+        print(f"⚠️  CRITICAL: Refusing to overwrite existing {impl_file.name} - preserving implementation")
+        return
+
+    # Additional safety check
+    if impl_file.exists():
+        print(f"⚠️  WARNING: File {impl_file} already exists - skipping to preserve implementation")
+        return
 
     content = f'''"""
 Implementation module for {module_name}

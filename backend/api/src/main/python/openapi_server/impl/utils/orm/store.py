@@ -56,6 +56,7 @@ class PynamoStore:
 
     def get(self, pk: Any) -> Optional[Dict[str, Any]]:
         try:
+            print(f"DEBUG: Getting model with pk={pk}, type={type(pk)}")
             m = self._model.get(pk)
         except DoesNotExist:
             return None

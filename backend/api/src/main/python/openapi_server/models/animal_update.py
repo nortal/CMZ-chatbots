@@ -12,7 +12,7 @@ class AnimalUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name=None, species=None, status=None):  # noqa: E501
+    def __init__(self, name=None, species=None, status=None, personality=None):  # noqa: E501
         """AnimalUpdate - a model defined in OpenAPI
 
         :param name: The name of this AnimalUpdate.  # noqa: E501
@@ -21,22 +21,27 @@ class AnimalUpdate(Model):
         :type species: str
         :param status: The status of this AnimalUpdate.  # noqa: E501
         :type status: str
+        :param personality: The personality of this AnimalUpdate.  # noqa: E501
+        :type personality: str
         """
         self.openapi_types = {
             'name': str,
             'species': str,
-            'status': str
+            'status': str,
+            'personality': str
         }
 
         self.attribute_map = {
             'name': 'name',
             'species': 'species',
-            'status': 'status'
+            'status': 'status',
+            'personality': 'personality'
         }
 
         self._name = name
         self._species = species
         self._status = status
+        self._personality = personality
 
     @classmethod
     def from_dict(cls, dikt) -> 'AnimalUpdate':
@@ -125,3 +130,28 @@ class AnimalUpdate(Model):
             )
 
         self._status = status
+
+    @property
+    def personality(self) -> str:
+        """Gets the personality of this AnimalUpdate.
+
+        The personality description of the animal  # noqa: E501
+
+        :return: The personality of this AnimalUpdate.
+        :rtype: str
+        """
+        return self._personality
+
+    @personality.setter
+    def personality(self, personality: str):
+        """Sets the personality of this AnimalUpdate.
+
+        The personality description of the animal  # noqa: E501
+
+        :param personality: The personality of this AnimalUpdate.
+        :type personality: str
+        """
+        if personality is not None and len(personality) > 500:
+            raise ValueError("Invalid value for `personality`, length must be less than or equal to `500`")  # noqa: E501
+
+        self._personality = personality

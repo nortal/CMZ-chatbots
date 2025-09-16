@@ -846,6 +846,8 @@ For comprehensive end-to-end validation of data flow from UI interactions to Dyn
 - `VALIDATE-DATA-PERSISTENCE-ADVICE.md` - Implementation guidance, troubleshooting, and best practices for data integrity testing
 - `.claude/commands/validate-animal-config-persistence.md` - Focused validation for Animal Config endpoint data persistence
 - `VALIDATE-ANIMAL-CONFIG-PERSISTENCE-ADVICE.md` - Best practices for Animal Config persistence validation
+- `.claude/commands/validate-animal-config-fields.md` - Systematic field-level testing of Animal Name, Scientific Name, and Temperature controls with visible DynamoDB validation
+- `VALIDATE-ANIMAL-CONFIG-FIELDS-ADVICE.md` - Comprehensive testing best practices for individual field validation
 - `.claude/commands/validate-full-animal-config.md` - Comprehensive E2E testing of all 30 Animal Config dialog components with TDD approach
 - `VALIDATE-ANIMAL-CONFIG-COMPONENTS-ADVICE.md` - Component-specific testing advice and valid values discovered during validation
 
@@ -880,6 +882,20 @@ The backend health validation system ensures users receive appropriate error mes
 For generating new systematic command prompts with sequential reasoning and comprehensive documentation:
 - `.claude/commands/create-solution.md` - Meta-prompt generator using `/create-solution <description>`
 - `CREATE-SOLUTION-ADVICE.md` - Best practices and lessons learned for prompt creation
+
+## Authentication Architecture Fix
+For resolving persistent JWT token issues and auth endpoint regressions:
+- `.claude/commands/fix-auth-architecture.md` - Comprehensive auth architecture solution using `/fix-auth-architecture`
+- `FIX-AUTH-ARCHITECTURE-ADVICE.md` - Implementation guidance, troubleshooting, and best practices
+- **Key Components**:
+  - `impl/utils/jwt_utils.py` - Centralized JWT token generation ensuring frontend compatibility
+  - `impl/auth.py` - Multi-mode authentication (mock/dynamodb/cognito) with environment switching
+  - `tests/test_auth_contract.py` - Contract tests preventing auth regressions
+- **Critical Success Factors**:
+  - Always generate 3-part JWT tokens (header.payload.signature)
+  - Use AUTH_MODE environment variable for auth backend selection
+  - Run contract tests after any auth changes
+  - Use `make post-generate` after OpenAPI regeneration (never standalone generate)
 
 ## MR Review System
 For automated review and validation of GitHub Pull Requests:

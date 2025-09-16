@@ -80,7 +80,11 @@ class FlaskAnimalHandler:
             
             # Convert domain entity to OpenAPI response
             response = self._animal_serializer.to_openapi(animal)
-            
+
+            # Convert to dict if it's an OpenAPI model
+            if hasattr(response, 'to_dict'):
+                return response.to_dict(), 200
+
             return response, 200
             
         except NotFoundError as e:
@@ -153,7 +157,11 @@ class FlaskAnimalHandler:
             
             # Convert domain entity to OpenAPI response
             response = self._animal_serializer.to_openapi(animal)
-            
+
+            # Convert to dict if it's an OpenAPI model
+            if hasattr(response, 'to_dict'):
+                return response.to_dict(), 200
+
             return response, 200
             
         except NotFoundError as e:
@@ -189,14 +197,18 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 400
         except Exception as e:
+            import traceback
             from openapi_server.models.error import Error
+            # Log the full error for debugging
+            print(f"ERROR in update_animal: {str(e)}")
+            print(f"Traceback: {traceback.format_exc()}")
             error_obj = Error(
                 code="internal_error",
                 message="Internal server error",
-                details={"error": str(e)}
+                details={"error": str(e), "type": type(e).__name__}
             )
             return error_obj.to_dict(), 500
-    
+
     def delete_animal(self, animal_id: str) -> Tuple[None, int]:
         """
         Flask handler for animal soft deletion

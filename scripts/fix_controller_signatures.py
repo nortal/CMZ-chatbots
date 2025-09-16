@@ -83,6 +83,19 @@ class ControllerFixer:
             if param_name:
                 # Convert to Python-safe name
                 safe_name = param_name.replace('-', '_')
+
+                # Handle Python reserved keywords
+                # Connexion automatically adds underscore to reserved keywords
+                python_reserved = {
+                    'id', 'type', 'class', 'def', 'return', 'if', 'else',
+                    'elif', 'try', 'except', 'finally', 'for', 'while',
+                    'break', 'continue', 'pass', 'import', 'from', 'as',
+                    'global', 'nonlocal', 'lambda', 'with', 'yield', 'assert',
+                    'del', 'in', 'is', 'not', 'or', 'and', 'None', 'True', 'False'
+                }
+                if safe_name in python_reserved:
+                    safe_name = safe_name + '_'
+
                 params.append(safe_name)
 
         # Request body parameter

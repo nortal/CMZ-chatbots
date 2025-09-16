@@ -193,6 +193,7 @@ paths:
       summary: Update an existing animal
       tags:
       - Animals
+      x-body-name: animal_update
       x-openapi-router-controller: openapi_server.controllers.animals_controller
   /animal_config:
     get:
@@ -454,6 +455,7 @@ paths:
       summary: Login or register
       tags:
       - Auth
+      x-body-name: auth_request
       x-openapi-router-controller: openapi_server.controllers.auth_controller
   /auth/logout:
     post:
@@ -516,6 +518,7 @@ paths:
       summary: Initiate password reset
       tags:
       - Auth
+      x-body-name: password_reset_request
       x-openapi-router-controller: openapi_server.controllers.auth_controller
   /billing:
     get:
@@ -2685,6 +2688,7 @@ components:
       type: object
     AnimalUpdate:
       example:
+        personality: personality
         species: species
         name: name
         status: active
@@ -2704,6 +2708,11 @@ components:
           - active
           - hidden
           title: status
+          type: string
+        personality:
+          description: The personality description of the animal
+          maxLength: 500
+          title: personality
           type: string
       title: AnimalUpdate
       type: object

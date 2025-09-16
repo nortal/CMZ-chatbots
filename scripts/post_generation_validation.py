@@ -138,8 +138,23 @@ class APIValidation:
         for param in path_params:
             if param.get('in') == 'path':
                 param_name = param.get('name')
-                if param_name and param_name not in params:
-                    self.errors.append(f"❌ {operation_id}: Missing path parameter '{param_name}'")
+                if param_name:
+                    # Convert to Python-safe name (same logic as Connexion)
+                    safe_name = param_name.replace('-', '_')
+
+                    # Handle Python reserved keywords
+                    python_reserved = {
+                        'id', 'type', 'class', 'def', 'return', 'if', 'else',
+                        'elif', 'try', 'except', 'finally', 'for', 'while',
+                        'break', 'continue', 'pass', 'import', 'from', 'as',
+                        'global', 'nonlocal', 'lambda', 'with', 'yield', 'assert',
+                        'del', 'in', 'is', 'not', 'or', 'and', 'None', 'True', 'False'
+                    }
+                    if safe_name in python_reserved:
+                        safe_name = safe_name + '_'
+
+                    if safe_name not in params:
+                        self.errors.append(f"❌ {operation_id}: Missing path parameter '{safe_name}' (from '{param_name}')")
 
     def validate_impl_connections(self, spec: Dict):
         """Ensure implementations exist for all controllers"""

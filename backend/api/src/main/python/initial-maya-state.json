@@ -1,0 +1,128 @@
+{
+    "Item": {
+        "animalId": {
+            "S": "animal_003"
+        },
+        "configuration": {
+            "M": {
+                "voice": {
+                    "S": "onyx"
+                },
+                "temperature": {
+                    "N": "1"
+                },
+                "toolsEnabled": {
+                    "L": [
+                        {
+                            "S": "facts"
+                        },
+                        {
+                            "S": "media_lookup"
+                        }
+                    ]
+                },
+                "guardrails": {
+                    "M": {
+                        "response_length_limit": {
+                            "N": "500"
+                        },
+                        "safe_mode": {
+                            "BOOL": false
+                        },
+                        "content_filter": {
+                            "BOOL": false
+                        }
+                    }
+                },
+                "aiModel": {
+                    "S": "gpt-4o-mini"
+                },
+                "topP": {
+                    "N": "1"
+                },
+                "status": {
+                    "S": "active"
+                }
+            }
+        },
+        "created": {
+            "M": {
+                "at": {
+                    "S": "2025-09-13T15:30:00Z"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "deleted": {
+            "M": {
+                "at": {
+                    "S": "2025-09-15T23:02:07.036912+00:00"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "modified": {
+            "M": {
+                "at": {
+                    "S": "2025-09-16T18:15:56.612595+00:00"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "name": {
+            "S": "Maya the Monkey - Updated 2025-01-16"
+        },
+        "personality": {
+            "M": {
+                "description": {
+                    "S": ""
+                }
+            }
+        },
+        "softDelete": {
+            "BOOL": false
+        },
+        "species": {
+            "S": "Macaca mulatta - Updated Scientific Name"
+        },
+        "status": {
+            "S": "active"
+        }
+    }
+}
