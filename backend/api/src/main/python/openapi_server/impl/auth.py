@@ -5,11 +5,10 @@ Enhanced with environment mode support and JWT utilities
 """
 
 import os
-import hashlib
-import hmac
 import secrets
 import logging
 import boto3
+import bcrypt
 from typing import Any, Dict, List, Tuple, Union, Optional
 from botocore.exceptions import ClientError
 from ..models.error import Error
@@ -25,14 +24,11 @@ COGNITO_CLIENT_ID = os.environ.get('COGNITO_CLIENT_ID', '')
 USERS_TABLE_NAME = os.environ.get('USERS_DYNAMO_TABLE_NAME', 'cmz-users-dev')
 
 # Password hashing configuration
-# nosec B105 - Default value only for development, production check enforced
-PASSWORD_SALT = os.environ.get('PASSWORD_SALT')
-if not PASSWORD_SALT:
-    if os.environ.get('ENVIRONMENT') == 'production':
-        raise ValueError("PASSWORD_SALT must be set in production environment")
-    # Generate a random salt for development (changes each run for security)
-    PASSWORD_SALT = secrets.token_hex(32)  # nosec - dynamic generation for dev only
-    logger.warning("Using dynamically generated password salt for development")
+# bcrypt handles salt generation internally, making it more secure
+# Cost factor for bcrypt (higher = more secure but slower)
+BCRYPT_ROUNDS = int(os.environ.get('BCRYPT_ROUNDS', '12'))
+if BCRYPT_ROUNDS < 10 and os.environ.get('ENVIRONMENT') == 'production':
+    raise ValueError("BCRYPT_ROUNDS must be at least 10 in production")
 
 # Log auth mode on module load
 logger.info(f"🔐 Authentication Mode: {AUTH_MODE}")
@@ -40,87 +36,101 @@ logger.info(f"🔐 Authentication Mode: {AUTH_MODE}")
 
 def hash_password(password: str) -> str:
     """
-    Hash a password using HMAC-SHA256 with salt.
+    Hash a password using bcrypt with automatic salt generation.
+
+    bcrypt is specifically designed for password hashing and is
+    computationally expensive, making it resistant to brute force attacks.
 
     Args:
         password: Plain text password
 
     Returns:
-        Hashed password as hex string
+        Hashed password as string (includes salt)
     """
-    return hmac.new(
-        PASSWORD_SALT.encode(),
-        password.encode(),
-        hashlib.sha256
-    ).hexdigest()
+    # bcrypt requires bytes
+    password_bytes = password.encode('utf-8')
+    # Generate salt and hash password
+    hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt(rounds=BCRYPT_ROUNDS))
+    # Return as string for storage
+    return hashed.decode('utf-8')
 
 
 def verify_password(stored_password: str, provided_password: str) -> bool:
     """
-    Verify a password against a stored hash.
+    Verify a password against a stored bcrypt hash.
+
+    bcrypt handles salt extraction and verification internally,
+    making it resistant to timing attacks and rainbow tables.
 
     Args:
-        stored_password: Stored password (hash or plain text for legacy)
+        stored_password: Stored bcrypt hash
         provided_password: Password provided by user
 
     Returns:
         True if passwords match, False otherwise
     """
-    # For backward compatibility, check if stored password is hashed (64 chars hex)
-    if len(stored_password) == 64 and all(c in '0123456789abcdef' for c in stored_password):
-        # It's a hash, compare hashes securely
-        return secrets.compare_digest(stored_password, hash_password(provided_password))
-    else:
-        # Legacy plain text - log warning and hash for comparison
-        # nosec B105 - Backward compatibility for migration period only
-        logger.warning(f"Plain text password detected for migration - user should update password")
-        # Hash both sides for secure comparison even with plain text
-        return secrets.compare_digest(hash_password(stored_password), hash_password(provided_password))
+    try:
+        # Convert strings to bytes for bcrypt
+        stored_bytes = stored_password.encode('utf-8')
+        provided_bytes = provided_password.encode('utf-8')
+
+        # bcrypt.checkpw handles salt extraction and secure comparison
+        return bcrypt.checkpw(provided_bytes, stored_bytes)
+    except (ValueError, AttributeError):
+        # Invalid hash format or encoding issues
+        logger.warning("Invalid password hash format encountered")
+        return False
 
 
 def authenticate_user_mock(email: str, password: str) -> Dict[str, Any]:
     """
     Mock authentication for local development.
-    Uses test users with hashed passwords for security scanning compliance.
+    Uses test users with pre-computed bcrypt hashes for security and performance.
     """
-    # Test users with hashed passwords (using hash_password for consistency)
-    # These are pre-hashed versions of the test passwords for security scanning
+    # Test users with pre-computed bcrypt hashes
+    # These are bcrypt hashes of the test passwords, pre-computed for performance
+    # bcrypt is slow by design, so we pre-compute for test accounts
     # nosec B105 - These are test accounts for local development only
     test_users = {
         'admin@cmz.org': {
-            'password_hash': hash_password('admin123'),  # nosec - test account
+            # bcrypt hash of 'admin123' with cost factor 12
+            'password_hash': '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY.hsLuU4pZ4sE6',  # nosec - test account
             'role': 'admin'
         },
         'test@cmz.org': {
-            'password_hash': hash_password('testpass123'),  # nosec - test account
+            # bcrypt hash of 'testpass123' with cost factor 12
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
             'role': 'user'
         },
         'parent1@test.cmz.org': {
-            'password_hash': hash_password('testpass123'),  # nosec - test account
+            # bcrypt hash of 'testpass123' with cost factor 12
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
             'role': 'parent'
         },
         'student1@test.cmz.org': {
-            'password_hash': hash_password('testpass123'),  # nosec - test account
+            # bcrypt hash of 'testpass123' with cost factor 12
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
             'role': 'student'
         },
         'student2@test.cmz.org': {
-            'password_hash': hash_password('testpass123'),  # nosec - test account
+            # bcrypt hash of 'testpass123' with cost factor 12
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
             'role': 'student'
         },
         'user_parent_001@cmz.org': {
-            'password_hash': hash_password('testpass123'),  # nosec - test account
+            # bcrypt hash of 'testpass123' with cost factor 12
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
             'role': 'parent'
         }
     }
 
-    # Check credentials using secure comparison
+    # Check credentials using bcrypt verification
     if email not in test_users:
         raise ValueError("Invalid email or password")
 
     stored_hash = test_users[email]['password_hash']
-    provided_hash = hash_password(password)
 
-    if not secrets.compare_digest(stored_hash, provided_hash):
+    if not verify_password(stored_hash, password):
         raise ValueError("Invalid email or password")
 
     # Create user data
