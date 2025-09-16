@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def auth_logout_post():  # noqa: E501
     """Logout current user (invalidate token/session)
 
@@ -69,7 +68,6 @@ def auth_logout_post():  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def auth_post(auth_request):  # noqa: E501
     """Login or register
 
@@ -139,7 +137,6 @@ def auth_post(auth_request):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def auth_refresh_post():  # noqa: E501
     """Refresh access token
 
@@ -202,7 +199,6 @@ def auth_refresh_post():  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def auth_reset_password_post(password_reset_request):  # noqa: E501
     """Initiate password reset
 

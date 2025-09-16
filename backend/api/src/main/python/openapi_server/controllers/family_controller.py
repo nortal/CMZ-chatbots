@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def create_family(family):  # noqa: E501
     """Create a new family
 
@@ -76,7 +75,6 @@ def create_family(family):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def delete_family(family_id):  # noqa: E501
     """Delete a family
 
@@ -144,7 +142,6 @@ def delete_family(family_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def get_family(family_id):  # noqa: E501
     """Get specific family by ID
 
@@ -212,7 +209,6 @@ def get_family(family_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def list_families():  # noqa: E501
     """Get list of all families
 
@@ -275,7 +271,6 @@ def list_families():  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def update_family(family_id, family):  # noqa: E501
     """Update an existing family
 

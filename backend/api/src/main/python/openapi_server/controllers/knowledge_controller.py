@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def knowledge_article_delete(knowledge_id):  # noqa: E501
     """Delete knowledge article
 
@@ -74,7 +73,6 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def knowledge_article_get(knowledge_id):  # noqa: E501
     """Get article by id
 
@@ -142,7 +140,6 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def knowledge_article_post(knowledge_create):  # noqa: E501
     """Create knowledge article
 

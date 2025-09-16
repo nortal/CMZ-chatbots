@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def billing_get(period):  # noqa: E501
     """Billing summary
 
@@ -74,7 +73,6 @@ def billing_get(period):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def logs_get(level, start, end, page, page_size):  # noqa: E501
     """Application logs (paged/filtered)
 
@@ -154,7 +152,6 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def performance_metrics_get(start, end):  # noqa: E501
     """Performance metrics between dates
 
