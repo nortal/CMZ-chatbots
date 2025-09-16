@@ -3,9 +3,10 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.controllers import util
 
 
+ block to insert a comma between parameters except after the last one. }}
 def create_family(family):  # noqa: E501
     """Create a new family
 
@@ -33,7 +34,7 @@ def create_family(family):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -51,7 +52,7 @@ def create_family(family):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller create_family implementation not found: {str(e)}",
@@ -62,11 +63,11 @@ def create_family(family):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in create_family: {str(e)}",
@@ -75,6 +76,7 @@ def create_family(family):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def delete_family(family_id):  # noqa: E501
     """Delete a family
 
@@ -100,7 +102,7 @@ def delete_family(family_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -118,7 +120,7 @@ def delete_family(family_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller delete_family implementation not found: {str(e)}",
@@ -129,11 +131,11 @@ def delete_family(family_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in delete_family: {str(e)}",
@@ -142,6 +144,7 @@ def delete_family(family_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def get_family(family_id):  # noqa: E501
     """Get specific family by ID
 
@@ -167,7 +170,7 @@ def get_family(family_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -185,7 +188,7 @@ def get_family(family_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller get_family implementation not found: {str(e)}",
@@ -196,11 +199,11 @@ def get_family(family_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in get_family: {str(e)}",
@@ -209,6 +212,7 @@ def get_family(family_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def list_families():  # noqa: E501
     """Get list of all families
 
@@ -229,7 +233,7 @@ def list_families():  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -247,7 +251,7 @@ def list_families():  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller list_families implementation not found: {str(e)}",
@@ -258,11 +262,11 @@ def list_families():  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in list_families: {str(e)}",
@@ -271,6 +275,7 @@ def list_families():  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def update_family(family_id, family):  # noqa: E501
     """Update an existing family
 
@@ -301,7 +306,7 @@ def update_family(family_id, family):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -319,7 +324,7 @@ def update_family(family_id, family):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller update_family implementation not found: {str(e)}",
@@ -330,11 +335,11 @@ def update_family(family_id, family):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in update_family: {str(e)}",

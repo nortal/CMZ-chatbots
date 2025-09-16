@@ -3,9 +3,10 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.controllers import util
 
 
+ block to insert a comma between parameters except after the last one. }}
 def knowledge_article_delete(knowledge_id):  # noqa: E501
     """Delete knowledge article
 
@@ -31,7 +32,7 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -49,7 +50,7 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller knowledge_article_delete implementation not found: {str(e)}",
@@ -60,11 +61,11 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in knowledge_article_delete: {str(e)}",
@@ -73,6 +74,7 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def knowledge_article_get(knowledge_id):  # noqa: E501
     """Get article by id
 
@@ -98,7 +100,7 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -116,7 +118,7 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller knowledge_article_get implementation not found: {str(e)}",
@@ -127,11 +129,11 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in knowledge_article_get: {str(e)}",
@@ -140,6 +142,7 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def knowledge_article_post(knowledge_create):  # noqa: E501
     """Create knowledge article
 
@@ -167,7 +170,7 @@ def knowledge_article_post(knowledge_create):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -185,7 +188,7 @@ def knowledge_article_post(knowledge_create):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller knowledge_article_post implementation not found: {str(e)}",
@@ -196,11 +199,11 @@ def knowledge_article_post(knowledge_create):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in knowledge_article_post: {str(e)}",

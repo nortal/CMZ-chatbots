@@ -167,21 +167,39 @@ def handle_animal_id_put(id_: str, body: Dict[str, Any]) -> Tuple[Any, int]:
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_id_delete(id: str) -> Tuple[Any, int]:
+def handle_animal_id_delete(id_: str = None, id: str = None) -> Tuple[Any, int]:
     """Delete animal via DELETE /animal/{id} (soft delete)"""
     try:
+        # Handle both parameter names (connexion may pass id_ or id)
+        animal_id = id_ if id_ is not None else id
+        if animal_id is None:
+            from .error_handler import create_error_response
+            return create_error_response(
+                "missing_parameter",
+                "Missing required parameter: id",
+                {}
+            ), 400
         animal_handler = create_flask_animal_handler()
-        return animal_handler.delete_animal(id)
+        return animal_handler.delete_animal(animal_id)
     except Exception as e:
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_post(body: Dict[str, Any]) -> Tuple[Any, int]:
+def handle_animal_post(animal_input: Any = None, body: Dict[str, Any] = None) -> Tuple[Any, int]:
     """Create a new animal via POST /animal"""
     try:
+        # Handle both parameter names (controller may pass animal_input or body)
+        request_body = animal_input if animal_input is not None else body
+        if request_body is None:
+            from .error_handler import create_error_response
+            return create_error_response(
+                "missing_body",
+                "Missing request body",
+                {}
+            ), 400
         animal_handler = create_flask_animal_handler()
-        return animal_handler.create_animal(body)
+        return animal_handler.create_animal(request_body)
     except Exception as e:
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
