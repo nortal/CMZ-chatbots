@@ -138,7 +138,7 @@ if [ "$SKIP_SYSTEM_PACKAGES" = false ]; then
 
     # Install Node.js 18
     print_status "Installing Node.js 18..."
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -  # nosemgrep: bash.curl.security.curl-pipe-bash
     sudo apt-get install -y nodejs
 
     # Install Docker

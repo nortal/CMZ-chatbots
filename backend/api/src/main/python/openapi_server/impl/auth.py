@@ -94,32 +94,32 @@ def authenticate_user_mock(email: str, password: str) -> Dict[str, Any]:
     test_users = {
         'admin@cmz.org': {
             # bcrypt hash of 'admin123' with cost factor 12
-            'password_hash': '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY.hsLuU4pZ4sE6',  # nosec - test account
+            'password_hash': '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY.hsLuU4pZ4sE6',  # nosec nosemgrep - test account
             'role': 'admin'
         },
         'test@cmz.org': {
             # bcrypt hash of 'testpass123' with cost factor 12
-            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec nosemgrep - test account
             'role': 'user'
         },
         'parent1@test.cmz.org': {
             # bcrypt hash of 'testpass123' with cost factor 12
-            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec nosemgrep - test account
             'role': 'parent'
         },
         'student1@test.cmz.org': {
             # bcrypt hash of 'testpass123' with cost factor 12
-            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec nosemgrep - test account
             'role': 'student'
         },
         'student2@test.cmz.org': {
             # bcrypt hash of 'testpass123' with cost factor 12
-            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec nosemgrep - test account
             'role': 'student'
         },
         'user_parent_001@cmz.org': {
             # bcrypt hash of 'testpass123' with cost factor 12
-            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec - test account
+            'password_hash': '$2b$12$YGVkDNPPHXUC/pKvQDrv4.bzLcXdFmRXZf7KgLaxmHvIlkxXNOhOq',  # nosec nosemgrep - test account
             'role': 'parent'
         }
     }
