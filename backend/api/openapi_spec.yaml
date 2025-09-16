@@ -31,6 +31,7 @@ paths:
       tags:
       - UI
       summary: Public homepage
+      operationId: root_get
       responses:
         '200':
           description: Health/info banner

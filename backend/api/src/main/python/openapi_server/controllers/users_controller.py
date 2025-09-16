@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def me_get():  # noqa: E501
     """Current authenticated user
 

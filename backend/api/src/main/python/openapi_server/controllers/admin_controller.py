@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def create_user(user_input):  # noqa: E501
     """Create a new user
 
@@ -76,7 +75,6 @@ def create_user(user_input):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def create_user_details(user_details_input):  # noqa: E501
     """Create user details
 
@@ -146,7 +144,6 @@ def create_user_details(user_details_input):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def delete_user(user_id):  # noqa: E501
     """Delete user
 
@@ -214,7 +211,6 @@ def delete_user(user_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def delete_user_details(user_id):  # noqa: E501
     """Delete user details
 
@@ -282,7 +278,6 @@ def delete_user_details(user_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def get_user(user_id):  # noqa: E501
     """Get user by ID
 
@@ -350,7 +345,6 @@ def get_user(user_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def get_user_details(user_id):  # noqa: E501
     """Get user details by ID
 
@@ -418,7 +412,6 @@ def get_user_details(user_id):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def list_user_details():  # noqa: E501
     """Get list of all user details
 
@@ -481,7 +474,6 @@ def list_user_details():  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def list_users():  # noqa: E501
     """Get list of all users
 
@@ -544,7 +536,6 @@ def list_users():  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def update_user(user_id, user):  # noqa: E501
     """Update a user
 
@@ -617,7 +608,6 @@ def update_user(user_id, user):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def update_user_details(user_id, user_details_input):  # noqa: E501
     """Update user details
 

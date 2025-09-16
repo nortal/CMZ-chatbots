@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdpr, audit_reason):  # noqa: E501
     """Delete conversation history with enhanced GDPR compliance
 
@@ -89,7 +88,6 @@ def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdp
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limit, offset, include_metadata):  # noqa: E501
     """Get conversation history with enhanced filtering and pagination
 
@@ -178,7 +176,6 @@ def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limi
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def convo_turn_post(convo_turn_post_request):  # noqa: E501
     """Send conversation turn with enhanced validation and rate limiting
 
@@ -248,7 +245,6 @@ def convo_turn_post(convo_turn_post_request):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def summarize_convo_post(summarize_convo_post_request):  # noqa: E501
     """Advanced conversation summarization with personalization and analytics
 

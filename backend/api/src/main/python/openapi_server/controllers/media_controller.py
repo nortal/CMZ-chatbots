@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# from openapi_server.controllers import util  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def media_delete(media_id, permanent):  # noqa: E501
     """Delete media by id (soft delete with validation)
 
@@ -77,7 +76,6 @@ def media_delete(media_id, permanent):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def media_get(media_id, animal_id, kind, limit):  # noqa: E501
     """Fetch media metadata by id with enhanced filters
 
@@ -154,7 +152,6 @@ def media_get(media_id, animal_id, kind, limit):  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def upload_media_post(file, title, animal_id, description, tags):  # noqa: E501
     """Upload media (image/audio/video) with enhanced validation
 

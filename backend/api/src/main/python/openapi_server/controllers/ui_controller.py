@@ -3,10 +3,9 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.controllers import util
+# # from openapi_server.controllers import util  # Not used  # Not used
 
 
- block to insert a comma between parameters except after the last one. }}
 def admin_get():  # noqa: E501
     """Admin dashboard shell data
 
@@ -69,7 +68,6 @@ def admin_get():  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def member_get():  # noqa: E501
     """User portal shell data
 
@@ -132,7 +130,6 @@ def member_get():  # noqa: E501
             return error_obj, 500
 
 
- block to insert a comma between parameters except after the last one. }}
 def root_get():  # noqa: E501
     """Public homepage
 
