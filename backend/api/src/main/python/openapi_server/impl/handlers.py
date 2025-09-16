@@ -36,6 +36,8 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'animal_details_patch': handle_animal_details_patch,
             'animal_details_delete': handle_animal_details_delete,
             'animal_id_put': handle_animal_id_put,
+            'animal_id_delete': handle_animal_id_delete,  # Add missing mapping
+            'animal_post': handle_animal_post,  # Add missing mapping
             'user_list_get': handle_user_list_get,
             'user_details_get': handle_user_details_get,
             'user_details_post': handle_user_details_post,
@@ -160,6 +162,26 @@ def handle_animal_id_put(id_: str, body: Dict[str, Any]) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         # Connexion passes id_ but our handler expects animal_id
         return animal_handler.update_animal(id_, body)
+    except Exception as e:
+        from .error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
+
+
+def handle_animal_id_delete(id: str) -> Tuple[Any, int]:
+    """Delete animal via DELETE /animal/{id} (soft delete)"""
+    try:
+        animal_handler = create_flask_animal_handler()
+        return animal_handler.delete_animal(id)
+    except Exception as e:
+        from .error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
+
+
+def handle_animal_post(body: Dict[str, Any]) -> Tuple[Any, int]:
+    """Create a new animal via POST /animal"""
+    try:
+        animal_handler = create_flask_animal_handler()
+        return animal_handler.create_animal(body)
     except Exception as e:
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
