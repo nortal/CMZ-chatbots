@@ -95,7 +95,9 @@ export function useAnimalConfig(animalId: string | null): UseAnimalConfigResult 
       setConfig(updatedConfig);
       console.log('Animal configuration updated successfully');
     } catch (err) {
-      // Verify if save actually succeeded despite error (400 error workaround)
+      // TODO: Fix underlying API issue (track in Jira PR003946-XXX)
+      // Backend sometimes returns errors even when DynamoDB operations succeed
+      // This verification workaround should be removed after backend error handling is improved
       try {
         const verifyConfig = await animalApi.getAnimalConfig(animalId);
         // Check if any of the updates were actually applied

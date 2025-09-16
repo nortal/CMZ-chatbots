@@ -3,17 +3,25 @@ JWT Utility Module for CMZ Authentication
 Ensures consistent JWT token generation across all auth modes
 """
 
+import os
 import time
 import base64
 import json
 import hashlib
 import hmac
+import logging
 from typing import Dict, Any, Optional
 
-# Configuration
-JWT_SECRET = "cmz-mock-secret-key-for-development"  # Change for production
-JWT_ALGORITHM = "HS256"
-TOKEN_EXPIRATION_SECONDS = 86400  # 24 hours
+# Set up logging
+logger = logging.getLogger(__name__)
+
+# Configuration - Load from environment with secure fallback
+JWT_SECRET = os.environ.get('JWT_SECRET', 'cmz-development-key-change-in-production')
+if JWT_SECRET == 'cmz-development-key-change-in-production' and os.environ.get('ENVIRONMENT') == 'production':
+    raise ValueError("JWT_SECRET must be set in production environment")
+
+JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
+TOKEN_EXPIRATION_SECONDS = int(os.environ.get('TOKEN_EXPIRATION_SECONDS', '86400'))  # 24 hours default
 
 
 def generate_jwt_token(
@@ -124,7 +132,7 @@ def decode_jwt_payload(token: str) -> Optional[Dict[str, Any]]:
 
         return payload
     except Exception as e:
-        print(f"Error decoding JWT: {str(e)}")
+        logger.error(f"Error decoding JWT: {str(e)}")
         return None
 
 
@@ -209,17 +217,17 @@ if __name__ == "__main__":
     }
 
     token = generate_jwt_token(test_user)
-    print(f"Generated token: {token}")
-    print(f"Token parts: {len(token.split('.'))}")
+    logger.info(f"Generated token: {token}")
+    logger.info(f"Token parts: {len(token.split('.'))}")
 
     # Test decoding
     payload = decode_jwt_payload(token)
-    print(f"Decoded payload: {json.dumps(payload, indent=2)}")
+    logger.info(f"Decoded payload: {json.dumps(payload, indent=2)}")
 
     # Test verification
     is_valid, verified_payload = verify_jwt_token(token)
-    print(f"Token valid: {is_valid}")
+    logger.info(f"Token valid: {is_valid}")
 
     # Test auth response
     response = create_auth_response(test_user)
-    print(f"Auth response: {json.dumps(response, indent=2)}")
+    logger.info(f"Auth response: {json.dumps(response, indent=2)}")

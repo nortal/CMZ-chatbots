@@ -10,12 +10,20 @@ fi
 
 # Jira configuration
 JIRA_BASE_URL="https://nortal.atlassian.net"
-JIRA_API_TOKEN="${JIRA_API_TOKEN}"
-JIRA_EMAIL="kc.stegbauer@nortal.com"
+JIRA_API_TOKEN="${JIRA_API_TOKEN:-}"
+JIRA_EMAIL="${JIRA_EMAIL:-kc.stegbauer@nortal.com}"
 PROJECT_KEY="PR003946"
 
-# Create Basic Auth header
-AUTH_HEADER=$(echo -n "${JIRA_EMAIL}:${JIRA_API_TOKEN}" | base64)
+# Validate required environment variables
+if [ -z "${JIRA_API_TOKEN}" ]; then
+    echo "Error: JIRA_API_TOKEN environment variable is not set"
+    echo "Please set JIRA_API_TOKEN or create a .env.local file with this variable"
+    exit 1
+fi
+
+# Create Basic Auth header securely
+# Use printf instead of echo for better compatibility and security
+AUTH_HEADER=$(printf '%s:%s' "${JIRA_EMAIL}" "${JIRA_API_TOKEN}" | base64)
 
 # Create the ticket JSON payload
 cat > /tmp/temperature_bug_ticket.json << 'EOF'

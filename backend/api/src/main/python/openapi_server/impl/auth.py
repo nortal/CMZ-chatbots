@@ -5,11 +5,18 @@ Enhanced with environment mode support and JWT utilities
 """
 
 import os
+import hashlib
+import hmac
+import secrets
+import logging
 import boto3
 from typing import Any, Dict, List, Tuple, Union, Optional
 from botocore.exceptions import ClientError
 from ..models.error import Error
 from .utils.jwt_utils import create_auth_response, generate_jwt_token
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # Environment configuration
 AUTH_MODE = os.environ.get('AUTH_MODE', 'mock')
@@ -17,8 +24,51 @@ COGNITO_USER_POOL_ID = os.environ.get('COGNITO_USER_POOL_ID', '')
 COGNITO_CLIENT_ID = os.environ.get('COGNITO_CLIENT_ID', '')
 USERS_TABLE_NAME = os.environ.get('USERS_DYNAMO_TABLE_NAME', 'cmz-users-dev')
 
+# Password hashing configuration
+PASSWORD_SALT = os.environ.get('PASSWORD_SALT', 'cmz-development-salt')
+if PASSWORD_SALT == 'cmz-development-salt' and os.environ.get('ENVIRONMENT') == 'production':
+    raise ValueError("PASSWORD_SALT must be set in production environment")
+
 # Log auth mode on module load
-print(f"🔐 Authentication Mode: {AUTH_MODE}")
+logger.info(f"🔐 Authentication Mode: {AUTH_MODE}")
+
+
+def hash_password(password: str) -> str:
+    """
+    Hash a password using HMAC-SHA256 with salt.
+
+    Args:
+        password: Plain text password
+
+    Returns:
+        Hashed password as hex string
+    """
+    return hmac.new(
+        PASSWORD_SALT.encode(),
+        password.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+
+def verify_password(stored_password: str, provided_password: str) -> bool:
+    """
+    Verify a password against a stored hash.
+
+    Args:
+        stored_password: Stored password (hash or plain text for legacy)
+        provided_password: Password provided by user
+
+    Returns:
+        True if passwords match, False otherwise
+    """
+    # For backward compatibility, check if stored password is hashed (64 chars hex)
+    if len(stored_password) == 64 and all(c in '0123456789abcdef' for c in stored_password):
+        # It's a hash, compare hashes
+        return secrets.compare_digest(stored_password, hash_password(provided_password))
+    else:
+        # Legacy plain text - hash both for comparison (temporary backward compatibility)
+        # In production, all passwords should be migrated to hashes
+        return secrets.compare_digest(stored_password, provided_password)
 
 
 def authenticate_user_mock(email: str, password: str) -> Dict[str, Any]:
@@ -67,8 +117,9 @@ def authenticate_user_dynamodb(email: str, password: str) -> Dict[str, Any]:
 
         user_item = response['Item']
 
-        # Simple password check (should use hashing in production)
-        if user_item.get('password') != password:
+        # Secure password verification using hashing
+        stored_password = user_item.get('password', '')
+        if not verify_password(stored_password, password):
             raise ValueError("Invalid email or password")
 
         # Create user data
@@ -82,7 +133,7 @@ def authenticate_user_dynamodb(email: str, password: str) -> Dict[str, Any]:
         return create_auth_response(user_data)
 
     except ClientError as e:
-        print(f"DynamoDB error: {str(e)}")
+        logger.error(f"DynamoDB error: {str(e)}")
         raise ValueError("Authentication service unavailable")
 
 
@@ -132,7 +183,7 @@ def authenticate_user_cognito(email: str, password: str) -> Dict[str, Any]:
         if error_code in ['NotAuthorizedException', 'UserNotFoundException']:
             raise ValueError("Invalid email or password")
         else:
-            print(f"Cognito error: {str(e)}")
+            logger.error(f"Cognito error: {str(e)}")
             raise ValueError("Authentication service unavailable")
 
 
@@ -140,7 +191,7 @@ def authenticate_user(email: str, password: str) -> Dict[str, Any]:
     """
     Main authentication function that routes to appropriate backend.
     """
-    print(f"Authenticating user {email} with mode: {AUTH_MODE}")
+    logger.debug(f"Authenticating user {email} with mode: {AUTH_MODE}")
 
     if AUTH_MODE == 'cognito':
         return authenticate_user_cognito(email, password)
