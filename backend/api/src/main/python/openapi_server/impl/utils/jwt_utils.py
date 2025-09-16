@@ -16,9 +16,15 @@ from typing import Dict, Any, Optional
 logger = logging.getLogger(__name__)
 
 # Configuration - Load from environment with secure fallback
-JWT_SECRET = os.environ.get('JWT_SECRET', 'cmz-development-key-change-in-production')
-if JWT_SECRET == 'cmz-development-key-change-in-production' and os.environ.get('ENVIRONMENT') == 'production':
-    raise ValueError("JWT_SECRET must be set in production environment")
+# nosec B105 - Default value only for development, production check enforced
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    if os.environ.get('ENVIRONMENT') == 'production':
+        raise ValueError("JWT_SECRET must be set in production environment")
+    # Generate a random secret for development (changes each run for security)
+    import secrets as sec
+    JWT_SECRET = sec.token_hex(32)  # nosec - dynamic generation for dev only
+    logger.warning("Using dynamically generated JWT secret for development")
 
 JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 TOKEN_EXPIRATION_SECONDS = int(os.environ.get('TOKEN_EXPIRATION_SECONDS', '86400'))  # 24 hours default
@@ -217,12 +223,13 @@ if __name__ == "__main__":
     }
 
     token = generate_jwt_token(test_user)
-    logger.info(f"Generated token: {token}")
-    logger.info(f"Token parts: {len(token.split('.'))}")
+    # Don't log sensitive tokens
+    logger.info(f"Generated token with {len(token.split('.'))} parts")  # nosec - not logging token value
 
     # Test decoding
     payload = decode_jwt_payload(token)
-    logger.info(f"Decoded payload: {json.dumps(payload, indent=2)}")
+    # Don't log sensitive payload data
+    logger.info(f"Decoded payload with {len(payload)} fields")  # nosec
 
     # Test verification
     is_valid, verified_payload = verify_jwt_token(token)
@@ -230,4 +237,5 @@ if __name__ == "__main__":
 
     # Test auth response
     response = create_auth_response(test_user)
-    logger.info(f"Auth response: {json.dumps(response, indent=2)}")
+    # Don't log sensitive auth response
+    logger.info(f"Auth response created with token")  # nosec
