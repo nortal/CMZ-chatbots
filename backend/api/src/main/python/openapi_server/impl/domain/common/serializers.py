@@ -68,8 +68,15 @@ def serialize_audit_stamp(audit_stamp: Optional[AuditStamp]) -> Dict[str, Any]:
             "by": serialize_audit_by(None)
         }
 
+    # Convert datetime to ISO string for JSON serialization
+    at_value = audit_stamp.at
+    if hasattr(at_value, 'isoformat'):
+        at_value = at_value.isoformat()
+    elif at_value and not isinstance(at_value, str):
+        at_value = str(at_value)
+
     return {
-        "at": audit_stamp.at,
+        "at": at_value,
         "by": serialize_audit_by(audit_stamp.by)
     }
 
@@ -207,23 +214,57 @@ def deserialize_family(data: Dict[str, Any]) -> Family:
 
 def serialize_animal(animal: Animal, include_api_id: bool = True) -> Dict[str, Any]:
     """Convert Animal domain entity to dict"""
+    # Handle personality field - keep as dict for database, string for API
+    personality_value = animal.personality or {}
+
+    # For API responses, convert to string
+    if include_api_id:
+        if isinstance(personality_value, dict) and 'description' in personality_value:
+            # Extract description string from dict format
+            personality_value = personality_value['description']
+        elif isinstance(personality_value, dict) and personality_value:
+            # If it's a dict without description, try to get first string value
+            for key, val in personality_value.items():
+                if isinstance(val, str):
+                    personality_value = val
+                    break
+        elif not isinstance(personality_value, str):
+            # Default to empty string if not a string
+            personality_value = ""
+    else:
+        # For database operations, ensure it's a dict with description key
+        if isinstance(personality_value, str):
+            personality_value = {"description": personality_value}
+        elif isinstance(personality_value, dict):
+            # Ensure it has a description key
+            if 'description' not in personality_value:
+                # Try to extract any string value
+                desc = ""
+                for key, val in personality_value.items():
+                    if isinstance(val, str):
+                        desc = val
+                        break
+                personality_value = {"description": desc}
+        else:
+            personality_value = {"description": ""}
+
     result = {
         "animalId": animal.animal_id,
         "name": animal.name,
         "species": animal.species,
         "status": animal.status,
-        "personality": animal.personality or {},
+        "personality": personality_value,  # Dict for DB, string for API
         "configuration": animal.configuration or {},
         "softDelete": animal.soft_delete,
         "created": serialize_audit_stamp(animal.created),
         "modified": serialize_audit_stamp(animal.modified),
         "deleted": serialize_audit_stamp(animal.deleted)
     }
-    
+
     # Only include 'id' field for API responses, not for database persistence
     if include_api_id:
         result["id"] = animal.animal_id
-        
+
     return result
 
 
@@ -231,9 +272,27 @@ def deserialize_animal(data: Dict[str, Any]) -> Animal:
     """Convert dict to Animal domain entity"""
     # Handle both 'id' and 'animalId' from different sources
     animal_id = data.get("animalId") or data.get("id", "")
-    
-    # Handle personality field using helper function
-    personality = normalize_personality_field(data.get("personality", {}))
+
+    # Handle personality field - can be string, dict, or nested DynamoDB Map
+    personality_raw = data.get("personality", {})
+
+    # If it's already a string, use it directly
+    if isinstance(personality_raw, str):
+        personality = {"description": personality_raw} if personality_raw else {}
+    # If it's a dict with 'description' key, use as is
+    elif isinstance(personality_raw, dict) and 'description' in personality_raw:
+        personality = personality_raw
+    # If it's a DynamoDB Map structure (M type)
+    elif isinstance(personality_raw, dict) and 'M' in personality_raw:
+        # Extract from nested Map structure
+        map_data = personality_raw['M']
+        if 'description' in map_data and 'S' in map_data['description']:
+            personality = {"description": map_data['description']['S']}
+        else:
+            personality = {}
+    else:
+        # Use the helper function for other cases
+        personality = normalize_personality_field(personality_raw)
     
     return Animal(
         animal_id=animal_id,

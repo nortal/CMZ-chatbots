@@ -35,7 +35,10 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'animal_details_post': handle_animal_details_post,
             'animal_details_patch': handle_animal_details_patch,
             'animal_details_delete': handle_animal_details_delete,
+            'animal_id_get': handle_animal_id_get,  # Add missing GET mapping
             'animal_id_put': handle_animal_id_put,
+            'animal_id_delete': handle_animal_id_delete,  # Add missing mapping
+            'animal_post': handle_animal_post,  # Add missing mapping
             'user_list_get': handle_user_list_get,
             'user_details_get': handle_user_details_get,
             'user_details_post': handle_user_details_post,
@@ -154,12 +157,108 @@ def handle_animal_details_delete(animal_id: str) -> Tuple[Any, int]:
         return handle_exception_for_controllers(e)
 
 
+def handle_animal_id_get(id_: str) -> Tuple[Any, int]:
+    """Get animal via GET /animal/{id}"""
+    try:
+        animal_handler = create_flask_animal_handler()
+        # Connexion passes id_ but our handler expects animal_id
+        result = animal_handler.get_animal(id_)
+
+        # If the result is an OpenAPI model, convert to dict
+        if isinstance(result, tuple) and len(result) == 2:
+            response_data, status_code = result
+            if hasattr(response_data, 'to_dict'):
+                return response_data.to_dict(), status_code
+            return response_data, status_code
+
+        return result
+    except Exception as e:
+        from .error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
+
+
 def handle_animal_id_put(id_: str, body: Dict[str, Any]) -> Tuple[Any, int]:
     """Update animal via PUT /animal/{id}"""
     try:
         animal_handler = create_flask_animal_handler()
         # Connexion passes id_ but our handler expects animal_id
-        return animal_handler.update_animal(id_, body)
+        result = animal_handler.update_animal(id_, body)
+
+        # If the result is an OpenAPI model, convert to dict
+        if isinstance(result, tuple) and len(result) == 2:
+            response_data, status_code = result
+
+            if hasattr(response_data, 'to_dict'):
+                # Debug: Check what to_dict returns before returning it
+                import json
+                import logging
+                logger = logging.getLogger(__name__)
+
+                dict_data = response_data.to_dict()
+                logger.info(f"Response data type: {type(dict_data)}")
+                logger.info(f"Response data keys: {dict_data.keys() if isinstance(dict_data, dict) else 'NOT A DICT'}")
+
+                # Try to serialize to check for issues
+                try:
+                    json.dumps(dict_data)
+                    logger.info("Response data is JSON serializable")
+                except TypeError as e:
+                    logger.error(f"Response data is NOT JSON serializable: {e}")
+                    # Log each field to find the problematic one
+                    if isinstance(dict_data, dict):
+                        for key, value in dict_data.items():
+                            try:
+                                json.dumps({key: value})
+                            except TypeError:
+                                logger.error(f"Field '{key}' is not JSON serializable. Type: {type(value)}, Value: {value}")
+
+                return dict_data, status_code
+            return response_data, status_code
+
+        return result
+    except Exception as e:
+        import traceback
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in handle_animal_id_put: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        from .error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
+
+
+def handle_animal_id_delete(id_: str = None, id: str = None) -> Tuple[Any, int]:
+    """Delete animal via DELETE /animal/{id} (soft delete)"""
+    try:
+        # Handle both parameter names (connexion may pass id_ or id)
+        animal_id = id_ if id_ is not None else id
+        if animal_id is None:
+            from .error_handler import create_error_response
+            return create_error_response(
+                "missing_parameter",
+                "Missing required parameter: id",
+                {}
+            ), 400
+        animal_handler = create_flask_animal_handler()
+        return animal_handler.delete_animal(animal_id)
+    except Exception as e:
+        from .error_handler import handle_exception_for_controllers
+        return handle_exception_for_controllers(e)
+
+
+def handle_animal_post(animal_input: Any = None, body: Dict[str, Any] = None) -> Tuple[Any, int]:
+    """Create a new animal via POST /animal"""
+    try:
+        # Handle both parameter names (controller may pass animal_input or body)
+        request_body = animal_input if animal_input is not None else body
+        if request_body is None:
+            from .error_handler import create_error_response
+            return create_error_response(
+                "missing_body",
+                "Missing request body",
+                {}
+            ), 400
+        animal_handler = create_flask_animal_handler()
+        return animal_handler.create_animal(request_body)
     except Exception as e:
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
@@ -250,14 +349,45 @@ def handle_family_details_delete(family_id: str) -> Tuple[Any, int]:
 # Auth handlers
 def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
     """User login"""
-    from .auth import handle_auth_post
-    return handle_auth_post(body)
+    from .auth import authenticate_user
+    from openapi_server.models.auth_response import AuthResponse
+    try:
+        # Handle both dict and model object
+        if hasattr(body, 'to_dict'):
+            body = body.to_dict()
+        elif hasattr(body, 'username') and hasattr(body, 'password'):
+            # It's an AuthRequest model object
+            body = {'username': body.username, 'password': body.password}
+
+        # Extract email and password from body
+        email = body.get('email', body.get('username', ''))
+        password = body.get('password', '')
+
+        # Authenticate user
+        result = authenticate_user(email, password)
+
+        # Create response dict with proper field names for OpenAPI validation
+        # The OpenAPI spec expects 'expiresIn' (camelCase) not 'expires_in'
+        response_dict = {
+            'token': result['token'],
+            'user': result['user'],
+            'expiresIn': 86400  # 24 hours in seconds
+        }
+        return response_dict, 200
+    except Exception as e:
+        from openapi_server.models.error import Error
+        error = Error(
+            code="authentication_failed",
+            message=str(e),
+            details={"error": "Authentication failed"}
+        )
+        return error.to_dict(), 401
 
 
 def handle_auth_post(body: Dict[str, Any]) -> Tuple[Any, int]:
     """User authentication (login/register)"""
-    from .auth import handle_auth_post
-    return handle_auth_post(body)
+    # Reuse handle_login_post since they're the same for now
+    return handle_login_post(body)
 
 
 def handle_logout_post() -> Tuple[Any, int]:

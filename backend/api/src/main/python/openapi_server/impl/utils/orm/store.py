@@ -1,4 +1,5 @@
 import os
+import logging
 from typing import Any, Dict, List, Optional, Protocol, Tuple, Type
 from pynamodb.models import Model
 from pynamodb.exceptions import PutError, UpdateError, DoesNotExist
@@ -9,10 +10,13 @@ from .models import FamilyModel, UserModel, UserDetailsModel, AnimalModel
 from pynamodb.exceptions import PutError
 # PR003946-69: Server-Generated IDs
 from ..id_generator import (
-    add_audit_timestamps, ensure_user_id, ensure_animal_id, 
+    add_audit_timestamps, ensure_user_id, ensure_animal_id,
     ensure_family_id
 )
 # PR003946-95: File-based persistence for offline testing
+
+# Set up logging
+logger = logging.getLogger(__name__)
 from .file_store import FileStore
 
 class DynamoStore(Protocol):
@@ -56,6 +60,7 @@ class PynamoStore:
 
     def get(self, pk: Any) -> Optional[Dict[str, Any]]:
         try:
+            logger.debug(f"Getting model with pk={pk}, type={type(pk)}")
             m = self._model.get(pk)
         except DoesNotExist:
             return None

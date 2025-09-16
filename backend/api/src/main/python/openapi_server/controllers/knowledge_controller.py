@@ -3,16 +3,21 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.models.error import Error  # noqa: E501
+from openapi_server.models.knowledge_article import KnowledgeArticle  # noqa: E501
+from openapi_server.models.knowledge_create import KnowledgeCreate  # noqa: E501
+# from openapi_server import util  # Not used
 
 
 def knowledge_article_delete(knowledge_id):  # noqa: E501
     """Delete knowledge article
 
-    :param knowledge_id: 
-    :type knowledge_id: strstr | bytes
+     # noqa: E501
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
+    :param knowledge_id: 
+    :type knowledge_id: str
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -21,13 +26,13 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "knowledgecontroller".replace("_controller", "")
+        impl_module_name = "knowledge_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -55,7 +60,7 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
             message=f"Controller knowledge_article_delete implementation not found: {str(e)}",
             details={"controller": "KnowledgeController", "operation": "knowledge_article_delete"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -70,16 +75,18 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
                 message=f"Internal server error in knowledge_article_delete: {str(e)}",
                 details={"controller": "KnowledgeController", "operation": "knowledge_article_delete"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
 def knowledge_article_get(knowledge_id):  # noqa: E501
     """Get article by id
 
-    :param knowledge_id: 
-    :type knowledge_id: strstr | bytes
+     # noqa: E501
 
-    :rtype: Union[KnowledgeArticle, Tuple[KnowledgeArticle, int], Tuple[KnowledgeArticle, int, Dict[str, str]]]
+    :param knowledge_id: 
+    :type knowledge_id: str
+
+    :rtype: Union[KnowledgeArticle, Tuple[KnowledgeArticle, int], Tuple[KnowledgeArticle, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -88,13 +95,13 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "knowledgecontroller".replace("_controller", "")
+        impl_module_name = "knowledge_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -122,7 +129,7 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
             message=f"Controller knowledge_article_get implementation not found: {str(e)}",
             details={"controller": "KnowledgeController", "operation": "knowledge_article_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -137,33 +144,35 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
                 message=f"Internal server error in knowledge_article_get: {str(e)}",
                 details={"controller": "KnowledgeController", "operation": "knowledge_article_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def knowledge_article_post(knowledge_create):  # noqa: E501
+def knowledge_article_post(body):  # noqa: E501
     """Create knowledge article
 
-    :param knowledge_create: 
-    :type knowledge_create:  | bytes
+     # noqa: E501
 
-    :rtype: Union[KnowledgeArticle, Tuple[KnowledgeArticle, int], Tuple[KnowledgeArticle, int, Dict[str, str]]]
+    :param knowledge_create: 
+    :type knowledge_create: dict | bytes
+
+    :rtype: Union[KnowledgeArticle, Tuple[KnowledgeArticle, int], Tuple[KnowledgeArticle, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        knowledge_create = KnowledgeCreate.from_dict(connexion.request.get_json())  # noqa: E501
+        body = KnowledgeCreate.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "knowledgecontroller".replace("_controller", "")
+        impl_module_name = "knowledge_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -175,7 +184,7 @@ def knowledge_article_post(knowledge_create):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(knowledge_create)
+        result = impl_function(body)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -191,7 +200,7 @@ def knowledge_article_post(knowledge_create):  # noqa: E501
             message=f"Controller knowledge_article_post implementation not found: {str(e)}",
             details={"controller": "KnowledgeController", "operation": "knowledge_article_post"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -206,6 +215,4 @@ def knowledge_article_post(knowledge_create):  # noqa: E501
                 message=f"Internal server error in knowledge_article_post: {str(e)}",
                 details={"controller": "KnowledgeController", "operation": "knowledge_article_post"}
             )
-            return error_obj, 500
-
-
+            return error_obj.to_dict(), 500

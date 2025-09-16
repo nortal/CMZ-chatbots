@@ -3,26 +3,34 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.models.feature_flags_document import FeatureFlagsDocument  # noqa: E501
+from openapi_server.models.feature_flags_update import FeatureFlagsUpdate  # noqa: E501
+from openapi_server.models.system_health import SystemHealth  # noqa: E501
+# from openapi_server import util  # Not used
 
 
 def feature_flags_get():  # noqa: E501
     """Get feature flags
 
-    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]]
+     # noqa: E501
+
+
+    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]
     """
+    # Auto-generated parameter handling
+
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "systemcontroller".replace("_controller", "")
+        impl_module_name = "system_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -50,7 +58,7 @@ def feature_flags_get():  # noqa: E501
             message=f"Controller feature_flags_get implementation not found: {str(e)}",
             details={"controller": "SystemController", "operation": "feature_flags_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -65,33 +73,35 @@ def feature_flags_get():  # noqa: E501
                 message=f"Internal server error in feature_flags_get: {str(e)}",
                 details={"controller": "SystemController", "operation": "feature_flags_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def feature_flags_patch(feature_flags_update):  # noqa: E501
+def feature_flags_patch(body):  # noqa: E501
     """Update feature flags
 
-    :param feature_flags_update: 
-    :type feature_flags_update:  | bytes
+     # noqa: E501
 
-    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]]
+    :param feature_flags_update: 
+    :type feature_flags_update: dict | bytes
+
+    :rtype: Union[FeatureFlagsDocument, Tuple[FeatureFlagsDocument, int], Tuple[FeatureFlagsDocument, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        feature_flags_update = FeatureFlagsUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        body = FeatureFlagsUpdate.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "systemcontroller".replace("_controller", "")
+        impl_module_name = "system_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -103,7 +113,7 @@ def feature_flags_patch(feature_flags_update):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(feature_flags_update)
+        result = impl_function(body)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -119,7 +129,7 @@ def feature_flags_patch(feature_flags_update):  # noqa: E501
             message=f"Controller feature_flags_patch implementation not found: {str(e)}",
             details={"controller": "SystemController", "operation": "feature_flags_patch"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -134,26 +144,31 @@ def feature_flags_patch(feature_flags_update):  # noqa: E501
                 message=f"Internal server error in feature_flags_patch: {str(e)}",
                 details={"controller": "SystemController", "operation": "feature_flags_patch"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
 def system_health_get():  # noqa: E501
     """System/health check for status page
 
-    :rtype: Union[SystemHealth, Tuple[SystemHealth, int], Tuple[SystemHealth, int, Dict[str, str]]]
+     # noqa: E501
+
+
+    :rtype: Union[SystemHealth, Tuple[SystemHealth, int], Tuple[SystemHealth, int, Dict[str, str]]
     """
+    # Auto-generated parameter handling
+
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "systemcontroller".replace("_controller", "")
+        impl_module_name = "system_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -181,7 +196,7 @@ def system_health_get():  # noqa: E501
             message=f"Controller system_health_get implementation not found: {str(e)}",
             details={"controller": "SystemController", "operation": "system_health_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -196,6 +211,4 @@ def system_health_get():  # noqa: E501
                 message=f"Internal server error in system_health_get: {str(e)}",
                 details={"controller": "SystemController", "operation": "system_health_get"}
             )
-            return error_obj, 500
-
-
+            return error_obj.to_dict(), 500

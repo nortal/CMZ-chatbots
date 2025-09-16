@@ -1,66 +1,126 @@
 import connexion
-{{#imports}}{{#-last}}from typing import Dict
+from typing import Dict
 from typing import Tuple
 from typing import Union
 
-{{/-last}}{{/imports}}{{#models}}{{#model}}from {{package}}.models.{{classFilename}} import {{classname}}{{#hasMore}}  # noqa: E501{{/hasMore}}
-{{/model}}{{/models}}from {{package}} import util
-
+{{#imports}}{{import}}  # noqa: E501
+{{/imports}}
+# from {{packageName}} import util  # Not used
 {{#operations}}
-
 {{#operation}}
-{{! The following uses Mustache's {{^-last}} block to insert a comma between parameters except after the last one. }}
-{{! This prevents trailing commas in function signatures which can cause syntax errors. }}
-def {{operationId}}({{#allParams}}{{paramName}}{{^-last}}, {{/-last}}{{/allParams}}):  # noqa: E501
-    """{{summary}}{{#notes}}
 
-    {{notes}}{{/notes}}
 
-{{#allParams}}    :param {{paramName}}: {{description}}
-    :type {{paramName}}: {{#isString}}str{{/isString}}{{#isLong}}int{{/isLong}}{{#isInteger}}int{{/isInteger}}{{#isBoolean}}bool{{/isBoolean}}{{#isBinary}}str{{/isBinary}}{{#isByteArray}}str{{/isByteArray}}{{#isUuid}}str{{/isUuid}}{{#isEmail}}str{{/isEmail}}{{#isFreeFormObject}}object{{/isFreeFormObject}}{{#isAnyType}}object{{/isAnyType}}{{#isDateTime}}datetime{{/isDateTime}}{{#isDate}}date{{/isDate}}{{#isFile}}str{{/isFile}}{{#isPrimitiveType}}{{#isString}}str{{/isString}}{{#isLong}}int{{/isLong}}{{#isInteger}}int{{/isInteger}}{{#isBoolean}}bool{{/isBoolean}}{{#isBinary}}str{{/isBinary}}{{#isByteArray}}str{{/isByteArray}}{{#isUuid}}str{{/isUuid}}{{#isEmail}}str{{/isEmail}}{{#isFreeFormObject}}object{{/isFreeFormObject}}{{#isAnyType}}object{{/isAnyType}}{{#isDateTime}}datetime{{/isDateTime}}{{#isDate}}date{{/isDate}}{{#isFile}}str{{/isFile}}{{/isPrimitiveType}}{{#isContainer}}{{#isArray}}List[{{#items}}{{#isPrimitiveType}}{{#isString}}str{{/isString}}{{#isLong}}int{{/isLong}}{{#isInteger}}int{{/isInteger}}{{#isBoolean}}bool{{/isBoolean}}{{/isPrimitiveType}}{{#isModel}}{{datatype}}{{/isModel}}{{/items}}]{{/isArray}}{{#isMap}}Dict[str, {{#items}}{{#isPrimitiveType}}{{#isString}}str{{/isString}}{{#isLong}}int{{/isLong}}{{#isInteger}}int{{/isInteger}}{{#isBoolean}}bool{{/isBoolean}}{{/isPrimitiveType}}{{#isModel}}{{datatype}}{{/isModel}}{{/items}}]{{/isMap}}{{/isContainer}}{{#isModel}}{{datatype}}{{/isModel}} | bytes
+def {{operationId}}({{#allParams}}{{^isBodyParam}}{{paramName}}{{/isBodyParam}}{{#isBodyParam}}body{{/isBodyParam}}{{^required}}=None{{/required}}{{^-last}}, {{/-last}}{{/allParams}}):  # noqa: E501
+    """{{summary}}{{^summary}}{{operationId}}{{/summary}}
 
-{{/allParams}}
-    :rtype: Union[{{#returnType}}{{returnType}}{{/returnType}}{{^returnType}}None{{/returnType}}, Tuple[{{#returnType}}{{returnType}}{{/returnType}}{{^returnType}}None{{/returnType}}, int], Tuple[{{#returnType}}{{returnType}}{{/returnType}}{{^returnType}}None{{/returnType}}, int, Dict[str, str]]]
+    {{notes}} # noqa: E501
+
+    {{#allParams}}
+    :param {{paramName}}: {{description}}
+        {{^isContainer}}
+            {{#isPrimitiveType}}
+    :type {{paramName}}: {{>param_type}}
+            {{/isPrimitiveType}}
+            {{#isUuid}}
+    :type {{paramName}}: {{>param_type}}
+            {{/isUuid}}
+            {{^isPrimitiveType}}
+                {{#isFile}}
+    :type {{paramName}}: werkzeug.datastructures.FileStorage
+                {{/isFile}}
+                {{^isFile}}
+                    {{^isUuid}}
+    :type {{paramName}}: dict | bytes
+                    {{/isUuid}}
+                {{/isFile}}
+            {{/isPrimitiveType}}
+        {{/isContainer}}
+        {{#isArray}}
+            {{#items}}
+                {{#isPrimitiveType}}
+    :type {{paramName}}: List[{{>param_type}}]
+                {{/isPrimitiveType}}
+                {{^isPrimitiveType}}
+    :type {{paramName}}: list | bytes
+                {{/isPrimitiveType}}
+            {{/items}}
+        {{/isArray}}
+        {{#isMap}}
+            {{#items}}
+                {{#isPrimitiveType}}
+    :type {{paramName}}: Dict[str, {{>param_type}}]
+                {{/isPrimitiveType}}
+                {{^isPrimitiveType}}
+    :type {{paramName}}: dict | bytes
+                {{/isPrimitiveType}}
+            {{/items}}
+        {{/isMap}}
+    {{/allParams}}
+
+    :rtype: Union[{{returnType}}{{^returnType}}None{{/returnType}}, Tuple[{{returnType}}{{^returnType}}None{{/returnType}}, int], Tuple[{{returnType}}{{^returnType}}None{{/returnType}}, int, Dict[str, str]]
     """
-{{#hasParams}}{{#allParams}}{{#-first}}    # Auto-generated parameter handling
-{{/-first}}{{#hasBodyParam}}{{#isBodyParam}}    if connexion.request.is_json:
-        {{paramName}} = {{dataType}}.from_dict(connexion.request.get_json())  # noqa: E501
-{{/isBodyParam}}{{/hasBodyParam}}{{/allParams}}
-{{/hasParams}}
+    # Auto-generated parameter handling
+    {{#allParams}}
+        {{#isBodyParam}}
+    {{#bodyParam}}
+    if connexion.request.is_json:
+        body = {{#dataType}}{{dataType}}.from_dict(connexion.request.get_json()){{/dataType}}{{^dataType}}connexion.request.get_json(){{/dataType}}  # noqa: E501
+    {{/bodyParam}}
+        {{/isBodyParam}}
+        {{^isBodyParam}}
+            {{^isContainer}}
+                {{#isDate}}
+    {{paramName}} = util.deserialize_date({{paramName}})
+                {{/isDate}}
+                {{#isDateTime}}
+    {{paramName}} = util.deserialize_datetime({{paramName}})
+                {{/isDateTime}}
+            {{/isContainer}}
+            {{#isArray}}
+                {{#items}}
+                    {{#isDate}}
+    if {{paramName}}:
+        {{paramName}} = [util.deserialize_date(s) for s in {{paramName}}]  # noqa: E501
+                    {{/isDate}}
+                    {{#isDateTime}}
+    if {{paramName}}:
+        {{paramName}} = [util.deserialize_datetime(s) for s in {{paramName}}]  # noqa: E501
+                    {{/isDateTime}}
+                {{/items}}
+            {{/isArray}}
+        {{/isBodyParam}}
+    {{/allParams}}
+
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
-        {{#vendorExtensions.x-impl-module}}
-        from {{package}}.impl.{{vendorExtensions.x-impl-module}} import {{vendorExtensions.x-impl-function}}
-        {{/vendorExtensions.x-impl-module}}
-        {{^vendorExtensions.x-impl-module}}
         # Auto-detect implementation module from operationId
-        impl_module_name = "{{#lambda.lowercase}}{{classname}}{{/lambda.lowercase}}".replace("_controller", "")
-        impl_function_name = "handle_{{#lambda.underscore}}{{operationId}}{{/lambda.underscore}}"
+        impl_module_name = "{{classFilename}}".replace("_controller", "")
+        impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"{{package}}.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"{{packageName}}.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from {{package}}.impl import handlers
+            from {{packageName}}.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
-        {{/vendorExtensions.x-impl-module}}
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
-        {{#hasParams}}
-        result = impl_function({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-        {{/hasParams}}
-        {{^hasParams}}
-        result = impl_function()
-        {{/hasParams}}
+        result = impl_function({{#allParams}}{{^isBodyParam}}{{paramName}}{{/isBodyParam}}{{#isBodyParam}}body{{/isBodyParam}}{{^-last}}, {{/-last}}{{/allParams}})
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -70,7 +130,7 @@ def {{operationId}}({{#allParams}}{{paramName}}{{^-last}}, {{/-last}}{{/allParam
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from {{package}}.models.error import Error
+        from {{packageName}}.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller {{operationId}} implementation not found: {str(e)}",
@@ -81,18 +141,16 @@ def {{operationId}}({{#allParams}}{{paramName}}{{^-last}}, {{/-last}}{{/allParam
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from {{package}}.impl.error_handler import handle_exception_for_controllers
+            from {{packageName}}.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from {{package}}.models.error import Error
+            from {{packageName}}.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in {{operationId}}: {str(e)}",
                 details={"controller": "{{classname}}", "operation": "{{operationId}}"}
             )
             return error_obj, 500
-
-
 {{/operation}}
 {{/operations}}

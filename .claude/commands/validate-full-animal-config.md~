@@ -1,0 +1,860 @@
+# validate-full-animal-config
+
+Comprehensive E2E validation and testing of Animal Management -> Animal Config dialog components with complete data persistence verification. **PRIMARY FOCUS**: Animal Name and Species (Scientific Name) field validation with DynamoDB persistence verification.
+
+## Usage
+```
+/validate-full-animal-config [--component <name>] [--tab <name>] [--quick] [--report-only]
+```
+
+## Overview
+
+This command performs systematic end-to-end validation of every UI component in the Animal Config dialog, verifying the complete data flow from UI interaction through API processing to DynamoDB persistence. Unlike partial validation commands, this ensures 100% component coverage with comprehensive test scenarios.  
+
+**CRITICAL**: This validation MUST be performed using Playwright MCP with browser visibility enabled so users can observe the testing process in real-time. This visual feedback is essential for:
+- Verifying the correct UI elements are being tested
+- Observing actual user interactions being simulated
+- Identifying visual issues that may not be caught by API testing alone
+- Building confidence in the test coverage
+- Debugging failures by seeing exactly where issues occur
+
+## Command Options
+
+- `--component <name>`: Test specific component (e.g., "voice", "guardrails")
+- `--tab <name>`: Test all components in specific tab (e.g., "basic-info", "settings")
+- `--quick`: Run minimal test set (1 value per component instead of 3-5)
+- `--report-only`: Generate report from existing test data without re-running tests
+
+## Implementation Process
+
+### Phase 0: Update learnings and last report
+Before starting read the files:
+    ~/repositories/CMZ-chatbots/VALIDATE-ANIMAL-CONFIG-COMPONENTS-ADVICE.md
+    ~/repositories/CMZ-chatbots/VALIDATE-ANIMAL-CONFIG-REPORT.md
+    ~/repositories/CMZ-chatbots/ANY-PRE-TEST-ADVICE.md
+If possible make a prediction for which tests will succeed and fail based on the report and recent activity.
+
+
+### Phase 1: Environment Setup and Mapping Verification
+
+1. **Initialize Playwright Browser**
+   ```javascript
+   // CRITICAL: Use Playwright MCP with visible browser
+   await mcp__playwright__browser_navigate({ url: "http://localhost:3000" });
+
+   // Ensure browser window is properly sized for visibility
+   await mcp__playwright__browser_resize({ width: 1280, height: 720 });
+
+   // Take initial screenshot for reference
+   await mcp__playwright__browser_take_screenshot({
+     filename: "animal-config-test-start.png",
+     fullPage: false
+   });
+   ```
+
+2. **Service Health Check**
+   ```bash
+   # Verify all required services
+   curl -f http://localhost:3000 || exit 1  # Frontend
+   curl -f http://localhost:8080 || exit 1  # Backend
+   aws dynamodb list-tables --region us-west-2 || exit 1  # DynamoDB
+   ```
+
+2. **Mapping Document Management**
+   - Check if `animal-config-dynamo-mappings.md` exists
+   - If exists: Validate against current `animal-config-features.txt`
+   - If missing or outdated: Generate complete mapping
+   - Document structure:
+     ```markdown
+     # Animal Config Component to DynamoDB Mapping
+
+     ## Basic Info Tab
+     | UI Component | DynamoDB Field | Type | Valid Values |
+     |--------------|----------------|------|--------------|
+     | Animal Name | animalId | String | alphanumeric, spaces, hyphens |
+     | Species | species | String | text up to 100 chars |
+     | Personality and Behavior | personality | Object | complex nested structure |
+     | Active | isActive | Boolean | true/false |
+     | Educational Focus | educationalFocus | String | text up to 500 chars |
+     | Age Appropriate | ageAppropriate | Array | ["3-5", "6-8", "9-12", "13+"] |
+
+     [Continue for all tabs...]
+     ```
+
+3. **Test User Authentication**
+   - Use test credentials: `test@cmz.org` / `testpass123`
+   - Capture JWT token for API calls
+   - Verify role permissions for animal config updates
+
+### Phase 2: Primary Focus - Animal Name and Species Field Validation
+
+**CRITICAL REQUIREMENT**: The primary purpose of this validation is to ensure that Animal Name and Species (Scientific Name) fields in the Basic Info tab work correctly with the complete data flow:
+
+1. **Verify Initial Values Match DynamoDB**: The fields should display the current values from DynamoDB
+2. **Change and Save**: Successfully change both values and save the configuration
+3. **Persistence Check**: After save, the fields should retain the new values (not revert)
+4. **DynamoDB Update Verification**: The new values must be persisted to DynamoDB
+5. **Cross-Session Persistence**: Values should persist when dialog is closed and reopened
+
+**SUCCESS CRITERIA FOR ANIMAL NAME & SPECIES**:
+- ✅ UI displays current DynamoDB values on load
+- ✅ User can change both Animal Name and Species values
+- ✅ Save button successfully saves configuration
+- ✅ Fields retain new values after save (no reversion to old values)
+- ✅ New values are written to DynamoDB
+- ✅ Dialog reload shows updated values
+- ✅ Values persist across browser sessions
+
+**FAILURE INDICATORS**:
+- ❌ Fields show different values than what's in DynamoDB
+- ❌ Changes revert to old values after save
+- ❌ Save succeeds but DynamoDB is not updated
+- ❌ New values don't persist after dialog close/reopen
+
+### Phase 2a: Animal Name and Species Priority Testing
+
+**Step 1: Initial State Verification**
+```javascript
+// Navigate to Animal Config dialog
+await mcp__playwright__browser_navigate({ url: "http://localhost:3000/admin/animals" });
+await mcp__playwright__browser_snapshot();
+
+// Open animal config for test animal
+await mcp__playwright__browser_click({
+  element: "Animal Config button for test animal",
+  ref: "[data-testid='animal-config-btn']"
+});
+
+// Ensure we're on Basic Info tab
+await mcp__playwright__browser_wait_for({ text: "Animal Configuration" });
+await mcp__playwright__browser_click({
+  element: "Basic Info tab",
+  ref: "[data-testid='tab-basic-info']"
+});
+
+// Capture current UI values
+const snapshot = await mcp__playwright__browser_snapshot();
+const currentAnimalName = extractValueFromSnapshot(snapshot, "animal-name-input");
+const currentSpecies = extractValueFromSnapshot(snapshot, "species-input");
+
+// Take screenshot of initial state
+await mcp__playwright__browser_take_screenshot({
+  filename: "animal-name-species-initial-state.png",
+  element: "Basic Info section"
+});
+```
+
+**Step 2: DynamoDB Baseline Verification**
+```bash
+# Get current DynamoDB values
+aws dynamodb get-item \
+  --table-name quest-dev-animal \
+  --key '{"animalId": {"S": "test-animal-001"}}' \
+  --query 'Item.{animalId: animalId.S, species: species.S}' \
+  --output json > baseline-animal-name-species.json
+
+# Verify UI matches DynamoDB
+python3 -c "
+import json
+with open('baseline-animal-name-species.json') as f:
+    db_data = json.load(f)
+
+print(f'DB Animal Name: {db_data[\"animalId\"]}')
+print(f'DB Species: {db_data[\"species\"]}')
+print(f'UI Animal Name: ${currentAnimalName}')
+print(f'UI Species: ${currentSpecies}')
+
+assert db_data['animalId'] == '${currentAnimalName}', f'Animal Name mismatch: DB={db_data[\"animalId\"]}, UI=${currentAnimalName}'
+assert db_data['species'] == '${currentSpecies}', f'Species mismatch: DB={db_data[\"species\"]}, UI=${currentSpecies}'
+print('✅ UI values match DynamoDB baseline')
+"
+```
+
+**Step 3: Change Values and Save**
+```javascript
+// Define new test values
+const newAnimalName = "Updated-Leo-" + Date.now();
+const newSpecies = "Panthera leo updated";
+
+// Clear and enter new Animal Name
+await mcp__playwright__browser_click({
+  element: "Animal Name input field",
+  ref: "[data-testid='animal-name-input']"
+});
+await mcp__playwright__browser_press_key({ key: "Control+a" });
+await mcp__playwright__browser_type({
+  element: "Animal Name input field",
+  ref: "[data-testid='animal-name-input']",
+  text: newAnimalName
+});
+
+// Clear and enter new Species
+await mcp__playwright__browser_click({
+  element: "Species input field",
+  ref: "[data-testid='species-input']"
+});
+await mcp__playwright__browser_press_key({ key: "Control+a" });
+await mcp__playwright__browser_type({
+  element: "Species input field",
+  ref: "[data-testid='species-input']",
+  text: newSpecies
+});
+
+// Take screenshot showing new values before save
+await mcp__playwright__browser_take_screenshot({
+  filename: "animal-name-species-new-values.png",
+  element: "Basic Info section"
+});
+
+// Save configuration
+await mcp__playwright__browser_click({
+  element: "Save Configuration button",
+  ref: "[data-testid='save-config-btn']"
+});
+
+// Wait for save success
+await mcp__playwright__browser_wait_for({ text: "Configuration saved successfully" });
+
+// Take screenshot of save success
+await mcp__playwright__browser_take_screenshot({
+  filename: "animal-name-species-save-success.png"
+});
+```
+
+**Step 4: Immediate Persistence Verification**
+```javascript
+// Verify fields still show new values after save (no reversion)
+const postSaveSnapshot = await mcp__playwright__browser_snapshot();
+const postSaveAnimalName = extractValueFromSnapshot(postSaveSnapshot, "animal-name-input");
+const postSaveSpecies = extractValueFromSnapshot(postSaveSnapshot, "species-input");
+
+// Take screenshot of fields after save
+await mcp__playwright__browser_take_screenshot({
+  filename: "animal-name-species-post-save.png",
+  element: "Basic Info section"
+});
+
+// Verify no reversion occurred
+assert(postSaveAnimalName === newAnimalName, `Animal Name reverted: expected ${newAnimalName}, got ${postSaveAnimalName}`);
+assert(postSaveSpecies === newSpecies, `Species reverted: expected ${newSpecies}, got ${postSaveSpecies}`);
+console.log('✅ Fields retained new values after save');
+```
+
+**Step 5: DynamoDB Update Verification**
+```bash
+# Wait for eventual consistency
+sleep 2
+
+# Get updated DynamoDB values
+aws dynamodb get-item \
+  --table-name quest-dev-animal \
+  --key '{"animalId": {"S": "test-animal-001"}}' \
+  --query 'Item.{animalId: animalId.S, species: species.S}' \
+  --output json > updated-animal-name-species.json
+
+# Verify DynamoDB was updated
+python3 -c "
+import json
+with open('updated-animal-name-species.json') as f:
+    updated_data = json.load(f)
+
+print(f'Updated DB Animal Name: {updated_data[\"animalId\"]}')
+print(f'Updated DB Species: {updated_data[\"species\"]}')
+print(f'Expected Animal Name: ${newAnimalName}')
+print(f'Expected Species: ${newSpecies}')
+
+assert updated_data['animalId'] == '${newAnimalName}', f'Animal Name not updated in DB: expected ${newAnimalName}, got {updated_data[\"animalId\"]}'
+assert updated_data['species'] == '${newSpecies}', f'Species not updated in DB: expected ${newSpecies}, got {updated_data[\"species\"]}'
+print('✅ DynamoDB successfully updated with new values')
+"
+```
+
+**Step 6: Dialog Reload Persistence Test**
+```javascript
+// Close dialog
+await mcp__playwright__browser_click({
+  element: "Close dialog button",
+  ref: "[data-testid='close-dialog-btn']"
+});
+await mcp__playwright__browser_wait_for({ textGone: "Animal Configuration" });
+
+// Reopen dialog
+await mcp__playwright__browser_click({
+  element: "Animal Config button for test animal",
+  ref: "[data-testid='animal-config-btn']"
+});
+await mcp__playwright__browser_wait_for({ text: "Animal Configuration" });
+
+// Navigate to Basic Info tab
+await mcp__playwright__browser_click({
+  element: "Basic Info tab",
+  ref: "[data-testid='tab-basic-info']"
+});
+
+// Verify values persisted after reload
+const reloadSnapshot = await mcp__playwright__browser_snapshot();
+const reloadedAnimalName = extractValueFromSnapshot(reloadSnapshot, "animal-name-input");
+const reloadedSpecies = extractValueFromSnapshot(reloadSnapshot, "species-input");
+
+// Take screenshot of reloaded values
+await mcp__playwright__browser_take_screenshot({
+  filename: "animal-name-species-after-reload.png",
+  element: "Basic Info section"
+});
+
+// Verify persistence across dialog sessions
+assert(reloadedAnimalName === newAnimalName, `Animal Name not persisted: expected ${newAnimalName}, got ${reloadedAnimalName}`);
+assert(reloadedSpecies === newSpecies, `Species not persisted: expected ${newSpecies}, got ${reloadedSpecies}`);
+console.log('✅ Values persisted across dialog reload');
+```
+
+### Phase 2b: Extended Component Validation (Secondary Priority)
+
+For each remaining component in `animal-config-features.txt`:
+
+1. **Baseline Capture**
+   ```python
+   # Query current DynamoDB state
+   aws dynamodb get-item \
+     --table-name quest-dev-animal \
+     --key '{"animalId": {"S": "test-animal-001"}}' \
+     --output json > baseline/{component_name}.json
+   ```
+
+2. **UI Value Verification (Using Playwright MCP with Visual Feedback)**
+   ```javascript
+   // Navigate to Animal Config dialog - USER WILL SEE THIS
+   await mcp__playwright__browser_navigate({ url: "http://localhost:3000/admin/animals" });
+
+   // Take snapshot to show current state
+   await mcp__playwright__browser_snapshot();
+
+   // Click on animal config button - VISIBLE TO USER
+   await mcp__playwright__browser_click({
+     element: "Animal Config button for test animal",
+     ref: "[data-testid='animal-config-btn']"
+   });
+
+   // Wait for dialog to open with visual confirmation
+   await mcp__playwright__browser_wait_for({ text: "Animal Configuration" });
+
+   // Navigate to appropriate tab - USER SEES TAB SWITCHING
+   await mcp__playwright__browser_click({
+     element: `${tabName} tab`,
+     ref: `[data-testid="tab-${tabName}"]`
+   });
+
+   // Capture accessibility snapshot for value verification
+   const snapshot = await mcp__playwright__browser_snapshot();
+
+   // Extract current value from snapshot
+   const currentValue = extractValueFromSnapshot(snapshot, componentId);
+
+   // Take screenshot showing current value
+   await mcp__playwright__browser_take_screenshot({
+     filename: `baseline-${componentName}.png`,
+     element: `${componentName} field`,
+     ref: `[data-testid="${componentId}"]`
+   });
+
+   // Compare with DynamoDB baseline
+   assert(currentValue === baselineValue, `Mismatch: UI shows ${currentValue}, DB has ${baselineValue}`);
+   ```
+
+3. **Multi-Value Testing**
+   Test each component with multiple values based on type:
+
+   **Text Fields** (Animal Name, Species, System Prompt):
+   - Normal text: "Leo the Lion"
+   - Unicode: "Léo 獅子 🦁"
+   - Special chars: "Leo-123_v2.0"
+   - Max length: 500 character string
+   - Empty string: ""
+
+   **Boolean Fields** (Active, Allow Personal Questions):
+   - Toggle from true → false
+   - Toggle from false → true
+   - Rapid toggle: true → false → true
+
+   **Select/Dropdown Fields** (Voice, AI Model, Tone, Formality):
+   - First option
+   - Last option
+   - Middle option
+   - Cycle through all options
+
+   **Numeric Fields** (Temperature, Top P, Max Response Length):
+   - Minimum value (0.0)
+   - Maximum value (1.0 for Temperature/Top P, 2000 for length)
+   - Midpoint (0.5)
+   - Boundary values (0.001, 0.999)
+   - Invalid values for error testing
+
+   **Array Fields** (Guardrails, Knowledge Base entries):
+   - Add single item
+   - Add multiple items
+   - Edit existing item
+   - Delete item
+   - Delete all items
+   - Reorder items (if supported)
+
+   **Complex Objects** (Voice settings, Personality):
+   - Update single nested field
+   - Update multiple nested fields
+   - Clear nested object
+   - Replace entire object
+
+4. **Save and Persistence Verification (With Visual Confirmation)**
+   ```javascript
+   // USER SEES: Click save button with visual feedback
+   await mcp__playwright__browser_click({
+     element: "Save Configuration button",
+     ref: "[data-testid='save-config-btn']"
+   });
+
+   // Wait for and capture success notification - USER SEES SUCCESS/ERROR
+   await mcp__playwright__browser_wait_for({ text: "Configuration saved successfully" });
+
+   // Take screenshot of success notification
+   await mcp__playwright__browser_take_screenshot({
+     filename: `save-success-${componentName}.png`,
+     element: "Success notification",
+     ref: ".success-toast"
+   });
+
+   // Check network requests to verify API call
+   const requests = await mcp__playwright__browser_network_requests();
+   const apiRequest = requests.find(r => r.url.includes('/animal_config'));
+
+   // Verify API payload contains test value
+   assert(apiRequest.postData.includes(testValue), 'Test value not in API request');
+
+   // Log console messages for debugging
+   const consoleMessages = await mcp__playwright__browser_console_messages();
+   console.log('Browser console during save:', consoleMessages);
+   ```
+
+5. **DynamoDB Verification**
+   ```python
+   # Query updated DynamoDB state
+   aws dynamodb get-item \
+     --table-name quest-dev-animal \
+     --key '{"animalId": {"S": "test-animal-001"}}' \
+     --output json > updated/{component_name}.json
+
+   # Compare with expected value
+   python3 -c "
+   import json
+   with open('updated/${component_name}.json') as f:
+       data = json.load(f)
+   # Deserialize DynamoDB format
+   from boto3.dynamodb.types import TypeDeserializer
+   deserializer = TypeDeserializer()
+   item = {k: deserializer.deserialize(v) for k, v in data['Item'].items()}
+
+   # Verify persistence
+   assert item['${fieldName}'] == '${testValue}', f'Expected {testValue}, got {item[fieldName]}'
+   "
+   ```
+
+6. **Dialog Reload Verification (Visual Confirmation of Persistence)**
+   ```javascript
+   // USER SEES: Close dialog
+   await mcp__playwright__browser_click({
+     element: "Close dialog button",
+     ref: "[data-testid='close-dialog-btn']"
+   });
+
+   // Wait for dialog to close - VISIBLE TO USER
+   await mcp__playwright__browser_wait_for({ textGone: "Animal Configuration" });
+
+   // USER SEES: Reopen dialog
+   await mcp__playwright__browser_click({
+     element: "Animal Config button",
+     ref: "[data-testid='animal-config-btn']"
+   });
+
+   // Wait for dialog to open - VISIBLE TO USER
+   await mcp__playwright__browser_wait_for({ text: "Animal Configuration" });
+
+   // Navigate back to the tab being tested
+   await mcp__playwright__browser_click({
+     element: `${tabName} tab`,
+     ref: `[data-testid="tab-${tabName}"]`
+   });
+
+   // Take screenshot showing reloaded value
+   await mcp__playwright__browser_take_screenshot({
+     filename: `reload-verification-${componentName}.png`,
+     element: `${componentName} field after reload`,
+     ref: `[data-testid="${componentId}"]`
+   });
+
+   // Verify value persisted via snapshot
+   const reloadSnapshot = await mcp__playwright__browser_snapshot();
+   const reloadedValue = extractValueFromSnapshot(reloadSnapshot, componentId);
+   assert(reloadedValue === testValue, 'Value not persisted after dialog reload');
+   ```
+
+7. **List Refresh Verification (Visual Confirmation in List View)**
+   ```javascript
+   // USER SEES: Return to animal list
+   await mcp__playwright__browser_click({
+     element: "Close dialog button",
+     ref: "[data-testid='close-dialog-btn']"
+   });
+
+   // USER SEES: Refresh list
+   await mcp__playwright__browser_click({
+     element: "Refresh list button",
+     ref: "[data-testid='refresh-list-btn']"
+   });
+
+   // Wait for list to update - VISIBLE TO USER
+   await mcp__playwright__browser_wait_for({ time: 2 }); // Allow time for refresh
+
+   // Take screenshot of updated list
+   await mcp__playwright__browser_take_screenshot({
+     filename: `list-update-${componentName}.png`,
+     fullPage: false
+   });
+
+   // Verify updated values reflected in list view via snapshot
+   const listSnapshot = await mcp__playwright__browser_snapshot();
+   const listContent = extractListItemFromSnapshot(listSnapshot, animalId);
+   assert(listContent.includes(testValue), 'List not updated with new value');
+   ```
+
+### Phase 3: Combination Testing
+
+Test 3-5 random combinations of components together:
+
+1. **Scenario 1: Basic Info + Settings**
+   - Update Animal Name + Voice + Temperature simultaneously
+   - Verify all changes persist correctly
+
+2. **Scenario 2: Guardrails + Knowledge Base**
+   - Add guardrail + Add knowledge entry
+   - Verify arrays handle concurrent updates
+
+3. **Scenario 3: Full Tab Update**
+   - Update all fields in Settings tab
+   - Verify no field interference
+
+4. **Scenario 4: Cross-Tab Updates**
+   - Update one field per tab
+   - Save once and verify all persist
+
+5. **Scenario 5: Edge Case Combo**
+   - Maximum values + Empty strings + Boolean toggles
+   - Verify edge cases work together
+
+### Phase 4: Reporting and Analysis
+
+1. **Update Test Reports**
+
+   **VALIDATE-ANIMAL-CONFIG-REPORT.md**:
+   ```markdown
+   # Animal Config Validation Report
+   Generated: [timestamp]
+
+   ## PRIORITY TEST RESULTS: Animal Name & Species (Scientific Name)
+
+   ### 🎯 Primary Validation Results
+   | Test Phase | Animal Name | Species | Overall Result |
+   |------------|-------------|---------|----------------|
+   | Initial Load (UI ↔ DB) | ✅/❌ | ✅/❌ | ✅/❌ PASS/FAIL |
+   | Value Change & Save | ✅/❌ | ✅/❌ | ✅/❌ PASS/FAIL |
+   | Post-Save Persistence | ✅/❌ | ✅/❌ | ✅/❌ PASS/FAIL |
+   | DynamoDB Update | ✅/❌ | ✅/❌ | ✅/❌ PASS/FAIL |
+   | Dialog Reload | ✅/❌ | ✅/❌ | ✅/❌ PASS/FAIL |
+
+   ### 📊 Detailed Animal Name & Species Results
+
+   **Animal Name Field**:
+   ```
+   Initial DB Value: [original_value]
+   Initial UI Value: [ui_value]
+   Match Status: ✅ MATCH / ❌ MISMATCH
+
+   New Test Value: [new_value]
+   Post-Save UI Value: [post_save_ui_value]
+   Reversion Status: ✅ NO REVERSION / ❌ REVERTED TO: [reverted_value]
+
+   Final DB Value: [final_db_value]
+   Persistence Status: ✅ PERSISTED / ❌ NOT PERSISTED
+
+   Reload UI Value: [reload_ui_value]
+   Cross-Session Status: ✅ PERSISTENT / ❌ LOST
+   ```
+
+   **Species Field**:
+   ```
+   Initial DB Value: [original_species]
+   Initial UI Value: [ui_species]
+   Match Status: ✅ MATCH / ❌ MISMATCH
+
+   New Test Value: [new_species]
+   Post-Save UI Value: [post_save_ui_species]
+   Reversion Status: ✅ NO REVERSION / ❌ REVERTED TO: [reverted_species]
+
+   Final DB Value: [final_db_species]
+   Persistence Status: ✅ PERSISTED / ❌ NOT PERSISTED
+
+   Reload UI Value: [reload_ui_species]
+   Cross-Session Status: ✅ PERSISTENT / ❌ LOST
+   ```
+
+   ### 🔍 Root Cause Analysis (if failures detected)
+
+   **If Animal Name/Species FAILED**:
+
+   **Data Flow Analysis**:
+   - UI → Backend API: [SUCCESS/FAIL - details]
+   - Backend → DynamoDB: [SUCCESS/FAIL - details]
+   - DynamoDB → Backend: [SUCCESS/FAIL - details]
+   - Backend → UI: [SUCCESS/FAIL - details]
+
+   **Network Requests Analysis**:
+   - Save API Call: [URL, Method, Status, Payload]
+   - Load API Call: [URL, Method, Status, Response]
+   - Error Messages: [Browser console errors]
+
+   **Identified Issues**:
+   1. [Issue description with exact failure point]
+   2. [Reproduction steps]
+   3. [Suggested fix]
+
+   ## Test Coverage Summary
+   - **Priority Components (Animal Name + Species)**: 2/2 tested
+   - **Secondary Components**: X/28 tested
+   - **Total Components**: 30
+   - **Overall Coverage**: X%
+
+   ## Component Test Results
+
+   ### ✅ PASSED Components
+   | Component | Tab | Test Scenarios | Values Tested | Status |
+   |-----------|-----|----------------|---------------|---------|
+   | Animal Name | Basic Info | 6 phases | Load, Change, Save, Persist, Reload, DB | PASS/FAIL |
+   | Species | Basic Info | 6 phases | Load, Change, Save, Persist, Reload, DB | PASS/FAIL |
+
+   ### ❌ FAILED Components
+   | Component | Tab | Failure Type | Reproduction Steps | Error Details | Fix Priority |
+   |-----------|-----|--------------|-------------------|---------------|--------------|
+   | Animal Name | Basic Info | [failure_type] | 1. Load config 2. Change value 3. Save | [exact_error] | 🔴 CRITICAL |
+   | Species | Basic Info | [failure_type] | 1. Load config 2. Change value 3. Save | [exact_error] | 🔴 CRITICAL |
+
+   ### 🎯 WORKING STATUS SUMMARY
+
+   **COMPONENTS WORKING CORRECTLY**:
+   - ✅ Animal Name: Full data flow working
+   - ✅ Species: Full data flow working
+   **Result**: Animal Configuration components are functional ✅
+
+   **OR**
+
+   **COMPONENTS NOT WORKING**:
+   - ❌ Animal Name: [specific issue - e.g., "values revert after save"]
+   - ❌ Species: [specific issue - e.g., "DB not updated"]
+   **Result**: Animal Configuration components are broken ❌
+   **Impact**: Users cannot reliably update animal information
+   **Fix Required**: Yes, before production use
+
+   ## Test Execution Metrics
+   - Priority Test Duration: [duration for name/species]
+   - Total Test Duration: [full duration]
+   - API Response Times: min=Xms, avg=Yms, max=Zms
+   - Database Query Times: min=Xms, avg=Yms, max=Zms
+   - UI Interaction Times: min=Xms, avg=Yms, max=Zms
+   ```
+
+   **VALIDATE-ANIMAL-CONFIG-COMPONENTS-ADVICE.md**:
+   ```markdown
+   # Animal Config Component Testing Advice
+
+   ## Authentication
+   - Use test@cmz.org / testpass123 for standard user
+   - Use admin@cmz.org / adminpass123 for admin operations
+   - JWT tokens expire after 1 hour, re-auth if tests run long
+
+   ## Valid Test Values by Component
+
+   ### Voice Field
+   - Valid providers: "elevenlabs", "aws-polly", "azure"
+   - Valid voiceIds: Must match provider's voice list
+   - Stability: 0.0 to 1.0 (decimals)
+   - Note: "elevenlabs" requires additional nested settings
+
+   ### AI Model Field
+   - Valid models: "gpt-4", "gpt-3.5-turbo", "claude-2"
+   - Note: Model availability depends on API keys configured
+
+   ### Temperature/Top P
+   - Valid range: 0.0 to 1.0
+   - Precision: Up to 2 decimal places
+   - Default: 0.7 for temperature, 0.9 for top_p
+
+   ### Guardrails
+   - Structure: Array of objects with {id, name, enabled, rules}
+   - Maximum: 10 guardrails per animal
+   - Rules: JSON schema validation applied
+
+   ## Timing Considerations
+   - Allow 2s after save for DynamoDB eventual consistency
+   - Dialog animations take ~300ms, wait before interacting
+   - List refresh may take up to 5s with many animals
+
+   ## Known Issues & Workarounds
+   - Voice field: Temporarily use mock provider "test" if validation fails
+   - Large personality text: May timeout, split into chunks
+   - Concurrent saves: Implement optimistic locking to prevent overwrites
+   ```
+
+2. **Generate Summary Statistics**
+   - Component coverage percentage
+   - Pass/fail rates by tab
+   - Average test execution time
+   - Most common failure patterns
+   - Regression trends
+
+### Phase 5: Continuous Validation
+
+1. **Idempotent Execution**
+   - Tests can be run multiple times without side effects
+   - Each run appends to history, doesn't overwrite
+   - Track improvements/regressions over time
+
+2. **TDD Integration**
+   ```bash
+   # Run before implementing new features
+   /validate-full-animal-config --component new-feature
+   # Verify failure (red)
+
+   # Implement feature
+
+   # Run again to verify success (green)
+   /validate-full-animal-config --component new-feature
+   ```
+
+3. **CI/CD Integration**
+   - Include in pre-merge validation
+   - Run nightly against staging
+   - Alert on new failures or regressions
+
+## Success Criteria
+
+### 🎯 PRIMARY GOALS: Animal Name & Species Fields
+- ✅ **Animal Name field** displays correct DynamoDB value on load
+- ✅ **Species field** displays correct DynamoDB value on load
+- ✅ Both fields accept new values and show them in UI
+- ✅ Save button successfully saves both field changes
+- ✅ **NO REVERSION**: Fields retain new values after save (critical test)
+- ✅ **DynamoDB UPDATED**: New values are written to DynamoDB
+- ✅ **CROSS-SESSION PERSISTENCE**: Values persist when dialog is closed/reopened
+- ✅ Complete data flow validation (UI → API → DB → UI) for both fields
+
+**CRITICAL SUCCESS INDICATOR**: If Animal Name and Species fields pass all 6 test phases, the components are working. If either field fails any phase, the components are broken and require fixing.
+
+### Secondary Goals
+- ✅ Extended component coverage from animal-config-features.txt
+- ✅ Each secondary component tested with 3-5 different values
+- ✅ Dialog close/reopen persistence verified for all components
+- ✅ List refresh updates verified
+- ✅ All test data persisted to DynamoDB
+
+### Quality Metrics
+- Animal Name and Species have complete test coverage with detailed failure analysis
+- Every failure includes exact reproduction steps and root cause analysis
+- Failures categorized for systematic fixes with priority levels
+- Testing advice captures all valid/invalid values discovered
+- Report provides clear WORKING/NOT WORKING status for priority components
+
+### Deliverables
+1. `animal-config-dynamo-mappings.md` - Complete UI to DB field mapping
+2. `VALIDATE-ANIMAL-CONFIG-REPORT.md` - Comprehensive test results with categories
+3. `VALIDATE-ANIMAL-CONFIG-COMPONENTS-ADVICE.md` - Testing guidance and valid values
+4. All DynamoDB animal records populated with test data
+
+## Implementation Notes
+
+### Sequential Reasoning Integration
+Use MCP Sequential Thinking to:
+- Plan optimal test order based on dependencies
+- Predict likely failure patterns
+- Generate hypotheses about root causes
+- Design targeted fix categories
+
+### Tool Usage
+- **Playwright MCP (PRIMARY - REQUIRED)**: Browser automation with VISUAL feedback
+  - MUST use for ALL UI interactions
+  - Browser window MUST be visible to user throughout testing
+  - Take screenshots at key points for documentation
+  - Use browser_snapshot for accessibility testing
+  - Capture console messages and network requests for debugging
+- **AWS MCP**: Direct DynamoDB queries and updates
+- **Grep/Glob**: Locate component IDs in codebase
+- **Read/Write**: Maintain test reports and mappings
+
+**CRITICAL IMPLEMENTATION NOTE**:
+The entire test MUST be performed through Playwright MCP with the browser window visible. This is not optional - it's essential for:
+1. User confidence in test coverage
+2. Visual verification of UI state changes
+3. Debugging when tests fail
+4. Ensuring accessibility compliance
+5. Catching visual regressions that API tests miss
+
+### Error Handling
+- Capture screenshots on failure
+- Log full error stack traces
+- Save API request/response pairs
+- Document browser console errors
+
+### Performance Tracking
+- Measure each operation's duration
+- Identify slow operations (>1s)
+- Track performance regressions
+- Suggest optimization opportunities
+
+## Example Execution
+
+```bash
+# PRIORITY: Full validation with Animal Name & Species focus
+/validate-full-animal-config
+
+# Test only Animal Name and Species (fastest option for primary validation)
+/validate-full-animal-config --component animal-name --component species
+
+# Test Basic Info tab (includes Animal Name & Species)
+/validate-full-animal-config --tab basic-info
+
+# Quick validation of priority fields only
+/validate-full-animal-config --quick --tab basic-info
+
+# Generate report only
+/validate-full-animal-config --report-only
+```
+
+**Recommended Usage**: Start with the basic command to get complete Animal Name and Species validation. The test will prioritize these fields and provide a clear WORKING/NOT WORKING status.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Services not running**: Run `make start-dev` first
+2. **Authentication failures**: Clear browser storage, use fresh test account
+3. **DynamoDB access**: Verify AWS credentials with `aws sts get-caller-identity`
+4. **Timeout errors**: Increase Playwright timeout in slower environments
+5. **Stale mappings**: Delete `animal-config-dynamo-mappings.md` to regenerate
+
+### Debug Mode
+Add `--debug` flag for verbose output including:
+- Each API request/response
+- DynamoDB query results
+- UI element selectors tried
+- Timing for each operation
+
+## Related Commands
+- `/validate-animal-config-edit` - UI-only validation
+- `/validate-animal-config-persistence` - Single endpoint persistence
+- `/validate-data-persistence` - General data flow validation
+- `/systematic-cmz-infrastructure-hardening` - Infrastructure reliability

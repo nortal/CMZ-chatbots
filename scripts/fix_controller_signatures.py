@@ -7,6 +7,8 @@ This ensures body parameters are properly included in function signatures
 import os
 import re
 import yaml
+import keyword
+import builtins
 from pathlib import Path
 from typing import Dict, Set
 
@@ -83,6 +85,15 @@ class ControllerFixer:
             if param_name:
                 # Convert to Python-safe name
                 safe_name = param_name.replace('-', '_')
+
+                # Handle Python reserved keywords using the keyword module
+                if keyword.iskeyword(safe_name) or safe_name in keyword.softkwlist:
+                    safe_name = safe_name + '_'
+
+                # Also check for built-in names that aren't keywords but should be avoided
+                if hasattr(builtins, safe_name):
+                    safe_name = safe_name + '_'
+
                 params.append(safe_name)
 
         # Request body parameter

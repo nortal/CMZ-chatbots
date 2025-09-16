@@ -3,29 +3,35 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
-from openapi_server.models.auth_request import AuthRequest
-from openapi_server.models.auth_response import AuthResponse
-from openapi_server.models.password_reset_request import PasswordResetRequest
+from openapi_server.models.auth_request import AuthRequest  # noqa: E501
+from openapi_server.models.auth_response import AuthResponse  # noqa: E501
+from openapi_server.models.error import Error  # noqa: E501
+from openapi_server.models.password_reset_request import PasswordResetRequest  # noqa: E501
+# from openapi_server import util  # Not used
 
 
 def auth_logout_post():  # noqa: E501
     """Logout current user (invalidate token/session)
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
+     # noqa: E501
+
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
+    # Auto-generated parameter handling
+
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_module_name = "auth_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -53,7 +59,7 @@ def auth_logout_post():  # noqa: E501
             message=f"Controller auth_logout_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_logout_post"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -68,16 +74,18 @@ def auth_logout_post():  # noqa: E501
                 message=f"Internal server error in auth_logout_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_logout_post"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def auth_post(body=None):  # noqa: E501
+def auth_post(body):  # noqa: E501
     """Login or register
 
-    :param body:
-    :type body: dict | bytes
+     # noqa: E501
 
-    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]]
+    :param auth_request: 
+    :type auth_request: dict | bytes
+
+    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
@@ -88,13 +96,13 @@ def auth_post(body=None):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_module_name = "auth_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -122,7 +130,7 @@ def auth_post(body=None):  # noqa: E501
             message=f"Controller auth_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_post"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -137,26 +145,31 @@ def auth_post(body=None):  # noqa: E501
                 message=f"Internal server error in auth_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_post"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
 def auth_refresh_post():  # noqa: E501
     """Refresh access token
 
-    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]]
+     # noqa: E501
+
+
+    :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
     """
+    # Auto-generated parameter handling
+
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_module_name = "auth_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -184,7 +197,7 @@ def auth_refresh_post():  # noqa: E501
             message=f"Controller auth_refresh_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_refresh_post"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -199,16 +212,18 @@ def auth_refresh_post():  # noqa: E501
                 message=f"Internal server error in auth_refresh_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_refresh_post"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def auth_reset_password_post(body=None):  # noqa: E501
+def auth_reset_password_post(body):  # noqa: E501
     """Initiate password reset
 
-    :param body:
-    :type body: dict | bytes
+     # noqa: E501
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
+    :param password_reset_request: 
+    :type password_reset_request: dict | bytes
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
@@ -219,13 +234,13 @@ def auth_reset_password_post(body=None):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "authcontroller".replace("_controller", "")
+        impl_module_name = "auth_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -253,7 +268,7 @@ def auth_reset_password_post(body=None):  # noqa: E501
             message=f"Controller auth_reset_password_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_reset_password_post"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -268,6 +283,4 @@ def auth_reset_password_post(body=None):  # noqa: E501
                 message=f"Internal server error in auth_reset_password_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_reset_password_post"}
             )
-            return error_obj, 500
-
-
+            return error_obj.to_dict(), 500

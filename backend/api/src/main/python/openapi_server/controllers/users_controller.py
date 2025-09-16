@@ -3,26 +3,32 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.models.user import User  # noqa: E501
+# from openapi_server import util  # Not used
 
 
 def me_get():  # noqa: E501
     """Current authenticated user
 
-    :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]]
+     # noqa: E501
+
+
+    :rtype: Union[User, Tuple[User, int], Tuple[User, int, Dict[str, str]]
     """
+    # Auto-generated parameter handling
+
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "userscontroller".replace("_controller", "")
+        impl_module_name = "users_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -50,7 +56,7 @@ def me_get():  # noqa: E501
             message=f"Controller me_get implementation not found: {str(e)}",
             details={"controller": "UsersController", "operation": "me_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -65,6 +71,4 @@ def me_get():  # noqa: E501
                 message=f"Internal server error in me_get: {str(e)}",
                 details={"controller": "UsersController", "operation": "me_get"}
             )
-            return error_obj, 500
-
-
+            return error_obj.to_dict(), 500

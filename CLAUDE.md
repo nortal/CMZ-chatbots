@@ -306,7 +306,7 @@ The API includes these major endpoint groups:
 
 ## API Validation Implementation Template (/nextfive)
 
-**Use this prompt for systematic implementation of API validation tickets with optional specific ticket targeting:**
+**Use this prompt for systematic implementation of API validation tickets with optional specific ticket targeting.**
 
 ### Basic Usage (Discovery Mode)
 ```
@@ -329,6 +329,25 @@ The API includes these major endpoint groups:
 # Same as above, supports both space and comma separation
 
 # If dependencies exceed 5 tickets total, reports and continues with priority subset
+```
+
+### Jira Status Management (NEW)
+The `/nextfive` command now automatically manages Jira ticket statuses:
+
+**Automatic Status Transitions:**
+- **Start of work**: Tickets move to "In Progress" (Phase 3)
+- **MR ready**: Tickets move to "Done" (Phase 11)
+
+**Manual Status Updates:**
+```bash
+# Move tickets to In Progress when starting work
+./scripts/manage_jira_tickets.sh batch-start PR003946-91 PR003946-88
+
+# Move tickets to Done when MR is ready
+./scripts/manage_jira_tickets.sh batch-done PR003946-91 PR003946-88
+
+# Check current status
+./scripts/manage_jira_tickets.sh status PR003946-91
 ```
 
 ### Implementation Template
@@ -362,19 +381,53 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - Docker containerized development environment
 - All business logic must go in `impl/` directory (never in generated code)
 
-## Required Process - Discovery-First Approach
+## Required Process - Discovery-First Approach with TDD
 1. **DISCOVERY FIRST**: Run integration tests to identify actual state (never assume based on Jira status)
-2. **ENHANCED DISCOVERY**: Use `scripts/enhanced_discovery.py` for dependency analysis and priority scoring
-3. **TWO-PHASE QUALITY GATES**: Execute `scripts/two_phase_quality_gates.sh` for systematic validation
-4. **SEQUENTIAL REASONING**: Use MCP to predict outcomes and plan systematic approach
-5. **SCOPE ASSESSMENT**: If fewer than 5 failing tickets, identify comprehensive enhancement opportunities
-6. **GIT WORKFLOW**: MANDATORY - Always start from dev, create feature branch, target dev for MR
-7. **SYSTEMATIC IMPLEMENTATION**: Focus on OpenAPI spec enhancements + model regeneration + infrastructure
-8. **SECURITY & QUALITY**: Address GitHub Advanced Security scanner issues systematically
-9. **REPOSITORY HYGIENE**: Apply learnings from PR #32 retrospective to prevent test artifact pollution
-10. **FEATURE BRANCH MR**: Create MR from feature branch targeting dev (never commit directly to dev)
-11. **COPILOT REVIEW**: Add reviewer and address feedback with inline comment resolution
-12. **CORRECTIVE JIRA**: Verify ticket mapping before updates, use corrective comments for mistakes
+2. **TDD CHECK**: If ticket doesn't exist in test suite, CREATE TEST FIRST following TDD practices (see below)
+3. **ENHANCED DISCOVERY**: Use `scripts/enhanced_discovery.py` for dependency analysis and priority scoring
+4. **TWO-PHASE QUALITY GATES**: Execute `scripts/two_phase_quality_gates.sh` for systematic validation
+5. **SEQUENTIAL REASONING**: Use MCP to predict outcomes and plan systematic approach
+6. **SCOPE ASSESSMENT**: If fewer than 5 failing tickets, identify comprehensive enhancement opportunities
+7. **GIT WORKFLOW**: MANDATORY - Always start from dev, create feature branch, target dev for MR
+8. **SYSTEMATIC IMPLEMENTATION**: Focus on OpenAPI spec enhancements + model regeneration + infrastructure
+9. **SECURITY & QUALITY**: Address GitHub Advanced Security scanner issues systematically
+10. **REPOSITORY HYGIENE**: Apply learnings from PR #32 retrospective to prevent test artifact pollution
+11. **FEATURE BRANCH MR**: Create MR from feature branch targeting dev (never commit directly to dev)
+12. **COPILOT REVIEW**: Add reviewer and address feedback with inline comment resolution
+13. **CORRECTIVE JIRA**: Verify ticket mapping before updates, use corrective comments for mistakes
+
+### TDD Process for New Tickets (Step 2)
+When a ticket doesn't exist in the test suite (like PR003946-144):
+
+1. **Create Test Structure** (follow .claude/commands/setup-tdd.md):
+   ```bash
+   mkdir -p tests/integration/PR003946-XXX
+   ```
+
+2. **Create Test Specification**:
+   - `PR003946-XXX-ADVICE.md` - Feature description & acceptance criteria
+   - `PR003946-XXX-howto-test.md` - Explicit test instructions with pass/fail criteria
+   - Add test method to `test_api_validation_epic.py` or appropriate test file
+
+3. **Write Failing Test First**:
+   ```python
+   def test_pr003946_xxx_feature_description(self, client):
+       """PR003946-XXX: [Feature description from Jira or inferred from context]"""
+       # Test implementation that will initially fail
+       response = client.post('/endpoint', ...)
+       assert response.status_code == expected_code
+   ```
+
+4. **Run Test to Verify It Fails**:
+   ```bash
+   pytest tests/integration/test_api_validation_epic.py::test_pr003946_xxx -xvs
+   ```
+
+5. **Implement Feature** to make test pass
+
+6. **Document Results**:
+   - `PR003946-XXX-YYYY-MM-DD-HHMMSS-results.md` - Test execution report
+   - `PR003946-XXX-history.txt` - Pass/fail history tracking
 
 ## Technical Requirements
 - **Focus on Endpoint Implementation**: Prioritize new API endpoints over strict business validation
@@ -445,18 +498,23 @@ add_simple_comment "PR003946-XX" "CORRECTION: Previous comment was incorrect..."
 ## Complete Workflow
 1. **DISCOVERY PHASE**: Run integration tests to identify actual failing tickets
 2. **PLANNING PHASE**: List discovered tickets and use sequential reasoning to plan implementation
-3. **SCOPE EXPANSION**: If fewer than 5 tickets, identify new endpoint opportunities from OpenAPI spec
-4. **IMPLEMENTATION PHASE**: Implement systematically with comprehensive testing
-5. **QUALITY PHASE**: Address security issues and run quality checks
-6. **MR PHASE**: Create MR targeting `dev` branch, then add Copilot reviewer with `gh pr edit <PR_NUMBER> --add-reviewer Copilot`
-7. **DOCUMENTATION PHASE**: Add history documentation to MR
-8. **JIRA PHASE**: Update Jira tickets using automated script: `./scripts/update_jira_simple.sh`
+3. **JIRA START PHASE**: Move selected tickets to "In Progress" status
+   - Use `./scripts/manage_jira_tickets.sh batch-start PR003946-XX PR003946-YY ...`
+   - Automatic comment added: "🚀 Starting implementation via /nextfive command"
+4. **SCOPE EXPANSION**: If fewer than 5 tickets, identify new endpoint opportunities from OpenAPI spec
+5. **IMPLEMENTATION PHASE**: Implement systematically with comprehensive testing
+6. **QUALITY PHASE**: Address security issues and run quality checks
+7. **MR PHASE**: Create MR targeting `dev` branch, then add Copilot reviewer with `gh pr edit <PR_NUMBER> --add-reviewer Copilot`
+8. **DOCUMENTATION PHASE**: Add history documentation to MR
 9. **REVIEW PHASE**: Wait for and address Copilot review feedback (one round)
    - Address all inline code comments and suggestions
    - **Mark resolved comments**: Use `gh pr comment <comment-id> --body "✅ Resolved: [brief description]"` to mark inline comments as resolved
    - Commit fixes with descriptive messages explaining what was addressed
 10. **VALIDATION PHASE**: Re-test and verify all functionality after changes
-11. **COMPLETION PHASE**: Use sequential reasoning to validate all steps completed correctly and ensure merge readiness
+11. **JIRA DONE PHASE**: Move implemented tickets to "Done" status when MR is ready
+   - Use `./scripts/manage_jira_tickets.sh batch-done PR003946-XX PR003946-YY ...`
+   - Automatic comment added: "✅ Implementation complete - MR ready for merge"
+12. **COMPLETION PHASE**: Use sequential reasoning to validate all steps completed correctly and ensure merge readiness
 
 ## Retrospective Integration (PR #32 Learnings)
 
@@ -662,6 +720,21 @@ When fewer than 5 failing tickets exist, implement systematic enhancements:
 # Result: Standard /nextfive behavior (discover and implement 5 tickets)
 ```
 
+### Example 9: Ticket Not in Test Suite (TDD Required)
+```bash
+/nextfive PR003946-144
+# Ticket PR003946-144 not found in test suite
+# TDD Process Triggered:
+#   1. Create test structure: tests/integration/PR003946-144/
+#   2. Write PR003946-144-ADVICE.md with feature requirements
+#   3. Write PR003946-144-howto-test.md with test steps
+#   4. Add test_pr003946_144_feature() to test_api_validation_epic.py
+#   5. Run test to verify it fails
+#   6. Implement feature to make test pass
+#   7. Document in PR003946-144-YYYY-MM-DD-HHMMSS-results.md
+# Result: Test created first, then implementation follows TDD principles
+```
+
 **Discovery Commands Reference:**
 ```bash
 # Find failing tickets
@@ -720,30 +793,47 @@ Use `/prepare-mr` command to systematically verify readiness.
 
 ## Jira Update Script Template
 
-The project includes a working Jira automation script at `/scripts/update_jira_simple.sh`:
+The project includes enhanced Jira management scripts:
 
+### Main Script: `/scripts/manage_jira_tickets.sh`
 **Key Features:**
+- **Full Status Management**: To Do → In Progress → Done transitions
+- **Intelligent Transition Detection**: Automatically finds correct transition IDs
+- **Batch Operations**: Update multiple tickets at once
+- **Status Verification**: Checks current status before transitioning
+- **Error Handling**: Provides clear success/failure feedback
+
+**Usage Patterns:**
+```bash
+# Move single ticket to In Progress
+./scripts/manage_jira_tickets.sh start PR003946-91 "Starting implementation"
+
+# Move single ticket to Done
+./scripts/manage_jira_tickets.sh done PR003946-91 "MR ready for merge"
+
+# Batch update multiple tickets to In Progress
+./scripts/manage_jira_tickets.sh batch-start PR003946-91 PR003946-88 PR003946-75
+
+# Batch update multiple tickets to Done
+./scripts/manage_jira_tickets.sh batch-done PR003946-91 PR003946-88 PR003946-75
+
+# Check ticket status
+./scripts/manage_jira_tickets.sh status PR003946-91
+
+# Add comment only
+./scripts/manage_jira_tickets.sh comment PR003946-91 "Implementation note"
+```
+
+### Legacy Script: `/scripts/update_jira_simple.sh`
 - **Basic Authentication**: Uses `email:token` encoded with base64 (not Bearer token)
 - **Status Transitions**: Automatically moves tickets from "To Do" → "In Progress"
 - **Simple Comments**: Avoids complex JSON that causes parsing errors
-- **Error Handling**: Provides clear success/failure feedback
-
-**Usage Pattern:**
-```bash
-# After implementing tickets, update them with:
-./scripts/update_jira_simple.sh
-
-# Script will:
-# 1. Test API connectivity
-# 2. Transition ticket status
-# 3. Add implementation comments
-# 4. Provide verification links
-```
+- **Warning**: Updates incorrect tickets (PR003946-87, PR003946-67)
 
 **Authentication Setup:**
 - Uses existing `JIRA_API_TOKEN` environment variable
 - Requires `kc.stegbauer@nortal.com` email for Basic Auth
-- Script handles base64 encoding automatically
+- Scripts handle base64 encoding automatically
 
 ## Version Tracking System
 For comprehensive API version validation and frontend compatibility checking, see:
@@ -756,6 +846,8 @@ For comprehensive end-to-end validation of data flow from UI interactions to Dyn
 - `VALIDATE-DATA-PERSISTENCE-ADVICE.md` - Implementation guidance, troubleshooting, and best practices for data integrity testing
 - `.claude/commands/validate-animal-config-persistence.md` - Focused validation for Animal Config endpoint data persistence
 - `VALIDATE-ANIMAL-CONFIG-PERSISTENCE-ADVICE.md` - Best practices for Animal Config persistence validation
+- `.claude/commands/validate-animal-config-fields.md` - Systematic field-level testing of Animal Name, Scientific Name, and Temperature controls with visible DynamoDB validation
+- `VALIDATE-ANIMAL-CONFIG-FIELDS-ADVICE.md` - Comprehensive testing best practices for individual field validation
 - `.claude/commands/validate-full-animal-config.md` - Comprehensive E2E testing of all 30 Animal Config dialog components with TDD approach
 - `VALIDATE-ANIMAL-CONFIG-COMPONENTS-ADVICE.md` - Component-specific testing advice and valid values discovered during validation
 
@@ -790,6 +882,20 @@ The backend health validation system ensures users receive appropriate error mes
 For generating new systematic command prompts with sequential reasoning and comprehensive documentation:
 - `.claude/commands/create-solution.md` - Meta-prompt generator using `/create-solution <description>`
 - `CREATE-SOLUTION-ADVICE.md` - Best practices and lessons learned for prompt creation
+
+## Authentication Architecture Fix
+For resolving persistent JWT token issues and auth endpoint regressions:
+- `.claude/commands/fix-auth-architecture.md` - Comprehensive auth architecture solution using `/fix-auth-architecture`
+- `FIX-AUTH-ARCHITECTURE-ADVICE.md` - Implementation guidance, troubleshooting, and best practices
+- **Key Components**:
+  - `impl/utils/jwt_utils.py` - Centralized JWT token generation ensuring frontend compatibility
+  - `impl/auth.py` - Multi-mode authentication (mock/dynamodb/cognito) with environment switching
+  - `tests/test_auth_contract.py` - Contract tests preventing auth regressions
+- **Critical Success Factors**:
+  - Always generate 3-part JWT tokens (header.payload.signature)
+  - Use AUTH_MODE environment variable for auth backend selection
+  - Run contract tests after any auth changes
+  - Use `make post-generate` after OpenAPI regeneration (never standalone generate)
 
 ## MR Review System
 For automated review and validation of GitHub Pull Requests:

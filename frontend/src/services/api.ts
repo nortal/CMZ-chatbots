@@ -166,7 +166,8 @@ export const utils = {
    */
   transformAnimalForFrontend(backendAnimal: Animal) {
     return {
-      id: backendAnimal.id || backendAnimal.animalId || 'unknown',
+      id: backendAnimal.animalId || 'unknown',
+      animalId: backendAnimal.animalId || 'unknown',  // Ensure animalId is always present
       name: backendAnimal.name,
       species: backendAnimal.species,
       active: backendAnimal.status === 'active',

@@ -231,8 +231,6 @@ yarn-error.log*
 package-lock.json
 
 # Development Tools
-.claude/
-.mcp.json
 .vscode/
 .idea/
 
@@ -240,3 +238,4 @@ package-lock.json
 .DS_Store
 Thumbs.db
 .env.local
+.env

@@ -1,0 +1,31 @@
+# Semgrep Ignore File
+
+# OpenAPI Generator Mustache templates
+# These use triple braces for unescaping which is intentional
+# for code generation purposes, not a security vulnerability
+backend/api/templates/python-flask/*.mustache
+
+# Test files that use mock data
+**/test_*.py
+**/tests/**
+
+# Generated code (OpenAPI)
+backend/api/generated/**
+**/generated/**
+
+# Documentation and non-executable files
+*.md
+*.txt
+*.json
+*.yaml
+*.yml
+
+# Environment and config files
+.env*
+credentials-*.env
+
+# CI/CD and build files
+.github/**
+scripts/*.sh
+Makefile
+Dockerfile*

@@ -3,19 +3,23 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.models.error import Error  # noqa: E501
+from openapi_server.models.media import Media  # noqa: E501
+from openapi_server.models.media_get200_response import MediaGet200Response  # noqa: E501
+# from openapi_server import util  # Not used
 
 
-def media_delete(media_id, permanent):  # noqa: E501
+def media_delete(media_id, permanent=None):  # noqa: E501
     """Delete media by id (soft delete with validation)
 
+     # noqa: E501
+
     :param media_id: Media identifier to delete
-    :type media_id: strstr | bytes
-
+    :type media_id: str
     :param permanent: Whether to permanently delete (true) or soft delete (false, default)
-    :type permanent: boolbool | bytes
+    :type permanent: bool
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -24,13 +28,13 @@ def media_delete(media_id, permanent):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "mediacontroller".replace("_controller", "")
+        impl_module_name = "media_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -42,7 +46,7 @@ def media_delete(media_id, permanent):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(media_idpermanent)
+        result = impl_function(media_id, permanent)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -58,7 +62,7 @@ def media_delete(media_id, permanent):  # noqa: E501
             message=f"Controller media_delete implementation not found: {str(e)}",
             details={"controller": "MediaController", "operation": "media_delete"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -73,25 +77,24 @@ def media_delete(media_id, permanent):  # noqa: E501
                 message=f"Internal server error in media_delete: {str(e)}",
                 details={"controller": "MediaController", "operation": "media_delete"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def media_get(media_id, animal_id, kind, limit):  # noqa: E501
+def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E501
     """Fetch media metadata by id with enhanced filters
 
+     # noqa: E501
+
     :param media_id: Specific media identifier to retrieve
-    :type media_id: strstr | bytes
-
+    :type media_id: str
     :param animal_id: Filter media by animal identifier
-    :type animal_id: strstr | bytes
-
+    :type animal_id: str
     :param kind: Filter media by type
-    :type kind: strstr | bytes
-
+    :type kind: str
     :param limit: Maximum number of media items to return
-    :type limit: intint | bytes
+    :type limit: int
 
-    :rtype: Union[MediaGet200Response, Tuple[MediaGet200Response, int], Tuple[MediaGet200Response, int, Dict[str, str]]]
+    :rtype: Union[MediaGet200Response, Tuple[MediaGet200Response, int], Tuple[MediaGet200Response, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -100,13 +103,13 @@ def media_get(media_id, animal_id, kind, limit):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "mediacontroller".replace("_controller", "")
+        impl_module_name = "media_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -118,7 +121,7 @@ def media_get(media_id, animal_id, kind, limit):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(media_idanimal_idkindlimit)
+        result = impl_function(media_id, animal_id, kind, limit)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -134,7 +137,7 @@ def media_get(media_id, animal_id, kind, limit):  # noqa: E501
             message=f"Controller media_get implementation not found: {str(e)}",
             details={"controller": "MediaController", "operation": "media_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -149,28 +152,26 @@ def media_get(media_id, animal_id, kind, limit):  # noqa: E501
                 message=f"Internal server error in media_get: {str(e)}",
                 details={"controller": "MediaController", "operation": "media_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def upload_media_post(file, title, animal_id, description, tags):  # noqa: E501
+def upload_media_post(file, title=None, animal_id=None, description=None, tags=None):  # noqa: E501
     """Upload media (image/audio/video) with enhanced validation
 
+     # noqa: E501
+
     :param file: Media file to upload (max 50MB)
-    :type file: strstrstrstr | bytes
-
+    :type file: str
     :param title: Human-readable title for the media
-    :type title: strstr | bytes
-
+    :type title: str
     :param animal_id: Associated animal identifier
-    :type animal_id: strstr | bytes
-
+    :type animal_id: str
     :param description: Optional description or context for the media
-    :type description: strstr | bytes
-
+    :type description: str
     :param tags: Optional metadata tags
-    :type tags: List[str] | bytes
+    :type tags: List[str]
 
-    :rtype: Union[Media, Tuple[Media, int], Tuple[Media, int, Dict[str, str]]]
+    :rtype: Union[Media, Tuple[Media, int], Tuple[Media, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -179,13 +180,13 @@ def upload_media_post(file, title, animal_id, description, tags):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "mediacontroller".replace("_controller", "")
+        impl_module_name = "media_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -197,7 +198,7 @@ def upload_media_post(file, title, animal_id, description, tags):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(filetitleanimal_iddescriptiontags)
+        result = impl_function(file, title, animal_id, description, tags)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -213,7 +214,7 @@ def upload_media_post(file, title, animal_id, description, tags):  # noqa: E501
             message=f"Controller upload_media_post implementation not found: {str(e)}",
             details={"controller": "MediaController", "operation": "upload_media_post"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -228,6 +229,4 @@ def upload_media_post(file, title, animal_id, description, tags):  # noqa: E501
                 message=f"Internal server error in upload_media_post: {str(e)}",
                 details={"controller": "MediaController", "operation": "upload_media_post"}
             )
-            return error_obj, 500
-
-
+            return error_obj.to_dict(), 500

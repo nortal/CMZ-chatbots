@@ -3,16 +3,21 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.models.billing_summary import BillingSummary  # noqa: E501
+from openapi_server.models.paged_logs import PagedLogs  # noqa: E501
+from openapi_server.models.performance_metrics import PerformanceMetrics  # noqa: E501
+# from openapi_server import util  # Not used
 
 
-def billing_get(period):  # noqa: E501
+def billing_get(period=None):  # noqa: E501
     """Billing summary
 
-    :param period: Billing period (e.g., 2025-08)
-    :type period: strstr | bytes
+     # noqa: E501
 
-    :rtype: Union[BillingSummary, Tuple[BillingSummary, int], Tuple[BillingSummary, int, Dict[str, str]]]
+    :param period: Billing period (e.g., 2025-08)
+    :type period: str
+
+    :rtype: Union[BillingSummary, Tuple[BillingSummary, int], Tuple[BillingSummary, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -21,13 +26,13 @@ def billing_get(period):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "analyticscontroller".replace("_controller", "")
+        impl_module_name = "analytics_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -55,7 +60,7 @@ def billing_get(period):  # noqa: E501
             message=f"Controller billing_get implementation not found: {str(e)}",
             details={"controller": "AnalyticsController", "operation": "billing_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -70,43 +75,43 @@ def billing_get(period):  # noqa: E501
                 message=f"Internal server error in billing_get: {str(e)}",
                 details={"controller": "AnalyticsController", "operation": "billing_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def logs_get(level, start, end, page, page_size):  # noqa: E501
+def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # noqa: E501
     """Application logs (paged/filtered)
 
+     # noqa: E501
+
     :param level: 
-    :type level: strstr | bytes
-
+    :type level: str
     :param start: 
-    :type start: datetimedatetime | bytes
-
+    :type start: str
     :param end: 
-    :type end: datetimedatetime | bytes
-
+    :type end: str
     :param page: 
-    :type page: intint | bytes
-
+    :type page: int
     :param page_size: 
-    :type page_size: intint | bytes
+    :type page_size: int
 
-    :rtype: Union[PagedLogs, Tuple[PagedLogs, int], Tuple[PagedLogs, int, Dict[str, str]]]
+    :rtype: Union[PagedLogs, Tuple[PagedLogs, int], Tuple[PagedLogs, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
+    start = util.deserialize_datetime(start)
+    end = util.deserialize_datetime(end)
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "analyticscontroller".replace("_controller", "")
+        impl_module_name = "analytics_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -118,7 +123,7 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(levelstartendpagepage_size)
+        result = impl_function(level, start, end, page, page_size)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -134,7 +139,7 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
             message=f"Controller logs_get implementation not found: {str(e)}",
             details={"controller": "AnalyticsController", "operation": "logs_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -149,34 +154,37 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
                 message=f"Internal server error in logs_get: {str(e)}",
                 details={"controller": "AnalyticsController", "operation": "logs_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
 def performance_metrics_get(start, end):  # noqa: E501
     """Performance metrics between dates
 
+     # noqa: E501
+
     :param start: ISO8601 start (inclusive)
-    :type start: datetimedatetime | bytes
-
+    :type start: str
     :param end: ISO8601 end (exclusive)
-    :type end: datetimedatetime | bytes
+    :type end: str
 
-    :rtype: Union[PerformanceMetrics, Tuple[PerformanceMetrics, int], Tuple[PerformanceMetrics, int, Dict[str, str]]]
+    :rtype: Union[PerformanceMetrics, Tuple[PerformanceMetrics, int], Tuple[PerformanceMetrics, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
+    start = util.deserialize_datetime(start)
+    end = util.deserialize_datetime(end)
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "analyticscontroller".replace("_controller", "")
+        impl_module_name = "analytics_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -188,7 +196,7 @@ def performance_metrics_get(start, end):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(startend)
+        result = impl_function(start, end)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -204,7 +212,7 @@ def performance_metrics_get(start, end):  # noqa: E501
             message=f"Controller performance_metrics_get implementation not found: {str(e)}",
             details={"controller": "AnalyticsController", "operation": "performance_metrics_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -219,6 +227,4 @@ def performance_metrics_get(start, end):  # noqa: E501
                 message=f"Internal server error in performance_metrics_get: {str(e)}",
                 details={"controller": "AnalyticsController", "operation": "performance_metrics_get"}
             )
-            return error_obj, 500
-
-
+            return error_obj.to_dict(), 500

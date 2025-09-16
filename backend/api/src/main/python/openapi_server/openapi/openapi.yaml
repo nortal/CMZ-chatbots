@@ -193,6 +193,7 @@ paths:
       summary: Update an existing animal
       tags:
       - Animals
+      x-body-name: animal_update
       x-openapi-router-controller: openapi_server.controllers.animals_controller
   /animal_config:
     get:
@@ -454,6 +455,7 @@ paths:
       summary: Login or register
       tags:
       - Auth
+      x-body-name: auth_request
       x-openapi-router-controller: openapi_server.controllers.auth_controller
   /auth/logout:
     post:
@@ -516,6 +518,7 @@ paths:
       summary: Initiate password reset
       tags:
       - Auth
+      x-body-name: password_reset_request
       x-openapi-router-controller: openapi_server.controllers.auth_controller
   /billing:
     get:
@@ -1512,6 +1515,26 @@ paths:
       tags:
       - System
       x-openapi-router-controller: openapi_server.controllers.system_controller
+  /test/stress/body:
+    post:
+      operationId: test_stress_body
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/testStressBody_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/testStressBody_201_response"
+          description: Created
+      summary: Test endpoint for body parameter validation
+      tags:
+      - test
+      x-openapi-router-controller: openapi_server.controllers.test_controller
   /upload_media:
     post:
       operationId: upload_media_post
@@ -2665,6 +2688,7 @@ components:
       type: object
     AnimalUpdate:
       example:
+        personality: personality
         species: species
         name: name
         status: active
@@ -2684,6 +2708,11 @@ components:
           - active
           - hidden
           title: status
+          type: string
+        personality:
+          description: The personality description of the animal
+          maxLength: 500
+          title: personality
           type: string
       title: AnimalUpdate
       type: object
@@ -3747,6 +3776,28 @@ components:
           $ref: "#/components/schemas/Media"
         type: array
       title: _media_get_200_response
+    testStressBody_request:
+      properties:
+        data:
+          title: data
+          type: string
+      required:
+      - data
+      title: testStressBody_request
+      type: object
+    testStressBody_201_response:
+      example:
+        data: data
+        id: id
+      properties:
+        id:
+          title: id
+          type: string
+        data:
+          title: data
+          type: string
+      title: testStressBody_201_response
+      type: object
     ConvoTurnResponse_turn:
       example:
         tokensCompletion: 6

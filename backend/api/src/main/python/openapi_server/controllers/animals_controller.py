@@ -3,22 +3,25 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
-from openapi_server.models.animal_config import AnimalConfig
-from openapi_server.models.animal_config_update import AnimalConfigUpdate
-from openapi_server.models.animal import Animal
-from openapi_server.models.animal_input import AnimalInput
-from openapi_server.models.animal_update import AnimalUpdate
-from openapi_server.models.animal_details import AnimalDetails
+from openapi_server.models.animal import Animal  # noqa: E501
+from openapi_server.models.animal_config import AnimalConfig  # noqa: E501
+from openapi_server.models.animal_config_update import AnimalConfigUpdate  # noqa: E501
+from openapi_server.models.animal_details import AnimalDetails  # noqa: E501
+from openapi_server.models.animal_input import AnimalInput  # noqa: E501
+from openapi_server.models.animal_update import AnimalUpdate  # noqa: E501
+from openapi_server.models.error import Error  # noqa: E501
+# from openapi_server import util  # Not used
 
 
 def animal_config_get(animal_id):  # noqa: E501
     """Get animal configuration
 
-    :param animal_id: 
-    :type animal_id: strstr | bytes
+     # noqa: E501
 
-    :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]]
+    :param animal_id: 
+    :type animal_id: str
+
+    :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -27,13 +30,13 @@ def animal_config_get(animal_id):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -61,7 +64,7 @@ def animal_config_get(animal_id):  # noqa: E501
             message=f"Controller animal_config_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_config_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -76,19 +79,20 @@ def animal_config_get(animal_id):  # noqa: E501
                 message=f"Internal server error in animal_config_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_config_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def animal_config_patch(animal_id, body=None):  # noqa: E501
+def animal_config_patch(animal_id, body):  # noqa: E501
     """Update animal configuration
 
-    :param animal_id:
-    :type animal_id: str | bytes
+     # noqa: E501
 
-    :param body:
-    :type body: dict | bytes
+    :param animal_id: 
+    :type animal_id: str
+    :param animal_config_update: 
+    :type animal_config_update: dict | bytes
 
-    :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]]
+    :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
@@ -99,13 +103,13 @@ def animal_config_patch(animal_id, body=None):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -133,7 +137,7 @@ def animal_config_patch(animal_id, body=None):  # noqa: E501
             message=f"Controller animal_config_patch implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_config_patch"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -148,16 +152,18 @@ def animal_config_patch(animal_id, body=None):  # noqa: E501
                 message=f"Internal server error in animal_config_patch: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_config_patch"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
 def animal_details_get(animal_id):  # noqa: E501
     """Fetch animal details
 
-    :param animal_id: 
-    :type animal_id: strstr | bytes
+     # noqa: E501
 
-    :rtype: Union[AnimalDetails, Tuple[AnimalDetails, int], Tuple[AnimalDetails, int, Dict[str, str]]]
+    :param animal_id: 
+    :type animal_id: str
+
+    :rtype: Union[AnimalDetails, Tuple[AnimalDetails, int], Tuple[AnimalDetails, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -166,13 +172,13 @@ def animal_details_get(animal_id):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -200,7 +206,7 @@ def animal_details_get(animal_id):  # noqa: E501
             message=f"Controller animal_details_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_details_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -215,16 +221,18 @@ def animal_details_get(animal_id):  # noqa: E501
                 message=f"Internal server error in animal_details_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_details_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def animal_id_delete(id):  # noqa: E501
+def animal_id_delete(id_):  # noqa: E501
     """Delete an animal (soft delete)
 
-    :param id: 
-    :type id: strstr | bytes
+     # noqa: E501
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]]
+    :param id: 
+    :type id: str
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -233,13 +241,13 @@ def animal_id_delete(id):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -251,7 +259,7 @@ def animal_id_delete(id):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(id)
+        result = impl_function(id_)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -267,7 +275,7 @@ def animal_id_delete(id):  # noqa: E501
             message=f"Controller animal_id_delete implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_id_delete"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -282,16 +290,18 @@ def animal_id_delete(id):  # noqa: E501
                 message=f"Internal server error in animal_id_delete: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_id_delete"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def animal_id_get(id):  # noqa: E501
+def animal_id_get(id_):  # noqa: E501
     """Get a specific animal by ID
 
-    :param id: 
-    :type id: strstr | bytes
+     # noqa: E501
 
-    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]]
+    :param id: 
+    :type id: str
+
+    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -300,13 +310,13 @@ def animal_id_get(id):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -318,7 +328,7 @@ def animal_id_get(id):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(id)
+        result = impl_function(id_)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -334,7 +344,7 @@ def animal_id_get(id):  # noqa: E501
             message=f"Controller animal_id_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_id_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -349,36 +359,37 @@ def animal_id_get(id):  # noqa: E501
                 message=f"Internal server error in animal_id_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_id_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def animal_id_put(id, animal_update):  # noqa: E501
+def animal_id_put(id_, body):  # noqa: E501
     """Update an existing animal
 
+     # noqa: E501
+
     :param id: 
-    :type id: strstr | bytes
-
+    :type id: str
     :param animal_update: 
-    :type animal_update:  | bytes
+    :type animal_update: dict | bytes
 
-    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]]
+    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        animal_update = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        body = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -390,7 +401,7 @@ def animal_id_put(id, animal_update):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(id, animal_update)
+        result = impl_function(id_, body)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -406,7 +417,7 @@ def animal_id_put(id, animal_update):  # noqa: E501
             message=f"Controller animal_id_put implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_id_put"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -421,16 +432,18 @@ def animal_id_put(id, animal_update):  # noqa: E501
                 message=f"Internal server error in animal_id_put: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_id_put"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
 def animal_list_get(status=None):  # noqa: E501
     """List animals
 
-    :param status: Filter animals by status
-    :type status: str | None
+     # noqa: E501
 
-    :rtype: Union[List[Animal], Tuple[List[Animal], int], Tuple[List[Animal], int, Dict[str, str]]]
+    :param status: Filter animals by status
+    :type status: str
+
+    :rtype: Union[List[Animal], Tuple[List[Animal], int], Tuple[List[Animal], int, Dict[str, str]]
     """
     # Auto-generated parameter handling
 
@@ -439,13 +452,13 @@ def animal_list_get(status=None):  # noqa: E501
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -473,7 +486,7 @@ def animal_list_get(status=None):  # noqa: E501
             message=f"Controller animal_list_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_list_get"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -488,33 +501,35 @@ def animal_list_get(status=None):  # noqa: E501
                 message=f"Internal server error in animal_list_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_list_get"}
             )
-            return error_obj, 500
+            return error_obj.to_dict(), 500
 
 
-def animal_post(animal_input):  # noqa: E501
+def animal_post(body):  # noqa: E501
     """Create a new animal
 
-    :param animal_input: 
-    :type animal_input:  | bytes
+     # noqa: E501
 
-    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]]
+    :param animal_input: 
+    :type animal_input: dict | bytes
+
+    :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        animal_input = AnimalInput.from_dict(connexion.request.get_json())  # noqa: E501
+        body = AnimalInput.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
     try:
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
-        impl_module_name = "animalscontroller".replace("_controller", "")
+        impl_module_name = "animals_controller".replace("_controller", "")
         impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
             # Pattern 1: Direct module import
-            impl_module = __import__(f"openapi_server.controllers.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
@@ -526,7 +541,7 @@ def animal_post(animal_input):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(animal_input)
+        result = impl_function(body)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -542,7 +557,7 @@ def animal_post(animal_input):  # noqa: E501
             message=f"Controller animal_post implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_post"}
         )
-        return error_obj, 501
+        return error_obj.to_dict(), 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -557,6 +572,4 @@ def animal_post(animal_input):  # noqa: E501
                 message=f"Internal server error in animal_post: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_post"}
             )
-            return error_obj, 500
-
-
+            return error_obj.to_dict(), 500
