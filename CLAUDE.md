@@ -306,7 +306,7 @@ The API includes these major endpoint groups:
 
 ## API Validation Implementation Template (/nextfive)
 
-**Use this prompt for systematic implementation of API validation tickets with optional specific ticket targeting:**
+**Use this prompt for systematic implementation of API validation tickets with optional specific ticket targeting.**
 
 ### Basic Usage (Discovery Mode)
 ```
@@ -329,6 +329,25 @@ The API includes these major endpoint groups:
 # Same as above, supports both space and comma separation
 
 # If dependencies exceed 5 tickets total, reports and continues with priority subset
+```
+
+### Jira Status Management (NEW)
+The `/nextfive` command now automatically manages Jira ticket statuses:
+
+**Automatic Status Transitions:**
+- **Start of work**: Tickets move to "In Progress" (Phase 3)
+- **MR ready**: Tickets move to "Done" (Phase 11)
+
+**Manual Status Updates:**
+```bash
+# Move tickets to In Progress when starting work
+./scripts/manage_jira_tickets.sh batch-start PR003946-91 PR003946-88
+
+# Move tickets to Done when MR is ready
+./scripts/manage_jira_tickets.sh batch-done PR003946-91 PR003946-88
+
+# Check current status
+./scripts/manage_jira_tickets.sh status PR003946-91
 ```
 
 ### Implementation Template
@@ -442,18 +461,23 @@ add_simple_comment "PR003946-XX" "CORRECTION: Previous comment was incorrect..."
 ## Complete Workflow
 1. **DISCOVERY PHASE**: Run integration tests to identify actual failing tickets
 2. **PLANNING PHASE**: List discovered tickets and use sequential reasoning to plan implementation
-3. **SCOPE EXPANSION**: If fewer than 5 tickets, identify new endpoint opportunities from OpenAPI spec
-4. **IMPLEMENTATION PHASE**: Implement systematically with comprehensive testing
-5. **QUALITY PHASE**: Address security issues and run quality checks
-6. **MR PHASE**: Create MR targeting `dev` branch, then add Copilot reviewer with `gh pr edit <PR_NUMBER> --add-reviewer Copilot`
-7. **DOCUMENTATION PHASE**: Add history documentation to MR
-8. **JIRA PHASE**: Update Jira tickets using automated script: `./scripts/update_jira_simple.sh`
+3. **JIRA START PHASE**: Move selected tickets to "In Progress" status
+   - Use `./scripts/manage_jira_tickets.sh batch-start PR003946-XX PR003946-YY ...`
+   - Automatic comment added: "🚀 Starting implementation via /nextfive command"
+4. **SCOPE EXPANSION**: If fewer than 5 tickets, identify new endpoint opportunities from OpenAPI spec
+5. **IMPLEMENTATION PHASE**: Implement systematically with comprehensive testing
+6. **QUALITY PHASE**: Address security issues and run quality checks
+7. **MR PHASE**: Create MR targeting `dev` branch, then add Copilot reviewer with `gh pr edit <PR_NUMBER> --add-reviewer Copilot`
+8. **DOCUMENTATION PHASE**: Add history documentation to MR
 9. **REVIEW PHASE**: Wait for and address Copilot review feedback (one round)
    - Address all inline code comments and suggestions
    - **Mark resolved comments**: Use `gh pr comment <comment-id> --body "✅ Resolved: [brief description]"` to mark inline comments as resolved
    - Commit fixes with descriptive messages explaining what was addressed
 10. **VALIDATION PHASE**: Re-test and verify all functionality after changes
-11. **COMPLETION PHASE**: Use sequential reasoning to validate all steps completed correctly and ensure merge readiness
+11. **JIRA DONE PHASE**: Move implemented tickets to "Done" status when MR is ready
+   - Use `./scripts/manage_jira_tickets.sh batch-done PR003946-XX PR003946-YY ...`
+   - Automatic comment added: "✅ Implementation complete - MR ready for merge"
+12. **COMPLETION PHASE**: Use sequential reasoning to validate all steps completed correctly and ensure merge readiness
 
 **START HERE - Discovery-Driven Approach:**
 
@@ -678,30 +702,47 @@ Use `/prepare-mr` command to systematically verify readiness.
 
 ## Jira Update Script Template
 
-The project includes a working Jira automation script at `/scripts/update_jira_simple.sh`:
+The project includes enhanced Jira management scripts:
 
+### Main Script: `/scripts/manage_jira_tickets.sh`
 **Key Features:**
+- **Full Status Management**: To Do → In Progress → Done transitions
+- **Intelligent Transition Detection**: Automatically finds correct transition IDs
+- **Batch Operations**: Update multiple tickets at once
+- **Status Verification**: Checks current status before transitioning
+- **Error Handling**: Provides clear success/failure feedback
+
+**Usage Patterns:**
+```bash
+# Move single ticket to In Progress
+./scripts/manage_jira_tickets.sh start PR003946-91 "Starting implementation"
+
+# Move single ticket to Done
+./scripts/manage_jira_tickets.sh done PR003946-91 "MR ready for merge"
+
+# Batch update multiple tickets to In Progress
+./scripts/manage_jira_tickets.sh batch-start PR003946-91 PR003946-88 PR003946-75
+
+# Batch update multiple tickets to Done
+./scripts/manage_jira_tickets.sh batch-done PR003946-91 PR003946-88 PR003946-75
+
+# Check ticket status
+./scripts/manage_jira_tickets.sh status PR003946-91
+
+# Add comment only
+./scripts/manage_jira_tickets.sh comment PR003946-91 "Implementation note"
+```
+
+### Legacy Script: `/scripts/update_jira_simple.sh`
 - **Basic Authentication**: Uses `email:token` encoded with base64 (not Bearer token)
 - **Status Transitions**: Automatically moves tickets from "To Do" → "In Progress"
 - **Simple Comments**: Avoids complex JSON that causes parsing errors
-- **Error Handling**: Provides clear success/failure feedback
-
-**Usage Pattern:**
-```bash
-# After implementing tickets, update them with:
-./scripts/update_jira_simple.sh
-
-# Script will:
-# 1. Test API connectivity
-# 2. Transition ticket status
-# 3. Add implementation comments
-# 4. Provide verification links
-```
+- **Warning**: Updates incorrect tickets (PR003946-87, PR003946-67)
 
 **Authentication Setup:**
 - Uses existing `JIRA_API_TOKEN` environment variable
 - Requires `kc.stegbauer@nortal.com` email for Basic Auth
-- Script handles base64 encoding automatically
+- Scripts handle base64 encoding automatically
 
 ## Version Tracking System
 For comprehensive API version validation and frontend compatibility checking, see:
