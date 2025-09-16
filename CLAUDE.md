@@ -381,19 +381,53 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 - Docker containerized development environment
 - All business logic must go in `impl/` directory (never in generated code)
 
-## Required Process - Discovery-First Approach
+## Required Process - Discovery-First Approach with TDD
 1. **DISCOVERY FIRST**: Run integration tests to identify actual state (never assume based on Jira status)
-2. **ENHANCED DISCOVERY**: Use `scripts/enhanced_discovery.py` for dependency analysis and priority scoring
-3. **TWO-PHASE QUALITY GATES**: Execute `scripts/two_phase_quality_gates.sh` for systematic validation
-4. **SEQUENTIAL REASONING**: Use MCP to predict outcomes and plan systematic approach
-5. **SCOPE ASSESSMENT**: If fewer than 5 failing tickets, identify comprehensive enhancement opportunities
-6. **GIT WORKFLOW**: MANDATORY - Always start from dev, create feature branch, target dev for MR
-7. **SYSTEMATIC IMPLEMENTATION**: Focus on OpenAPI spec enhancements + model regeneration + infrastructure
-8. **SECURITY & QUALITY**: Address GitHub Advanced Security scanner issues systematically
-9. **REPOSITORY HYGIENE**: Apply learnings from PR #32 retrospective to prevent test artifact pollution
-10. **FEATURE BRANCH MR**: Create MR from feature branch targeting dev (never commit directly to dev)
-11. **COPILOT REVIEW**: Add reviewer and address feedback with inline comment resolution
-12. **CORRECTIVE JIRA**: Verify ticket mapping before updates, use corrective comments for mistakes
+2. **TDD CHECK**: If ticket doesn't exist in test suite, CREATE TEST FIRST following TDD practices (see below)
+3. **ENHANCED DISCOVERY**: Use `scripts/enhanced_discovery.py` for dependency analysis and priority scoring
+4. **TWO-PHASE QUALITY GATES**: Execute `scripts/two_phase_quality_gates.sh` for systematic validation
+5. **SEQUENTIAL REASONING**: Use MCP to predict outcomes and plan systematic approach
+6. **SCOPE ASSESSMENT**: If fewer than 5 failing tickets, identify comprehensive enhancement opportunities
+7. **GIT WORKFLOW**: MANDATORY - Always start from dev, create feature branch, target dev for MR
+8. **SYSTEMATIC IMPLEMENTATION**: Focus on OpenAPI spec enhancements + model regeneration + infrastructure
+9. **SECURITY & QUALITY**: Address GitHub Advanced Security scanner issues systematically
+10. **REPOSITORY HYGIENE**: Apply learnings from PR #32 retrospective to prevent test artifact pollution
+11. **FEATURE BRANCH MR**: Create MR from feature branch targeting dev (never commit directly to dev)
+12. **COPILOT REVIEW**: Add reviewer and address feedback with inline comment resolution
+13. **CORRECTIVE JIRA**: Verify ticket mapping before updates, use corrective comments for mistakes
+
+### TDD Process for New Tickets (Step 2)
+When a ticket doesn't exist in the test suite (like PR003946-144):
+
+1. **Create Test Structure** (follow .claude/commands/setup-tdd.md):
+   ```bash
+   mkdir -p tests/integration/PR003946-XXX
+   ```
+
+2. **Create Test Specification**:
+   - `PR003946-XXX-ADVICE.md` - Feature description & acceptance criteria
+   - `PR003946-XXX-howto-test.md` - Explicit test instructions with pass/fail criteria
+   - Add test method to `test_api_validation_epic.py` or appropriate test file
+
+3. **Write Failing Test First**:
+   ```python
+   def test_pr003946_xxx_feature_description(self, client):
+       """PR003946-XXX: [Feature description from Jira or inferred from context]"""
+       # Test implementation that will initially fail
+       response = client.post('/endpoint', ...)
+       assert response.status_code == expected_code
+   ```
+
+4. **Run Test to Verify It Fails**:
+   ```bash
+   pytest tests/integration/test_api_validation_epic.py::test_pr003946_xxx -xvs
+   ```
+
+5. **Implement Feature** to make test pass
+
+6. **Document Results**:
+   - `PR003946-XXX-YYYY-MM-DD-HHMMSS-results.md` - Test execution report
+   - `PR003946-XXX-history.txt` - Pass/fail history tracking
 
 ## Technical Requirements
 - **Focus on Endpoint Implementation**: Prioritize new API endpoints over strict business validation
@@ -684,6 +718,21 @@ When fewer than 5 failing tickets exist, implement systematic enhancements:
 /nextfive PR003946-999 PR003946-998
 # All target tickets not found → fallback to discovery mode
 # Result: Standard /nextfive behavior (discover and implement 5 tickets)
+```
+
+### Example 9: Ticket Not in Test Suite (TDD Required)
+```bash
+/nextfive PR003946-144
+# Ticket PR003946-144 not found in test suite
+# TDD Process Triggered:
+#   1. Create test structure: tests/integration/PR003946-144/
+#   2. Write PR003946-144-ADVICE.md with feature requirements
+#   3. Write PR003946-144-howto-test.md with test steps
+#   4. Add test_pr003946_144_feature() to test_api_validation_epic.py
+#   5. Run test to verify it fails
+#   6. Implement feature to make test pass
+#   7. Document in PR003946-144-YYYY-MM-DD-HHMMSS-results.md
+# Result: Test created first, then implementation follows TDD principles
 ```
 
 **Discovery Commands Reference:**
