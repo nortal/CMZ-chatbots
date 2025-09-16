@@ -1512,6 +1512,26 @@ paths:
       tags:
       - System
       x-openapi-router-controller: openapi_server.controllers.system_controller
+  /test/stress/body:
+    post:
+      operationId: test_stress_body
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/testStressBody_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/testStressBody_201_response"
+          description: Created
+      summary: Test endpoint for body parameter validation
+      tags:
+      - test
+      x-openapi-router-controller: openapi_server.controllers.test_controller
   /upload_media:
     post:
       operationId: upload_media_post
@@ -3747,6 +3767,28 @@ components:
           $ref: "#/components/schemas/Media"
         type: array
       title: _media_get_200_response
+    testStressBody_request:
+      properties:
+        data:
+          title: data
+          type: string
+      required:
+      - data
+      title: testStressBody_request
+      type: object
+    testStressBody_201_response:
+      example:
+        data: data
+        id: id
+      properties:
+        id:
+          title: id
+          type: string
+        data:
+          title: data
+          type: string
+      title: testStressBody_201_response
+      type: object
     ConvoTurnResponse_turn:
       example:
         tokensCompletion: 6

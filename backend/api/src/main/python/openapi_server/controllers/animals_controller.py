@@ -2,14 +2,15 @@ import connexion
 from typing import Dict
 from typing import Tuple
 from typing import Union
+from typing import List
 
-from openapi_server import util
-from openapi_server.models.animal_config import AnimalConfig
-from openapi_server.models.animal_config_update import AnimalConfigUpdate
 from openapi_server.models.animal import Animal
 from openapi_server.models.animal_input import AnimalInput
 from openapi_server.models.animal_update import AnimalUpdate
+from openapi_server.models.animal_config import AnimalConfig
+from openapi_server.models.animal_config_update import AnimalConfigUpdate
 from openapi_server.models.animal_details import AnimalDetails
+from openapi_server import util
 
 
 def animal_config_get(animal_id):  # noqa: E501
@@ -79,20 +80,20 @@ def animal_config_get(animal_id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_config_patch(animal_id, body=None):  # noqa: E501
+def animal_config_patch(animal_id, animal_config_update):  # noqa: E501
     """Update animal configuration
 
-    :param animal_id:
-    :type animal_id: str | bytes
+    :param animal_id: 
+    :type animal_id: strstr | bytes
 
-    :param body:
-    :type body: dict | bytes
+    :param animal_config_update: 
+    :type animal_config_update:  | bytes
 
     :rtype: Union[AnimalConfig, Tuple[AnimalConfig, int], Tuple[AnimalConfig, int, Dict[str, str]]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        body = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        animal_config_update = AnimalConfigUpdate.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
@@ -117,7 +118,7 @@ def animal_config_patch(animal_id, body=None):  # noqa: E501
                 raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
 
         # Call implementation function with processed parameters
-        result = impl_function(animal_id, body)
+        result = impl_function(animal_id, animal_config_update)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -424,11 +425,11 @@ def animal_id_put(id, animal_update):  # noqa: E501
             return error_obj, 500
 
 
-def animal_list_get(status=None):  # noqa: E501
+def animal_list_get(status):  # noqa: E501
     """List animals
 
     :param status: Filter animals by status
-    :type status: str | None
+    :type status: strstr | bytes
 
     :rtype: Union[List[Animal], Tuple[List[Animal], int], Tuple[List[Animal], int, Dict[str, str]]]
     """

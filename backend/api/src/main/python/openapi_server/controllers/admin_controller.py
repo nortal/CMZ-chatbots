@@ -3,9 +3,10 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.controllers import util
 
 
+ block to insert a comma between parameters except after the last one. }}
 def create_user(user_input):  # noqa: E501
     """Create a new user
 
@@ -33,7 +34,7 @@ def create_user(user_input):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -51,7 +52,7 @@ def create_user(user_input):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller create_user implementation not found: {str(e)}",
@@ -62,11 +63,11 @@ def create_user(user_input):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in create_user: {str(e)}",
@@ -75,6 +76,7 @@ def create_user(user_input):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def create_user_details(user_details_input):  # noqa: E501
     """Create user details
 
@@ -102,7 +104,7 @@ def create_user_details(user_details_input):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -120,7 +122,7 @@ def create_user_details(user_details_input):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller create_user_details implementation not found: {str(e)}",
@@ -131,11 +133,11 @@ def create_user_details(user_details_input):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in create_user_details: {str(e)}",
@@ -144,6 +146,7 @@ def create_user_details(user_details_input):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def delete_user(user_id):  # noqa: E501
     """Delete user
 
@@ -169,7 +172,7 @@ def delete_user(user_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -187,7 +190,7 @@ def delete_user(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller delete_user implementation not found: {str(e)}",
@@ -198,11 +201,11 @@ def delete_user(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in delete_user: {str(e)}",
@@ -211,6 +214,7 @@ def delete_user(user_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def delete_user_details(user_id):  # noqa: E501
     """Delete user details
 
@@ -236,7 +240,7 @@ def delete_user_details(user_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -254,7 +258,7 @@ def delete_user_details(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller delete_user_details implementation not found: {str(e)}",
@@ -265,11 +269,11 @@ def delete_user_details(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in delete_user_details: {str(e)}",
@@ -278,6 +282,7 @@ def delete_user_details(user_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def get_user(user_id):  # noqa: E501
     """Get user by ID
 
@@ -303,7 +308,7 @@ def get_user(user_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -321,7 +326,7 @@ def get_user(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller get_user implementation not found: {str(e)}",
@@ -332,11 +337,11 @@ def get_user(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in get_user: {str(e)}",
@@ -345,6 +350,7 @@ def get_user(user_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def get_user_details(user_id):  # noqa: E501
     """Get user details by ID
 
@@ -370,7 +376,7 @@ def get_user_details(user_id):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -388,7 +394,7 @@ def get_user_details(user_id):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller get_user_details implementation not found: {str(e)}",
@@ -399,11 +405,11 @@ def get_user_details(user_id):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in get_user_details: {str(e)}",
@@ -412,6 +418,7 @@ def get_user_details(user_id):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def list_user_details():  # noqa: E501
     """Get list of all user details
 
@@ -432,7 +439,7 @@ def list_user_details():  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -450,7 +457,7 @@ def list_user_details():  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller list_user_details implementation not found: {str(e)}",
@@ -461,11 +468,11 @@ def list_user_details():  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in list_user_details: {str(e)}",
@@ -474,6 +481,7 @@ def list_user_details():  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def list_users():  # noqa: E501
     """Get list of all users
 
@@ -494,7 +502,7 @@ def list_users():  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -512,7 +520,7 @@ def list_users():  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller list_users implementation not found: {str(e)}",
@@ -523,11 +531,11 @@ def list_users():  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in list_users: {str(e)}",
@@ -536,6 +544,7 @@ def list_users():  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def update_user(user_id, user):  # noqa: E501
     """Update a user
 
@@ -566,7 +575,7 @@ def update_user(user_id, user):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -584,7 +593,7 @@ def update_user(user_id, user):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller update_user implementation not found: {str(e)}",
@@ -595,11 +604,11 @@ def update_user(user_id, user):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in update_user: {str(e)}",
@@ -608,6 +617,7 @@ def update_user(user_id, user):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def update_user_details(user_id, user_details_input):  # noqa: E501
     """Update user details
 
@@ -638,7 +648,7 @@ def update_user_details(user_id, user_details_input):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -656,7 +666,7 @@ def update_user_details(user_id, user_details_input):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller update_user_details implementation not found: {str(e)}",
@@ -667,11 +677,11 @@ def update_user_details(user_id, user_details_input):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in update_user_details: {str(e)}",

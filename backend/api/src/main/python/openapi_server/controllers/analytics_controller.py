@@ -3,9 +3,10 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.controllers import util
 
 
+ block to insert a comma between parameters except after the last one. }}
 def billing_get(period):  # noqa: E501
     """Billing summary
 
@@ -31,7 +32,7 @@ def billing_get(period):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -49,7 +50,7 @@ def billing_get(period):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller billing_get implementation not found: {str(e)}",
@@ -60,11 +61,11 @@ def billing_get(period):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in billing_get: {str(e)}",
@@ -73,6 +74,7 @@ def billing_get(period):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def logs_get(level, start, end, page, page_size):  # noqa: E501
     """Application logs (paged/filtered)
 
@@ -110,7 +112,7 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -128,7 +130,7 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller logs_get implementation not found: {str(e)}",
@@ -139,11 +141,11 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in logs_get: {str(e)}",
@@ -152,6 +154,7 @@ def logs_get(level, start, end, page, page_size):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def performance_metrics_get(start, end):  # noqa: E501
     """Performance metrics between dates
 
@@ -180,7 +183,7 @@ def performance_metrics_get(start, end):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -198,7 +201,7 @@ def performance_metrics_get(start, end):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller performance_metrics_get implementation not found: {str(e)}",
@@ -209,11 +212,11 @@ def performance_metrics_get(start, end):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in performance_metrics_get: {str(e)}",

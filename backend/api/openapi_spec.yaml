@@ -1029,6 +1029,7 @@ paths:
       tags:
       - Animals
       summary: Create a new animal
+      operationId: animal_post
       security: []
       requestBody:
         required: true
@@ -1062,6 +1063,7 @@ paths:
       tags:
       - Animals
       summary: Get a specific animal by ID
+      operationId: animal_id_get
       parameters:
       - in: path
         name: id
@@ -1089,6 +1091,7 @@ paths:
       tags:
       - Animals
       summary: Update an existing animal
+      operationId: animal_id_put
       security: []
       parameters:
       - in: path
@@ -1119,6 +1122,7 @@ paths:
       tags:
       - Animals
       summary: Delete an animal (soft delete)
+      operationId: animal_id_delete
       security: []
       parameters:
       - in: path

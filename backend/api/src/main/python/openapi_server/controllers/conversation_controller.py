@@ -3,9 +3,10 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server import util
+from openapi_server.controllers import util
 
 
+ block to insert a comma between parameters except after the last one. }}
 def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdpr, audit_reason):  # noqa: E501
     """Delete conversation history with enhanced GDPR compliance
 
@@ -46,7 +47,7 @@ def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdp
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -64,7 +65,7 @@ def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdp
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller convo_history_delete implementation not found: {str(e)}",
@@ -75,11 +76,11 @@ def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdp
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in convo_history_delete: {str(e)}",
@@ -88,6 +89,7 @@ def convo_history_delete(session_id, user_id, animal_id, older_than, confirm_gdp
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limit, offset, include_metadata):  # noqa: E501
     """Get conversation history with enhanced filtering and pagination
 
@@ -134,7 +136,7 @@ def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limi
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -152,7 +154,7 @@ def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limi
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller convo_history_get implementation not found: {str(e)}",
@@ -163,11 +165,11 @@ def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limi
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in convo_history_get: {str(e)}",
@@ -176,6 +178,7 @@ def convo_history_get(animal_id, user_id, session_id, start_date, end_date, limi
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def convo_turn_post(convo_turn_post_request):  # noqa: E501
     """Send conversation turn with enhanced validation and rate limiting
 
@@ -203,7 +206,7 @@ def convo_turn_post(convo_turn_post_request):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -221,7 +224,7 @@ def convo_turn_post(convo_turn_post_request):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller convo_turn_post implementation not found: {str(e)}",
@@ -232,11 +235,11 @@ def convo_turn_post(convo_turn_post_request):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in convo_turn_post: {str(e)}",
@@ -245,6 +248,7 @@ def convo_turn_post(convo_turn_post_request):  # noqa: E501
             return error_obj, 500
 
 
+ block to insert a comma between parameters except after the last one. }}
 def summarize_convo_post(summarize_convo_post_request):  # noqa: E501
     """Advanced conversation summarization with personalization and analytics
 
@@ -272,7 +276,7 @@ def summarize_convo_post(summarize_convo_post_request):  # noqa: E501
             impl_function = getattr(impl_module, impl_function_name)
         except (ImportError, AttributeError):
             # Pattern 2: Generic handler with hexagonal architecture routing
-            from openapi_server.impl import handlers
+            from openapi_server.controllers.impl import handlers
             # Use the generic handle_ function that routes based on caller name
             impl_function = handlers.handle_
             if not impl_function:
@@ -290,7 +294,7 @@ def summarize_convo_post(summarize_convo_post_request):  # noqa: E501
 
     except NotImplementedError as e:
         # Development mode: return clear error instead of placeholder
-        from openapi_server.models.error import Error
+        from openapi_server.controllers.models.error import Error
         error_obj = Error(
             code="not_implemented",
             message=f"Controller summarize_convo_post implementation not found: {str(e)}",
@@ -301,11 +305,11 @@ def summarize_convo_post(summarize_convo_post_request):  # noqa: E501
     except Exception as e:
         # Use centralized error handler if available
         try:
-            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            from openapi_server.controllers.impl.error_handler import handle_exception_for_controllers
             return handle_exception_for_controllers(e)
         except ImportError:
             # Fallback error response
-            from openapi_server.models.error import Error
+            from openapi_server.controllers.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error in summarize_convo_post: {str(e)}",
