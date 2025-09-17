@@ -136,8 +136,8 @@ class AnimalConfigUpdate(Model):
             raise ValueError("Invalid value for `personality`, length must be less than or equal to `1000`")  # noqa: E501
         if personality is not None and len(personality) < 5:
             raise ValueError("Invalid value for `personality`, length must be greater than or equal to `5`")  # noqa: E501
-        if personality is not None and not re.search(r'^[a-zA-Z0-9\s\.,!?\-():\[\]]+$', personality):  # noqa: E501
-            raise ValueError(r"Invalid value for `personality`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\.,!?\-():\[\]]+$/`")  # noqa: E501
+        if personality is not None and not re.search(r'^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$', personality):  # noqa: E501
+            raise ValueError(r"Invalid value for `personality`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$/`")  # noqa: E501
 
         self._personality = personality
 

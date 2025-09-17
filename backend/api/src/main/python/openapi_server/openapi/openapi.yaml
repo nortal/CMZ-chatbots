@@ -2866,10 +2866,10 @@ components:
           title: voice
           type: string
         personality:
-          description: Animal personality description with character validation
+          description: Animal personality description supporting natural language with punctuation
           maxLength: 1000
           minLength: 5
-          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]]+$"
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]''\"\"@#&+=/\\\\|{}~`*%$^_<>]+$"
           title: personality
           type: string
         aiModel:

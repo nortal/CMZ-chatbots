@@ -2323,8 +2323,8 @@ components:
           type: string
           minLength: 5
           maxLength: 1000
-          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]]+$'
-          description: Animal personality description with character validation
+          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+          description: Animal personality description supporting natural language with punctuation
         aiModel:
           type: string
           enum:
