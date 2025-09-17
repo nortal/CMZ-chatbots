@@ -227,6 +227,27 @@ class TestDataIntegrityValidation:
         else:
             assert response.status_code in [200, 404, 501]
 
+    def test_pr003946_75_content_type_validation(self, client):
+        """PR003946-75: Content-Type header validation enhancement"""
+
+        # Test with no Content-Type header
+        response = client.post('/animal',
+                              data='{"name": "Test Animal"}')
+        assert response.status_code == 415, "Should reject missing Content-Type"
+
+        # Test with wrong Content-Type
+        response = client.post('/animal',
+                              data='{"name": "Test Animal"}',
+                              content_type='text/plain')
+        assert response.status_code == 415, "Should reject wrong Content-Type"
+
+        # Test with correct Content-Type
+        response = client.post('/animal',
+                              data=json.dumps({"name": "Test Animal", "species": "Test"}),
+                              content_type='application/json')
+        # Should not be 415 if Content-Type is correct
+        assert response.status_code != 415, "Should accept application/json"
+
 
 class TestFamilyManagementValidation:
     """

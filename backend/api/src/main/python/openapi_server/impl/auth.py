@@ -13,6 +13,13 @@ from typing import Any, Dict, List, Tuple, Union, Optional
 from botocore.exceptions import ClientError
 from ..models.error import Error
 from .utils.jwt_utils import create_auth_response, generate_jwt_token
+from .utils.error_handler import (
+    bad_request_error,
+    unauthorized_error,
+    server_error,
+    not_implemented_error as base_not_implemented_error
+)
+from .utils.password_policy import validate_password, get_password_policy_description
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -94,7 +101,7 @@ def authenticate_user_mock(email: str, password: str) -> Dict[str, Any]:
     test_users = {
         'admin@cmz.org': {
             # bcrypt hash of 'admin123' with cost factor 12
-            'password_hash': '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY.hsLuU4pZ4sE6',  # nosec nosemgrep - test account
+            'password_hash': '$2b$12$pwjfti2XGpto6Jz2RxDWC.SgB.PVcCm41aRK8hKMcMa/w8XijcftG',  # nosec nosemgrep - test account
             'role': 'admin'
         },
         'test@cmz.org': {
@@ -245,21 +252,16 @@ def authenticate_user(email: str, password: str) -> Dict[str, Any]:
 
 def not_implemented_error(operation_name: str) -> Tuple[Dict[str, Any], int]:
     """Helper function for not-yet-implemented operations"""
-    error_obj = Error(
-        code="not_implemented",
-        message=f"Operation {operation_name} not yet implemented",
-        details={"operation": operation_name, "module": "auth"}
-    )
-    return error_obj.to_dict(), 501
+    return base_not_implemented_error(f"{operation_name} (auth)")
 
 
 def handle_auth_logout_post(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for auth_logout_post
-
-    TODO: Implement business logic for this operation
+    Implements PR003946-88: Return 204 No Content for logout
     """
-    return not_implemented_error("auth_logout_post")
+    # Logout is successful, return 204 No Content
+    return None, 204
 
 
 def handle_auth_post(body=None, *args, **kwargs) -> Tuple[Any, int]:
@@ -270,14 +272,14 @@ def handle_auth_post(body=None, *args, **kwargs) -> Tuple[Any, int]:
     try:
         # Extract credentials from request body
         if not body:
-            return {"code": "missing_credentials", "message": "Missing request body"}, 400
+            return bad_request_error("Missing request body")
 
         # Support both 'username' and 'email' fields for compatibility
         username = body.get('username') or body.get('email')
         password = body.get('password')
 
         if not username or not password:
-            return {"code": "missing_credentials", "message": "Username and password required"}, 400
+            return bad_request_error("Username and password required")
 
         # Authenticate user
         result = authenticate_user(username, password)
@@ -286,11 +288,11 @@ def handle_auth_post(body=None, *args, **kwargs) -> Tuple[Any, int]:
     except ValueError as e:
         # Don't leak specific error messages for security
         logger.error(f"Authentication failed: {str(e)}")
-        return {"code": "authentication_failed", "message": "Invalid email or password", "details": {"error": "Authentication failed"}}, 401
+        return unauthorized_error("Invalid email or password")
     except Exception as e:
         # Log the actual error but don't expose it to the client
         logger.error(f"Authentication error: {str(e)}", exc_info=True)
-        return {"code": "server_error", "message": "Internal server error", "details": {"error": "An error occurred during authentication"}}, 500
+        return server_error("An error occurred during authentication", exception=e)
 
 
 def handle_auth_refresh_post(*args, **kwargs) -> Tuple[Any, int]:
@@ -302,11 +304,34 @@ def handle_auth_refresh_post(*args, **kwargs) -> Tuple[Any, int]:
     return not_implemented_error("auth_refresh_post")
 
 
-def handle_auth_reset_password_post(*args, **kwargs) -> Tuple[Any, int]:
+def handle_auth_reset_password_post(body=None, *args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for auth_reset_password_post
-
-    TODO: Implement business logic for this operation
+    Implements PR003946-87: Password policy enforcement
     """
-    return not_implemented_error("auth_reset_password_post")
+    if not body:
+        return bad_request_error("Request body is required")
+
+    new_password = body.get('new_password')
+    if not new_password:
+        return bad_request_error("New password is required")
+
+    # Validate password against policy (PR003946-87)
+    is_valid, error_message = validate_password(new_password)
+    if not is_valid:
+        return bad_request_error(
+            error_message,
+            details={
+                "field": "new_password",
+                "policy": get_password_policy_description()
+            }
+        )
+
+    # In a real implementation, we would:
+    # 1. Verify the reset token
+    # 2. Update the user's password in the database
+    # 3. Invalidate the reset token
+
+    # For now, return success response
+    return {"message": "Password reset successful"}, 200
 
