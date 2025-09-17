@@ -6,8 +6,73 @@ Ensures all errors follow the Error schema
 from typing import Dict, Any, Optional, Tuple
 from openapi_server.models.error import Error
 import logging
+import re
 
 logger = logging.getLogger(__name__)
+
+# Patterns for sensitive information that should not be logged
+SENSITIVE_PATTERNS = [
+    r'password',
+    r'passwd',
+    r'pwd',
+    r'token',
+    r'api_key',
+    r'apikey',
+    r'secret',
+    r'authorization',
+    r'auth',
+    r'credential',
+    r'private_key',
+    r'private',
+    r'key'
+]
+
+def sanitize_for_logging(data: Any) -> Any:
+    """
+    Sanitize sensitive information from data before logging.
+
+    Args:
+        data: Data to sanitize (dict, list, or primitive)
+
+    Returns:
+        Sanitized copy of the data
+    """
+    if data is None:
+        return None
+
+    if isinstance(data, dict):
+        sanitized = {}
+        for key, value in data.items():
+            # Check if key contains sensitive pattern
+            key_lower = key.lower()
+            is_sensitive = any(pattern in key_lower for pattern in SENSITIVE_PATTERNS)
+
+            if is_sensitive:
+                sanitized[key] = "[REDACTED]"
+            elif isinstance(value, (dict, list)):
+                sanitized[key] = sanitize_for_logging(value)
+            else:
+                # Also check if string value looks like a token/password
+                if isinstance(value, str) and len(value) > 20 and (
+                    value.startswith(('eyJ', 'Bearer ', 'github_pat_', 'gho_', 'ghp_', 'ATATT')) or
+                    re.match(r'^[A-Za-z0-9+/]{20,}={0,2}$', value)  # Base64-like
+                ):
+                    sanitized[key] = "[REDACTED]"
+                else:
+                    sanitized[key] = value
+        return sanitized
+
+    elif isinstance(data, list):
+        return [sanitize_for_logging(item) for item in data]
+
+    # For strings that look like tokens
+    elif isinstance(data, str) and len(data) > 20 and (
+        data.startswith(('eyJ', 'Bearer ', 'github_pat_', 'gho_', 'ghp_', 'ATATT')) or
+        re.match(r'^[A-Za-z0-9+/]{20,}={0,2}$', data)
+    ):
+        return "[REDACTED]"
+
+    return data
 
 
 def create_error_response(
@@ -34,11 +99,14 @@ def create_error_response(
         details=details or {}
     )
 
-    # Log the error for monitoring
+    # Sanitize details before logging to prevent sensitive information exposure
+    sanitized_details = sanitize_for_logging(details) if details else None
+
+    # Log the error for monitoring with sanitized details
     if status_code >= 500:
-        logger.error(f"Server error: {code} - {message}", extra={"details": details})
+        logger.error(f"Server error: {code} - {message}", extra={"details": sanitized_details})
     elif status_code >= 400:
-        logger.warning(f"Client error: {code} - {message}", extra={"details": details})
+        logger.warning(f"Client error: {code} - {message}", extra={"details": sanitized_details})
 
     return error.to_dict(), status_code
 
