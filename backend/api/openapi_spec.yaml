@@ -804,7 +804,7 @@ paths:
         schema:
           type: string
           maxLength: 500
-          pattern: '^[a-zA-Z0-9\s\-_\.,:;]+$'
+          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
       responses:
         '204':
           description: Conversation history deleted successfully
@@ -1348,8 +1348,8 @@ paths:
                   type: string
                   minLength: 1
                   maxLength: 200
-                  pattern: '^[a-zA-Z0-9\s\-_\.]+$'
-                  description: Human-readable title for the media
+                  pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+                  description: Human-readable title for the media with natural language support
                 animalId:
                   type: string
                   pattern: '^[a-zA-Z0-9_-]+$'
@@ -2018,8 +2018,8 @@ components:
             type: string
             minLength: 1
             maxLength: 100
-            pattern: '^[a-zA-Z0-9\s\-\.'']+$'
-            description: Display name with basic character validation
+            pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+            description: Display name with natural language character validation
           phoneNumber:
             type: string
             pattern: '^\+[1-9]\d{1,14}$'
