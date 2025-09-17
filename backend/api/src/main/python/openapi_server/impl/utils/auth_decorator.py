@@ -6,6 +6,7 @@ import functools
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from flask import request
+from openapi_server.models.error import Error
 from .jwt_utils import verify_jwt_token
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,6 @@ def requires_auth(allowed_roles: Optional[List[str]] = None):
             auth_header = request.headers.get('Authorization')
 
             if not auth_header:
-                from openapi_server.models.error import Error
                 error = Error(
                     code="unauthorized",
                     message="Authentication required",
@@ -41,7 +41,6 @@ def requires_auth(allowed_roles: Optional[List[str]] = None):
             is_valid, payload = verify_jwt_token(auth_header)
 
             if not is_valid or not payload:
-                from openapi_server.models.error import Error
                 error = Error(
                     code="unauthorized",
                     message="Invalid or expired token",
@@ -53,7 +52,6 @@ def requires_auth(allowed_roles: Optional[List[str]] = None):
             if allowed_roles:
                 user_role = payload.get('role', 'visitor')
                 if user_role not in allowed_roles:
-                    from openapi_server.models.error import Error
                     error = Error(
                         code="forbidden",
                         message="Insufficient permissions",
