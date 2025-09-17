@@ -101,12 +101,14 @@ def create_error_response(
 
     # Sanitize details before logging to prevent sensitive information exposure
     sanitized_details = sanitize_for_logging(details) if details else None
+    # Also sanitize the message to ensure no sensitive data in error messages
+    sanitized_message = sanitize_for_logging(message) if isinstance(message, str) else message
 
     # Log the error for monitoring with sanitized details
     if status_code >= 500:
-        logger.error(f"Server error: {code} - {message}", extra={"details": sanitized_details})
+        logger.error(f"Server error: {code} - {sanitized_message}", extra={"details": sanitized_details})
     elif status_code >= 400:
-        logger.warning(f"Client error: {code} - {message}", extra={"details": sanitized_details})
+        logger.warning(f"Client error: {code} - {sanitized_message}", extra={"details": sanitized_details})
 
     return error.to_dict(), status_code
 
