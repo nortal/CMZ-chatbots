@@ -3,7 +3,6 @@
 import connexion
 from flask_cors import CORS
 from flask import jsonify
-from werkzeug.exceptions import NotFound, InternalServerError
 
 from openapi_server import encoder
 
