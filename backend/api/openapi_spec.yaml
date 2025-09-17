@@ -1812,6 +1812,23 @@ paths:
         '204':
           description: Family deleted
 
+  /family_list:
+    get:
+      tags:
+      - Family
+      summary: List all families
+      operationId: listAllFamilies
+      security: []
+      responses:
+        '200':
+          description: List of all families
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Family'
+
   # Test endpoints for stress testing regression prevention
   /test/stress/body:
     post:

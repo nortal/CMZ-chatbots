@@ -45,6 +45,7 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'user_details_patch': handle_user_details_patch,
             'user_details_delete': handle_user_details_delete,
             'family_list_get': handle_family_list_get,
+            'list_all_families': handle_family_list_get,  # New endpoint mapping
             'family_details_post': handle_family_details_post,
             'family_details_get': handle_family_details_get,
             'family_details_patch': handle_family_details_patch,
