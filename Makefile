@@ -49,7 +49,8 @@ $(GEN_TMP_BASE):
 .PHONY: help
 help:
 	@echo "Targets (API-specific):"
-	@echo "  generate-api     Backup $(GEN_APP_DIR) to tmp/api_<timestamp> and regenerate Flask code from $(OPENAPI_SPEC)"
+	@echo "  generate-api     Regenerate Flask code from $(OPENAPI_SPEC) WITH automatic validation (prevents auth regressions)"
+	@echo "  generate-api-raw Generate Flask code WITHOUT validation (use with caution - will break auth!)"
 	@echo "  sync-openapi    Sync $(GEN_APP_DIR)/{openapi.yaml,models,test} into $(SRC_APP_DIR)"
 	@echo "  build-api        Build Docker image $(IMAGE_NAME) from generated Dockerfile in $(SRC_APP_DIR)"
 	@echo "  run-api          Run container $(CONTAINER_NAME) with $(SRC_APP_DIR) mounted; port $(PORT)->$(CONTAINER_PORT)"
@@ -74,8 +75,8 @@ validate-naming:
 	@echo ">> Validating naming conventions..."
 	@python3 scripts/validate_naming_conventions_simple.py $(ROOT_DIR)
 
-.PHONY: generate-api
-generate-api: validate-naming $(GEN_TMP_BASE)
+.PHONY: generate-api-raw
+generate-api-raw: validate-naming $(GEN_TMP_BASE)
 	@set -e; \
 	echo ">> Backing up existing app directory (if any)"; \
 	TS=$$(date +%Y%m%d_%H%M%S); \
@@ -97,6 +98,11 @@ generate-api: validate-naming $(GEN_TMP_BASE)
 		-o "/local/$(GEN_APP_DIR)" \
 		$(OPENAPI_GEN_OPTS); \
 	echo ">> Generation complete."
+
+# IMPORTANT: generate-api now ALWAYS runs validation to prevent auth endpoint regressions
+.PHONY: generate-api
+generate-api: generate-api-raw validate-api
+	@echo "✅ API generation and validation complete (auth endpoints preserved)"
 
 .PHONY: sync-openapi
 sync-openapi:
@@ -309,7 +315,7 @@ validate-api: ## Validate API generation and frontend-backend contract
 	@echo "📝 Testing frontend-backend contract..."
 	@python3 scripts/frontend_backend_contract_test.py || echo "⚠️ Contract tests failed - backend may not be running"
 
-post-generate: generate-api validate-api ## Generate API and validate/fix issues
+post-generate: generate-api ## Generate API with automatic validation (same as generate-api now)
 	@echo "✅ API generation and validation complete"
 
 pre-mr: ## Prepare for MR creation (quality check + branch push)

@@ -60,6 +60,42 @@ export interface AnimalConfig {
   };
 }
 
+// Token management
+const TOKEN_KEY = 'cmz_auth_token';
+const TOKEN_EXPIRY_KEY = 'cmz_token_expiry';
+
+export const tokenManager = {
+  setToken(token: string, expiresIn: number) {
+    localStorage.setItem(TOKEN_KEY, token);
+    const expiryTime = Date.now() + (expiresIn * 1000);
+    localStorage.setItem(TOKEN_EXPIRY_KEY, expiryTime.toString());
+  },
+
+  getToken(): string | null {
+    const token = localStorage.getItem(TOKEN_KEY);
+    const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+
+    if (!token || !expiry) return null;
+
+    // Check if token is expired
+    if (Date.now() > parseInt(expiry)) {
+      this.clearToken();
+      return null;
+    }
+
+    return token;
+  },
+
+  clearToken() {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_EXPIRY_KEY);
+  },
+
+  isAuthenticated(): boolean {
+    return this.getToken() !== null;
+  }
+};
+
 /**
  * Generic API request handler with error handling
  */
@@ -68,19 +104,33 @@ async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<T> {
   try {
+    // Get auth token and add to headers if available
+    const token = tokenManager.getToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
       ...options,
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+
+      // If unauthorized, clear the token
+      if (response.status === 401) {
+        tokenManager.clearToken();
+      }
+
       throw new Error(
-        errorData.detail || 
-        errorData.message || 
+        errorData.detail ||
+        errorData.message ||
         `API Error: ${response.status} ${response.statusText}`
       );
     }
@@ -224,14 +274,21 @@ export const authApi = {
     if (!password?.trim()) {
       throw new Error('Password is required');
     }
-    
-    return apiRequest<{ token: string; expiresIn: number }>('/auth', {
+
+    const response = await apiRequest<{ token: string; expiresIn: number }>('/auth', {
       method: 'POST',
       body: JSON.stringify({
         username: email, // Backend expects 'username' field
         password: password
       })
     });
+
+    // Store the token after successful login
+    if (response.token) {
+      tokenManager.setToken(response.token, response.expiresIn || 3600);
+    }
+
+    return response;
   },
 
   /**
@@ -247,9 +304,14 @@ export const authApi = {
    * Logout user
    */
   async logout(): Promise<void> {
-    return apiRequest<void>('/auth/logout', {
-      method: 'POST'
-    });
+    try {
+      await apiRequest<void>('/auth/logout', {
+        method: 'POST'
+      });
+    } finally {
+      // Always clear the token, even if the logout request fails
+      tokenManager.clearToken();
+    }
   }
 };
 
