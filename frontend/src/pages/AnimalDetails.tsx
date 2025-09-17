@@ -89,11 +89,10 @@ const AnimalDetails: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log('Fetched animals:', data);
-      
-      // Transform API data to frontend format (API uses animal_id, name, species, status)
+
+      // Transform API data to frontend format (API uses animalId, name, species, status)
       const transformedAnimals: EditableAnimal[] = (data || []).map((animal: any) => ({
-        animalId: animal.animal_id,
+          animalId: animal.animalId || animal.id || animal.animal_id,
         name: animal.name,
         species: animal.species,
         status: animal.status,
@@ -121,7 +120,6 @@ const AnimalDetails: React.FC = () => {
         images: [],
         caretakers: []
       }));
-      
       setAnimals(transformedAnimals);
     } catch (err) {
       console.error('Error fetching animals:', err);
@@ -135,10 +133,17 @@ const AnimalDetails: React.FC = () => {
   const saveAnimalChanges = async () => {
     if (!editedData) return;
 
+    const animalId = editedData.animalId;
+
+    if (!animalId) {
+      alert('Error: Animal ID is missing. Cannot save changes.');
+      return;
+    }
+
     try {
       setSaveLoading(true);
       const token = localStorage.getItem('cmz_token');
-      
+
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -150,7 +155,7 @@ const AnimalDetails: React.FC = () => {
         status: editedData.status || 'active'
       };
 
-      const response = await fetch(`http://localhost:8080/animal/${editedData.animalId}`, {
+      const response = await fetch(`http://localhost:8080/animal/${animalId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
