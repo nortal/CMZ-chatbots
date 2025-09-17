@@ -37,15 +37,24 @@ class AnimalService:
         # Business validation
         validate_animal_creation_data(animal_data)
         
-        # Generate animal ID if not provided
-        animal_id = animal_data.get("id") or animal_data.get("animalId")
-        if not animal_id:
-            animal_id = str(uuid.uuid4())
-            animal_data["animalId"] = animal_id
-        else:
-            animal_data["animalId"] = animal_id
-        
-        # Check for conflicts
+        # PR003946-70: Reject client-provided IDs
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"DEBUG: animal_data keys: {list(animal_data.keys())}")
+
+        animal_id = animal_data.get("id") or animal_data.get("animalId") or animal_data.get("animal_id")
+        logger.info(f"DEBUG: Checking for client ID: {animal_id}")
+
+        if animal_id:
+            # Client tried to provide an ID - this is not allowed
+            logger.info(f"DEBUG: Raising ValidationError for client ID: {animal_id}")
+            raise ValidationError("Client-provided IDs are not allowed")
+
+        # Generate server-side ID
+        animal_id = str(uuid.uuid4())
+        animal_data["animalId"] = animal_id
+
+        # Check for conflicts (should never happen with UUID, but being defensive)
         if self._animal_repo.exists(animal_id):
             raise ConflictError(f"Animal already exists with ID: {animal_id}")
         

@@ -80,6 +80,49 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
 def handle_animal_config_get(animal_id: str) -> Tuple[Any, int]:
     """Get animal configuration"""
     try:
+        # Check authentication
+        from .utils.auth_decorator import requires_auth
+
+        # Apply auth decorator logic manually since we can't use decorators directly
+        from flask import request
+        from .utils.jwt_utils import verify_jwt_token
+
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            from openapi_server.models.error import Error
+            error = Error(
+                code="unauthorized",
+                message="Authentication required",
+                details={"error": "Missing Authorization header"}
+            )
+            return error.to_dict(), 401
+
+        # Verify token
+        is_valid, payload = verify_jwt_token(auth_header)
+        if not is_valid or not payload:
+            from openapi_server.models.error import Error
+            error = Error(
+                code="unauthorized",
+                message="Invalid or expired token",
+                details={"error": "Token validation failed"}
+            )
+            return error.to_dict(), 401
+
+        # Check role - allow admin, zookeeper, and member roles
+        user_role = payload.get('role', 'visitor')
+        allowed_roles = ['admin', 'zookeeper', 'member']
+        if user_role not in allowed_roles:
+            from openapi_server.models.error import Error
+            error = Error(
+                code="forbidden",
+                message="Insufficient permissions",
+                details={
+                    "error": f"Role '{user_role}' not allowed. Required roles: {allowed_roles}"
+                }
+            )
+            return error.to_dict(), 403
+
+        # Execute the actual handler
         animal_handler = create_flask_animal_handler()
         return animal_handler.get_animal_config(animal_id)
     except Exception as e:
@@ -90,6 +133,55 @@ def handle_animal_config_get(animal_id: str) -> Tuple[Any, int]:
 def handle_animal_config_patch(animal_id: str, body: Dict[str, Any]) -> Tuple[Any, int]:
     """Update animal configuration"""
     try:
+        # Fix floating-point precision issues for temperature and topP
+        if 'temperature' in body and body['temperature'] is not None:
+            # Round to 1 decimal place to avoid floating-point precision issues
+            body['temperature'] = round(float(body['temperature']), 1)
+
+        if 'topP' in body and body['topP'] is not None:
+            # Round to 2 decimal places for topP
+            body['topP'] = round(float(body['topP']), 2)
+
+        # Check authentication
+        from flask import request
+        from .utils.jwt_utils import verify_jwt_token
+
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            from openapi_server.models.error import Error
+            error = Error(
+                code="unauthorized",
+                message="Authentication required",
+                details={"error": "Missing Authorization header"}
+            )
+            return error.to_dict(), 401
+
+        # Verify token
+        is_valid, payload = verify_jwt_token(auth_header)
+        if not is_valid or not payload:
+            from openapi_server.models.error import Error
+            error = Error(
+                code="unauthorized",
+                message="Invalid or expired token",
+                details={"error": "Token validation failed"}
+            )
+            return error.to_dict(), 401
+
+        # Check role - only allow admin and zookeeper roles to update
+        user_role = payload.get('role', 'visitor')
+        allowed_roles = ['admin', 'zookeeper']
+        if user_role not in allowed_roles:
+            from openapi_server.models.error import Error
+            error = Error(
+                code="forbidden",
+                message="Insufficient permissions",
+                details={
+                    "error": f"Role '{user_role}' not allowed. Required roles: {allowed_roles}"
+                }
+            )
+            return error.to_dict(), 403
+
+        # Execute the actual handler
         animal_handler = create_flask_animal_handler()
         return animal_handler.update_animal_config(animal_id, body)
     except Exception as e:
@@ -392,8 +484,8 @@ def handle_auth_post(body: Dict[str, Any]) -> Tuple[Any, int]:
 
 def handle_logout_post() -> Tuple[Any, int]:
     """User logout"""
-    from .auth import logout_post
-    return logout_post()
+    from .auth import handle_auth_logout_post
+    return handle_auth_logout_post()
 
 
 def handle_auth_refresh_post() -> Tuple[Any, int]:
