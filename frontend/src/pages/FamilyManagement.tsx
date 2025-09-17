@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Search, Edit, Trash2, Users, Calendar, Mail, Phone, MapPin, FileText, Eye } from 'lucide-react';
+import AddFamilyModal from '../components/AddFamilyModal';
 
 interface Student {
   id: string;
@@ -229,6 +230,7 @@ const FamilyManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'pending'>('all');
   const [showAddFamily, setShowAddFamily] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const filteredFamilies = families.filter(family => {
     const matchesSearch = family.familyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -555,7 +557,13 @@ const FamilyManagement: React.FC = () => {
             >
               Close
             </button>
-            <button className="flex-1 flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button
+              onClick={() => {
+                setIsEditMode(true);
+                // For now, just show an alert. Full edit implementation would go here
+                alert('Edit mode would be activated here. Full implementation pending.');
+              }}
+              className="flex-1 flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               <Edit className="w-4 h-4 mr-2" />
               Edit Family Details
             </button>
@@ -628,6 +636,21 @@ const FamilyManagement: React.FC = () => {
       )}
 
       <FamilyDetailsModal />
+
+      {/* Add Family Modal */}
+      <AddFamilyModal
+        isOpen={showAddFamily}
+        onClose={() => setShowAddFamily(false)}
+        onSave={(familyData) => {
+          console.log('New family data:', familyData);
+          // Here you would typically make an API call to save the family
+          // For now, just show an alert
+          alert(`Family "${familyData.familyName}" would be added to the system`);
+
+          // In a real app, you'd update the families list here
+          // setFamilies([...families, newFamily]);
+        }}
+      />
     </div>
   );
 };
