@@ -9,7 +9,7 @@ from openapi_server.models.convo_turn_post_request import ConvoTurnPostRequest  
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.summarize_convo_post200_response import SummarizeConvoPost200Response  # noqa: E501
 from openapi_server.models.summarize_convo_post_request import SummarizeConvoPostRequest  # noqa: E501
-# from openapi_server import util  # Not used
+from openapi_server import util
 
 
 def convo_history_delete(session_id=None, user_id=None, animal_id=None, older_than=None, confirm_gdpr=None, audit_reason=None):  # noqa: E501
@@ -55,7 +55,13 @@ def convo_history_delete(session_id=None, user_id=None, animal_id=None, older_th
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(session_id, user_id, animal_id, older_than, confirm_gdpr, audit_reason)
@@ -74,7 +80,7 @@ def convo_history_delete(session_id=None, user_id=None, animal_id=None, older_th
             message=f"Controller convo_history_delete implementation not found: {str(e)}",
             details={"controller": "ConversationController", "operation": "convo_history_delete"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -89,7 +95,7 @@ def convo_history_delete(session_id=None, user_id=None, animal_id=None, older_th
                 message=f"Internal server error in convo_history_delete: {str(e)}",
                 details={"controller": "ConversationController", "operation": "convo_history_delete"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def convo_history_get(animal_id=None, user_id=None, session_id=None, start_date=None, end_date=None, limit=None, offset=None, include_metadata=None):  # noqa: E501
@@ -140,7 +146,13 @@ def convo_history_get(animal_id=None, user_id=None, session_id=None, start_date=
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(animal_id, user_id, session_id, start_date, end_date, limit, offset, include_metadata)
@@ -159,7 +171,7 @@ def convo_history_get(animal_id=None, user_id=None, session_id=None, start_date=
             message=f"Controller convo_history_get implementation not found: {str(e)}",
             details={"controller": "ConversationController", "operation": "convo_history_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -174,7 +186,7 @@ def convo_history_get(animal_id=None, user_id=None, session_id=None, start_date=
                 message=f"Internal server error in convo_history_get: {str(e)}",
                 details={"controller": "ConversationController", "operation": "convo_history_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def convo_turn_post(body):  # noqa: E501
@@ -211,7 +223,13 @@ def convo_turn_post(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -230,7 +248,7 @@ def convo_turn_post(body):  # noqa: E501
             message=f"Controller convo_turn_post implementation not found: {str(e)}",
             details={"controller": "ConversationController", "operation": "convo_turn_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -245,7 +263,7 @@ def convo_turn_post(body):  # noqa: E501
                 message=f"Internal server error in convo_turn_post: {str(e)}",
                 details={"controller": "ConversationController", "operation": "convo_turn_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def summarize_convo_post(body):  # noqa: E501
@@ -282,7 +300,13 @@ def summarize_convo_post(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -301,7 +325,7 @@ def summarize_convo_post(body):  # noqa: E501
             message=f"Controller summarize_convo_post implementation not found: {str(e)}",
             details={"controller": "ConversationController", "operation": "summarize_convo_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -316,4 +340,4 @@ def summarize_convo_post(body):  # noqa: E501
                 message=f"Internal server error in summarize_convo_post: {str(e)}",
                 details={"controller": "ConversationController", "operation": "summarize_convo_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

@@ -41,7 +41,13 @@ def billing_get(period=None):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(period)
@@ -60,7 +66,7 @@ def billing_get(period=None):  # noqa: E501
             message=f"Controller billing_get implementation not found: {str(e)}",
             details={"controller": "AnalyticsController", "operation": "billing_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -75,7 +81,7 @@ def billing_get(period=None):  # noqa: E501
                 message=f"Internal server error in billing_get: {str(e)}",
                 details={"controller": "AnalyticsController", "operation": "billing_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # noqa: E501
@@ -120,7 +126,13 @@ def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # no
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(level, start, end, page, page_size)
@@ -139,7 +151,7 @@ def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # no
             message=f"Controller logs_get implementation not found: {str(e)}",
             details={"controller": "AnalyticsController", "operation": "logs_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -154,7 +166,7 @@ def logs_get(level=None, start=None, end=None, page=None, page_size=None):  # no
                 message=f"Internal server error in logs_get: {str(e)}",
                 details={"controller": "AnalyticsController", "operation": "logs_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def performance_metrics_get(start, end):  # noqa: E501
@@ -193,7 +205,13 @@ def performance_metrics_get(start, end):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(start, end)
@@ -212,7 +230,7 @@ def performance_metrics_get(start, end):  # noqa: E501
             message=f"Controller performance_metrics_get implementation not found: {str(e)}",
             details={"controller": "AnalyticsController", "operation": "performance_metrics_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -227,4 +245,4 @@ def performance_metrics_get(start, end):  # noqa: E501
                 message=f"Internal server error in performance_metrics_get: {str(e)}",
                 details={"controller": "AnalyticsController", "operation": "performance_metrics_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

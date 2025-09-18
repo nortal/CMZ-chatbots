@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { animalApi, utils, Animal, AnimalConfig } from '../services/api';
+import { animalApi, Animal, AnimalConfig } from '../services/api';
 
 export interface UseAnimalsResult {
   animals: Animal[];

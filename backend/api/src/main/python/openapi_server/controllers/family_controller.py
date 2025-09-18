@@ -42,7 +42,13 @@ def create_family(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -61,7 +67,7 @@ def create_family(body):  # noqa: E501
             message=f"Controller create_family implementation not found: {str(e)}",
             details={"controller": "FamilyController", "operation": "create_family"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -76,7 +82,7 @@ def create_family(body):  # noqa: E501
                 message=f"Internal server error in create_family: {str(e)}",
                 details={"controller": "FamilyController", "operation": "create_family"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def delete_family(family_id):  # noqa: E501
@@ -111,7 +117,13 @@ def delete_family(family_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(family_id)
@@ -130,7 +142,7 @@ def delete_family(family_id):  # noqa: E501
             message=f"Controller delete_family implementation not found: {str(e)}",
             details={"controller": "FamilyController", "operation": "delete_family"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -145,7 +157,7 @@ def delete_family(family_id):  # noqa: E501
                 message=f"Internal server error in delete_family: {str(e)}",
                 details={"controller": "FamilyController", "operation": "delete_family"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def get_family(family_id):  # noqa: E501
@@ -180,7 +192,13 @@ def get_family(family_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(family_id)
@@ -199,7 +217,7 @@ def get_family(family_id):  # noqa: E501
             message=f"Controller get_family implementation not found: {str(e)}",
             details={"controller": "FamilyController", "operation": "get_family"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -214,7 +232,80 @@ def get_family(family_id):  # noqa: E501
                 message=f"Internal server error in get_family: {str(e)}",
                 details={"controller": "FamilyController", "operation": "get_family"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
+
+
+def list_all_families():  # noqa: E501
+    """List all families
+
+     # noqa: E501
+
+
+    :rtype: Union[List[Family], Tuple[List[Family], int], Tuple[List[Family], int, Dict[str, str]]
+    """
+    # Auto-generated parameter handling
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "family_controller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
+
+        # Call implementation function with processed parameters
+        result = impl_function()
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller list_all_families implementation not found: {str(e)}",
+            details={"controller": "FamilyController", "operation": "list_all_families"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in list_all_families: {str(e)}",
+                details={"controller": "FamilyController", "operation": "list_all_families"}
+            )
+            return error_obj, 500
 
 
 def list_families():  # noqa: E501
@@ -247,7 +338,13 @@ def list_families():  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -266,7 +363,7 @@ def list_families():  # noqa: E501
             message=f"Controller list_families implementation not found: {str(e)}",
             details={"controller": "FamilyController", "operation": "list_families"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -281,7 +378,7 @@ def list_families():  # noqa: E501
                 message=f"Internal server error in list_families: {str(e)}",
                 details={"controller": "FamilyController", "operation": "list_families"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def update_family(family_id, body):  # noqa: E501
@@ -320,7 +417,13 @@ def update_family(family_id, body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(family_id, body)
@@ -339,7 +442,7 @@ def update_family(family_id, body):  # noqa: E501
             message=f"Controller update_family implementation not found: {str(e)}",
             details={"controller": "FamilyController", "operation": "update_family"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -354,4 +457,4 @@ def update_family(family_id, body):  # noqa: E501
                 message=f"Internal server error in update_family: {str(e)}",
                 details={"controller": "FamilyController", "operation": "update_family"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

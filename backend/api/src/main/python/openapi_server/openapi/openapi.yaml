@@ -90,9 +90,27 @@ paths:
                 $ref: "#/components/schemas/Animal"
           description: Animal created successfully
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "422":
-          $ref: "#/components/responses/ValidationError"
+          content:
+            application/json:
+              examples:
+                validationError:
+                  value:
+                    code: validation_error
+                    message: Request validation failed
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Validation error
       security: []
       summary: Create a new animal
       tags:
@@ -113,7 +131,16 @@ paths:
         "204":
           description: Animal deleted successfully
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       security: []
       summary: Delete an animal (soft delete)
       tags:
@@ -155,7 +182,16 @@ paths:
                 $ref: "#/components/schemas/Animal"
           description: Animal details
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       summary: Get a specific animal by ID
       tags:
       - Animals
@@ -184,11 +220,38 @@ paths:
                 $ref: "#/components/schemas/Animal"
           description: Animal updated successfully
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
         "422":
-          $ref: "#/components/responses/ValidationError"
+          content:
+            application/json:
+              examples:
+                validationError:
+                  value:
+                    code: validation_error
+                    message: Request validation failed
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Validation error
       security: []
       summary: Update an existing animal
       tags:
@@ -290,11 +353,38 @@ paths:
                 $ref: "#/components/schemas/AnimalConfig"
           description: Updated config
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
         "422":
-          $ref: "#/components/responses/ValidationError"
+          content:
+            application/json:
+              examples:
+                validationError:
+                  value:
+                    code: validation_error
+                    message: Request validation failed
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Validation error
       security: []
       summary: Update animal configuration
       tags:
@@ -340,7 +430,16 @@ paths:
                 $ref: "#/components/schemas/AnimalDetails"
           description: Animal details
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       summary: Fetch animal details
       tags:
       - Animals
@@ -408,7 +507,16 @@ paths:
                 type: array
           description: List of animals
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
       summary: List animals
       tags:
       - Animals
@@ -451,7 +559,16 @@ paths:
                 $ref: "#/components/schemas/AuthResponse"
           description: Auth token
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          content:
+            application/json:
+              examples:
+                unauthorized:
+                  value:
+                    code: unauthorized
+                    message: Missing or invalid token
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
       summary: Login or register
       tags:
       - Auth
@@ -609,7 +726,7 @@ paths:
         required: false
         schema:
           maxLength: 500
-          pattern: "^[a-zA-Z0-9\\s\\-_\\.,:;]+$"
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]'\"\";@#&+=/\\\\|{}~`*%$^_<>]+$"
           type: string
         style: form
       responses:
@@ -633,7 +750,16 @@ paths:
                 $ref: "#/components/schemas/Error"
           description: Insufficient permissions for bulk deletion
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
         "422":
           content:
             application/json:
@@ -750,9 +876,27 @@ paths:
                 $ref: "#/components/schemas/ConvoHistory"
           description: Conversation history with optional metadata
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       security: []
       summary: Get conversation history with enhanced filtering and pagination
       tags:
@@ -799,9 +943,27 @@ paths:
                 $ref: "#/components/schemas/_convo_turn_post_200_response"
           description: AI response with enhanced metadata and analytics
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "422":
-          $ref: "#/components/responses/ValidationError"
+          content:
+            application/json:
+              examples:
+                validationError:
+                  value:
+                    code: validation_error
+                    message: Request validation failed
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Validation error
         "429":
           content:
             application/json:
@@ -900,7 +1062,16 @@ paths:
                 $ref: "#/components/schemas/Family"
           description: Family details
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       security: []
       summary: Get specific family by ID
       tags:
@@ -931,6 +1102,23 @@ paths:
           description: Family updated
       security: []
       summary: Update an existing family
+      tags:
+      - Family
+      x-openapi-router-controller: openapi_server.controllers.family_controller
+  /family_list:
+    get:
+      operationId: list_all_families
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Family"
+                type: array
+          description: List of all families
+      security: []
+      summary: List all families
       tags:
       - Family
       x-openapi-router-controller: openapi_server.controllers.family_controller
@@ -1065,7 +1253,16 @@ paths:
                 $ref: "#/components/schemas/KnowledgeArticle"
           description: Article
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       summary: Get article by id
       tags:
       - Knowledge
@@ -1252,9 +1449,27 @@ paths:
         "204":
           description: Media deleted successfully
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
         "403":
           content:
             application/json:
@@ -1353,9 +1568,27 @@ paths:
                 $ref: "#/components/schemas/_media_get_200_response"
           description: Media metadata (single item or array based on parameters)
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       summary: Fetch media metadata by id with enhanced filters
       tags:
       - Media
@@ -1472,7 +1705,16 @@ paths:
                 $ref: "#/components/schemas/_summarize_convo_post_200_response"
           description: Conversation summary with optional analytics
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "404":
           content:
             application/json:
@@ -1480,7 +1722,16 @@ paths:
                 $ref: "#/components/schemas/Error"
           description: Conversation session not found
         "422":
-          $ref: "#/components/responses/ValidationError"
+          content:
+            application/json:
+              examples:
+                validationError:
+                  value:
+                    code: validation_error
+                    message: Request validation failed
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Validation error
       security: []
       summary: Advanced conversation summarization with personalization and analytics
       tags:
@@ -1571,7 +1822,16 @@ paths:
                 $ref: "#/components/schemas/Media"
           description: Media created successfully
         "400":
-          $ref: "#/components/responses/BadRequest"
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
         "413":
           content:
             application/json:
@@ -1585,7 +1845,16 @@ paths:
                 $ref: "#/components/schemas/Error"
           description: Unsupported media type
         "422":
-          $ref: "#/components/responses/ValidationError"
+          content:
+            application/json:
+              examples:
+                validationError:
+                  value:
+                    code: validation_error
+                    message: Request validation failed
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Validation error
       security: []
       summary: Upload media (image/audio/video) with enhanced validation
       tags:
@@ -1594,6 +1863,52 @@ paths:
   /user:
     get:
       operationId: list_users
+      parameters:
+      - description: Search query for user name or email
+        explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by user role
+        explode: true
+        in: query
+        name: role
+        required: false
+        schema:
+          enum:
+          - visitor
+          - user
+          - member
+          - editor
+          - admin
+          - parent
+          - student
+          type: string
+        style: form
+      - description: Page number (1-based)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          type: integer
+        style: form
+      - description: Number of items per page (max 100)
+        explode: true
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 15
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
       responses:
         "200":
           content:
@@ -1752,7 +2067,16 @@ paths:
                 $ref: "#/components/schemas/User"
           description: User details
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       security: []
       summary: Get user by ID
       tags:
@@ -1955,7 +2279,16 @@ paths:
                 $ref: "#/components/schemas/UserDetails"
           description: User details
         "404":
-          $ref: "#/components/responses/NotFound"
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
       security: []
       summary: Get user details by ID
       tags:
@@ -2273,10 +2606,10 @@ components:
             pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
             type: string
           displayName:
-            description: Display name with basic character validation
+            description: Display name with natural language character validation
             maxLength: 100
             minLength: 1
-            pattern: "^[a-zA-Z0-9\\s\\-\\.']+$"
+            pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]'\"\";@#&+=/\\\\|{}~`*%$^_<>]+$"
             type: string
           phoneNumber:
             description: E.164 international phone number format
@@ -2296,6 +2629,8 @@ components:
             - member
             - editor
             - admin
+            - parent
+            - student
             type: string
           userType:
             default: none
@@ -2355,6 +2690,8 @@ components:
             - member
             - editor
             - admin
+            - parent
+            - student
             type: string
         required:
         - email
@@ -2866,10 +3203,11 @@ components:
           title: voice
           type: string
         personality:
-          description: Animal personality description supporting natural language with punctuation
+          description: Animal personality description supporting natural language
+            with punctuation
           maxLength: 1000
           minLength: 5
-          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]''\"\"@#&+=/\\\\|{}~`*%$^_<>]+$"
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]'\"\";@#&+=/\\\\|{}~`*%$^_<>]+$"
           title: personality
           type: string
         aiModel:
@@ -3746,10 +4084,10 @@ components:
           format: binary
           type: string
         title:
-          description: Human-readable title for the media
+          description: Human-readable title for the media with natural language support
           maxLength: 200
           minLength: 1
-          pattern: "^[a-zA-Z0-9\\s\\-_\\.]+$"
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]'\"\";@#&+=/\\\\|{}~`*%$^_<>]+$"
           type: string
         animalId:
           description: Associated animal identifier

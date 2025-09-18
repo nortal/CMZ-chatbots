@@ -78,7 +78,6 @@ test.describe('Animal Configuration Save Test', () => {
             
         } else {
             // If we can't find the personality field, fail with helpful info
-            const pageContent = await page.content();
             console.log('Available form fields:', await page.locator('input, textarea, select').count());
             throw new Error('Could not find personality field in animal configuration form');
         }

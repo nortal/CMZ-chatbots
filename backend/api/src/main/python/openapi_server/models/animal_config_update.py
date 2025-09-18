@@ -116,7 +116,7 @@ class AnimalConfigUpdate(Model):
     def personality(self) -> str:
         """Gets the personality of this AnimalConfigUpdate.
 
-        Animal personality description with character validation  # noqa: E501
+        Animal personality description supporting natural language with punctuation  # noqa: E501
 
         :return: The personality of this AnimalConfigUpdate.
         :rtype: str
@@ -127,7 +127,7 @@ class AnimalConfigUpdate(Model):
     def personality(self, personality: str):
         """Sets the personality of this AnimalConfigUpdate.
 
-        Animal personality description with character validation  # noqa: E501
+        Animal personality description supporting natural language with punctuation  # noqa: E501
 
         :param personality: The personality of this AnimalConfigUpdate.
         :type personality: str
@@ -136,8 +136,8 @@ class AnimalConfigUpdate(Model):
             raise ValueError("Invalid value for `personality`, length must be less than or equal to `1000`")  # noqa: E501
         if personality is not None and len(personality) < 5:
             raise ValueError("Invalid value for `personality`, length must be greater than or equal to `5`")  # noqa: E501
-        if personality is not None and not re.search(r'^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$', personality):  # noqa: E501
-            raise ValueError(r"Invalid value for `personality`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$/`")  # noqa: E501
+        if personality is not None and not re.search(r'^[a-zA-Z0-9\s\.,!?\-():\[\]\'"";@#&+=\/\\|{}~`*%$^_<>]+$', personality):  # noqa: E501
+            raise ValueError(r"Invalid value for `personality`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=\/\\|{}~`*%$^_<>]+$/`")  # noqa: E501
 
         self._personality = personality
 

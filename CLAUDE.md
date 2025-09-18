@@ -383,6 +383,11 @@ For systematic validation of backend service health and user-friendly error mess
 - `.claude/commands/validate-backend-health.md` - Comprehensive backend health detection with error message differentiation
 - `VALIDATE-BACKEND-HEALTH-ADVICE.md` - Testing methodology, service management, and troubleshooting guide for backend health validation
 
+## Family Dialog Validation
+For comprehensive E2E validation of the Add Family dialog with field testing and database verification:
+- `.claude/commands/validate-family-dialog.md` - Playwright validation with visible browser for all family dialog fields
+- `VALIDATE-FAMILY-DIALOG-ADVICE.md` - Best practices, troubleshooting, and advanced testing scenarios for family dialog validation
+
 ### Backend Health Testing Overview
 The backend health validation system ensures users receive appropriate error messages based on actual system status:
 

@@ -312,6 +312,8 @@ validate-api: ## Validate API generation and frontend-backend contract
 	@python3 scripts/post_generation_validation.py
 	@echo "🔧 Fixing controller signatures if needed..."
 	@python3 scripts/fix_controller_signatures.py
+	@echo "🏠 Applying Family Management fixes..."
+	@scripts/post_generate_family_fixes.sh || echo "⚠️ Family fixes script not found or failed"
 	@echo "📝 Testing frontend-backend contract..."
 	@python3 scripts/frontend_backend_contract_test.py || echo "⚠️ Contract tests failed - backend may not be running"
 

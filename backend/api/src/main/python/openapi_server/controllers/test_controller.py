@@ -42,7 +42,13 @@ def test_stress_body(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -61,7 +67,7 @@ def test_stress_body(body):  # noqa: E501
             message=f"Controller test_stress_body implementation not found: {str(e)}",
             details={"controller": "TestController", "operation": "test_stress_body"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -76,4 +82,4 @@ def test_stress_body(body):  # noqa: E501
                 message=f"Internal server error in test_stress_body: {str(e)}",
                 details={"controller": "TestController", "operation": "test_stress_body"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

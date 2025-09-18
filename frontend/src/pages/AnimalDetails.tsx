@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, Edit, MessageCircle, Calendar, MapPin, Heart, Activity, Save, X } from 'lucide-react';
+import { Search, Filter, Eye, Edit, MessageCircle, MapPin, Heart, Activity, Save, X } from 'lucide-react';
 
 interface Animal {
   animalId: string;

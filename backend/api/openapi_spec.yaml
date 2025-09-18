@@ -194,6 +194,44 @@ paths:
       summary: Get list of all users
       operationId: listUsers
       security: []
+      parameters:
+      - in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        description: Search query for user name or email
+      - in: query
+        name: role
+        required: false
+        schema:
+          type: string
+          enum:
+          - visitor
+          - user
+          - member
+          - editor
+          - admin
+          - parent
+          - student
+        description: Filter by user role
+      - in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Page number (1-based)
+      - in: query
+        name: page_size
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 15
+        description: Number of items per page (max 100)
       responses:
         '200':
           description: List of users
@@ -1741,7 +1779,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Family'
+              $ref: '#/components/schemas/FamilyInput'
       responses:
         '201':
           description: Family created
@@ -2056,6 +2094,8 @@ components:
             - member
             - editor
             - admin
+            - parent
+            - student
           userType:
             type: string
             enum:
@@ -2089,6 +2129,8 @@ components:
               - member
               - editor
               - admin
+              - parent
+              - student
     UserDetails:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -2600,20 +2642,27 @@ components:
     Family:
       type: object
       required:
+      - familyName
       - parents
       - students
       properties:
         familyId:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          example: family_abc123
           description: Unique family ID
           readOnly: true
+        familyName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Smith Family"
+          description: Name of the family group
         parents:
           type: array
           minItems: 1
-          maxItems: 4
           items:
             type: string
+            example: user_parent_001
             pattern: '^[a-zA-Z0-9_-]+$'
             description: User ID of a parent
         students:
@@ -2622,25 +2671,103 @@ components:
           maxItems: 8
           items:
             type: string
+            example: student_001
             pattern: '^[a-zA-Z0-9_-]+$'
             description: User ID of a student
-        maxStudents:
-          type: integer
-          minimum: 1
-          maximum: 8
-          description: Maximum number of students allowed in family
+        address:
+          type: object
+          description: Family address information
+          properties:
+            street:
+              type: string
+              maxLength: 200
+              example: "123 Main St"
+            city:
+              type: string
+              maxLength: 100
+              example: "Seattle"
+            state:
+              type: string
+              minLength: 2
+              maxLength: 2
+              pattern: '^[A-Z]{2}$'
+              example: "WA"
+            zipCode:
+              type: string
+              pattern: '^\d{5}(-\d{4})?$'
+              example: "98101"
+        preferredPrograms:
+          type: array
+          items:
+            type: string
+          example: ["Junior Zookeeper", "Conservation Club"]
+          description: Educational programs the family is interested in
         status:
           type: string
-          enum:
-          - active
-          - inactive
-          - suspended
+          enum: [active, inactive, pending]
           default: active
           description: Family enrollment status
-        enrollmentDate:
+        memberSince:
           type: string
-          format: date
-          description: Date family was enrolled (must not be future date)
+          format: date-time
+          readOnly: true
+          description: When the family joined
+        created:
+          $ref: '#/components/schemas/AuditStamp'
+          readOnly: true
+        modified:
+          $ref: '#/components/schemas/AuditStamp'
+          readOnly: true
+    FamilyInput:
+      type: object
+      required:
+      - familyName
+      - parents
+      - students
+      properties:
+        familyName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Name of the family group
+        parents:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            description: User ID of a parent
+        students:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            type: string
+            description: User ID of a student
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+              maxLength: 200
+            city:
+              type: string
+              maxLength: 100
+            state:
+              type: string
+              minLength: 2
+              maxLength: 2
+              pattern: '^[A-Z]{2}$'
+            zipCode:
+              type: string
+              pattern: '^\d{5}(-\d{4})?$'
+        preferredPrograms:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, inactive, pending]
+          default: active
     UsageSummary:
       type: object
       properties:
