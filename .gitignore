@@ -237,5 +237,5 @@ package-lock.json
 # OS Files
 .DS_Store
 Thumbs.db
-.env.local
+.env.local*
 .env

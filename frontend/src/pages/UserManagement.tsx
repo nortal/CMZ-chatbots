@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit, Trash2, Shield, Key, Mail, Phone, Calendar, Filter, Eye, UserCheck, UserX } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Shield, Key, Mail, Calendar, Filter, Eye, UserCheck, UserX } from 'lucide-react';
 import { UserRole } from '../types/roles';
 
 interface User {
@@ -134,7 +134,6 @@ const UserManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'pending' | 'suspended'>('all');
-  const [showAddUser, setShowAddUser] = useState(false);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||

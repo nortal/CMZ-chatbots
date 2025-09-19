@@ -9,6 +9,7 @@ import AnimalConfig from './pages/AnimalConfig';
 import AnimalDetails from './pages/AnimalDetails';
 import FamilyManagement from './pages/FamilyManagement';
 import UserManagement from './pages/UserManagement';
+import TestFamilyModalEnhanced from './pages/TestFamilyModalEnhanced';
 import './index.css';
 
 const AppRoutes: React.FC = () => {
@@ -84,6 +85,9 @@ const AppRoutes: React.FC = () => {
           </DashboardLayout>
         </ProtectedRoute>
       } />
+
+      {/* Test route for Enhanced Family Modal */}
+      <Route path="/test/family-modal" element={<TestFamilyModalEnhanced />} />
 
       {/* Placeholder routes - to be implemented */}
       <Route path="/animals/details" element={

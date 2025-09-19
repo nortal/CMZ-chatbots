@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit, Trash2, Users, Calendar, Mail, Phone, MapPin, FileText, Eye } from 'lucide-react';
+import AddFamilyModalEnhanced from '../components/AddFamilyModalEnhanced';
+import { familyApi } from '../services/familyApi';
 
 interface Student {
   id: string;
@@ -52,196 +54,108 @@ interface Family {
 }
 
 const FamilyManagement: React.FC = () => {
-  const [families] = useState<Family[]>([
-    {
-      id: 'fam-001',
-      familyName: 'Johnson Family',
-      students: [
-        {
-          id: 'std-001',
-          firstName: 'Emma',
-          lastName: 'Johnson',
-          age: 8,
-          grade: '3rd Grade',
-          interests: ['Animals', 'Science', 'Drawing'],
-          allergies: ['Peanuts']
-        },
-        {
-          id: 'std-002',
-          firstName: 'Liam',
-          lastName: 'Johnson',
-          age: 10,
-          grade: '5th Grade',
-          interests: ['Conservation', 'Photography', 'Reading']
-        }
-      ],
-      parents: [
-        {
-          id: 'par-001',
-          firstName: 'Sarah',
-          lastName: 'Johnson',
-          email: 'sarah.johnson@email.com',
-          phone: '(555) 123-4567',
-          role: 'primary',
-          emergencyContact: true
-        },
-        {
-          id: 'par-002',
-          firstName: 'Michael',
-          lastName: 'Johnson',
-          email: 'mike.johnson@email.com',
-          phone: '(555) 987-6543',
-          role: 'secondary',
-          emergencyContact: true
-        }
-      ],
-      registrationDate: '2024-01-15',
-      status: 'active',
-      address: {
-        street: '123 Oak Street',
-        city: 'Seattle',
-        state: 'WA',
-        zipCode: '98101'
-      },
-      emergencyContact: {
-        name: 'Jennifer Martinez',
-        phone: '(555) 555-1234',
-        relationship: 'Aunt'
-      },
-      medicalNotes: 'Emma has severe peanut allergy - carry EpiPen at all times.',
-      educationalGoals: ['Wildlife Conservation Awareness', 'Scientific Observation Skills'],
-      preferredPrograms: ['Junior Zookeeper', 'Conservation Club', 'Art & Animals'],
-      visitHistory: [
-        { date: '2024-01-20', program: 'Junior Zookeeper', attendance: 2 },
-        { date: '2024-02-10', program: 'Conservation Club', attendance: 2 },
-        { date: '2024-03-05', program: 'Art & Animals', attendance: 1 }
-      ],
-      totalVisits: 5,
-      lastVisit: '2024-03-05'
-    },
-    {
-      id: 'fam-002',
-      familyName: 'Rodriguez Family',
-      students: [
-        {
-          id: 'std-003',
-          firstName: 'Sofia',
-          lastName: 'Rodriguez',
-          age: 6,
-          grade: '1st Grade',
-          interests: ['Elephants', 'Music', 'Dancing'],
-          allergies: ['Dairy']
-        }
-      ],
-      parents: [
-        {
-          id: 'par-003',
-          firstName: 'Maria',
-          lastName: 'Rodriguez',
-          email: 'maria.rodriguez@email.com',
-          phone: '(555) 234-5678',
-          role: 'primary',
-          emergencyContact: true
-        }
-      ],
-      registrationDate: '2024-02-20',
-      status: 'active',
-      address: {
-        street: '456 Pine Avenue',
-        city: 'Bellevue',
-        state: 'WA',
-        zipCode: '98004'
-      },
-      emergencyContact: {
-        name: 'Carlos Rodriguez',
-        phone: '(555) 876-5432',
-        relationship: 'Uncle'
-      },
-      medicalNotes: 'Sofia is lactose intolerant.',
-      educationalGoals: ['Animal Behavior Understanding', 'Creative Expression'],
-      preferredPrograms: ['Tiny Tots', 'Animal Art', 'Music with Animals'],
-      visitHistory: [
-        { date: '2024-02-25', program: 'Tiny Tots', attendance: 1 },
-        { date: '2024-03-10', program: 'Animal Art', attendance: 1 }
-      ],
-      totalVisits: 2,
-      lastVisit: '2024-03-10'
-    },
-    {
-      id: 'fam-003',
-      familyName: 'Chen Family',
-      students: [
-        {
-          id: 'std-004',
-          firstName: 'David',
-          lastName: 'Chen',
-          age: 12,
-          grade: '7th Grade',
-          interests: ['Marine Biology', 'Technology', 'Environmental Science']
-        },
-        {
-          id: 'std-005',
-          firstName: 'Ashley',
-          lastName: 'Chen',
-          age: 9,
-          grade: '4th Grade',
-          interests: ['Birds', 'Math', 'Puzzles']
-        }
-      ],
-      parents: [
-        {
-          id: 'par-004',
-          firstName: 'Kevin',
-          lastName: 'Chen',
-          email: 'kevin.chen@email.com',
-          phone: '(555) 345-6789',
-          role: 'primary',
-          emergencyContact: true
-        }
-      ],
-      registrationDate: '2023-11-10',
-      status: 'active',
-      address: {
-        street: '789 Maple Drive',
-        city: 'Redmond',
-        state: 'WA',
-        zipCode: '98052'
-      },
-      emergencyContact: {
-        name: 'Linda Chen',
-        phone: '(555) 678-9012',
-        relationship: 'Grandmother'
-      },
-      educationalGoals: ['STEM Education', 'Environmental Stewardship'],
-      preferredPrograms: ['Science Club', 'Teen Naturalist', 'Eco Warriors'],
-      visitHistory: [
-        { date: '2023-11-15', program: 'Science Club', attendance: 2 },
-        { date: '2023-12-20', program: 'Teen Naturalist', attendance: 1 },
-        { date: '2024-01-10', program: 'Eco Warriors', attendance: 2 },
-        { date: '2024-02-28', program: 'Science Club', attendance: 2 }
-      ],
-      totalVisits: 7,
-      lastVisit: '2024-02-28'
-    }
-  ]);
+  // Start with empty array - will be populated from API
+  const [families, setFamilies] = useState<Family[]>([]);
 
   const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'pending'>('all');
   const [showAddFamily, setShowAddFamily] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch families from API on component mount
+  useEffect(() => {
+    fetchFamilies();
+  }, []);
+
+  const fetchFamilies = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const fetchedFamilies = await familyApi.getFamilies();
+      console.log('Fetched families from API:', fetchedFamilies);
+
+      // Transform API data to match component structure
+      const transformedFamilies = fetchedFamilies.map(fam => ({
+        ...fam,
+        id: fam.familyId,
+        familyName: fam.familyName || `Family ${fam.familyId}`, // Provide default if null
+        students: (fam.students || []).map(s => ({
+          id: s.userId,
+          firstName: s.displayName?.split(' ')[0] || '',
+          lastName: s.displayName?.split(' ')[1] || '',
+          age: parseInt(s.age) || 0,
+          grade: s.grade || '',
+          interests: s.interests || [],
+          allergies: s.allergies || []
+        })),
+        parents: (fam.parents || []).map(p => ({
+          id: p.userId,
+          firstName: p.displayName?.split(' ')[0] || '',
+          lastName: p.displayName?.split(' ')[1] || '',
+          email: p.email || '',
+          phone: p.phone || '',
+          role: p.isPrimaryContact ? 'primary' : 'secondary' as 'primary' | 'secondary',
+          emergencyContact: p.isEmergencyContact || false
+        })),
+        registrationDate: fam.memberSince || fam.createdAt || fam.created?.at || new Date().toISOString(),
+        status: (fam.status || 'active') as 'active' | 'inactive' | 'pending',
+        address: fam.address || { street: '', city: '', state: '', zipCode: '' },
+        emergencyContact: { name: '', phone: '', relationship: '' },
+        educationalGoals: [],
+        preferredPrograms: fam.preferredPrograms || [],
+        visitHistory: [],
+        totalVisits: 0,
+        lastVisit: fam.modified?.at || fam.created?.at || new Date().toISOString()
+      }));
+
+      // Merge with mock data for now to maintain display
+      // Replace the mock data with fetched families instead of adding to them
+      setFamilies(transformedFamilies);
+    } catch (err) {
+      console.error('Error fetching families:', err);
+      setError('Failed to load families. Using demo data.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteFamily = async (familyId: string) => {
+    if (!window.confirm('Are you sure you want to delete this family? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await familyApi.deleteFamily(familyId);
+      setFamilies(prev => prev.filter(f => f.id !== familyId));
+      alert('Family deleted successfully');
+    } catch (err) {
+      console.error('Error deleting family:', err);
+      alert('Failed to delete family. Please try again.');
+    }
+  };
+
+  const handleEditFamily = (family: Family) => {
+    setSelectedFamily(family);
+    setIsEditMode(true);
+    // In a real implementation, would open an edit modal
+    alert('Edit functionality will open an edit modal. Implementation pending.');
+  };
 
   const filteredFamilies = families.filter(family => {
-    const matchesSearch = family.familyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         family.students.some(student => 
-                           `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    const familyName = family.familyName || '';
+    const matchesSearch = familyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         family.students.some(student =>
+                           `${student.firstName || ''} ${student.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
                          ) ||
                          family.parents.some(parent =>
-                           `${parent.firstName} ${parent.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           parent.email.toLowerCase().includes(searchTerm.toLowerCase())
+                           `${parent.firstName || ''} ${parent.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (parent.email || '').toLowerCase().includes(searchTerm.toLowerCase())
                          );
-    
+
     const matchesStatus = statusFilter === 'all' || family.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -332,10 +246,18 @@ const FamilyManagement: React.FC = () => {
             <Eye className="w-4 h-4 mr-2" />
             View Details
           </button>
-          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+          <button
+            onClick={() => handleEditFamily(family)}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            title="Edit Family"
+          >
             <Edit className="w-4 h-4" />
           </button>
-          <button className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors">
+          <button
+            onClick={() => handleDeleteFamily(family.id)}
+            className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+            title="Delete Family"
+          >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -555,7 +477,13 @@ const FamilyManagement: React.FC = () => {
             >
               Close
             </button>
-            <button className="flex-1 flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button
+              onClick={() => {
+                setIsEditMode(true);
+                // For now, just show an alert. Full edit implementation would go here
+                alert('Edit mode would be activated here. Full implementation pending.');
+              }}
+              className="flex-1 flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               <Edit className="w-4 h-4 mr-2" />
               Edit Family Details
             </button>
@@ -572,7 +500,7 @@ const FamilyManagement: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Family Management</h1>
           <p className="text-gray-600">Manage family registrations and educational program participation</p>
         </div>
-        <button 
+        <button
           onClick={() => setShowAddFamily(true)}
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
@@ -580,6 +508,20 @@ const FamilyManagement: React.FC = () => {
           Add New Family
         </button>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-yellow-800">{error}</p>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-blue-800">Loading families...</p>
+        </div>
+      )}
 
       {/* Search and Filter Controls */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -628,6 +570,31 @@ const FamilyManagement: React.FC = () => {
       )}
 
       <FamilyDetailsModal />
+
+      {/* Add Family Modal */}
+      <AddFamilyModalEnhanced
+        open={showAddFamily}
+        onOpenChange={setShowAddFamily}
+        onSubmit={async (familyData) => {
+          try {
+            console.log('Creating new family:', familyData);
+            const newFamily = await familyApi.createFamily(familyData);
+            console.log('Family created successfully:', newFamily);
+
+            // Show success message
+            alert(`Family "${familyData.familyName}" has been successfully added to the system!`);
+
+            // Close the modal
+            setShowAddFamily(false);
+
+            // Refresh the families list
+            await fetchFamilies();
+          } catch (error: any) {
+            console.error('Error creating family:', error);
+            alert(`Failed to create family: ${error.message || 'Unknown error occurred'}`);
+          }
+        }}
+      />
     </div>
   );
 };

@@ -70,20 +70,23 @@ class FlaskUserHandler:
         except Exception as e:
             return {"error": "Internal server error", "detail": str(e)}, 500
     
-    def list_users(self, page: int = None, page_size: int = None) -> Tuple[Any, int]:
+    def list_users(self, page: int = None, page_size: int = None,
+                   query: str = None, role: str = None) -> Tuple[Any, int]:
         """
         Flask handler for user listing
-        
+
         Args:
             page: Page number (optional)
             page_size: Items per page (optional)
-            
+            query: Search query for name or email (optional)
+            role: Filter by specific role (optional)
+
         Returns:
             Tuple of (response_body, http_status_code)
         """
         try:
             # Execute business logic
-            users = self._user_service.list_users(page, page_size)
+            users = self._user_service.list_users(page, page_size, query, role)
             
             # Convert domain entities to OpenAPI response
             response_items = []

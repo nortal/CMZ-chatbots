@@ -13,6 +13,12 @@ from .dependency_injection import (
     create_user_service,
     create_animal_service
 )
+from .conversation import (
+    handle_convo_turn_post,
+    handle_convo_history_get,
+    handle_convo_history_delete,
+    handle_summarize_convo_post
+)
 
 
 def handle_(*args, **kwargs) -> Tuple[Any, int]:
@@ -39,16 +45,21 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'animal_id_put': handle_animal_id_put,
             'animal_id_delete': handle_animal_id_delete,  # Add missing mapping
             'animal_post': handle_animal_post,  # Add missing mapping
+            'list_users': handle_user_list_get,  # Map list_users to handler
             'user_list_get': handle_user_list_get,
             'user_details_get': handle_user_details_get,
             'user_details_post': handle_user_details_post,
             'user_details_patch': handle_user_details_patch,
             'user_details_delete': handle_user_details_delete,
             'family_list_get': handle_family_list_get,
+            'list_all_families': handle_family_list_get,  # New endpoint mapping
+            'list_families': handle_family_list_get,  # Controller function name mapping
+            'create_family': handle_family_details_post,  # Fix for create_family routing
             'family_details_post': handle_family_details_post,
             'family_details_get': handle_family_details_get,
             'family_details_patch': handle_family_details_patch,
             'family_details_delete': handle_family_details_delete,
+            'delete_family': handle_family_details_delete,  # Map delete_family controller function
             'login_post': handle_login_post,
             'logout_post': handle_logout_post,
             # New auth operationIds from OpenAPI spec
@@ -59,6 +70,11 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'health_get': handle_health_get,
             'homepage_get': handle_homepage_get,
             'admin_dashboard_get': handle_admin_dashboard_get,
+            # Conversation handlers
+            'convo_turn_post': handle_convo_turn_post,
+            'convo_history_get': handle_convo_history_get,
+            'convo_history_delete': handle_convo_history_delete,
+            'summarize_convo_post': handle_summarize_convo_post,
         }
 
         handler_func = handler_map.get(caller_name)
@@ -130,9 +146,19 @@ def handle_animal_config_get(animal_id: str) -> Tuple[Any, int]:
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_config_patch(animal_id: str, body: Dict[str, Any]) -> Tuple[Any, int]:
+def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
     """Update animal configuration"""
     try:
+        # Convert AnimalConfigUpdate object to dictionary if necessary
+        from openapi_server.models.animal_config_update import AnimalConfigUpdate
+        if isinstance(body, AnimalConfigUpdate):
+            # Use the model_to_json_keyed_dict to properly convert the object
+            from .utils.core import model_to_json_keyed_dict
+            body = model_to_json_keyed_dict(body) or {}
+        elif not isinstance(body, dict):
+            # Fallback for other types
+            body = dict(body) if body else {}
+
         # Fix floating-point precision issues for temperature and topP
         if 'temperature' in body and body['temperature'] is not None:
             # Round to 1 decimal place to avoid floating-point precision issues
@@ -357,11 +383,12 @@ def handle_animal_post(animal_input: Any = None, body: Dict[str, Any] = None) ->
 
 
 # User handlers
-def handle_user_list_get() -> Tuple[Any, int]:
-    """Get list of users"""
+def handle_user_list_get(query: str = None, role: str = None, page: int = None, page_size: int = None) -> Tuple[Any, int]:
+    """Get list of users with optional filtering and pagination"""
     try:
         user_handler = create_flask_user_handler()
-        return user_handler.list_users()
+        # Pass query and pagination parameters to the handler
+        return user_handler.list_users(query=query, role=role, page=page, page_size=page_size)
     except Exception as e:
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
@@ -414,10 +441,31 @@ def handle_family_list_get() -> Tuple[Any, int]:
     return family_list_get()
 
 
-def handle_family_details_post(body: Dict[str, Any]) -> Tuple[Any, int]:
-    """Create new family"""
+def handle_family_details_post(body: Any) -> Tuple[Any, int]:
+    """Create new family with proper model handling"""
     from .family import family_details_post
-    return family_details_post(body)
+
+    # Convert FamilyInput model object to dict if needed
+    if hasattr(body, 'to_dict'):
+        body_dict = body.to_dict()
+        # The to_dict() method converts to snake_case, but we need camelCase for the family creation
+        # Convert family_name back to familyName
+        if 'family_name' in body_dict:
+            body_dict['familyName'] = body_dict.pop('family_name')
+        if 'preferred_programs' in body_dict:
+            body_dict['preferredPrograms'] = body_dict.pop('preferred_programs')
+    else:
+        body_dict = body
+
+    # Ensure all fields are present in the dictionary
+    # The model might not include all fields if not regenerated
+    if isinstance(body_dict, dict):
+        # Log what we received for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Creating family with data: {body_dict}")
+
+    return family_details_post(body_dict)
 
 
 def handle_family_details_get(family_id: str) -> Tuple[Any, int]:

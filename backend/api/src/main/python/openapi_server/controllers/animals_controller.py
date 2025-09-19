@@ -45,7 +45,13 @@ def animal_config_get(animal_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(animal_id)
@@ -64,7 +70,7 @@ def animal_config_get(animal_id):  # noqa: E501
             message=f"Controller animal_config_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_config_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -79,7 +85,7 @@ def animal_config_get(animal_id):  # noqa: E501
                 message=f"Internal server error in animal_config_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_config_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def animal_config_patch(animal_id, body):  # noqa: E501
@@ -118,7 +124,13 @@ def animal_config_patch(animal_id, body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(animal_id, body)
@@ -137,7 +149,7 @@ def animal_config_patch(animal_id, body):  # noqa: E501
             message=f"Controller animal_config_patch implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_config_patch"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -152,7 +164,7 @@ def animal_config_patch(animal_id, body):  # noqa: E501
                 message=f"Internal server error in animal_config_patch: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_config_patch"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def animal_details_get(animal_id):  # noqa: E501
@@ -187,7 +199,13 @@ def animal_details_get(animal_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(animal_id)
@@ -206,7 +224,7 @@ def animal_details_get(animal_id):  # noqa: E501
             message=f"Controller animal_details_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_details_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -221,10 +239,10 @@ def animal_details_get(animal_id):  # noqa: E501
                 message=f"Internal server error in animal_details_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_details_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
-def animal_id_delete(id_):  # noqa: E501
+def animal_id_delete(id):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
@@ -256,10 +274,16 @@ def animal_id_delete(id_):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
-        result = impl_function(id_)
+        result = impl_function(id)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -275,7 +299,7 @@ def animal_id_delete(id_):  # noqa: E501
             message=f"Controller animal_id_delete implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_id_delete"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -290,10 +314,10 @@ def animal_id_delete(id_):  # noqa: E501
                 message=f"Internal server error in animal_id_delete: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_id_delete"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
-def animal_id_get(id_):  # noqa: E501
+def animal_id_get(id):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
@@ -325,10 +349,16 @@ def animal_id_get(id_):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
-        result = impl_function(id_)
+        result = impl_function(id)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -344,7 +374,7 @@ def animal_id_get(id_):  # noqa: E501
             message=f"Controller animal_id_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_id_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -359,10 +389,10 @@ def animal_id_get(id_):  # noqa: E501
                 message=f"Internal server error in animal_id_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_id_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
-def animal_id_put(id_, body):  # noqa: E501
+def animal_id_put(id, body):  # noqa: E501
     """Update an existing animal
 
      # noqa: E501
@@ -398,10 +428,16 @@ def animal_id_put(id_, body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
-        result = impl_function(id_, body)
+        result = impl_function(id, body)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -417,7 +453,7 @@ def animal_id_put(id_, body):  # noqa: E501
             message=f"Controller animal_id_put implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_id_put"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -432,7 +468,7 @@ def animal_id_put(id_, body):  # noqa: E501
                 message=f"Internal server error in animal_id_put: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_id_put"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def animal_list_get(status=None):  # noqa: E501
@@ -467,7 +503,13 @@ def animal_list_get(status=None):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(status)
@@ -486,7 +528,7 @@ def animal_list_get(status=None):  # noqa: E501
             message=f"Controller animal_list_get implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_list_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -501,7 +543,7 @@ def animal_list_get(status=None):  # noqa: E501
                 message=f"Internal server error in animal_list_get: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_list_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def animal_post(body):  # noqa: E501
@@ -538,7 +580,13 @@ def animal_post(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -557,7 +605,7 @@ def animal_post(body):  # noqa: E501
             message=f"Controller animal_post implementation not found: {str(e)}",
             details={"controller": "AnimalsController", "operation": "animal_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -572,4 +620,4 @@ def animal_post(body):  # noqa: E501
                 message=f"Internal server error in animal_post: {str(e)}",
                 details={"controller": "AnimalsController", "operation": "animal_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

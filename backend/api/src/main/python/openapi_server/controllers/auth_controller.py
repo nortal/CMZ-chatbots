@@ -40,7 +40,13 @@ def auth_logout_post():  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -59,7 +65,7 @@ def auth_logout_post():  # noqa: E501
             message=f"Controller auth_logout_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_logout_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -74,7 +80,7 @@ def auth_logout_post():  # noqa: E501
                 message=f"Internal server error in auth_logout_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_logout_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def auth_post(body):  # noqa: E501
@@ -111,7 +117,13 @@ def auth_post(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -130,7 +142,7 @@ def auth_post(body):  # noqa: E501
             message=f"Controller auth_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -145,7 +157,7 @@ def auth_post(body):  # noqa: E501
                 message=f"Internal server error in auth_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def auth_refresh_post():  # noqa: E501
@@ -178,7 +190,13 @@ def auth_refresh_post():  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -197,7 +215,7 @@ def auth_refresh_post():  # noqa: E501
             message=f"Controller auth_refresh_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_refresh_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -212,7 +230,7 @@ def auth_refresh_post():  # noqa: E501
                 message=f"Internal server error in auth_refresh_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_refresh_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def auth_reset_password_post(body):  # noqa: E501
@@ -249,7 +267,13 @@ def auth_reset_password_post(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -268,7 +292,7 @@ def auth_reset_password_post(body):  # noqa: E501
             message=f"Controller auth_reset_password_post implementation not found: {str(e)}",
             details={"controller": "AuthController", "operation": "auth_reset_password_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -283,4 +307,4 @@ def auth_reset_password_post(body):  # noqa: E501
                 message=f"Internal server error in auth_reset_password_post: {str(e)}",
                 details={"controller": "AuthController", "operation": "auth_reset_password_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

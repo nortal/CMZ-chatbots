@@ -98,26 +98,42 @@ class UserService:
         
         return user
     
-    def list_users(self, page: Optional[int] = None, page_size: Optional[int] = None) -> List[User]:
+    def list_users(self, page: Optional[int] = None, page_size: Optional[int] = None,
+                   query: Optional[str] = None, role: Optional[str] = None) -> List[User]:
         """
         List users with business logic filtering
-        
+
         Args:
             page: Page number (1-based)
             page_size: Items per page
-            
+            query: Search query for name or email
+            role: Filter by specific role
+
         Returns:
             List[User]: List of user domain entities
         """
         # Get all non-deleted users
         users = self._user_repo.list(hide_soft_deleted=True)
-        
+
+        # Apply search filter if query provided
+        if query:
+            query_lower = query.lower()
+            users = [
+                user for user in users
+                if (user.display_name and query_lower in user.display_name.lower()) or
+                   (user.email and query_lower in user.email.lower())
+            ]
+
+        # Apply role filter if provided
+        if role:
+            users = [user for user in users if user.role == role]
+
         # Apply pagination if requested
         if page and page_size:
             start = (page - 1) * page_size
             end = start + page_size
             users = users[start:end]
-        
+
         return users
     
     def update_user(self, user_id: str, update_data: Dict[str, Any]) -> User:

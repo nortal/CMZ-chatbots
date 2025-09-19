@@ -1,13 +1,36 @@
 # /nextfive Command
 
-Implement the next 5 high-priority Jira tickets from our API validation epic, following the same systematic approach we used for PR003946-90, PR003946-72, PR003946-73, PR003946-69, and PR003946-66.
+Implement the next 5 high-priority Jira tickets from specified epic or concept, following the same systematic approach we used for PR003946-90, PR003946-72, PR003946-73, PR003946-69, and PR003946-66.
 
 ## Usage
 
 ### Basic Usage (Discovery Mode)
 ```
 /nextfive
-# Discovers and implements next 5 high-priority tickets automatically
+# Discovers and implements next 5 high-priority tickets from API validation epic
+```
+
+### Epic-Based Usage
+```
+# By epic number
+/nextfive PR003946-170
+# Discovers and implements next 5 tickets from Enable Chat Epic
+
+/nextfive 170
+# Short form - assumes PR003946 project prefix
+```
+
+### Concept-Based Usage
+```
+# By keyword or phrase
+/nextfive "tickets related to chat"
+# Searches for tickets with "chat" in title/description
+
+/nextfive "authentication"
+# Finds tickets related to authentication
+
+/nextfive "family management"
+# Finds tickets for family management features
 ```
 
 ### Targeted Usage (Specific Ticket Mode)
@@ -25,6 +48,17 @@ Implement the next 5 high-priority Jira tickets from our API validation epic, fo
 # Same as above, supports both space and comma separation
 
 # If dependencies exceed 5 tickets total, reports and continues with priority subset
+```
+
+### Mixed Usage
+```
+# Epic plus specific tickets
+/nextfive PR003946-170 PR003946-156
+# Prioritizes PR003946-156 from the epic, fills remaining slots from epic
+
+# Concept plus tickets
+/nextfive "chat" PR003946-157 PR003946-158
+# Ensures these two tickets are included, fills rest from chat-related tickets
 ```
 
 ## Context
@@ -138,6 +172,107 @@ When a ticket doesn't exist in the test suite (like PR003946-144):
 - **>5 Total Tickets**: Inform user of total count, implement top 5 priority tickets
 - **Dependencies Only >5**: Inform user to re-run after merge, focus on critical dependencies
 
+## Argument Detection Logic
+
+### Intelligent Argument Parser
+```bash
+# Parse and classify the argument provided to /nextfive
+ARGUMENT="$1"
+
+# DETECTION LOGIC:
+# 1. Epic Detection (PR003946-XXX where XXX is an epic)
+if [[ "$ARGUMENT" =~ ^PR003946-[0-9]+$ ]]; then
+    # Check if it's an epic by looking for child tickets
+    CHILD_COUNT=$(curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
+        "$JIRA_BASE_URL/rest/api/3/search?jql=parent=$ARGUMENT" | jq '.total')
+
+    if [ "$CHILD_COUNT" -gt 0 ]; then
+        echo "✅ Detected Epic: $ARGUMENT with $CHILD_COUNT child tickets"
+        MODE="epic"
+        EPIC_KEY="$ARGUMENT"
+    else
+        echo "📋 Detected single ticket: $ARGUMENT"
+        MODE="ticket"
+        TICKET_KEY="$ARGUMENT"
+    fi
+
+# 2. Short Epic Number (just digits, assumes PR003946 prefix)
+elif [[ "$ARGUMENT" =~ ^[0-9]+$ ]]; then
+    EPIC_KEY="PR003946-$ARGUMENT"
+    echo "🔍 Checking if PR003946-$ARGUMENT is an epic..."
+    CHILD_COUNT=$(curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
+        "$JIRA_BASE_URL/rest/api/3/search?jql=parent=$EPIC_KEY" | jq '.total')
+
+    if [ "$CHILD_COUNT" -gt 0 ]; then
+        echo "✅ Detected Epic: $EPIC_KEY with $CHILD_COUNT child tickets"
+        MODE="epic"
+    else
+        echo "📋 Detected single ticket: $EPIC_KEY"
+        MODE="ticket"
+        TICKET_KEY="$EPIC_KEY"
+    fi
+
+# 3. Concept/Keyword Detection (text search)
+elif [[ "$ARGUMENT" =~ [a-zA-Z] ]]; then
+    echo "🔍 Searching for tickets related to: $ARGUMENT"
+    MODE="concept"
+    SEARCH_TERM="$ARGUMENT"
+
+# 4. No Argument (default discovery mode)
+else
+    echo "📊 No argument provided, using default discovery mode"
+    MODE="discovery"
+    EPIC_KEY="PR003946-61"  # Default API validation epic
+fi
+```
+
+### Epic-Based Discovery
+```bash
+# When epic is detected, find child tickets
+if [ "$MODE" = "epic" ]; then
+    echo "Discovering tickets from epic: $EPIC_KEY"
+
+    # Get all child tickets of the epic
+    TICKETS=$(curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
+        "$JIRA_BASE_URL/rest/api/3/search?jql=parent=$EPIC_KEY AND status!=Done&fields=key,summary,priority,status" \
+        | jq -r '.issues[] | "\(.key) - \(.fields.summary) [\(.fields.status.name)]"')
+
+    echo "Found tickets in epic:"
+    echo "$TICKETS"
+
+    # Prioritize by status and priority
+    HIGH_PRIORITY=$(echo "$TICKETS" | grep -E "Highest|High" | head -5)
+    TODO_TICKETS=$(echo "$TICKETS" | grep "To Do" | head -5)
+fi
+```
+
+### Concept-Based Discovery
+```bash
+# When searching by concept/keyword
+if [ "$MODE" = "concept" ]; then
+    # Remove quotes if present
+    SEARCH_TERM="${SEARCH_TERM//\"/}"
+
+    echo "Searching for tickets containing: $SEARCH_TERM"
+
+    # JQL search for tickets with the concept in summary or description
+    JQL="project=PR003946 AND (summary ~ \"$SEARCH_TERM\" OR description ~ \"$SEARCH_TERM\") AND status!=Done"
+
+    TICKETS=$(curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
+        "$JIRA_BASE_URL/rest/api/3/search?jql=$JQL&fields=key,summary,priority,status" \
+        | jq -r '.issues[] | "\(.key) - \(.fields.summary) [\(.fields.status.name)]"')
+
+    if [ -z "$TICKETS" ]; then
+        echo "⚠️ No tickets found for concept: $SEARCH_TERM"
+        echo "Falling back to discovery mode"
+        MODE="discovery"
+    else
+        echo "Found tickets matching '$SEARCH_TERM':"
+        echo "$TICKETS"
+    fi
+fi
+```
+
 ## Discovery Commands
 
 ### Discovery Mode (Standard /nextfive)
@@ -146,7 +281,9 @@ When a ticket doesn't exist in the test suite (like PR003946-144):
 python -m pytest tests/integration/test_api_validation_epic.py -v
 
 # Step 2: Enhanced discovery with dependency analysis and priority scoring
-python scripts/enhanced_discovery.py --epic PR003946-61 --include-dependencies
+# Now supports dynamic epic selection based on argument
+EPIC_TO_SEARCH="${EPIC_KEY:-PR003946-61}"  # Use detected epic or default
+python scripts/enhanced_discovery.py --epic "$EPIC_TO_SEARCH" --include-dependencies
 
 # Step 3: Identify specific failing test methods and their associated tickets
 grep -A 2 -B 1 "PR003946-" tests/integration/test_api_validation_epic.py
@@ -301,23 +438,94 @@ git checkout -b feature/api-validation-improvements-$(date +%Y%m%d)
 # Parsed as: ["PR003946-91", "PR003946-88", "PR003946-75"]
 ```
 
+### Epic-Based Examples
+
+#### Example 7: Epic Number Detection
+```bash
+/nextfive PR003946-170
+# Detected as Epic: Enable Chat Epic with 14 child tickets
+# Filters to non-Done tickets, prioritizes by status and priority
+# Result: Implements top 5 tickets from the epic
+```
+
+#### Example 8: Short Epic Number
+```bash
+/nextfive 170
+# Expands to PR003946-170, detects as epic
+# Same result as full epic number
+```
+
+#### Example 9: Epic with Mixed Priorities
+```bash
+/nextfive PR003946-61
+# API Validation Epic with various ticket states
+# Prioritizes: In Progress tickets → High/Highest priority → To Do status
+# Result: 5 most important tickets from epic
+```
+
+### Concept-Based Examples
+
+#### Example 10: Keyword Search
+```bash
+/nextfive "chat"
+# Searches for tickets with "chat" in summary or description
+# Finds: PR003946-156, PR003946-157, PR003946-158, etc.
+# Result: Implements 5 chat-related tickets
+```
+
+#### Example 11: Multi-Word Concept
+```bash
+/nextfive "family management"
+# Searches for tickets containing "family management"
+# Finds family-related features and bugs
+# Result: 5 family management tickets
+```
+
+#### Example 12: Concept Not Found
+```bash
+/nextfive "blockchain"
+# No tickets found with "blockchain"
+# Falls back to standard discovery mode
+# Result: Default /nextfive behavior
+```
+
+### Mixed Mode Examples
+
+#### Example 13: Epic Plus Specific Ticket
+```bash
+/nextfive PR003946-170 PR003946-157
+# Epic detected: PR003946-170 (Enable Chat)
+# Ensures PR003946-157 is included (if it's in the epic)
+# Fills remaining 4 slots from epic tickets
+# Result: PR003946-157 + 4 other epic tickets
+```
+
+#### Example 14: Concept Plus Tickets
+```bash
+/nextfive "authentication" PR003946-88 PR003946-91
+# Searches for auth-related tickets
+# Ensures PR003946-88 and PR003946-91 are included
+# Fills remaining slots from auth search results
+# Result: 2 specified + 3 auth-related tickets
+```
+
 ### Error Handling Examples
 
-#### Example 7: Mixed Valid/Invalid Tickets
+#### Example 15: Mixed Valid/Invalid Tickets
 ```bash
 /nextfive PR003946-91 PR003946-999 PR003946-75
 # Analysis: PR003946-91 ✅, PR003946-999 ❌, PR003946-75 ✅
 # Result: Process valid tickets (PR003946-91, PR003946-75) + their dependencies
 ```
 
-#### Example 8: No Valid Tickets Found
+#### Example 16: No Valid Tickets Found
 ```bash
 /nextfive PR003946-999 PR003946-998
 # All target tickets not found → fallback to discovery mode
 # Result: Standard /nextfive behavior (discover and implement 5 tickets)
 ```
 
-#### Example 9: Ticket Not in Test Suite (TDD Required)
+#### Example 17: Ticket Not in Test Suite (TDD Required)
 ```bash
 /nextfive PR003946-144
 # Ticket PR003946-144 not found in test suite

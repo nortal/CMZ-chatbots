@@ -46,7 +46,13 @@ def create_user(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -65,7 +71,7 @@ def create_user(body):  # noqa: E501
             message=f"Controller create_user implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "create_user"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -80,7 +86,7 @@ def create_user(body):  # noqa: E501
                 message=f"Internal server error in create_user: {str(e)}",
                 details={"controller": "AdminController", "operation": "create_user"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def create_user_details(body):  # noqa: E501
@@ -117,7 +123,13 @@ def create_user_details(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -136,7 +148,7 @@ def create_user_details(body):  # noqa: E501
             message=f"Controller create_user_details implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "create_user_details"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -151,7 +163,7 @@ def create_user_details(body):  # noqa: E501
                 message=f"Internal server error in create_user_details: {str(e)}",
                 details={"controller": "AdminController", "operation": "create_user_details"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def delete_user(user_id):  # noqa: E501
@@ -186,7 +198,13 @@ def delete_user(user_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -205,7 +223,7 @@ def delete_user(user_id):  # noqa: E501
             message=f"Controller delete_user implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "delete_user"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -220,7 +238,7 @@ def delete_user(user_id):  # noqa: E501
                 message=f"Internal server error in delete_user: {str(e)}",
                 details={"controller": "AdminController", "operation": "delete_user"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def delete_user_details(user_id):  # noqa: E501
@@ -255,7 +273,13 @@ def delete_user_details(user_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -274,7 +298,7 @@ def delete_user_details(user_id):  # noqa: E501
             message=f"Controller delete_user_details implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "delete_user_details"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -289,7 +313,7 @@ def delete_user_details(user_id):  # noqa: E501
                 message=f"Internal server error in delete_user_details: {str(e)}",
                 details={"controller": "AdminController", "operation": "delete_user_details"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def get_user(user_id):  # noqa: E501
@@ -324,7 +348,13 @@ def get_user(user_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -343,7 +373,7 @@ def get_user(user_id):  # noqa: E501
             message=f"Controller get_user implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "get_user"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -358,7 +388,7 @@ def get_user(user_id):  # noqa: E501
                 message=f"Internal server error in get_user: {str(e)}",
                 details={"controller": "AdminController", "operation": "get_user"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def get_user_details(user_id):  # noqa: E501
@@ -393,7 +423,13 @@ def get_user_details(user_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(user_id)
@@ -412,7 +448,7 @@ def get_user_details(user_id):  # noqa: E501
             message=f"Controller get_user_details implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "get_user_details"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -427,7 +463,7 @@ def get_user_details(user_id):  # noqa: E501
                 message=f"Internal server error in get_user_details: {str(e)}",
                 details={"controller": "AdminController", "operation": "get_user_details"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def list_user_details():  # noqa: E501
@@ -460,7 +496,13 @@ def list_user_details():  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -479,7 +521,7 @@ def list_user_details():  # noqa: E501
             message=f"Controller list_user_details implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "list_user_details"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -494,14 +536,22 @@ def list_user_details():  # noqa: E501
                 message=f"Internal server error in list_user_details: {str(e)}",
                 details={"controller": "AdminController", "operation": "list_user_details"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
-def list_users():  # noqa: E501
+def list_users(query=None, role=None, page=None, page_size=None):  # noqa: E501
     """Get list of all users
 
      # noqa: E501
 
+    :param query: Search query for user name or email
+    :type query: str
+    :param role: Filter by user role
+    :type role: str
+    :param page: Page number (1-based)
+    :type page: int
+    :param page_size: Number of items per page (max 100)
+    :type page_size: int
 
     :rtype: Union[PagedUsers, Tuple[PagedUsers, int], Tuple[PagedUsers, int, Dict[str, str]]
     """
@@ -527,10 +577,16 @@ def list_users():  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
-        result = impl_function()
+        result = impl_function(query, role, page, page_size)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -546,7 +602,7 @@ def list_users():  # noqa: E501
             message=f"Controller list_users implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "list_users"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -561,7 +617,7 @@ def list_users():  # noqa: E501
                 message=f"Internal server error in list_users: {str(e)}",
                 details={"controller": "AdminController", "operation": "list_users"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def update_user(user_id, body):  # noqa: E501
@@ -600,7 +656,13 @@ def update_user(user_id, body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(user_id, body)
@@ -619,7 +681,7 @@ def update_user(user_id, body):  # noqa: E501
             message=f"Controller update_user implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "update_user"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -634,7 +696,7 @@ def update_user(user_id, body):  # noqa: E501
                 message=f"Internal server error in update_user: {str(e)}",
                 details={"controller": "AdminController", "operation": "update_user"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def update_user_details(user_id, body):  # noqa: E501
@@ -673,7 +735,13 @@ def update_user_details(user_id, body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(user_id, body)
@@ -692,7 +760,7 @@ def update_user_details(user_id, body):  # noqa: E501
             message=f"Controller update_user_details implementation not found: {str(e)}",
             details={"controller": "AdminController", "operation": "update_user_details"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -707,4 +775,4 @@ def update_user_details(user_id, body):  # noqa: E501
                 message=f"Internal server error in update_user_details: {str(e)}",
                 details={"controller": "AdminController", "operation": "update_user_details"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

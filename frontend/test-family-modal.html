@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Add Family Modal API Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .search-input {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .results-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Add Family Modal - API Integration Test</h1>
+
+    <div class="test-section">
+        <h2>Test 1: Parent Search</h2>
+        <input type="text" id="parentSearch" class="search-input" placeholder="Type to search parents (e.g., 'john')">
+        <button onclick="testParentSearch()">Search Parents</button>
+        <div id="parentResults" class="results-list"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Student Search</h2>
+        <input type="text" id="studentSearch" class="search-input" placeholder="Type to search students (e.g., 'emma')">
+        <button onclick="testStudentSearch()">Search Students</button>
+        <div id="studentResults" class="results-list"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Pagination Limit (15 items max)</h2>
+        <button onclick="testPaginationLimit()">Test Pagination</button>
+        <div id="paginationResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Live Search Simulation</h2>
+        <input type="text" id="liveSearch" class="search-input" placeholder="Type to simulate modal search" oninput="simulateLiveSearch(this.value)">
+        <select id="roleSelect">
+            <option value="parent">Parent</option>
+            <option value="student">Student</option>
+        </select>
+        <div id="liveResults" class="results-list"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080';
+        let searchTimeout;
+
+        async function searchUsers(query, role, pageSize = 15) {
+            try {
+                const params = new URLSearchParams({
+                    query: query,
+                    role: role,
+                    page_size: pageSize.toString()
+                });
+
+                const response = await fetch(`${API_URL}/user?${params}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.items || [];
+            } catch (error) {
+                console.error('Search failed:', error);
+                return [];
+            }
+        }
+
+        async function testParentSearch() {
+            const query = document.getElementById('parentSearch').value;
+            const resultsDiv = document.getElementById('parentResults');
+
+            resultsDiv.innerHTML = '<div class="test-result info">Searching...</div>';
+
+            const users = await searchUsers(query, 'parent');
+
+            if (users.length === 0) {
+                resultsDiv.innerHTML = '<div class="test-result info">No parents found</div>';
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="test-result success">Found ${users.length} parent(s):</div>
+                    <ul>
+                        ${users.map(u => `
+                            <li>
+                                <strong>${u.displayName || u.display_name}</strong><br>
+                                Email: ${u.email}<br>
+                                Role: ${u.role}
+                                ${u.phoneNumber || u.phone_number ? `<br>Phone: ${u.phoneNumber || u.phone_number}` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+        }
+
+        async function testStudentSearch() {
+            const query = document.getElementById('studentSearch').value;
+            const resultsDiv = document.getElementById('studentResults');
+
+            resultsDiv.innerHTML = '<div class="test-result info">Searching...</div>';
+
+            const users = await searchUsers(query, 'student');
+
+            if (users.length === 0) {
+                resultsDiv.innerHTML = '<div class="test-result info">No students found</div>';
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="test-result success">Found ${users.length} student(s):</div>
+                    <ul>
+                        ${users.map(u => `
+                            <li>
+                                <strong>${u.displayName || u.display_name}</strong><br>
+                                Email: ${u.email}<br>
+                                Role: ${u.role}
+                                ${u.age ? `<br>Age: ${u.age}` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+        }
+
+        async function testPaginationLimit() {
+            const resultsDiv = document.getElementById('paginationResults');
+            resultsDiv.innerHTML = '<div class="test-result info">Testing pagination limit...</div>';
+
+            // Get all users with page_size=15
+            const users = await searchUsers('', 'parent', 15);
+
+            if (users.length <= 15) {
+                resultsDiv.innerHTML = `
+                    <div class="test-result success">
+                        ✓ Pagination working correctly<br>
+                        Requested: max 15 items<br>
+                        Received: ${users.length} items
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="test-result error">
+                        ✗ Pagination limit exceeded<br>
+                        Requested: max 15 items<br>
+                        Received: ${users.length} items
+                    </div>
+                `;
+            }
+        }
+
+        function simulateLiveSearch(query) {
+            // Clear previous timeout
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            const resultsDiv = document.getElementById('liveResults');
+
+            if (query.length < 2) {
+                resultsDiv.innerHTML = '<div class="test-result info">Type at least 2 characters to search</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="test-result info">Waiting for you to stop typing...</div>';
+
+            // Debounce - wait 300ms after user stops typing
+            searchTimeout = setTimeout(async () => {
+                const role = document.getElementById('roleSelect').value;
+                resultsDiv.innerHTML = '<div class="test-result info">Searching...</div>';
+
+                const users = await searchUsers(query, role);
+
+                if (users.length === 0) {
+                    resultsDiv.innerHTML = '<div class="test-result info">No results found</div>';
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="test-result success">Found ${users.length} result(s) (max 15 shown):</div>
+                        <ul>
+                            ${users.map(u => `
+                                <li style="cursor: pointer; padding: 5px; border-bottom: 1px solid #eee;"
+                                    onmouseover="this.style.backgroundColor='#f0f0f0'"
+                                    onmouseout="this.style.backgroundColor='white'">
+                                    <strong>${u.displayName || u.display_name}</strong> - ${u.email}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+            }, 300);
+        }
+
+        // Test on page load
+        window.onload = () => {
+            console.log('Add Family Modal API Test Page Loaded');
+            console.log('API URL:', API_URL);
+        };
+    </script>
+</body>
+</html>

@@ -39,7 +39,13 @@ def feature_flags_get():  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -58,7 +64,7 @@ def feature_flags_get():  # noqa: E501
             message=f"Controller feature_flags_get implementation not found: {str(e)}",
             details={"controller": "SystemController", "operation": "feature_flags_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -73,7 +79,7 @@ def feature_flags_get():  # noqa: E501
                 message=f"Internal server error in feature_flags_get: {str(e)}",
                 details={"controller": "SystemController", "operation": "feature_flags_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def feature_flags_patch(body):  # noqa: E501
@@ -110,7 +116,13 @@ def feature_flags_patch(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -129,7 +141,7 @@ def feature_flags_patch(body):  # noqa: E501
             message=f"Controller feature_flags_patch implementation not found: {str(e)}",
             details={"controller": "SystemController", "operation": "feature_flags_patch"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -144,7 +156,7 @@ def feature_flags_patch(body):  # noqa: E501
                 message=f"Internal server error in feature_flags_patch: {str(e)}",
                 details={"controller": "SystemController", "operation": "feature_flags_patch"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def system_health_get():  # noqa: E501
@@ -177,7 +189,13 @@ def system_health_get():  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function()
@@ -196,7 +214,7 @@ def system_health_get():  # noqa: E501
             message=f"Controller system_health_get implementation not found: {str(e)}",
             details={"controller": "SystemController", "operation": "system_health_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -211,4 +229,4 @@ def system_health_get():  # noqa: E501
                 message=f"Internal server error in system_health_get: {str(e)}",
                 details={"controller": "SystemController", "operation": "system_health_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

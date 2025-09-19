@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, MessageSquare, Database, AlertTriangle } from 'lucide-react';
 import { useAnimals, useAnimalConfig } from '../hooks/useAnimals';
-import { Animal as BackendAnimal, AnimalConfig as BackendAnimalConfig } from '../services/api';
+import { Animal as BackendAnimal } from '../services/api';
 import { utils } from '../services/api';
 import { useSecureFormHandling } from '../hooks/useSecureFormHandling';
 import { ValidationError } from '../utils/inputValidation';
@@ -278,14 +278,6 @@ const AnimalConfig: React.FC = () => {
       clearErrors();
     };
 
-    const getSeverityColor = (severity: string) => {
-      switch (severity) {
-        case 'high': return 'bg-red-100 text-red-800';
-        case 'medium': return 'bg-yellow-100 text-yellow-800';
-        case 'low': return 'bg-green-100 text-green-800';
-        default: return 'bg-gray-100 text-gray-800';
-      }
-    };
 
     const getCategoryColor = (category: string) => {
       switch (category) {

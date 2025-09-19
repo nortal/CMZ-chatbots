@@ -41,7 +41,13 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(knowledge_id)
@@ -60,7 +66,7 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
             message=f"Controller knowledge_article_delete implementation not found: {str(e)}",
             details={"controller": "KnowledgeController", "operation": "knowledge_article_delete"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -75,7 +81,7 @@ def knowledge_article_delete(knowledge_id):  # noqa: E501
                 message=f"Internal server error in knowledge_article_delete: {str(e)}",
                 details={"controller": "KnowledgeController", "operation": "knowledge_article_delete"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def knowledge_article_get(knowledge_id):  # noqa: E501
@@ -110,7 +116,13 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(knowledge_id)
@@ -129,7 +141,7 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
             message=f"Controller knowledge_article_get implementation not found: {str(e)}",
             details={"controller": "KnowledgeController", "operation": "knowledge_article_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -144,7 +156,7 @@ def knowledge_article_get(knowledge_id):  # noqa: E501
                 message=f"Internal server error in knowledge_article_get: {str(e)}",
                 details={"controller": "KnowledgeController", "operation": "knowledge_article_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def knowledge_article_post(body):  # noqa: E501
@@ -181,7 +193,13 @@ def knowledge_article_post(body):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(body)
@@ -200,7 +218,7 @@ def knowledge_article_post(body):  # noqa: E501
             message=f"Controller knowledge_article_post implementation not found: {str(e)}",
             details={"controller": "KnowledgeController", "operation": "knowledge_article_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -215,4 +233,4 @@ def knowledge_article_post(body):  # noqa: E501
                 message=f"Internal server error in knowledge_article_post: {str(e)}",
                 details={"controller": "KnowledgeController", "operation": "knowledge_article_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

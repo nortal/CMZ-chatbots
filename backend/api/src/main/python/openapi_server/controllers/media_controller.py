@@ -43,7 +43,13 @@ def media_delete(media_id, permanent=None):  # noqa: E501
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(media_id, permanent)
@@ -62,7 +68,7 @@ def media_delete(media_id, permanent=None):  # noqa: E501
             message=f"Controller media_delete implementation not found: {str(e)}",
             details={"controller": "MediaController", "operation": "media_delete"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -77,7 +83,7 @@ def media_delete(media_id, permanent=None):  # noqa: E501
                 message=f"Internal server error in media_delete: {str(e)}",
                 details={"controller": "MediaController", "operation": "media_delete"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E501
@@ -118,7 +124,13 @@ def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E5
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(media_id, animal_id, kind, limit)
@@ -137,7 +149,7 @@ def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E5
             message=f"Controller media_get implementation not found: {str(e)}",
             details={"controller": "MediaController", "operation": "media_get"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -152,7 +164,7 @@ def media_get(media_id=None, animal_id=None, kind=None, limit=None):  # noqa: E5
                 message=f"Internal server error in media_get: {str(e)}",
                 details={"controller": "MediaController", "operation": "media_get"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500
 
 
 def upload_media_post(file, title=None, animal_id=None, description=None, tags=None):  # noqa: E501
@@ -162,7 +174,7 @@ def upload_media_post(file, title=None, animal_id=None, description=None, tags=N
 
     :param file: Media file to upload (max 50MB)
     :type file: str
-    :param title: Human-readable title for the media
+    :param title: Human-readable title for the media with natural language support
     :type title: str
     :param animal_id: Associated animal identifier
     :type animal_id: str
@@ -195,7 +207,13 @@ def upload_media_post(file, title=None, animal_id=None, description=None, tags=N
             impl_function = handlers.handle_
             if not impl_function:
                 # Pattern 3: Default error for missing implementation
-                raise NotImplementedError(f"Implementation function 'handle_' not found in handlers module")
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
 
         # Call implementation function with processed parameters
         result = impl_function(file, title, animal_id, description, tags)
@@ -214,7 +232,7 @@ def upload_media_post(file, title=None, animal_id=None, description=None, tags=N
             message=f"Controller upload_media_post implementation not found: {str(e)}",
             details={"controller": "MediaController", "operation": "upload_media_post"}
         )
-        return error_obj.to_dict(), 501
+        return error_obj, 501
 
     except Exception as e:
         # Use centralized error handler if available
@@ -229,4 +247,4 @@ def upload_media_post(file, title=None, animal_id=None, description=None, tags=N
                 message=f"Internal server error in upload_media_post: {str(e)}",
                 details={"controller": "MediaController", "operation": "upload_media_post"}
             )
-            return error_obj.to_dict(), 500
+            return error_obj, 500

@@ -1,6 +1,6 @@
 # CMZ TDD Framework Summary
 
-**Generated**: 2025-09-13 22:43:45
+**Generated**: 2025-09-18 12:34:28
 
 ## Overview
 
@@ -17,20 +17,20 @@ The CMZ TDD framework currently provides comprehensive test coverage for **107**
 
 ## Recent Execution Summary
 
-**Most Recent Execution**: 2025-09-13 22:42
-- **Tests Run**: 10
+**Most Recent Execution**: 2025-09-18 12:34
+- **Tests Run**: 3
 - **Pass Rate**: 0.0%
-- **Execution Time**: 0.9 seconds
-- **Parallel Efficiency**: 2.7x
+- **Execution Time**: 0.3 seconds
+- **Parallel Efficiency**: 2.9x
 
 ### Status Breakdown
-- ❌ **FAIL**: 10
+- ❌ **FAIL**: 3
 
 ## Sequential Reasoning Assessment
 
 **Framework Status**: Excellent - comprehensive test coverage established requiring execution improvements
 
-**Strategic Recommendations**: Address 10 consistently failing tests
+**Strategic Recommendations**: Address 3 consistently failing tests
 
 ## Quick Actions
 

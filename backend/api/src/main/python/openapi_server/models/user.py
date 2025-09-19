@@ -236,7 +236,7 @@ class User(Model):
     def display_name(self) -> str:
         """Gets the display_name of this User.
 
-        Display name with basic character validation  # noqa: E501
+        Display name with natural language character validation  # noqa: E501
 
         :return: The display_name of this User.
         :rtype: str
@@ -247,7 +247,7 @@ class User(Model):
     def display_name(self, display_name: str):
         """Sets the display_name of this User.
 
-        Display name with basic character validation  # noqa: E501
+        Display name with natural language character validation  # noqa: E501
 
         :param display_name: The display_name of this User.
         :type display_name: str
@@ -256,8 +256,8 @@ class User(Model):
             raise ValueError("Invalid value for `display_name`, length must be less than or equal to `100`")  # noqa: E501
         if display_name is not None and len(display_name) < 1:
             raise ValueError("Invalid value for `display_name`, length must be greater than or equal to `1`")  # noqa: E501
-        if display_name is not None and not re.search(r'^[a-zA-Z0-9\s\-\.\']+$', display_name):  # noqa: E501
-            raise ValueError(r"Invalid value for `display_name`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\-\.']+$/`")  # noqa: E501
+        if display_name is not None and not re.search(r'^[a-zA-Z0-9\s\.,!?\-():\[\]\'"";@#&+=\/\\|{}~`*%$^_<>]+$', display_name):  # noqa: E501
+            raise ValueError(r"Invalid value for `display_name`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=\/\\|{}~`*%$^_<>]+$/`")  # noqa: E501
 
         self._display_name = display_name
 
@@ -331,7 +331,7 @@ class User(Model):
         :param role: The role of this User.
         :type role: str
         """
-        allowed_values = ["visitor", "user", "member", "editor", "admin"]  # noqa: E501
+        allowed_values = ["visitor", "user", "member", "editor", "admin", "parent", "student"]  # noqa: E501
         if role not in allowed_values:
             raise ValueError(
                 "Invalid value for `role` ({0}), must be one of {1}"
