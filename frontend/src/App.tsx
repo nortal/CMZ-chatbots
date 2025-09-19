@@ -14,6 +14,7 @@ import Chat from './pages/Chat';
 import ChatHistory from './pages/ChatHistory';
 import ConversationViewer from './pages/ConversationViewer';
 import PublicAnimalList from './pages/PublicAnimalList';
+import ParentDashboard from './pages/ParentDashboard';
 import './index.css';
 
 const AppRoutes: React.FC = () => {
@@ -37,6 +38,7 @@ const AppRoutes: React.FC = () => {
       case '/animals/config': return 'Animal Configuration';
       case '/animals/details': return 'Animal Details';
       case '/families/manage': return 'Family Management';
+      case '/parent/dashboard': return 'Parent Dashboard';
       case '/chat': return 'Chat with Animals';
       case '/conversations/history': return 'Conversation History';
       case '/users/accounts': return 'User Management';
@@ -190,6 +192,20 @@ const AppRoutes: React.FC = () => {
             onLogout={handleLogout}
           >
             <FamilyManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/parent/dashboard" element={
+        <ProtectedRoute requiredRoles={['parent']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <ParentDashboard />
           </DashboardLayout>
         </ProtectedRoute>
       } />

@@ -418,10 +418,13 @@ def animal_id_put(id=None, id_=None, body=None, **kwargs):  # noqa: E501
 
     # Auto-generated parameter handling
     # Ensure body is set from request if not provided as parameter
+    # Modified to handle partial updates - pass raw JSON instead of creating model
     if body is None and connexion.request.is_json:
-        body = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    elif connexion.request.is_json and not isinstance(body, AnimalUpdate):
-        body = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+        # For PUT endpoint, pass raw JSON to allow partial updates
+        body = connexion.request.get_json()  # noqa: E501
+    elif connexion.request.is_json and not isinstance(body, (dict, AnimalUpdate)):
+        # If we have JSON but it's not already processed, get raw JSON
+        body = connexion.request.get_json()  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
