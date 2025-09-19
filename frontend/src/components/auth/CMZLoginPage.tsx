@@ -28,11 +28,34 @@ const CMZLoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Helper function to get landing page based on user role
+  const getRoleLandingPage = (user: any): string => {
+    const role = user?.role;
+    switch(role) {
+      case 'admin':
+      case 'zookeeper':
+        return '/dashboard';
+      case 'parent':
+      case 'student':
+      case 'visitor':
+      default:
+        return '/animals';
+    }
+  };
+
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
-      const from = (location.state as any)?.from?.pathname || '/dashboard';
-      navigate(from, { replace: true });
+      const from = (location.state as any)?.from?.pathname;
+      if (from) {
+        navigate(from, { replace: true });
+      } else {
+        // Get user from context and navigate based on role
+        const storedUser = localStorage.getItem('cmz_user');
+        const user = storedUser ? JSON.parse(storedUser) : null;
+        const landingPage = getRoleLandingPage(user);
+        navigate(landingPage, { replace: true });
+      }
     }
   }, [isAuthenticated, authLoading, navigate, location]);
 

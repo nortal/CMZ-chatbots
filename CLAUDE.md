@@ -66,6 +66,44 @@ make generate-api-raw  # WARNING: Will break auth endpoints!
 
 **Solution**: ALWAYS use `make post-generate` which runs validation scripts that fix the routing
 
+### 🔧 ID Parameter Mismatch (Common Connexion Issue)
+**The Problem**: Connexion automatically renames path parameters named `id` to `id_` to avoid shadowing Python's built-in `id()` function. This causes "unexpected keyword argument 'id_'" errors.
+
+**Symptoms**:
+- `TypeError: animal_id_put() got an unexpected keyword argument 'id_'. Did you mean 'id'?`
+- Endpoints like `/animal/{id}`, `/family/{id}` fail with 500 errors
+- Works in tests but fails at runtime
+
+**Root Cause**:
+1. OpenAPI spec defines path parameter as `{id}`
+2. Generated controller uses `id` as parameter name
+3. Connexion renames it to `id_` at runtime to avoid Python builtin conflict
+4. Handler expects `id` but receives `id_` → TypeError
+
+**Permanent Solution**:
+All handler functions now accept BOTH `id` and `id_` parameters:
+```python
+def handle_animal_id_get(id: str = None, id_: str = None, **kwargs):
+    # Handle both parameter names
+    animal_id = id if id is not None else id_
+    if animal_id is None:
+        return error_response("missing_parameter"), 400
+    # ... rest of handler
+```
+
+**Automated Fix**: Run `scripts/fix_id_parameter_mismatch.py` after code generation or include in `make post-generate`
+**Full Documentation**: See `ID-PARAMETER-MISMATCH-ADVICE.md` for complete solution patterns
+
+### 🎯 Body Parameter Handling Issues
+**The Problem**: OpenAPI controllers and handlers often have parameter order/naming mismatches causing body parameters to be lost or misplaced.
+
+**Common Errors**:
+- `dictionary update sequence element #0 has length 1; 2 is required`
+- `Missing request body`
+- Body in wrong parameter position
+
+**Solution**: Use flexible `*args, **kwargs` parameter handling in handlers. See `BODY-PARAMETER-HANDLING-ADVICE.md` for complete patterns.
+
 ## Development Commands
 
 ### Core Workflow
@@ -395,6 +433,16 @@ For systematic validation of backend service health and user-friendly error mess
 For comprehensive E2E validation of the Add Family dialog with field testing and database verification:
 - `.claude/commands/validate-family-dialog.md` - Playwright validation with visible browser for all family dialog fields
 - `VALIDATE-FAMILY-DIALOG-ADVICE.md` - Best practices, troubleshooting, and advanced testing scenarios for family dialog validation
+
+## Chat and Chat History Validation
+For comprehensive E2E validation of chat functionality with DynamoDB persistence verification:
+- `.claude/commands/validate-chat-dynamodb.md` - Complete chat and chat history validation with visible Playwright browser
+- `VALIDATE-CHAT-DYNAMODB-ADVICE.md` - Best practices, timing considerations, and troubleshooting for chat validation
+
+## Comprehensive Validation Suite
+For orchestrating all validation commands and generating consolidated reports:
+- `.claude/commands/comprehensive-validation.md` - Run all validate*.md commands with parallel execution and reporting
+- `COMPREHENSIVE-VALIDATION-ADVICE.md` - Optimization strategies, CI/CD integration, and performance tuning
 
 ### Backend Health Testing Overview
 The backend health validation system ensures users receive appropriate error messages based on actual system status:

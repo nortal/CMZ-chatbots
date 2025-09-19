@@ -1,13 +1,13 @@
 import { NavigationItem, UserRole } from '../types/roles';
 
 export const navigationConfig: NavigationItem[] = [
-  // Dashboard - Available to all authenticated users
+  // Dashboard - Available to all authenticated users (optional for public users)
   {
     id: 'dashboard',
     label: 'Dashboard',
     path: '/dashboard',
     icon: 'Home',
-    roles: ['admin', 'zookeeper', 'educator', 'member', 'visitor']
+    roles: ['admin', 'zookeeper', 'educator', 'member', 'visitor', 'parent', 'student']
   },
 
   // Animal Management - Core zoo operations
@@ -62,14 +62,26 @@ export const navigationConfig: NavigationItem[] = [
     ]
   },
 
-  // Conversations & Chat Management
+  // Conversations & Chat Management - Available to all users with role-specific children
   {
     id: 'conversations',
     label: 'Conversations',
     path: '/conversations',
     icon: 'MessageCircle',
-    roles: ['admin', 'zookeeper', 'educator'],
+    roles: ['admin', 'zookeeper', 'educator', 'member', 'visitor', 'parent', 'student'],
     children: [
+      {
+        id: 'animal-ambassadors',
+        label: 'Chat with Animals',
+        path: '/animals',
+        roles: ['admin', 'zookeeper', 'educator', 'member', 'visitor', 'parent', 'student']
+      },
+      {
+        id: 'active-chat',
+        label: 'Active Chat',
+        path: '/chat',
+        roles: ['admin', 'zookeeper', 'educator', 'member', 'visitor', 'parent', 'student']
+      },
       {
         id: 'conversation-history',
         label: 'Chat History',

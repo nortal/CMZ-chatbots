@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, MessageSquare, Database, AlertTriangle } from 'lucide-react';
+import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, MessageSquare, Database, AlertTriangle, MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAnimals, useAnimalConfig } from '../hooks/useAnimals';
 import { Animal as BackendAnimal } from '../services/api';
 import { utils } from '../services/api';
@@ -48,6 +49,7 @@ interface Animal extends BackendAnimal {
 }
 
 const AnimalConfig: React.FC = () => {
+  const navigate = useNavigate();
   // Use our API hooks
   const { animals: backendAnimals, loading: animalsLoading, error: animalsError, refetch } = useAnimals();
   
@@ -179,8 +181,12 @@ const AnimalConfig: React.FC = () => {
             <Edit className="w-4 h-4 mr-2" />
             Configure
           </button>
-          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            <Eye className="w-4 h-4" />
+          <button
+            onClick={() => navigate(`/chat?animalId=${animal.id || animal.animalId}`)}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            title="Test Chatbot"
+          >
+            <MessageCircle className="w-4 h-4" />
           </button>
           <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
             <Settings className="w-4 h-4" />
@@ -785,7 +791,15 @@ const AnimalConfig: React.FC = () => {
               Cancel
             </button>
             <div className="space-x-3">
-              <button className="px-6 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
+              <button
+                onClick={() => {
+                  const animalId = selectedAnimal?.id || selectedAnimal?.animalId || selectedAnimalId;
+                  if (animalId) {
+                    navigate(`/chat?animalId=${animalId}`);
+                  }
+                }}
+                className="px-6 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors"
+              >
                 Test Chatbot
               </button>
               <button
