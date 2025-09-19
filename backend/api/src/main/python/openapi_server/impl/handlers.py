@@ -17,7 +17,9 @@ from .conversation import (
     handle_convo_turn_post,
     handle_convo_history_get,
     handle_convo_history_delete,
-    handle_summarize_convo_post
+    handle_summarize_convo_post,
+    handle_conversations_sessions_get,
+    handle_conversations_sessions_session_id_get
 )
 
 
@@ -75,6 +77,8 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'convo_history_get': handle_convo_history_get,
             'convo_history_delete': handle_convo_history_delete,
             'summarize_convo_post': handle_summarize_convo_post,
+            'conversations_sessions_get': handle_conversations_sessions_get,
+            'conversations_sessions_session_id_get': handle_conversations_sessions_session_id_get,
         }
 
         handler_func = handler_map.get(caller_name)

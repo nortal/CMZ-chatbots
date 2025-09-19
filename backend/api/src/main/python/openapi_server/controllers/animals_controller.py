@@ -242,22 +242,16 @@ def animal_details_get(animal_id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_delete(id_=None, id=None, **kwargs):  # noqa: E501
+def animal_id_delete(id):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
 
-    :param id:
+    :param id: 
     :type id: str
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    # Handle both id and id_ parameters (Connexion renames id to id_)
-    actual_id = id_ if id_ is not None else id
-    if actual_id is None:
-        # Check kwargs as fallback
-        actual_id = kwargs.get('id') or kwargs.get('id_')
-
     # Auto-generated parameter handling
 
     # CMZ Auto-Generated Implementation Connection
@@ -289,7 +283,7 @@ def animal_id_delete(id_=None, id=None, **kwargs):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(actual_id)
+        result = impl_function(id)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -323,22 +317,16 @@ def animal_id_delete(id_=None, id=None, **kwargs):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_get(id_=None, id=None, **kwargs):  # noqa: E501
+def animal_id_get(id):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
 
-    :param id:
+    :param id: 
     :type id: str
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
-    # Handle both id and id_ parameters (Connexion renames id to id_)
-    actual_id = id_ if id_ is not None else id
-    if actual_id is None:
-        # Check kwargs as fallback
-        actual_id = kwargs.get('id') or kwargs.get('id_')
-
     # Auto-generated parameter handling
 
     # CMZ Auto-Generated Implementation Connection
@@ -370,7 +358,7 @@ def animal_id_get(id_=None, id=None, **kwargs):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(actual_id)
+        result = impl_function(id)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -404,24 +392,18 @@ def animal_id_get(id_=None, id=None, **kwargs):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_put(id_=None, body=None, id=None, **kwargs):  # noqa: E501
+def animal_id_put(id, body):  # noqa: E501
     """Update an existing animal
 
      # noqa: E501
 
-    :param id:
+    :param id: 
     :type id: str
-    :param animal_update:
+    :param animal_update: 
     :type animal_update: dict | bytes
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
-    # Handle both id and id_ parameters (Connexion renames id to id_)
-    actual_id = id_ if id_ is not None else id
-    if actual_id is None:
-        # Check kwargs as fallback
-        actual_id = kwargs.get('id') or kwargs.get('id_')
-
     # Auto-generated parameter handling
     if connexion.request.is_json:
         body = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
@@ -455,7 +437,7 @@ def animal_id_put(id_=None, body=None, id=None, **kwargs):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(actual_id, body)
+        result = impl_function(id, body)
 
         # Handle different return types
         if isinstance(result, tuple):
