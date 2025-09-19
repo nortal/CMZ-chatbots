@@ -11,7 +11,8 @@ import {
   Clock,
   CheckCircle,
   Archive,
-  AlertCircle
+  AlertCircle,
+  Home
 } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +25,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
 import { Calendar as CalendarComponent } from "../components/ui/calendar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import FamilyConversationView from "../components/FamilyConversationView";
 import { cn } from "../lib/utils";
 
 // Types
@@ -358,22 +361,9 @@ const ChatHistory: React.FC = () => {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Conversation History</h1>
-          <p className="text-muted-foreground">
-            View and manage past chat sessions
-          </p>
-        </div>
-        <Button onClick={handleExportCSV} className="flex items-center gap-2">
-          <Download className="h-4 w-4" />
-          Export CSV
-        </Button>
-      </div>
-
+  // Extract the sessions view into a separate function for reuse
+  const renderSessionsView = () => (
+    <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -631,6 +621,69 @@ const ChatHistory: React.FC = () => {
           </div>
         </div>
       )}
+    </>
+  );
+
+  // For parent users, show tabs with family view
+  if (user?.role === 'parent') {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Conversation History</h1>
+            <p className="text-muted-foreground">
+              View family conversations and your personal chat sessions
+            </p>
+          </div>
+        </div>
+
+        {/* Tabs for Parent View */}
+        <Tabs defaultValue="family" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="family" className="flex items-center gap-2">
+              <Home className="h-4 w-4" />
+              Family Overview
+            </TabsTrigger>
+            <TabsTrigger value="personal" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              My Sessions
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="family" className="space-y-4">
+            <FamilyConversationView
+              parentUserId={user.userId || user.id}
+              onSessionClick={handleSessionClick}
+            />
+          </TabsContent>
+
+          <TabsContent value="personal" className="space-y-4">
+            {/* Personal sessions view - continue with the rest of the component */}
+            {renderSessionsView()}
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
+  }
+
+  // For non-parent users, show regular view
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Conversation History</h1>
+          <p className="text-muted-foreground">
+            View and manage past chat sessions
+          </p>
+        </div>
+        <Button onClick={handleExportCSV} className="flex items-center gap-2">
+          <Download className="h-4 w-4" />
+          Export CSV
+        </Button>
+      </div>
+      {renderSessionsView()}
     </div>
   );
 };
