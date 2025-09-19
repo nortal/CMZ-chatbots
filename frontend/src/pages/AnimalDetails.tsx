@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, Filter, Eye, Edit, MessageCircle, MapPin, Heart, Activity, Save, X } from 'lucide-react';
 
 interface Animal {
@@ -54,6 +55,10 @@ interface EditableAnimal extends Animal {
 }
 
 const AnimalDetails: React.FC = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const animalIdFromQuery = queryParams.get('animalId');
+
   const [animals, setAnimals] = useState<EditableAnimal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -91,15 +96,18 @@ const AnimalDetails: React.FC = () => {
       const data = await response.json();
       console.log('Fetched animals:', data);
       
-      // Transform API data to frontend format (API uses animal_id, name, species, status)
+      // Transform API data to frontend format
       const transformedAnimals: EditableAnimal[] = (data || []).map((animal: any) => ({
-        animalId: animal.animal_id,
+        animalId: animal.animalId || animal.animal_id,
         name: animal.name,
         species: animal.species,
         status: animal.status,
         created: animal.created,
         modified: animal.modified,
-        personality: animal.personality || {},
+        // Handle personality - API returns it as a string directly
+        personality: typeof animal.personality === 'string'
+          ? { description: animal.personality }
+          : (animal.personality || {}),
         configuration: animal.configuration || {},
         // Add default fields for display
         commonName: animal.species || 'Unknown',
@@ -205,16 +213,32 @@ const AnimalDetails: React.FC = () => {
     fetchAnimals();
   }, []);
 
+  // When animals are loaded or animalId changes, auto-select the animal
+  useEffect(() => {
+    if (animalIdFromQuery && animals.length > 0) {
+      const targetAnimal = animals.find(a => a.animalId === animalIdFromQuery);
+      if (targetAnimal) {
+        setSelectedAnimal(targetAnimal);
+      }
+    }
+  }, [animalIdFromQuery, animals]);
+
   const filteredAnimals = animals.filter(animal => {
+    // If animalIdFromQuery is provided, only return that specific animal
+    if (animalIdFromQuery) {
+      return animal.animalId === animalIdFromQuery;
+    }
+
+    // Otherwise apply normal filters
     const matchesSearch = animal.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          animal.species?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          animal.commonName?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const isActive = animal.configuration?.chatbotActive || animal.status === 'active';
-    const matchesFilter = filterStatus === 'all' || 
+    const matchesFilter = filterStatus === 'all' ||
                          (filterStatus === 'active' && isActive) ||
                          (filterStatus === 'inactive' && !isActive);
-    
+
     return matchesSearch && matchesFilter;
   });
 
@@ -740,61 +764,89 @@ const AnimalDetails: React.FC = () => {
     );
   }
 
+  // If a specific animal is requested and found, show only that animal's details
+  if (animalIdFromQuery && filteredAnimals.length === 1) {
+    const animal = filteredAnimals[0];
+
+    // Automatically set this animal as selected to show its details
+    if (!selectedAnimal || selectedAnimal.animalId !== animal.animalId) {
+      setSelectedAnimal(animal);
+    }
+  }
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Animal Management</h1>
-          <p className="text-gray-600">Manage animal profiles and chatbot configurations</p>
-        </div>
-        <button
-          onClick={fetchAnimals}
-          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Refresh
-        </button>
-      </div>
+      {/* Only show header and controls if not viewing single animal */}
+      {!animalIdFromQuery && (
+        <>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Animal Management</h1>
+              <p className="text-gray-600">Manage animal profiles and chatbot configurations</p>
+            </div>
+            <button
+              onClick={fetchAnimals}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
 
-      {/* Search and Filter Controls */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search animals by name, species, or common name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-gray-500" />
-          <select 
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'inactive')}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option value="all">All Animals</option>
-            <option value="active">Chatbot Active</option>
-            <option value="inactive">Chatbot Inactive</option>
-          </select>
-        </div>
-      </div>
+          {/* Search and Filter Controls */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search animals by name, species, or common name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Filter className="w-4 h-4 text-gray-500" />
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'inactive')}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="all">All Animals</option>
+                <option value="active">Chatbot Active</option>
+                <option value="inactive">Chatbot Inactive</option>
+              </select>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Animals Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredAnimals.map(animal => (
-          <AnimalCard key={animal.id} animal={animal} />
-        ))}
-      </div>
+      {!animalIdFromQuery && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filteredAnimals.map(animal => (
+            <AnimalCard key={animal.id} animal={animal} />
+          ))}
+        </div>
+      )}
 
-      {filteredAnimals.length === 0 && (
+      {filteredAnimals.length === 0 && !animalIdFromQuery && (
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No animals found</h3>
           <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
+        </div>
+      )}
+
+      {/* For single animal view, auto-open the modal */}
+      {animalIdFromQuery && filteredAnimals.length === 0 && (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Animal not found</h3>
+          <p className="text-gray-600">The requested animal could not be found.</p>
         </div>
       )}
 

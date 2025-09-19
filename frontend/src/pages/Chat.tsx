@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Wifi, WifiOff, User, Bot, AlertCircle, Check, Clock } from "lucide-react";
+import { Send, Wifi, WifiOff, User, Bot, AlertCircle, Check, Clock, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { ScrollArea } from "../components/ui/scroll-area";
@@ -169,6 +170,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   animalId = "default",
   className = ""
 }) => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -353,11 +355,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <Bot className="w-5 h-5 text-primary" />
           <h2 className="font-semibold">CMZ Chat Assistant</h2>
         </div>
-        <div className="flex items-center gap-2">
-          {getConnectionIcon()}
-          <span className="text-sm text-muted-foreground capitalize">
-            {connectionStatus}
-          </span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {getConnectionIcon()}
+            <span className="text-sm text-muted-foreground capitalize">
+              {connectionStatus}
+            </span>
+          </div>
+          <button
+            onClick={() => navigate(-1)}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Close chat"
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
         </div>
       </div>
 

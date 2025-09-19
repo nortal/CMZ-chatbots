@@ -13,6 +13,8 @@ import TestFamilyModalEnhanced from './pages/TestFamilyModalEnhanced';
 import Chat from './pages/Chat';
 import ChatHistory from './pages/ChatHistory';
 import ConversationViewer from './pages/ConversationViewer';
+import PublicAnimalList from './pages/PublicAnimalList';
+import ParentDashboard from './pages/ParentDashboard';
 import './index.css';
 
 const AppRoutes: React.FC = () => {
@@ -32,15 +34,31 @@ const AppRoutes: React.FC = () => {
   const getPageTitle = (pathname: string): string => {
     switch (pathname) {
       case '/dashboard': return 'Dashboard';
+      case '/animals': return 'Animal Ambassadors';
       case '/animals/config': return 'Animal Configuration';
       case '/animals/details': return 'Animal Details';
       case '/families/manage': return 'Family Management';
+      case '/parent/dashboard': return 'Parent Dashboard';
       case '/chat': return 'Chat with Animals';
       case '/conversations/history': return 'Conversation History';
       case '/users/accounts': return 'User Management';
       case '/analytics/usage': return 'Usage Analytics';
       case '/system/health': return 'System Health';
       default: return 'CMZ Dashboard';
+    }
+  };
+
+  // Helper function to determine landing page based on user role
+  const getRoleLandingPage = (userRole: string): string => {
+    switch(userRole) {
+      case 'admin':
+      case 'zookeeper':
+        return '/dashboard';
+      case 'parent':
+      case 'student':
+      case 'visitor':
+      default:
+        return '/animals';
     }
   };
 
@@ -57,7 +75,7 @@ const AppRoutes: React.FC = () => {
             onNavigate={handleNavigate}
             onLogout={handleLogout}
           >
-            <Navigate to="/dashboard" replace />
+            <Navigate to={getRoleLandingPage(user?.role || 'visitor')} replace />
           </DashboardLayout>
         </ProtectedRoute>
       } />
@@ -86,6 +104,20 @@ const AppRoutes: React.FC = () => {
             onLogout={handleLogout}
           >
             <AnimalConfig />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/animals" element={
+        <ProtectedRoute>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <PublicAnimalList />
           </DashboardLayout>
         </ProtectedRoute>
       } />
@@ -123,7 +155,7 @@ const AppRoutes: React.FC = () => {
           <DashboardLayout
             user={user!}
             currentPath={location.pathname}
-            currentPageTitle="Conversation Viewer"}
+            currentPageTitle="Conversation Viewer"
             onNavigate={handleNavigate}
             onLogout={handleLogout}
           >
@@ -164,6 +196,20 @@ const AppRoutes: React.FC = () => {
         </ProtectedRoute>
       } />
 
+      <Route path="/parent/dashboard" element={
+        <ProtectedRoute requiredRoles={['parent']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <ParentDashboard />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/users/accounts" element={
         <ProtectedRoute requiredRoles={['admin']}>
           <DashboardLayout
@@ -178,8 +224,12 @@ const AppRoutes: React.FC = () => {
         </ProtectedRoute>
       } />
 
-      {/* Catch all route */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Catch all route - redirects based on user role */}
+      <Route path="*" element={
+        <ProtectedRoute>
+          <Navigate to={getRoleLandingPage(user?.role || 'visitor')} replace />
+        </ProtectedRoute>
+      } />
     </Routes>
   );
 };

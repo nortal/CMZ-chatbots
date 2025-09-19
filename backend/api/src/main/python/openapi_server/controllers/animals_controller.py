@@ -242,16 +242,20 @@ def animal_details_get(animal_id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_delete(id):  # noqa: E501
+def animal_id_delete(id=None, id_=None, **kwargs):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
 
-    :param id: 
+    :param id:
     :type id: str
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
+    # Handle both id and id_ parameters (Connexion may rename id to id_)
+    if id is None:
+        id = id_
+
     # Auto-generated parameter handling
 
     # CMZ Auto-Generated Implementation Connection
@@ -317,16 +321,20 @@ def animal_id_delete(id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_get(id):  # noqa: E501
+def animal_id_get(id=None, id_=None, **kwargs):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
 
-    :param id: 
+    :param id:
     :type id: str
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
+    # Handle both id and id_ parameters (Connexion may rename id to id_)
+    if id is None:
+        id = id_
+
     # Auto-generated parameter handling
 
     # CMZ Auto-Generated Implementation Connection
@@ -392,21 +400,31 @@ def animal_id_get(id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_put(id, body):  # noqa: E501
+def animal_id_put(id=None, id_=None, body=None, **kwargs):  # noqa: E501
     """Update an existing animal
 
      # noqa: E501
 
-    :param id: 
+    :param id:
     :type id: str
-    :param animal_update: 
+    :param animal_update:
     :type animal_update: dict | bytes
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
+    # Handle both id and id_ parameters (Connexion may rename id to id_)
+    if id is None:
+        id = id_
+
     # Auto-generated parameter handling
-    if connexion.request.is_json:
-        body = AnimalUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+    # Ensure body is set from request if not provided as parameter
+    # Modified to handle partial updates - pass raw JSON instead of creating model
+    if body is None and connexion.request.is_json:
+        # For PUT endpoint, pass raw JSON to allow partial updates
+        body = connexion.request.get_json()  # noqa: E501
+    elif connexion.request.is_json and not isinstance(body, (dict, AnimalUpdate)):
+        # If we have JSON but it's not already processed, get raw JSON
+        body = connexion.request.get_json()  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules

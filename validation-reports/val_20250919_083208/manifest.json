@@ -1,0 +1,19 @@
+{
+  "sessionId": "val_20250919_083208",
+  "startTime": "2025-09-19T08:32:08-07:00",
+  "branch": "bugfix/missing-ui-components",
+  "commit": "96572b877105c7cc7ac16830e1ec73646187f147",
+  "validations": [
+    "validate-backend-health",
+    "validate-frontend-backend-integration",
+    "validate-animal-config",
+    "validate-animal-config-fields",
+    "validate-animal-config-persistence",
+    "validate-animal-config-edit",
+    "validate-full-animal-config",
+    "validate-family-dialog",
+    "validate-family-management", 
+    "validate-data-persistence",
+    "validate-chat-dynamodb"
+  ]
+}

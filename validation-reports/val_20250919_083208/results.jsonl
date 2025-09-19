@@ -1,0 +1,12 @@
+{"test": "validate-backend-health", "status": "FAIL", "duration": 0, "critical": true}
+{"test": "validate-backend-health", "status": "PASS", "duration": 0, "critical": true}
+{"test": "validate-frontend-backend-integration", "status": "PASS", "duration": 0, "critical": true}
+{"test": "validate-animal-config", "status": "FAIL", "duration": 1}
+{"test": "validate-animal-config-fields", "status": "FAIL", "duration": 1}
+{"test": "validate-animal-config-persistence", "status": "PASS", "duration": 1}
+{"test": "validate-animal-config-edit", "status": "PASS", "duration": 1}
+{"test": "validate-full-animal-config", "status": "PASS", "duration": 2}
+{"test": "validate-family-dialog", "status": "PASS", "duration": 1}
+{"test": "validate-family-management", "status": "PASS", "duration": 1}
+{"test": "validate-data-persistence", "status": "PASS", "duration": 2}
+{"test": "validate-chat-dynamodb", "status": "PASS", "duration": 1}

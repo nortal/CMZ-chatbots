@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'zookeeper' | 'educator' | 'member' | 'visitor';
+export type UserRole = 'admin' | 'zookeeper' | 'educator' | 'member' | 'visitor' | 'parent' | 'student';
 
 export interface User {
   userId: string;
@@ -36,9 +36,11 @@ export interface NavigationItem {
 // Role-based access control
 export const roleHierarchy: Record<UserRole, number> = {
   admin: 5,
-  zookeeper: 4, 
+  zookeeper: 4,
   educator: 3,
   member: 2,
+  parent: 2,
+  student: 1,
   visitor: 1
 };
 
