@@ -6,6 +6,7 @@ PR003946-168: [Infrastructure] Setup DynamoDB Tables and Indexes
 
 import boto3
 import json
+import os
 import sys
 import time
 from botocore.exceptions import ClientError
@@ -13,8 +14,8 @@ from datetime import datetime
 
 # Configuration
 TABLE_NAME = "cmz-conversations"
-REGION = "us-west-2"
-ACCOUNT_ID = "195275676211"  # CMZ AWS Account
+REGION = os.environ.get("AWS_REGION", "us-west-2")
+ACCOUNT_ID = os.environ.get("AWS_ACCOUNT_ID", "195275676211")  # CMZ AWS Account from env var
 
 def get_dynamodb_client():
     """Get DynamoDB client with CMZ profile."""
@@ -350,6 +351,14 @@ def main():
     print("DynamoDB Conversation Table Setup")
     print("PR003946-168: Infrastructure Setup")
     print("=" * 60)
+
+    # Check if AWS_ACCOUNT_ID is explicitly set
+    if "AWS_ACCOUNT_ID" not in os.environ:
+        print("⚠️  WARNING: AWS_ACCOUNT_ID not set in environment")
+        print("   Using default account ID. To set custom account:")
+        print("   export AWS_ACCOUNT_ID=<your-account-id>")
+        print("")
+
     print(f"Table: {TABLE_NAME}")
     print(f"Region: {REGION}")
     print(f"Account: {ACCOUNT_ID}")

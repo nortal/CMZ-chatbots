@@ -12,9 +12,19 @@ Use this command to ensure your merge request is fully ready for review and appr
 
 This command guides you through the complete merge request preparation process, ensuring all quality gates are passed, all comments are resolved, and all learnings are captured before submission.
 
+## ⚠️ CRITICAL: GitHub Setup Required
+
+**Before proceeding, you MUST read `GITHUB-ADVICE.md`** which covers:
+- How to export GitHub tokens from `.env.local`
+- Target branch policy (ALWAYS use `--base dev`, never `main`)
+- Common gh CLI errors and solutions
+- Token scope requirements
+
 ## Prerequisites
 
 Before running this command, ensure:
+- You have read `GITHUB-ADVICE.md` for GitHub CLI setup
+- GitHub token is properly configured and exported
 - You are working on a feature branch (never on `dev` directly)
 - All development work is complete
 - You have tested your changes locally
@@ -105,13 +115,19 @@ git diff dev...HEAD
 Create the MR with comprehensive documentation:
 
 ```bash
+# CRITICAL: Export GitHub token first (see GITHUB-ADVICE.md for details)
+export GITHUB_TOKEN=$(grep GITHUB_TOKEN .env.local | cut -d '=' -f2)
+
+# Verify token is exported
+echo $GITHUB_TOKEN | head -c 10  # Should show first 10 chars of token
+
 # Ensure you're on your feature branch
 git branch --show-current
 
 # Push your changes (if not already pushed)
 git push -u origin $(git branch --show-current)
 
-# Create the merge request targeting dev
+# Create the merge request targeting dev (NEVER use main)
 gh pr create --title "Clear, descriptive title" --body "$(cat <<'EOF'
 ## Summary
 Brief description of what this MR implements.
