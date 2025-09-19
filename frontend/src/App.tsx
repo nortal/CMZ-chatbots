@@ -10,6 +10,9 @@ import AnimalDetails from './pages/AnimalDetails';
 import FamilyManagement from './pages/FamilyManagement';
 import UserManagement from './pages/UserManagement';
 import TestFamilyModalEnhanced from './pages/TestFamilyModalEnhanced';
+import Chat from './pages/Chat';
+import ChatHistory from './pages/ChatHistory';
+import ConversationViewer from './pages/ConversationViewer';
 import './index.css';
 
 const AppRoutes: React.FC = () => {
@@ -32,6 +35,7 @@ const AppRoutes: React.FC = () => {
       case '/animals/config': return 'Animal Configuration';
       case '/animals/details': return 'Animal Details';
       case '/families/manage': return 'Family Management';
+      case '/chat': return 'Chat with Animals';
       case '/conversations/history': return 'Conversation History';
       case '/users/accounts': return 'User Management';
       case '/analytics/usage': return 'Usage Analytics';
@@ -82,6 +86,48 @@ const AppRoutes: React.FC = () => {
             onLogout={handleLogout}
           >
             <AnimalConfig />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/chat" element={
+        <ProtectedRoute>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <Chat />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/conversations/history" element={
+        <ProtectedRoute>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <ChatHistory />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/conversations/:sessionId" element={
+        <ProtectedRoute>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle="Conversation Viewer"}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <ConversationViewer />
           </DashboardLayout>
         </ProtectedRoute>
       } />

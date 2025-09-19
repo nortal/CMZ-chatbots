@@ -331,13 +331,21 @@ See `.claude/commands/nextfive.md` for complete documentation including:
 - Git workflow and Jira integration
 - Quality gates and retrospective learnings
 
-## Merge Request Preparation - MANDATORY PROCESS
+## GitHub Operations and Merge Request Preparation
+
+**⚠️ CRITICAL: Read `GITHUB-ADVICE.md` before ANY GitHub CLI operations**
+- Contains essential token configuration instructions
+- Explains how to properly export tokens from `.env.local`
+- Documents common errors and their solutions
+- Provides fallback strategies when gh CLI fails
 
 **Before creating any merge request, ALWAYS check:**
-1. **Command Guide**: `.claude/commands/prepare-merge-request.md` - Complete step-by-step process
-2. **Best Practices**: `MR-ADVICE.md` - Proven patterns and common pitfalls
+1. **GitHub Setup**: `GITHUB-ADVICE.md` - Token configuration and gh CLI usage
+2. **Command Guide**: `.claude/commands/prepare-merge-request.md` - Complete step-by-step process
+3. **Best Practices**: `MR-ADVICE.md` - Proven patterns and common pitfalls
 
 **MR Ready Criteria (All Must Be True):**
+- ✅ GitHub token properly exported (`export GITHUB_TOKEN=...`)
 - ✅ All comments resolved with specific documentation
 - ✅ All inline comments resolved with specific documentation
 - ✅ All quality gates passed (tests, linting, security)
