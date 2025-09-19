@@ -1,6 +1,8 @@
 # /nextfive Command
 
-Implement the next 5 high-priority Jira tickets from specified epic or concept, following the same systematic approach we used for PR003946-90, PR003946-72, PR003946-73, PR003946-69, and PR003946-66.
+Implement the next 5 high-priority Jira tickets from specified epic or concept.
+
+***CRITICAL*** Do not include tickets that have been addressed in the five tickets,  if one is selected and found to be complete select another ticket.  If the argument is an epic,  always check ALL of the tickets in the epic when selecting new work.
 
 ## Usage
 
