@@ -140,29 +140,42 @@ class FlaskAnimalHandler:
     def update_animal(self, animal_id: str, body: Any) -> Tuple[Any, int]:
         """
         Flask handler for animal update
-        
+
         Args:
             animal_id: Animal identifier
             body: OpenAPI Animal model or dict with update data
-            
+
         Returns:
             Tuple of (response_body, http_status_code)
         """
         try:
+            # For PUT requests with partial data, fetch existing data first
+            # to merge with the update
+            existing_animal = self._animal_service.get_animal(animal_id)
+
             # Convert OpenAPI model to business dict
             update_data = self._animal_serializer.from_openapi(body)
-            
+
+            # Merge existing data with update data (update_data takes precedence)
+            # This allows PUT to work like PATCH for partial updates
+            if existing_animal:
+                # Get existing data as dict
+                from ...domain.common.serializers import serialize_animal
+                existing_data = serialize_animal(existing_animal, include_api_id=False)
+                # Update only provided fields
+                for key, value in update_data.items():
+                    if value is not None:
+                        existing_data[key] = value
+                update_data = existing_data
+
             # Execute business logic
             animal = self._animal_service.update_animal(animal_id, update_data)
-            
-            # Convert domain entity to OpenAPI response
-            response = self._animal_serializer.to_openapi(animal)
 
-            # Convert to dict if it's an OpenAPI model
-            if hasattr(response, 'to_dict'):
-                return response.to_dict(), 200
+            # Convert domain entity to dict directly to avoid validation issues
+            from ...domain.common.serializers import serialize_animal
+            response_dict = serialize_animal(animal, include_api_id=True)
 
-            return response, 200
+            return response_dict, 200
             
         except NotFoundError as e:
             from openapi_server.models.error import Error

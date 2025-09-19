@@ -19,8 +19,10 @@ def authenticate_user(username: str, password: str) -> Dict[str, Any]:
         "parent1@test.cmz.org": {"password": "testpass123", "role": "parent", "name": "Test Parent One"},
         "parent2@test.cmz.org": {"password": "testpass123", "role": "parent", "name": "Test Parent Two"},
         "student1@test.cmz.org": {"password": "testpass123", "role": "student", "name": "Test Student One"},
+        "student2@test.cmz.org": {"password": "testpass123", "role": "student", "name": "Test Student Two"},
         "test@cmz.org": {"password": "testpass123", "role": "admin", "name": "Test Admin"},
         "admin@cmz.org": {"password": "admin123", "role": "admin", "name": "Admin User"},
+        "user_parent_001@cmz.org": {"password": "testpass123", "role": "parent", "name": "Parent User 001"},
     }
 
     if username in test_users and test_users[username]['password'] == password:
@@ -87,8 +89,10 @@ def handle_auth_post(*args, **kwargs) -> Tuple[Any, int]:
         "parent1@test.cmz.org": {"password": "testpass123", "role": "parent", "name": "Test Parent One"},
         "parent2@test.cmz.org": {"password": "testpass123", "role": "parent", "name": "Test Parent Two"},
         "student1@test.cmz.org": {"password": "testpass123", "role": "student", "name": "Test Student One"},
+        "student2@test.cmz.org": {"password": "testpass123", "role": "student", "name": "Test Student Two"},
         "test@cmz.org": {"password": "testpass123", "role": "admin", "name": "Test Admin"},
         "admin@cmz.org": {"password": "admin123", "role": "admin", "name": "Admin User"},
+        "user_parent_001@cmz.org": {"password": "testpass123", "role": "parent", "name": "Parent User 001"},
     }
 
     username = body.get('username', body.get('email'))
