@@ -11,11 +11,11 @@
       - generic [ref=e11]:
         - generic [ref=e12]:
           - generic [ref=e13]: Email Address
-          - textbox "Enter your email address" [ref=e14]: invalid@test.com
+          - textbox "Enter your email address" [ref=e14]: student1@test.cmz.org
         - generic [ref=e15]:
           - generic [ref=e16]: Password
           - generic [ref=e17]:
-            - textbox "Enter your password" [active] [ref=e18]: wrongpassword
+            - textbox "Enter your password" [active] [ref=e18]: testpass123
             - button [ref=e19] [cursor=pointer]:
               - img [ref=e20] [cursor=pointer]
         - generic [ref=e23]:

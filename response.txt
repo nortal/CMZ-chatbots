@@ -1,0 +1,8 @@
+{
+  "code": "internal_error",
+  "details": {
+    "error": "Invalid value for `species`, must not be `None`",
+    "type": "ValueError"
+  },
+  "message": "Internal server error"
+}

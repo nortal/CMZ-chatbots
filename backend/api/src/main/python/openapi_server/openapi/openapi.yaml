@@ -1011,7 +1011,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Family"
+              $ref: "#/components/schemas/FamilyInput"
         required: true
       responses:
         "201":
@@ -2514,12 +2514,19 @@ components:
     AuthRequest:
       example:
         password: password
+        email: email
         username: username
         register: true
       properties:
         username:
+          description: Email address (for backend compatibility)
           format: email
           title: username
+          type: string
+        email:
+          description: Email address (frontend sends this)
+          format: email
+          title: email
           type: string
         password:
           title: password
@@ -2530,7 +2537,6 @@ components:
           type: boolean
       required:
       - password
-      - username
       title: AuthRequest
       type: object
     AuthResponse:
@@ -3572,70 +3578,171 @@ components:
       type: object
     Family:
       example:
-        familyId: familyId
-        maxStudents: 1
-        enrollmentDate: 2000-01-23
+        familyId: family_abc123
+        memberSince: 2000-01-23T04:56:07.000+00:00
+        address:
+          zipCode: "98101"
+          city: Seattle
+          street: 123 Main St
+          state: WA
+        created:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        familyName: Smith Family
         students:
-        - students
-        - students
-        - students
-        - students
-        - students
+        - student_001
+        - student_001
+        - student_001
+        - student_001
+        - student_001
+        modified:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        preferredPrograms:
+        - Junior Zookeeper
+        - Conservation Club
         parents:
-        - parents
-        - parents
-        - parents
-        - parents
+        - user_parent_001
+        - user_parent_001
         status: active
       properties:
         familyId:
           description: Unique family ID
-          pattern: "^[a-zA-Z0-9_-]+$"
+          example: family_abc123
           readOnly: true
           title: familyId
+          type: string
+        familyName:
+          description: Name of the family group
+          example: Smith Family
+          maxLength: 100
+          minLength: 1
+          title: familyName
           type: string
         parents:
           items:
             description: User ID of a parent
+            example: user_parent_001
             pattern: "^[a-zA-Z0-9_-]+$"
             type: string
-          maxItems: 4
           minItems: 1
           title: parents
           type: array
         students:
           items:
             description: User ID of a student
+            example: student_001
             pattern: "^[a-zA-Z0-9_-]+$"
             type: string
           maxItems: 8
           minItems: 1
           title: students
           type: array
-        maxStudents:
-          description: Maximum number of students allowed in family
-          maximum: 8
-          minimum: 1
-          title: maxStudents
-          type: integer
+        address:
+          $ref: "#/components/schemas/Family_address"
+        preferredPrograms:
+          description: Educational programs the family is interested in
+          example:
+          - Junior Zookeeper
+          - Conservation Club
+          items:
+            type: string
+          title: preferredPrograms
+          type: array
         status:
           default: active
           description: Family enrollment status
           enum:
           - active
           - inactive
-          - suspended
+          - pending
           title: status
           type: string
-        enrollmentDate:
-          description: Date family was enrolled (must not be future date)
-          format: date
-          title: enrollmentDate
+        memberSince:
+          description: When the family joined
+          format: date-time
+          readOnly: true
+          title: memberSince
           type: string
+        created:
+          $ref: "#/components/schemas/AuditStamp"
+        modified:
+          $ref: "#/components/schemas/AuditStamp"
       required:
+      - familyName
       - parents
       - students
       title: Family
+      type: object
+    FamilyInput:
+      example:
+        address:
+          zipCode: zipCode
+          city: city
+          street: street
+          state: state
+        familyName: familyName
+        students:
+        - students
+        - students
+        - students
+        - students
+        - students
+        preferredPrograms:
+        - preferredPrograms
+        - preferredPrograms
+        parents:
+        - parents
+        - parents
+        status: active
+      properties:
+        familyName:
+          description: Name of the family group
+          maxLength: 100
+          minLength: 1
+          title: familyName
+          type: string
+        parents:
+          items:
+            description: User ID of a parent
+            type: string
+          minItems: 1
+          title: parents
+          type: array
+        students:
+          items:
+            description: User ID of a student
+            type: string
+          maxItems: 8
+          minItems: 1
+          title: students
+          type: array
+        address:
+          $ref: "#/components/schemas/FamilyInput_address"
+        preferredPrograms:
+          items:
+            type: string
+          title: preferredPrograms
+          type: array
+        status:
+          default: active
+          enum:
+          - active
+          - inactive
+          - pending
+          title: status
+          type: string
+      required:
+      - familyName
+      - parents
+      - students
+      title: FamilyInput
       type: object
     UsageSummary:
       example:
@@ -4286,6 +4393,65 @@ components:
           title: usd
           type: number
       title: BillingSummary_byService_inner
+      type: object
+    Family_address:
+      description: Family address information
+      example:
+        zipCode: "98101"
+        city: Seattle
+        street: 123 Main St
+        state: WA
+      properties:
+        street:
+          example: 123 Main St
+          maxLength: 200
+          title: street
+          type: string
+        city:
+          example: Seattle
+          maxLength: 100
+          title: city
+          type: string
+        state:
+          example: WA
+          maxLength: 2
+          minLength: 2
+          pattern: "^[A-Z]{2}$"
+          title: state
+          type: string
+        zipCode:
+          example: "98101"
+          pattern: "^\\d{5}(-\\d{4})?$"
+          title: zipCode
+          type: string
+      title: Family_address
+      type: object
+    FamilyInput_address:
+      example:
+        zipCode: zipCode
+        city: city
+        street: street
+        state: state
+      properties:
+        street:
+          maxLength: 200
+          title: street
+          type: string
+        city:
+          maxLength: 100
+          title: city
+          type: string
+        state:
+          maxLength: 2
+          minLength: 2
+          pattern: "^[A-Z]{2}$"
+          title: state
+          type: string
+        zipCode:
+          pattern: "^\\d{5}(-\\d{4})?$"
+          title: zipCode
+          type: string
+      title: FamilyInput_address
       type: object
     SystemHealth_checks_inner:
       example:

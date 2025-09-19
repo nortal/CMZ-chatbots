@@ -11,7 +11,7 @@
       - generic [ref=e11]:
         - generic [ref=e12]:
           - generic [ref=e13]: Email Address
-          - textbox "Enter your email address" [ref=e14]: user_parent_001@cmz.org
+          - textbox "Enter your email address" [ref=e14]: parent1@test.cmz.org
         - generic [ref=e15]:
           - generic [ref=e16]: Password
           - generic [ref=e17]:

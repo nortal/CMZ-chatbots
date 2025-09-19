@@ -12,11 +12,13 @@ class AuthRequest(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, username=None, password=None, register=None):  # noqa: E501
+    def __init__(self, username=None, email=None, password=None, register=None):  # noqa: E501
         """AuthRequest - a model defined in OpenAPI
 
         :param username: The username of this AuthRequest.  # noqa: E501
         :type username: str
+        :param email: The email of this AuthRequest.  # noqa: E501
+        :type email: str
         :param password: The password of this AuthRequest.  # noqa: E501
         :type password: str
         :param register: The register of this AuthRequest.  # noqa: E501
@@ -24,17 +26,20 @@ class AuthRequest(Model):
         """
         self.openapi_types = {
             'username': str,
+            'email': str,
             'password': str,
             'register': bool
         }
 
         self.attribute_map = {
             'username': 'username',
+            'email': 'email',
             'password': 'password',
             'register': 'register'
         }
 
         self._username = username
+        self._email = email
         self._password = password
         self._register = register
 
@@ -53,6 +58,7 @@ class AuthRequest(Model):
     def username(self) -> str:
         """Gets the username of this AuthRequest.
 
+        Email address (for backend compatibility)  # noqa: E501
 
         :return: The username of this AuthRequest.
         :rtype: str
@@ -63,14 +69,36 @@ class AuthRequest(Model):
     def username(self, username: str):
         """Sets the username of this AuthRequest.
 
+        Email address (for backend compatibility)  # noqa: E501
 
         :param username: The username of this AuthRequest.
         :type username: str
         """
-        if username is None:
-            raise ValueError("Invalid value for `username`, must not be `None`")  # noqa: E501
 
         self._username = username
+
+    @property
+    def email(self) -> str:
+        """Gets the email of this AuthRequest.
+
+        Email address (frontend sends this)  # noqa: E501
+
+        :return: The email of this AuthRequest.
+        :rtype: str
+        """
+        return self._email
+
+    @email.setter
+    def email(self, email: str):
+        """Sets the email of this AuthRequest.
+
+        Email address (frontend sends this)  # noqa: E501
+
+        :param email: The email of this AuthRequest.
+        :type email: str
+        """
+
+        self._email = email
 
     @property
     def password(self) -> str:

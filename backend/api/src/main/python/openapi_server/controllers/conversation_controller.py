@@ -9,7 +9,7 @@ from openapi_server.models.convo_turn_post_request import ConvoTurnPostRequest  
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.summarize_convo_post200_response import SummarizeConvoPost200Response  # noqa: E501
 from openapi_server.models.summarize_convo_post_request import SummarizeConvoPostRequest  # noqa: E501
-from openapi_server import util
+# from openapi_server import util  # Not used
 
 
 def convo_history_delete(session_id=None, user_id=None, animal_id=None, older_than=None, confirm_gdpr=None, audit_reason=None):  # noqa: E501

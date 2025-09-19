@@ -5,6 +5,7 @@ from typing import Union
 
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.family import Family  # noqa: E501
+from openapi_server.models.family_input import FamilyInput  # noqa: E501
 # from openapi_server import util  # Not used
 
 
@@ -13,14 +14,14 @@ def create_family(body):  # noqa: E501
 
      # noqa: E501
 
-    :param family: 
-    :type family: dict | bytes
+    :param family_input: 
+    :type family_input: dict | bytes
 
     :rtype: Union[Family, Tuple[Family, int], Tuple[Family, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        body = Family.from_dict(connexion.request.get_json())  # noqa: E501
+        body = FamilyInput.from_dict(connexion.request.get_json())  # noqa: E501
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
