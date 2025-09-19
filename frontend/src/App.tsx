@@ -123,7 +123,7 @@ const AppRoutes: React.FC = () => {
           <DashboardLayout
             user={user!}
             currentPath={location.pathname}
-            currentPageTitle="Conversation Viewer"}
+            currentPageTitle="Conversation Viewer"
             onNavigate={handleNavigate}
             onLogout={handleLogout}
           >
