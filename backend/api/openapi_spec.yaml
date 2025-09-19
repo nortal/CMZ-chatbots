@@ -2026,14 +2026,19 @@ components:
         username:
           type: string
           format: email
+          description: Email address (for backend compatibility)
+        email:
+          type: string
+          format: email
+          description: Email address (frontend sends this)
         password:
           type: string
         register:
           type: boolean
           description: If true, create account if not found
       required:
-      - username
       - password
+      # Note: Either username OR email must be provided, handled in implementation
     AuthResponse:
       type: object
       required:

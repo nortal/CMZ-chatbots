@@ -88,14 +88,18 @@ def auth_post(body):  # noqa: E501
 
      # noqa: E501
 
-    :param auth_request: 
+    :param auth_request:
     :type auth_request: dict | bytes
 
     :rtype: Union[AuthResponse, Tuple[AuthResponse, int], Tuple[AuthResponse, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
     if connexion.request.is_json:
-        body = AuthRequest.from_dict(connexion.request.get_json())  # noqa: E501
+        # Don't create AuthRequest model - pass raw JSON to allow both email and username
+        body = connexion.request.get_json()  # noqa: E501
+        # Ensure we have either username or email
+        if 'email' in body and 'username' not in body:
+            body['username'] = body['email']  # Map email to username for model compatibility
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
