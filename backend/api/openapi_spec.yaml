@@ -1244,7 +1244,7 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '422':
           $ref: '#/components/responses/ValidationError'
-  /animal/{id}:
+  /animal/{animalId}:
     get:
       tags:
       - Animals
@@ -1252,7 +1252,7 @@ paths:
       operationId: animal_id_get
       parameters:
       - in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -1282,7 +1282,7 @@ paths:
       security: []
       parameters:
       - in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -1313,7 +1313,7 @@ paths:
       security: []
       parameters:
       - in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string

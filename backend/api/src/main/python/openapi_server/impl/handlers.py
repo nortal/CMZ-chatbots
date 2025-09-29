@@ -120,7 +120,6 @@ def handle_animal_config_get(animal_id: str) -> Tuple[Any, int]:
         # Verify token
         is_valid, payload = verify_jwt_token(auth_header)
         if not is_valid or not payload:
-            from openapi_server.models.error import Error
             error = Error(
                 code="unauthorized",
                 message="Invalid or expired token",
@@ -132,7 +131,6 @@ def handle_animal_config_get(animal_id: str) -> Tuple[Any, int]:
         user_role = payload.get('role', 'visitor')
         allowed_roles = ['admin', 'zookeeper', 'member']
         if user_role not in allowed_roles:
-            from openapi_server.models.error import Error
             error = Error(
                 code="forbidden",
                 message="Insufficient permissions",
@@ -173,12 +171,9 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
             body['topP'] = round(float(body['topP']), 2)
 
         # Check authentication
-        from flask import request
-        from .utils.jwt_utils import verify_jwt_token
 
         auth_header = request.headers.get('Authorization')
         if not auth_header:
-            from openapi_server.models.error import Error
             error = Error(
                 code="unauthorized",
                 message="Authentication required",
@@ -189,7 +184,6 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
         # Verify token
         is_valid, payload = verify_jwt_token(auth_header)
         if not is_valid or not payload:
-            from openapi_server.models.error import Error
             error = Error(
                 code="unauthorized",
                 message="Invalid or expired token",
@@ -201,7 +195,6 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
         user_role = payload.get('role', 'visitor')
         allowed_roles = ['admin', 'zookeeper']
         if user_role not in allowed_roles:
-            from openapi_server.models.error import Error
             error = Error(
                 code="forbidden",
                 message="Insufficient permissions",
@@ -215,7 +208,6 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.update_animal_config(animal_id, body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -235,7 +227,6 @@ def handle_animal_list_get(*args, **kwargs) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.list_animals(status)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -245,7 +236,6 @@ def handle_animal_details_get(animal_id: str) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.get_animal(animal_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -255,7 +245,6 @@ def handle_animal_details_post(body: Dict[str, Any]) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.create_animal(body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -265,7 +254,6 @@ def handle_animal_details_patch(animal_id: str, body: Dict[str, Any]) -> Tuple[A
         animal_handler = create_flask_animal_handler()
         return animal_handler.update_animal(animal_id, body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -275,7 +263,6 @@ def handle_animal_details_delete(animal_id: str) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.delete_animal(animal_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -285,7 +272,6 @@ def handle_animal_id_get(id: str = None, id_: str = None, **kwargs) -> Tuple[Any
         # Handle both parameter names (Connexion may pass id or id_)
         animal_id = id if id is not None else id_
         if animal_id is None:
-            from .error_handler import create_error_response
             return create_error_response(
                 "missing_parameter",
                 "Missing required parameter: id",
@@ -304,7 +290,6 @@ def handle_animal_id_get(id: str = None, id_: str = None, **kwargs) -> Tuple[Any
 
         return result
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -336,7 +321,6 @@ def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
 
         # Validate we have both parameters
         if animal_id is None:
-            from .error_handler import create_error_response
             return create_error_response(
                 "missing_parameter",
                 "Missing required parameter: id",
@@ -344,7 +328,6 @@ def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
             ), 400
 
         if body is None:
-            from .error_handler import create_error_response
             return create_error_response(
                 "missing_body",
                 "Missing request body",
@@ -396,7 +379,6 @@ def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
         logger = logging.getLogger(__name__)
         logger.error(f"Error in handle_animal_id_put: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -406,7 +388,6 @@ def handle_animal_id_delete(id: str = None, id_: str = None, **kwargs) -> Tuple[
         # Handle both parameter names (Connexion may pass id or id_)
         animal_id = id if id is not None else id_
         if animal_id is None:
-            from .error_handler import create_error_response
             return create_error_response(
                 "missing_parameter",
                 "Missing required parameter: id",
@@ -415,7 +396,6 @@ def handle_animal_id_delete(id: str = None, id_: str = None, **kwargs) -> Tuple[
         animal_handler = create_flask_animal_handler()
         return animal_handler.delete_animal(animal_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -425,7 +405,6 @@ def handle_animal_post(animal_input: Any = None, body: Dict[str, Any] = None) ->
         # Handle both parameter names (controller may pass animal_input or body)
         request_body = animal_input if animal_input is not None else body
         if request_body is None:
-            from .error_handler import create_error_response
             return create_error_response(
                 "missing_body",
                 "Missing request body",
@@ -434,7 +413,6 @@ def handle_animal_post(animal_input: Any = None, body: Dict[str, Any] = None) ->
         animal_handler = create_flask_animal_handler()
         return animal_handler.create_animal(request_body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -446,7 +424,6 @@ def handle_user_list_get(query: str = None, role: str = None, page: int = None, 
         # Pass query and pagination parameters to the handler
         return user_handler.list_users(query=query, role=role, page=page, page_size=page_size)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -456,7 +433,6 @@ def handle_user_details_get(user_id: str) -> Tuple[Any, int]:
         user_handler = create_flask_user_handler()
         return user_handler.get_user(user_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -466,7 +442,6 @@ def handle_user_details_post(body: Dict[str, Any]) -> Tuple[Any, int]:
         user_handler = create_flask_user_handler()
         return user_handler.create_user(body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -476,7 +451,6 @@ def handle_user_details_patch(user_id: str, body: Dict[str, Any]) -> Tuple[Any, 
         user_handler = create_flask_user_handler()
         return user_handler.update_user(user_id, body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -486,7 +460,6 @@ def handle_user_details_delete(user_id: str) -> Tuple[Any, int]:
         user_handler = create_flask_user_handler()
         return user_handler.delete_user(user_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -517,7 +490,6 @@ def handle_family_details_post(body: Any) -> Tuple[Any, int]:
     # The model might not include all fields if not regenerated
     if isinstance(body_dict, dict):
         # Log what we received for debugging
-        import logging
         logger = logging.getLogger(__name__)
         logger.info(f"Creating family with data: {body_dict}")
 

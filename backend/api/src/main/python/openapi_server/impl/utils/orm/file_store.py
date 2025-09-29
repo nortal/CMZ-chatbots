@@ -84,7 +84,6 @@ class FileStore:
             with open(self.storage_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, FileNotFoundError, IOError, OSError) as e:
-            import logging
             logging.getLogger(__name__).warning(f"Failed to load data from {self.storage_file}: {e}")
             return []
     
@@ -92,7 +91,6 @@ class FileStore:
         """Save data to JSON file."""
         # Validate that storage file is within expected directory
         if not self.storage_file.resolve().is_relative_to(self.storage_dir.resolve()):
-            import logging
             logging.getLogger(__name__).error(f"Storage file path {self.storage_file} is outside expected directory")
             raise ValueError(f"Invalid storage path: {self.storage_file}")
             
@@ -100,7 +98,6 @@ class FileStore:
             with open(self.storage_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, default=str)
         except (IOError, OSError) as e:
-            import logging
             logging.getLogger(__name__).error(f"Failed to save data to {self.storage_file}: {e}")
             raise
     
@@ -176,7 +173,6 @@ class FileStore:
         index = self._find_item_index(data, pk)
         
         if index is None:
-            from botocore.exceptions import ClientError
             raise ClientError(
                 {"Error": {"Code": "ConditionalCheckFailedException",
                            "Message": f"Item does not exist: {self.pk_name}={pk}"}},
@@ -204,7 +200,6 @@ class FileStore:
         index = self._find_item_index(data, pk)
         
         if index is None:
-            from botocore.exceptions import ClientError
             raise ClientError(
                 {"Error": {"Code": "ConditionalCheckFailedException",
                            "Message": f"Item does not exist: {self.pk_name}={pk}"}},
@@ -227,7 +222,6 @@ class FileStore:
         index = self._find_item_index(data, pk)
         
         if index is None:
-            from botocore.exceptions import ClientError
             raise ClientError(
                 {"Error": {"Code": "ConditionalCheckFailedException",
                            "Message": f"Item does not exist: {self.pk_name}={pk}"}},

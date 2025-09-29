@@ -50,7 +50,6 @@ class StandardAuditService(AuditService):
             return domain_create_modification_audit(actor_data)
         else:
             # Fallback to simple timestamp audit
-            from datetime import datetime
             return {"modified": {"at": datetime.utcnow().isoformat() + "Z"}}
     
     def create_deletion_audit(self, actor_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
@@ -59,7 +58,6 @@ class StandardAuditService(AuditService):
             return domain_create_deletion_audit(actor_data)
         else:
             # Fallback to simple timestamp audit
-            from datetime import datetime
             return {"deleted": {"at": datetime.utcnow().isoformat() + "Z"}}
     
     def extract_actor_data(self, entity_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:

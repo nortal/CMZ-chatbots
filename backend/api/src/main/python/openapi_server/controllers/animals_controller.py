@@ -242,13 +242,13 @@ def animal_details_get(animal_id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_delete(id):  # noqa: E501
+def animal_id_delete(animal_id):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
 
-    :param id: 
-    :type id: str
+    :param animal_id:
+    :type animal_id: str
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
@@ -260,7 +260,7 @@ def animal_id_delete(id):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "animals_controller".replace("_controller", "")
-        impl_function_name = "handle_"
+        impl_function_name = "handle_animal_id_delete"
 
         # Try common implementation patterns
         try:
@@ -283,7 +283,7 @@ def animal_id_delete(id):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(id)
+        result = impl_function(animal_id)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -317,13 +317,13 @@ def animal_id_delete(id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_get(id):  # noqa: E501
+def animal_id_get(animal_id):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
 
-    :param id: 
-    :type id: str
+    :param animal_id:
+    :type animal_id: str
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
@@ -335,7 +335,7 @@ def animal_id_get(id):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "animals_controller".replace("_controller", "")
-        impl_function_name = "handle_"
+        impl_function_name = "handle_animal_id_get"
 
         # Try common implementation patterns
         try:
@@ -358,7 +358,7 @@ def animal_id_get(id):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(id)
+        result = impl_function(animal_id)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -392,14 +392,14 @@ def animal_id_get(id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_put(id, body):  # noqa: E501
+def animal_id_put(animal_id, body):  # noqa: E501
     """Update an existing animal
 
      # noqa: E501
 
-    :param id: 
-    :type id: str
-    :param animal_update: 
+    :param animal_id:
+    :type animal_id: str
+    :param animal_update:
     :type animal_update: dict | bytes
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
@@ -414,7 +414,7 @@ def animal_id_put(id, body):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "animals_controller".replace("_controller", "")
-        impl_function_name = "handle_"
+        impl_function_name = "handle_animal_id_put"
 
         # Try common implementation patterns
         try:
@@ -437,7 +437,7 @@ def animal_id_put(id, body):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(id, body)
+        result = impl_function(animal_id, body)
 
         # Handle different return types
         if isinstance(result, tuple):

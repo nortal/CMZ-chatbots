@@ -47,7 +47,7 @@ def conversations_sessions_get(user_id=None, animal_id=None, start_date=None, en
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "conversation_controller".replace("_controller", "")
-        impl_function_name = "handle_"
+        impl_function_name = "handle_conversations_sessions_get"
 
         # Try common implementation patterns
         try:
@@ -122,7 +122,7 @@ def conversations_sessions_session_id_get(session_id):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "conversation_controller".replace("_controller", "")
-        impl_function_name = "handle_"
+        impl_function_name = "handle_conversations_sessions_session_id_get"
 
         # Try common implementation patterns
         try:
