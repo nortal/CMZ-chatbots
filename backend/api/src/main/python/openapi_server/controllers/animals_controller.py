@@ -242,7 +242,7 @@ def animal_details_get(animal_id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_id_delete(animal_id):  # noqa: E501
+def animal_delete(animal_id):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
@@ -260,7 +260,7 @@ def animal_id_delete(animal_id):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "animals_controller".replace("_controller", "")
-        impl_function_name = "handle_animal_id_delete"
+        impl_function_name = "handle_animal_delete"
 
         # Try common implementation patterns
         try:
@@ -296,8 +296,8 @@ def animal_id_delete(animal_id):  # noqa: E501
         from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
-            message=f"Controller animal_id_delete implementation not found: {str(e)}",
-            details={"controller": "AnimalsController", "operation": "animal_id_delete"}
+            message=f"Controller animal_delete implementation not found: {str(e)}",
+            details={"controller": "AnimalsController", "operation": "animal_delete"}
         )
         return error_obj, 501
 
@@ -311,13 +311,13 @@ def animal_id_delete(animal_id):  # noqa: E501
             from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
-                message=f"Internal server error in animal_id_delete: {str(e)}",
-                details={"controller": "AnimalsController", "operation": "animal_id_delete"}
+                message=f"Internal server error in animal_delete: {str(e)}",
+                details={"controller": "AnimalsController", "operation": "animal_delete"}
             )
             return error_obj, 500
 
 
-def animal_id_get(animal_id):  # noqa: E501
+def animal_get(animal_id):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
@@ -335,7 +335,7 @@ def animal_id_get(animal_id):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "animals_controller".replace("_controller", "")
-        impl_function_name = "handle_animal_id_get"
+        impl_function_name = "handle_animal_get"
 
         # Try common implementation patterns
         try:
@@ -371,8 +371,8 @@ def animal_id_get(animal_id):  # noqa: E501
         from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
-            message=f"Controller animal_id_get implementation not found: {str(e)}",
-            details={"controller": "AnimalsController", "operation": "animal_id_get"}
+            message=f"Controller animal_get implementation not found: {str(e)}",
+            details={"controller": "AnimalsController", "operation": "animal_get"}
         )
         return error_obj, 501
 
@@ -386,13 +386,13 @@ def animal_id_get(animal_id):  # noqa: E501
             from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
-                message=f"Internal server error in animal_id_get: {str(e)}",
-                details={"controller": "AnimalsController", "operation": "animal_id_get"}
+                message=f"Internal server error in animal_get: {str(e)}",
+                details={"controller": "AnimalsController", "operation": "animal_get"}
             )
             return error_obj, 500
 
 
-def animal_id_put(animal_id, body):  # noqa: E501
+def animal_put(animal_id, body):  # noqa: E501
     """Update an existing animal
 
      # noqa: E501
@@ -414,7 +414,7 @@ def animal_id_put(animal_id, body):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "animals_controller".replace("_controller", "")
-        impl_function_name = "handle_animal_id_put"
+        impl_function_name = "handle_animal_put"
 
         # Try common implementation patterns
         try:
@@ -450,8 +450,8 @@ def animal_id_put(animal_id, body):  # noqa: E501
         from openapi_server.models.error import Error
         error_obj = Error(
             code="not_implemented",
-            message=f"Controller animal_id_put implementation not found: {str(e)}",
-            details={"controller": "AnimalsController", "operation": "animal_id_put"}
+            message=f"Controller animal_put implementation not found: {str(e)}",
+            details={"controller": "AnimalsController", "operation": "animal_put"}
         )
         return error_obj, 501
 
@@ -465,8 +465,8 @@ def animal_id_put(animal_id, body):  # noqa: E501
             from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
-                message=f"Internal server error in animal_id_put: {str(e)}",
-                details={"controller": "AnimalsController", "operation": "animal_id_put"}
+                message=f"Internal server error in animal_put: {str(e)}",
+                details={"controller": "AnimalsController", "operation": "animal_put"}
             )
             return error_obj, 500
 

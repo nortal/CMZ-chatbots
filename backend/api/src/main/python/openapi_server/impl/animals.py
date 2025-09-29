@@ -44,31 +44,31 @@ def handle_animal_details_get(*args, **kwargs) -> Tuple[Any, int]:
     return not_implemented_error("animal_details_get")
 
 
-def handle_animal_id_delete(*args, **kwargs) -> Tuple[Any, int]:
+def handle_animal_delete(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for animal_id_delete
+    Implementation handler for animal_delete
 
     TODO: Implement business logic for this operation
     """
-    return not_implemented_error("animal_id_delete")
+    return not_implemented_error("animal_delete")
 
 
-def handle_animal_id_get(*args, **kwargs) -> Tuple[Any, int]:
+def handle_animal_get(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for animal_id_get
+    Implementation handler for animal_get
 
     TODO: Implement business logic for this operation
     """
-    return not_implemented_error("animal_id_get")
+    return not_implemented_error("animal_get")
 
 
-def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
+def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for animal_id_put
+    Implementation handler for animal_put
 
     TODO: Implement business logic for this operation
     """
-    return not_implemented_error("animal_id_put")
+    return not_implemented_error("animal_put")
 
 
 def handle_animal_list_get(*args, **kwargs) -> Tuple[Any, int]:

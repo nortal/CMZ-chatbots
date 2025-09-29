@@ -1249,7 +1249,7 @@ paths:
       tags:
       - Animals
       summary: Get a specific animal by ID
-      operationId: animal_id_get
+      operationId: animal_get
       parameters:
       - in: path
         name: animalId
@@ -1277,7 +1277,7 @@ paths:
       tags:
       - Animals
       summary: Update an existing animal
-      operationId: animal_id_put
+      operationId: animal_put
       x-body-name: animal_update
       security: []
       parameters:
@@ -1309,7 +1309,7 @@ paths:
       tags:
       - Animals
       summary: Delete an animal (soft delete)
-      operationId: animal_id_delete
+      operationId: animal_delete
       security: []
       parameters:
       - in: path

@@ -43,9 +43,9 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'animal_details_post': handle_animal_details_post,
             'animal_details_patch': handle_animal_details_patch,
             'animal_details_delete': handle_animal_details_delete,
-            'animal_id_get': handle_animal_id_get,  # Add missing GET mapping
-            'animal_id_put': handle_animal_id_put,
-            'animal_id_delete': handle_animal_id_delete,  # Add missing mapping
+            'animal_get': handle_animal_get,  # Updated from animal_id_get
+            'animal_put': handle_animal_put,  # Updated from animal_id_put
+            'animal_delete': handle_animal_delete,  # Updated from animal_id_delete
             'animal_post': handle_animal_post,  # Add missing mapping
             'list_users': handle_user_list_get,  # Map list_users to handler
             'user_list_get': handle_user_list_get,
@@ -266,20 +266,20 @@ def handle_animal_details_delete(animal_id: str) -> Tuple[Any, int]:
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_id_get(id: str = None, id_: str = None, **kwargs) -> Tuple[Any, int]:
-    """Get animal via GET /animal/{id} - handles both id and id_ parameters"""
+def handle_animal_get(id: str = None, id_: str = None, animal_id: str = None, **kwargs) -> Tuple[Any, int]:
+    """Get animal via GET /animal/{animalId} - handles id, id_ and animal_id parameters"""
     try:
-        # Handle both parameter names (Connexion may pass id or id_)
-        animal_id = id if id is not None else id_
-        if animal_id is None:
+        # Handle all parameter names (Connexion may pass id, id_ or animal_id)
+        actual_id = animal_id if animal_id is not None else (id if id is not None else id_)
+        if actual_id is None:
             return create_error_response(
                 "missing_parameter",
-                "Missing required parameter: id",
+                "Missing required parameter: animalId",
                 {}
             ), 400
 
         animal_handler = create_flask_animal_handler()
-        result = animal_handler.get_animal(animal_id)
+        result = animal_handler.get_animal(actual_id)
 
         # If the result is an OpenAPI model, convert to dict
         if isinstance(result, tuple) and len(result) == 2:
@@ -293,37 +293,37 @@ def handle_animal_id_get(id: str = None, id_: str = None, **kwargs) -> Tuple[Any
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
-    """Update animal via PUT /animal/{id} - handles both id and id_ parameters"""
+def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
+    """Update animal via PUT /animal/{animalId} - handles id, id_ and animal_id parameters"""
     try:
         # Handle positional arguments from controller
-        # Controller calls handle_(id, body) so args will be (id, body) OR (id_, body)
-        animal_id = None
+        # Controller calls handle_(animal_id, body) so args will be (animal_id, body)
+        actual_id = None
         body = None
 
         if len(args) >= 2:
-            # First arg is id or id_
-            animal_id = args[0]
+            # First arg is animal_id
+            actual_id = args[0]
             # Second arg is body
             body = args[1]
         elif len(args) == 1:
             # Only one arg, could be id or body - check type
             if isinstance(args[0], str):
-                animal_id = args[0]
+                actual_id = args[0]
             else:
                 body = args[0]
 
         # Also check kwargs for any missing parameters
-        if animal_id is None:
-            animal_id = kwargs.get('id') or kwargs.get('id_')
+        if actual_id is None:
+            actual_id = kwargs.get('animal_id') or kwargs.get('id') or kwargs.get('id_')
         if body is None:
             body = kwargs.get('body') or kwargs.get('animal_update')
 
         # Validate we have both parameters
-        if animal_id is None:
+        if actual_id is None:
             return create_error_response(
                 "missing_parameter",
-                "Missing required parameter: id",
+                "Missing required parameter: animalId",
                 {}
             ), 400
 
@@ -339,7 +339,7 @@ def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
             body = body.to_dict()
 
         animal_handler = create_flask_animal_handler()
-        result = animal_handler.update_animal(animal_id, body)
+        result = animal_handler.update_animal(actual_id, body)
 
         # If the result is an OpenAPI model, convert to dict
         if isinstance(result, tuple) and len(result) == 2:
@@ -377,24 +377,24 @@ def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
         import traceback
         import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Error in handle_animal_id_put: {str(e)}")
+        logger.error(f"Error in handle_animal_put: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_id_delete(id: str = None, id_: str = None, **kwargs) -> Tuple[Any, int]:
-    """Delete animal via DELETE /animal/{id} (soft delete) - handles both id and id_ parameters"""
+def handle_animal_delete(id: str = None, id_: str = None, animal_id: str = None, **kwargs) -> Tuple[Any, int]:
+    """Delete animal via DELETE /animal/{animalId} (soft delete) - handles id, id_ and animal_id parameters"""
     try:
-        # Handle both parameter names (Connexion may pass id or id_)
-        animal_id = id if id is not None else id_
-        if animal_id is None:
+        # Handle all parameter names (Connexion may pass id, id_ or animal_id)
+        actual_id = animal_id if animal_id is not None else (id if id is not None else id_)
+        if actual_id is None:
             return create_error_response(
                 "missing_parameter",
-                "Missing required parameter: id",
+                "Missing required parameter: animalId",
                 {}
             ), 400
         animal_handler = create_flask_animal_handler()
-        return animal_handler.delete_animal(animal_id)
+        return animal_handler.delete_animal(actual_id)
     except Exception as e:
         return handle_exception_for_controllers(e)
 
