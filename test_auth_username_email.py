@@ -4,7 +4,6 @@ Simple contract test to verify auth endpoint accepts both username and email fie
 Run this to prevent auth regressions.
 """
 import requests
-import json
 import sys
 
 BASE_URL = "http://localhost:8080"

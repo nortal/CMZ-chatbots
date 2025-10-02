@@ -6,11 +6,10 @@ This script ensures that stub implementations don't override real implementation
 by detecting and resolving conflicts between stub files and the main handlers.py.
 """
 
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple, Set
+from typing import List, Set
 
 def find_impl_directory() -> Path:
     """Find the implementation directory."""
@@ -36,8 +35,9 @@ def find_stub_functions(file_path: Path) -> List[str]:
     content = file_path.read_text()
 
     # Find functions that return not_implemented_error
-    pattern = r'def\s+(handle_\w+)\([^)]*\)[^:]*:\s*(?:.*?\n)*?\s*return\s+not_implemented_error'
-    matches = re.finditer(pattern, content, re.MULTILINE | re.DOTALL)
+    # Use a simpler, non-backtracking pattern
+    pattern = r'def\s+(handle_\w+)\([^)]*\)[^:]*:.*?return\s+not_implemented_error'
+    matches = re.finditer(pattern, content, re.DOTALL)
 
     for match in matches:
         func_name = match.group(1)
