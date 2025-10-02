@@ -1,8 +1,9 @@
 """Flask handlers for animal operations using hexagonal architecture"""
 from typing import Tuple, Any, List
+from openapi_server.models.error import Error
 from ...domain.animal_service import AnimalService
 from ...domain.common.exceptions import (
-    NotFoundError, ConflictError, ValidationError, 
+    NotFoundError, ConflictError, ValidationError,
     BusinessRuleError, InvalidStateError
 )
 from .serializers import FlaskAnimalSerializer, FlaskAnimalConfigSerializer
@@ -48,7 +49,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 400
         except ConflictError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="conflict",
                 message=str(e),
@@ -56,7 +56,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 409
         except Exception as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error: {str(e)}",
@@ -88,7 +87,6 @@ class FlaskAnimalHandler:
             return response, 200
             
         except NotFoundError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="not_found",
                 message=str(e),
@@ -96,7 +94,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 404
         except Exception as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message="Internal server error",
@@ -129,7 +126,6 @@ class FlaskAnimalHandler:
             return response_items, 200
             
         except Exception as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message="Internal server error",
@@ -160,7 +156,6 @@ class FlaskAnimalHandler:
             # This allows PUT to work like PATCH for partial updates
             if existing_animal:
                 # Get existing data as dict
-                from ...domain.common.serializers import serialize_animal
                 existing_data = serialize_animal(existing_animal, include_api_id=False)
                 # Update only provided fields
                 for key, value in update_data.items():
@@ -178,7 +173,6 @@ class FlaskAnimalHandler:
             return response_dict, 200
             
         except NotFoundError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="not_found",
                 message=str(e),
@@ -186,7 +180,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 404
         except ValidationError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="validation_error",
                 message=str(e),
@@ -194,7 +187,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 400
         except ConflictError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="conflict",
                 message=str(e),
@@ -202,7 +194,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 409
         except InvalidStateError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="invalid_state",
                 message=str(e),
@@ -211,7 +202,6 @@ class FlaskAnimalHandler:
             return error_obj.to_dict(), 400
         except Exception as e:
             import traceback
-            from openapi_server.models.error import Error
             # Log the full error for debugging
             print(f"ERROR in update_animal: {str(e)}")
             print(f"Traceback: {traceback.format_exc()}")
@@ -239,7 +229,6 @@ class FlaskAnimalHandler:
             return None, 204
             
         except NotFoundError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="not_found",
                 message=str(e),
@@ -247,7 +236,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 404
         except ValidationError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="validation_error",
                 message=str(e),
@@ -255,7 +243,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 400
         except BusinessRuleError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="business_rule_violation",
                 message=str(e),
@@ -263,7 +250,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 400
         except Exception as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message="Internal server error",
@@ -291,7 +277,6 @@ class FlaskAnimalHandler:
             return response, 200
             
         except NotFoundError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="not_found",
                 message=str(e),
@@ -299,7 +284,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 404
         except Exception as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message="Internal server error",
@@ -338,7 +322,6 @@ class FlaskAnimalHandler:
             return response, 200
 
         except NotFoundError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="not_found",
                 message=str(e),
@@ -346,7 +329,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 404
         except ValidationError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="validation_error",
                 message=str(e),
@@ -354,7 +336,6 @@ class FlaskAnimalHandler:
             )
             return error_obj.to_dict(), 400
         except Exception as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="internal_error",
                 message=f"Internal server error: {str(e)}",

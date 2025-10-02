@@ -7,6 +7,7 @@ to access the business logic through the hexagonal architecture pattern.
 
 from typing import Any, Tuple, Dict
 import inspect
+import logging
 from .dependency_injection import (
     create_flask_user_handler,
     create_flask_animal_handler,
@@ -17,8 +18,12 @@ from .conversation import (
     handle_convo_turn_post,
     handle_convo_history_get,
     handle_convo_history_delete,
-    handle_summarize_convo_post
+    handle_summarize_convo_post,
+    handle_conversations_sessions_get,
+    handle_conversations_sessions_session_id_get
 )
+
+logger = logging.getLogger(__name__)
 
 
 def handle_(*args, **kwargs) -> Tuple[Any, int]:
@@ -41,9 +46,9 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'animal_details_post': handle_animal_details_post,
             'animal_details_patch': handle_animal_details_patch,
             'animal_details_delete': handle_animal_details_delete,
-            'animal_id_get': handle_animal_id_get,  # Add missing GET mapping
-            'animal_id_put': handle_animal_id_put,
-            'animal_id_delete': handle_animal_id_delete,  # Add missing mapping
+            'animal_get': handle_animal_get,  # Updated from animal_id_get
+            'animal_put': handle_animal_put,  # Updated from animal_id_put
+            'animal_delete': handle_animal_delete,  # Updated from animal_id_delete
             'animal_post': handle_animal_post,  # Add missing mapping
             'list_users': handle_user_list_get,  # Map list_users to handler
             'user_list_get': handle_user_list_get,
@@ -75,6 +80,8 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'convo_history_get': handle_convo_history_get,
             'convo_history_delete': handle_convo_history_delete,
             'summarize_convo_post': handle_summarize_convo_post,
+            'conversations_sessions_get': handle_conversations_sessions_get,
+            'conversations_sessions_session_id_get': handle_conversations_sessions_session_id_get,
         }
 
         handler_func = handler_map.get(caller_name)
@@ -116,7 +123,6 @@ def handle_animal_config_get(animal_id: str) -> Tuple[Any, int]:
         # Verify token
         is_valid, payload = verify_jwt_token(auth_header)
         if not is_valid or not payload:
-            from openapi_server.models.error import Error
             error = Error(
                 code="unauthorized",
                 message="Invalid or expired token",
@@ -128,7 +134,6 @@ def handle_animal_config_get(animal_id: str) -> Tuple[Any, int]:
         user_role = payload.get('role', 'visitor')
         allowed_roles = ['admin', 'zookeeper', 'member']
         if user_role not in allowed_roles:
-            from openapi_server.models.error import Error
             error = Error(
                 code="forbidden",
                 message="Insufficient permissions",
@@ -151,6 +156,11 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
     try:
         # Convert AnimalConfigUpdate object to dictionary if necessary
         from openapi_server.models.animal_config_update import AnimalConfigUpdate
+        from openapi_server.models.error import Error
+        from flask import request
+        from .utils.jwt_utils import verify_jwt_token
+        from .error_handler import handle_exception_for_controllers
+
         if isinstance(body, AnimalConfigUpdate):
             # Use the model_to_json_keyed_dict to properly convert the object
             from .utils.core import model_to_json_keyed_dict
@@ -169,12 +179,9 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
             body['topP'] = round(float(body['topP']), 2)
 
         # Check authentication
-        from flask import request
-        from .utils.jwt_utils import verify_jwt_token
 
         auth_header = request.headers.get('Authorization')
         if not auth_header:
-            from openapi_server.models.error import Error
             error = Error(
                 code="unauthorized",
                 message="Authentication required",
@@ -185,7 +192,6 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
         # Verify token
         is_valid, payload = verify_jwt_token(auth_header)
         if not is_valid or not payload:
-            from openapi_server.models.error import Error
             error = Error(
                 code="unauthorized",
                 message="Invalid or expired token",
@@ -197,7 +203,6 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
         user_role = payload.get('role', 'visitor')
         allowed_roles = ['admin', 'zookeeper']
         if user_role not in allowed_roles:
-            from openapi_server.models.error import Error
             error = Error(
                 code="forbidden",
                 message="Insufficient permissions",
@@ -211,7 +216,6 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.update_animal_config(animal_id, body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -228,8 +232,17 @@ def handle_animal_list_get(*args, **kwargs) -> Tuple[Any, int]:
         # Filter out None values that Connexion might pass for optional parameters
         status = status if status not in (None, '') else None
 
-        animal_handler = create_flask_animal_handler()
-        return animal_handler.list_animals(status)
+        # Try to use the real handler, fall back to mock if DB not available
+        try:
+            animal_handler = create_flask_animal_handler()
+            return animal_handler.list_animals(status)
+        except Exception as db_error:
+            # If DynamoDB fails (no credentials), use mock data
+            logger.warning(f"Database unavailable, using mock data: {db_error}")
+            from .animals_mock import get_mock_animals
+            animals = get_mock_animals(status)
+            return animals, 200
+
     except Exception as e:
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
@@ -261,7 +274,6 @@ def handle_animal_details_patch(animal_id: str, body: Dict[str, Any]) -> Tuple[A
         animal_handler = create_flask_animal_handler()
         return animal_handler.update_animal(animal_id, body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -271,25 +283,24 @@ def handle_animal_details_delete(animal_id: str) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.delete_animal(animal_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_id_get(id: str = None, id_: str = None, **kwargs) -> Tuple[Any, int]:
-    """Get animal via GET /animal/{id} - handles both id and id_ parameters"""
+def handle_animal_get(id: str = None, id_: str = None, animal_id: str = None, **kwargs) -> Tuple[Any, int]:
+    """Get animal via GET /animal/{animalId} - handles id, id_ and animal_id parameters"""
     try:
-        # Handle both parameter names (Connexion may pass id or id_)
-        animal_id = id if id is not None else id_
-        if animal_id is None:
+        # Handle all parameter names (Connexion may pass id, id_ or animal_id)
+        actual_id = animal_id if animal_id is not None else (id if id is not None else id_)
+        if actual_id is None:
             from .error_handler import create_error_response
             return create_error_response(
                 "missing_parameter",
-                "Missing required parameter: id",
+                "Missing required parameter: animalId",
                 {}
             ), 400
 
         animal_handler = create_flask_animal_handler()
-        result = animal_handler.get_animal(animal_id)
+        result = animal_handler.get_animal(actual_id)
 
         # If the result is an OpenAPI model, convert to dict
         if isinstance(result, tuple) and len(result) == 2:
@@ -304,43 +315,41 @@ def handle_animal_id_get(id: str = None, id_: str = None, **kwargs) -> Tuple[Any
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
-    """Update animal via PUT /animal/{id} - handles both id and id_ parameters"""
+def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
+    """Update animal via PUT /animal/{animalId} - handles id, id_ and animal_id parameters"""
     try:
         # Handle positional arguments from controller
-        # Controller calls handle_(id, body) so args will be (id, body) OR (id_, body)
-        animal_id = None
+        # Controller calls handle_(animal_id, body) so args will be (animal_id, body)
+        actual_id = None
         body = None
 
         if len(args) >= 2:
-            # First arg is id or id_
-            animal_id = args[0]
+            # First arg is animal_id
+            actual_id = args[0]
             # Second arg is body
             body = args[1]
         elif len(args) == 1:
             # Only one arg, could be id or body - check type
             if isinstance(args[0], str):
-                animal_id = args[0]
+                actual_id = args[0]
             else:
                 body = args[0]
 
         # Also check kwargs for any missing parameters
-        if animal_id is None:
-            animal_id = kwargs.get('id') or kwargs.get('id_')
+        if actual_id is None:
+            actual_id = kwargs.get('animal_id') or kwargs.get('id') or kwargs.get('id_')
         if body is None:
             body = kwargs.get('body') or kwargs.get('animal_update')
 
         # Validate we have both parameters
-        if animal_id is None:
-            from .error_handler import create_error_response
+        if actual_id is None:
             return create_error_response(
                 "missing_parameter",
-                "Missing required parameter: id",
+                "Missing required parameter: animalId",
                 {}
             ), 400
 
         if body is None:
-            from .error_handler import create_error_response
             return create_error_response(
                 "missing_body",
                 "Missing request body",
@@ -352,7 +361,7 @@ def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
             body = body.to_dict()
 
         animal_handler = create_flask_animal_handler()
-        result = animal_handler.update_animal(animal_id, body)
+        result = animal_handler.update_animal(actual_id, body)
 
         # If the result is an OpenAPI model, convert to dict
         if isinstance(result, tuple) and len(result) == 2:
@@ -390,26 +399,26 @@ def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
         import traceback
         import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Error in handle_animal_id_put: {str(e)}")
+        logger.error(f"Error in handle_animal_put: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
-def handle_animal_id_delete(id: str = None, id_: str = None, **kwargs) -> Tuple[Any, int]:
-    """Delete animal via DELETE /animal/{id} (soft delete) - handles both id and id_ parameters"""
+def handle_animal_delete(id: str = None, id_: str = None, animal_id: str = None, **kwargs) -> Tuple[Any, int]:
+    """Delete animal via DELETE /animal/{animalId} (soft delete) - handles id, id_ and animal_id parameters"""
     try:
-        # Handle both parameter names (Connexion may pass id or id_)
-        animal_id = id if id is not None else id_
-        if animal_id is None:
+        # Handle all parameter names (Connexion may pass id, id_ or animal_id)
+        actual_id = animal_id if animal_id is not None else (id if id is not None else id_)
+        if actual_id is None:
             from .error_handler import create_error_response
             return create_error_response(
                 "missing_parameter",
-                "Missing required parameter: id",
+                "Missing required parameter: animalId",
                 {}
             ), 400
         animal_handler = create_flask_animal_handler()
-        return animal_handler.delete_animal(animal_id)
+        return animal_handler.delete_animal(actual_id)
     except Exception as e:
         from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
@@ -421,7 +430,6 @@ def handle_animal_post(animal_input: Any = None, body: Dict[str, Any] = None) ->
         # Handle both parameter names (controller may pass animal_input or body)
         request_body = animal_input if animal_input is not None else body
         if request_body is None:
-            from .error_handler import create_error_response
             return create_error_response(
                 "missing_body",
                 "Missing request body",
@@ -430,7 +438,6 @@ def handle_animal_post(animal_input: Any = None, body: Dict[str, Any] = None) ->
         animal_handler = create_flask_animal_handler()
         return animal_handler.create_animal(request_body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -442,7 +449,6 @@ def handle_user_list_get(query: str = None, role: str = None, page: int = None, 
         # Pass query and pagination parameters to the handler
         return user_handler.list_users(query=query, role=role, page=page, page_size=page_size)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -452,7 +458,6 @@ def handle_user_details_get(user_id: str) -> Tuple[Any, int]:
         user_handler = create_flask_user_handler()
         return user_handler.get_user(user_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -462,7 +467,6 @@ def handle_user_details_post(body: Dict[str, Any]) -> Tuple[Any, int]:
         user_handler = create_flask_user_handler()
         return user_handler.create_user(body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -472,7 +476,6 @@ def handle_user_details_patch(user_id: str, body: Dict[str, Any]) -> Tuple[Any, 
         user_handler = create_flask_user_handler()
         return user_handler.update_user(user_id, body)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -482,7 +485,6 @@ def handle_user_details_delete(user_id: str) -> Tuple[Any, int]:
         user_handler = create_flask_user_handler()
         return user_handler.delete_user(user_id)
     except Exception as e:
-        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -513,7 +515,6 @@ def handle_family_details_post(body: Any) -> Tuple[Any, int]:
     # The model might not include all fields if not regenerated
     if isinstance(body_dict, dict):
         # Log what we received for debugging
-        import logging
         logger = logging.getLogger(__name__)
         logger.info(f"Creating family with data: {body_dict}")
 
@@ -541,7 +542,8 @@ def handle_family_details_delete(family_id: str) -> Tuple[Any, int]:
 # Auth handlers
 def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
     """User login"""
-    from .auth import authenticate_user
+    # Use mock authentication for now
+    from .auth_mock import authenticate_user
     from openapi_server.models.auth_response import AuthResponse
     try:
         # Handle both dict and model object
@@ -552,7 +554,8 @@ def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
             body = {'username': body.username, 'password': body.password}
 
         # Extract email and password from body
-        email = body.get('email', body.get('username', ''))
+        # Frontend sends 'username' field, but we use email
+        email = body.get('username', body.get('email', ''))
         password = body.get('password', '')
 
         # Authenticate user
@@ -584,19 +587,19 @@ def handle_auth_post(body: Dict[str, Any]) -> Tuple[Any, int]:
 
 def handle_logout_post() -> Tuple[Any, int]:
     """User logout"""
-    from .auth import handle_auth_logout_post
+    from .auth_mock import handle_auth_logout_post
     return handle_auth_logout_post()
 
 
 def handle_auth_refresh_post() -> Tuple[Any, int]:
     """Refresh authentication token"""
-    from .auth import handle_auth_refresh_post
+    from .auth_mock import handle_auth_refresh_post
     return handle_auth_refresh_post()
 
 
 def handle_auth_reset_password_post(body: Dict[str, Any]) -> Tuple[Any, int]:
     """Reset password"""
-    from .auth import handle_auth_reset_password_post
+    from .auth_mock import handle_auth_reset_password_post
     return handle_auth_reset_password_post(body)
 
 

@@ -233,7 +233,6 @@ class FlaskUserHandler:
             details_list = self._user_service.list_user_details(page, page_size)
             
             # Convert domain entities to response format
-            from ...domain.common.serializers import serialize_user_details
             response = [serialize_user_details(details) for details in details_list]
             
             return response, 200
@@ -260,7 +259,6 @@ class FlaskUserHandler:
             user_details = self._user_service.update_user_details_by_user_id(user_id, update_data)
             
             # Convert domain entity to dict response
-            from ...domain.common.serializers import serialize_user_details
             response = serialize_user_details(user_details)
             
             return response, 200

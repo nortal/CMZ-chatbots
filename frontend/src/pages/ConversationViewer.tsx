@@ -56,7 +56,7 @@ const conversationApi = {
   getConversation: async (token: string, sessionId: string) => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-    const response = await fetch(`${apiUrl}/convo_history?sessionId=${sessionId}`, {
+    const response = await fetch(`${apiUrl}/conversations/sessions/${sessionId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

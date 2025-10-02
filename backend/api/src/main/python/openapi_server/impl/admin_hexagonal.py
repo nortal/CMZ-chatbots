@@ -159,7 +159,6 @@ def handle_update_user(user_id: str, body: User) -> User:
             return response
         elif status_code == 404:
             # Maintain existing not_found pattern
-            from .utils import not_found
             return not_found("userId", user_id)
         else:
             # Convert error to exception
@@ -195,7 +194,6 @@ def handle_delete_user(user_id: str) -> Tuple[None, int]:
             return None, 204
         elif status_code == 404:
             # Maintain existing not_found pattern
-            from .utils import not_found
             return not_found("userId", user_id)
         else:
             # Convert error to exception

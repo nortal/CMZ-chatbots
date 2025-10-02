@@ -58,7 +58,7 @@ const chatHistoryApi = {
     if (filters?.startDate) queryParams.append('startDate', filters.startDate);
     if (filters?.endDate) queryParams.append('endDate', filters.endDate);
 
-    const response = await fetch(`${apiUrl}/convo_history?${queryParams.toString()}`, {
+    const response = await fetch(`${apiUrl}/conversations/sessions?${queryParams.toString()}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

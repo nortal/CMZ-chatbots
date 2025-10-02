@@ -871,6 +871,151 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /conversations/sessions:
+    get:
+      tags:
+      - Conversation
+      summary: List conversation sessions with pagination
+      security: []
+      parameters:
+      - in: query
+        name: userId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Filter sessions by user identifier
+      - in: query
+        name: animalId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Filter sessions by animal identifier
+      - in: query
+        name: startDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter sessions from this date
+      - in: query
+        name: endDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter sessions until this date
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        description: Maximum number of sessions to return
+      - in: query
+        name: lastEvaluatedKey
+        required: false
+        schema:
+          type: string
+        description: Pagination cursor from previous response
+      - in: query
+        name: sortBy
+        required: false
+        schema:
+          type: string
+          enum:
+          - timestamp
+          - messageCount
+          - duration
+          default: timestamp
+        description: Sort sessions by field
+      - in: query
+        name: sortOrder
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Sort order
+      responses:
+        '200':
+          description: List of conversation sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sessionId:
+                          type: string
+                        userId:
+                          type: string
+                        animalId:
+                          type: string
+                        animalName:
+                          type: string
+                        startTime:
+                          type: string
+                          format: date-time
+                        lastMessageTime:
+                          type: string
+                          format: date-time
+                        messageCount:
+                          type: integer
+                        duration:
+                          type: integer
+                          description: Duration in seconds
+                        summary:
+                          type: string
+                          description: Brief summary of conversation
+                  lastEvaluatedKey:
+                    type: string
+                    description: Cursor for next page
+                  totalCount:
+                    type: integer
+                    description: Total number of sessions matching filters
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /conversations/sessions/{sessionId}:
+    get:
+      tags:
+      - Conversation
+      summary: Get detailed conversation session
+      security: []
+      parameters:
+      - in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Session identifier
+      responses:
+        '200':
+          description: Detailed conversation session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvoHistory'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /summarize_convo:
     post:
       tags:
@@ -1099,15 +1244,15 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '422':
           $ref: '#/components/responses/ValidationError'
-  /animal/{id}:
+  /animal/{animalId}:
     get:
       tags:
       - Animals
       summary: Get a specific animal by ID
-      operationId: animal_id_get
+      operationId: animal_get
       parameters:
       - in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -1132,12 +1277,12 @@ paths:
       tags:
       - Animals
       summary: Update an existing animal
-      operationId: animal_id_put
+      operationId: animal_put
       x-body-name: animal_update
       security: []
       parameters:
       - in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -1164,11 +1309,11 @@ paths:
       tags:
       - Animals
       summary: Delete an animal (soft delete)
-      operationId: animal_id_delete
+      operationId: animal_delete
       security: []
       parameters:
       - in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -1916,6 +2061,17 @@ components:
               value:
                 code: unauthorized
                 message: Missing or invalid token
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            forbidden:
+              value:
+                code: forbidden
+                message: Insufficient permissions to access this resource
     NotFound:
       description: Resource not found
       content:
@@ -2026,14 +2182,19 @@ components:
         username:
           type: string
           format: email
+          description: Email address (for backend compatibility)
+        email:
+          type: string
+          format: email
+          description: Email address (frontend sends this)
         password:
           type: string
         register:
           type: boolean
           description: If true, create account if not found
       required:
-      - username
       - password
+      # Note: Either username OR email must be provided, handled in implementation
     AuthResponse:
       type: object
       required:

@@ -116,13 +116,13 @@ paths:
       tags:
       - Animals
       x-openapi-router-controller: openapi_server.controllers.animals_controller
-  /animal/{id}:
+  /animal/{animalId}:
     delete:
       operationId: animal_id_delete
       parameters:
       - explode: false
         in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -151,7 +151,7 @@ paths:
       parameters:
       - explode: false
         in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -201,7 +201,7 @@ paths:
       parameters:
       - explode: false
         in: path
-        name: id
+        name: animalId
         required: true
         schema:
           type: string
@@ -670,6 +670,193 @@ paths:
       tags:
       - Analytics
       x-openapi-router-controller: openapi_server.controllers.analytics_controller
+  /conversations/sessions:
+    get:
+      operationId: conversations_sessions_get
+      parameters:
+      - description: Filter sessions by user identifier
+        explode: true
+        in: query
+        name: userId
+        required: false
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: form
+      - description: Filter sessions by animal identifier
+        explode: true
+        in: query
+        name: animalId
+        required: false
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: form
+      - description: Filter sessions from this date
+        explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Filter sessions until this date
+        explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Maximum number of sessions to return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: Pagination cursor from previous response
+        explode: true
+        in: query
+        name: lastEvaluatedKey
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Sort sessions by field
+        explode: true
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          default: timestamp
+          enum:
+          - timestamp
+          - messageCount
+          - duration
+          type: string
+        style: form
+      - description: Sort order
+        explode: true
+        in: query
+        name: sortOrder
+        required: false
+        schema:
+          default: desc
+          enum:
+          - asc
+          - desc
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_conversations_sessions_get_200_response"
+          description: List of conversation sessions
+        "400":
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              examples:
+                unauthorized:
+                  value:
+                    code: unauthorized
+                    message: Missing or invalid token
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              examples:
+                forbidden:
+                  value:
+                    code: forbidden
+                    message: Insufficient permissions to access this resource
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Forbidden - Insufficient permissions
+      security: []
+      summary: List conversation sessions with pagination
+      tags:
+      - Conversation
+      x-openapi-router-controller: openapi_server.controllers.conversation_controller
+  /conversations/sessions/{sessionId}:
+    get:
+      operationId: conversations_sessions_session_id_get
+      parameters:
+      - description: Session identifier
+        explode: false
+        in: path
+        name: sessionId
+        required: true
+        schema:
+          pattern: "^[a-zA-Z0-9_-]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConvoHistory"
+          description: Detailed conversation session
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+        "401":
+          content:
+            application/json:
+              examples:
+                unauthorized:
+                  value:
+                    code: unauthorized
+                    message: Missing or invalid token
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              examples:
+                forbidden:
+                  value:
+                    code: forbidden
+                    message: Insufficient permissions to access this resource
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Forbidden - Insufficient permissions
+      security: []
+      summary: Get detailed conversation session
+      tags:
+      - Conversation
+      x-openapi-router-controller: openapi_server.controllers.conversation_controller
   /convo_history:
     delete:
       operationId: convo_history_delete
@@ -1011,7 +1198,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Family"
+              $ref: "#/components/schemas/FamilyInput"
         required: true
       responses:
         "201":
@@ -2359,6 +2546,17 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
       description: Unauthorized
+    Forbidden:
+      content:
+        application/json:
+          examples:
+            forbidden:
+              value:
+                code: forbidden
+                message: Insufficient permissions to access this resource
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Forbidden - Insufficient permissions
     NotFound:
       content:
         application/json:
@@ -2514,12 +2712,19 @@ components:
     AuthRequest:
       example:
         password: password
+        email: email
         username: username
         register: true
       properties:
         username:
+          description: Email address (for backend compatibility)
           format: email
           title: username
+          type: string
+        email:
+          description: Email address (frontend sends this)
+          format: email
+          title: email
           type: string
         password:
           title: password
@@ -2530,7 +2735,6 @@ components:
           type: boolean
       required:
       - password
-      - username
       title: AuthRequest
       type: object
     AuthResponse:
@@ -3572,70 +3776,171 @@ components:
       type: object
     Family:
       example:
-        familyId: familyId
-        maxStudents: 1
-        enrollmentDate: 2000-01-23
+        familyId: family_abc123
+        memberSince: 2000-01-23T04:56:07.000+00:00
+        address:
+          zipCode: "98101"
+          city: Seattle
+          street: 123 Main St
+          state: WA
+        created:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        familyName: Smith Family
         students:
-        - students
-        - students
-        - students
-        - students
-        - students
+        - student_001
+        - student_001
+        - student_001
+        - student_001
+        - student_001
+        modified:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        preferredPrograms:
+        - Junior Zookeeper
+        - Conservation Club
         parents:
-        - parents
-        - parents
-        - parents
-        - parents
+        - user_parent_001
+        - user_parent_001
         status: active
       properties:
         familyId:
           description: Unique family ID
-          pattern: "^[a-zA-Z0-9_-]+$"
+          example: family_abc123
           readOnly: true
           title: familyId
+          type: string
+        familyName:
+          description: Name of the family group
+          example: Smith Family
+          maxLength: 100
+          minLength: 1
+          title: familyName
           type: string
         parents:
           items:
             description: User ID of a parent
+            example: user_parent_001
             pattern: "^[a-zA-Z0-9_-]+$"
             type: string
-          maxItems: 4
           minItems: 1
           title: parents
           type: array
         students:
           items:
             description: User ID of a student
+            example: student_001
             pattern: "^[a-zA-Z0-9_-]+$"
             type: string
           maxItems: 8
           minItems: 1
           title: students
           type: array
-        maxStudents:
-          description: Maximum number of students allowed in family
-          maximum: 8
-          minimum: 1
-          title: maxStudents
-          type: integer
+        address:
+          $ref: "#/components/schemas/Family_address"
+        preferredPrograms:
+          description: Educational programs the family is interested in
+          example:
+          - Junior Zookeeper
+          - Conservation Club
+          items:
+            type: string
+          title: preferredPrograms
+          type: array
         status:
           default: active
           description: Family enrollment status
           enum:
           - active
           - inactive
-          - suspended
+          - pending
           title: status
           type: string
-        enrollmentDate:
-          description: Date family was enrolled (must not be future date)
-          format: date
-          title: enrollmentDate
+        memberSince:
+          description: When the family joined
+          format: date-time
+          readOnly: true
+          title: memberSince
           type: string
+        created:
+          $ref: "#/components/schemas/AuditStamp"
+        modified:
+          $ref: "#/components/schemas/AuditStamp"
       required:
+      - familyName
       - parents
       - students
       title: Family
+      type: object
+    FamilyInput:
+      example:
+        address:
+          zipCode: zipCode
+          city: city
+          street: street
+          state: state
+        familyName: familyName
+        students:
+        - students
+        - students
+        - students
+        - students
+        - students
+        preferredPrograms:
+        - preferredPrograms
+        - preferredPrograms
+        parents:
+        - parents
+        - parents
+        status: active
+      properties:
+        familyName:
+          description: Name of the family group
+          maxLength: 100
+          minLength: 1
+          title: familyName
+          type: string
+        parents:
+          items:
+            description: User ID of a parent
+            type: string
+          minItems: 1
+          title: parents
+          type: array
+        students:
+          items:
+            description: User ID of a student
+            type: string
+          maxItems: 8
+          minItems: 1
+          title: students
+          type: array
+        address:
+          $ref: "#/components/schemas/FamilyInput_address"
+        preferredPrograms:
+          items:
+            type: string
+          title: preferredPrograms
+          type: array
+        status:
+          default: active
+          enum:
+          - active
+          - inactive
+          - pending
+          title: status
+          type: string
+      required:
+      - familyName
+      - parents
+      - students
+      title: FamilyInput
       type: object
     UsageSummary:
       example:
@@ -3910,6 +4215,90 @@ components:
           timestamp: 2000-01-23T04:56:07.000+00:00
         reply: reply
       title: _convo_turn_post_200_response
+    _conversations_sessions_get_200_response_sessions_inner:
+      example:
+        duration: 6
+        summary: summary
+        messageCount: 0
+        startTime: 2000-01-23T04:56:07.000+00:00
+        lastMessageTime: 2000-01-23T04:56:07.000+00:00
+        sessionId: sessionId
+        animalName: animalName
+        userId: userId
+        animalId: animalId
+      properties:
+        sessionId:
+          title: sessionId
+          type: string
+        userId:
+          title: userId
+          type: string
+        animalId:
+          title: animalId
+          type: string
+        animalName:
+          title: animalName
+          type: string
+        startTime:
+          format: date-time
+          title: startTime
+          type: string
+        lastMessageTime:
+          format: date-time
+          title: lastMessageTime
+          type: string
+        messageCount:
+          title: messageCount
+          type: integer
+        duration:
+          description: Duration in seconds
+          title: duration
+          type: integer
+        summary:
+          description: Brief summary of conversation
+          title: summary
+          type: string
+      title: _conversations_sessions_get_200_response_sessions_inner
+      type: object
+    _conversations_sessions_get_200_response:
+      example:
+        sessions:
+        - duration: 6
+          summary: summary
+          messageCount: 0
+          startTime: 2000-01-23T04:56:07.000+00:00
+          lastMessageTime: 2000-01-23T04:56:07.000+00:00
+          sessionId: sessionId
+          animalName: animalName
+          userId: userId
+          animalId: animalId
+        - duration: 6
+          summary: summary
+          messageCount: 0
+          startTime: 2000-01-23T04:56:07.000+00:00
+          lastMessageTime: 2000-01-23T04:56:07.000+00:00
+          sessionId: sessionId
+          animalName: animalName
+          userId: userId
+          animalId: animalId
+        lastEvaluatedKey: lastEvaluatedKey
+        totalCount: 1
+      properties:
+        sessions:
+          items:
+            $ref: "#/components/schemas/_conversations_sessions_get_200_response_sessions_inner"
+          title: sessions
+          type: array
+        lastEvaluatedKey:
+          description: Cursor for next page
+          title: lastEvaluatedKey
+          type: string
+        totalCount:
+          description: Total number of sessions matching filters
+          title: totalCount
+          type: integer
+      title: _conversations_sessions_get_200_response
+      type: object
     _summarize_convo_post_request:
       properties:
         sessionId:
@@ -4286,6 +4675,65 @@ components:
           title: usd
           type: number
       title: BillingSummary_byService_inner
+      type: object
+    Family_address:
+      description: Family address information
+      example:
+        zipCode: "98101"
+        city: Seattle
+        street: 123 Main St
+        state: WA
+      properties:
+        street:
+          example: 123 Main St
+          maxLength: 200
+          title: street
+          type: string
+        city:
+          example: Seattle
+          maxLength: 100
+          title: city
+          type: string
+        state:
+          example: WA
+          maxLength: 2
+          minLength: 2
+          pattern: "^[A-Z]{2}$"
+          title: state
+          type: string
+        zipCode:
+          example: "98101"
+          pattern: "^\\d{5}(-\\d{4})?$"
+          title: zipCode
+          type: string
+      title: Family_address
+      type: object
+    FamilyInput_address:
+      example:
+        zipCode: zipCode
+        city: city
+        street: street
+        state: state
+      properties:
+        street:
+          maxLength: 200
+          title: street
+          type: string
+        city:
+          maxLength: 100
+          title: city
+          type: string
+        state:
+          maxLength: 2
+          minLength: 2
+          pattern: "^[A-Z]{2}$"
+          title: state
+          type: string
+        zipCode:
+          pattern: "^\\d{5}(-\\d{4})?$"
+          title: zipCode
+          type: string
+      title: FamilyInput_address
       type: object
     SystemHealth_checks_inner:
       example:

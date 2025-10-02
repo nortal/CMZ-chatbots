@@ -66,7 +66,7 @@ make generate-api-raw  # WARNING: Will break auth endpoints!
 
 **Solution**: ALWAYS use `make post-generate` which runs validation scripts that fix the routing
 
-### 🔧 ID Parameter Mismatch (Common Connexion Issue)
+### 🔧 ID Parameter Mismatch (Common Connexion Issue) - FIXED
 **The Problem**: Connexion automatically renames path parameters named `id` to `id_` to avoid shadowing Python's built-in `id()` function. This causes "unexpected keyword argument 'id_'" errors.
 
 **Symptoms**:
@@ -80,19 +80,26 @@ make generate-api-raw  # WARNING: Will break auth endpoints!
 3. Connexion renames it to `id_` at runtime to avoid Python builtin conflict
 4. Handler expects `id` but receives `id_` → TypeError
 
-**Permanent Solution**:
-All handler functions now accept BOTH `id` and `id_` parameters:
+**Solution Implemented (2025-09-19)**:
+All animal controller functions now accept BOTH `id` and `id_` parameters:
 ```python
-def handle_animal_id_get(id: str = None, id_: str = None, **kwargs):
-    # Handle both parameter names
-    animal_id = id if id is not None else id_
-    if animal_id is None:
-        return error_response("missing_parameter"), 400
-    # ... rest of handler
+def animal_id_put(id_=None, body=None, id=None, **kwargs):
+    # Handle both id and id_ parameters (Connexion renames id to id_)
+    actual_id = id_ if id_ is not None else id
+    if actual_id is None:
+        actual_id = kwargs.get('id') or kwargs.get('id_')
+    # ... rest of controller uses actual_id
 ```
 
-**Automated Fix**: Run `scripts/fix_id_parameter_mismatch.py` after code generation or include in `make post-generate`
-**Full Documentation**: See `ID-PARAMETER-MISMATCH-ADVICE.md` for complete solution patterns
+**Fixed Endpoints**:
+- ✅ GET /animal/{id} - `animal_id_get()`
+- ✅ PUT /animal/{id} - `animal_id_put()`
+- ✅ DELETE /animal/{id} - `animal_id_delete()`
+
+**Future Prevention**:
+- **Best Practice**: Use specific ID names in OpenAPI spec (`animalId`, `familyId`) instead of generic `id`
+- **Automated Fix**: Run `scripts/fix_id_parameter_mismatch.py` after code generation
+- **Full Documentation**: See `ID-PARAMETER-MISMATCH-ADVICE.md` for complete solution patterns and permanent fix recommendations
 
 ### 🎯 Body Parameter Handling Issues
 **The Problem**: OpenAPI controllers and handlers often have parameter order/naming mismatches causing body parameters to be lost or misplaced.
