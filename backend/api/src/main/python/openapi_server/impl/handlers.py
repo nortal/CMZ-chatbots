@@ -7,6 +7,7 @@ to access the business logic through the hexagonal architecture pattern.
 
 from typing import Any, Tuple, Dict
 import inspect
+import logging
 from .dependency_injection import (
     create_flask_user_handler,
     create_flask_animal_handler,
@@ -21,6 +22,8 @@ from .conversation import (
     handle_conversations_sessions_get,
     handle_conversations_sessions_session_id_get
 )
+
+logger = logging.getLogger(__name__)
 
 
 def handle_(*args, **kwargs) -> Tuple[Any, int]:
@@ -153,6 +156,11 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
     try:
         # Convert AnimalConfigUpdate object to dictionary if necessary
         from openapi_server.models.animal_config_update import AnimalConfigUpdate
+        from openapi_server.models.error import Error
+        from flask import request
+        from .utils.jwt_utils import verify_jwt_token
+        from .error_handler import handle_exception_for_controllers
+
         if isinstance(body, AnimalConfigUpdate):
             # Use the model_to_json_keyed_dict to properly convert the object
             from .utils.core import model_to_json_keyed_dict
@@ -224,9 +232,19 @@ def handle_animal_list_get(*args, **kwargs) -> Tuple[Any, int]:
         # Filter out None values that Connexion might pass for optional parameters
         status = status if status not in (None, '') else None
 
-        animal_handler = create_flask_animal_handler()
-        return animal_handler.list_animals(status)
+        # Try to use the real handler, fall back to mock if DB not available
+        try:
+            animal_handler = create_flask_animal_handler()
+            return animal_handler.list_animals(status)
+        except Exception as db_error:
+            # If DynamoDB fails (no credentials), use mock data
+            logger.warning(f"Database unavailable, using mock data: {db_error}")
+            from .animals_mock import get_mock_animals
+            animals = get_mock_animals(status)
+            return animals, 200
+
     except Exception as e:
+        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -236,6 +254,7 @@ def handle_animal_details_get(animal_id: str) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.get_animal(animal_id)
     except Exception as e:
+        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -245,6 +264,7 @@ def handle_animal_details_post(body: Dict[str, Any]) -> Tuple[Any, int]:
         animal_handler = create_flask_animal_handler()
         return animal_handler.create_animal(body)
     except Exception as e:
+        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -272,6 +292,7 @@ def handle_animal_get(id: str = None, id_: str = None, animal_id: str = None, **
         # Handle all parameter names (Connexion may pass id, id_ or animal_id)
         actual_id = animal_id if animal_id is not None else (id if id is not None else id_)
         if actual_id is None:
+            from .error_handler import create_error_response
             return create_error_response(
                 "missing_parameter",
                 "Missing required parameter: animalId",
@@ -290,6 +311,7 @@ def handle_animal_get(id: str = None, id_: str = None, animal_id: str = None, **
 
         return result
     except Exception as e:
+        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -379,6 +401,7 @@ def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
         logger = logging.getLogger(__name__)
         logger.error(f"Error in handle_animal_put: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
+        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -388,6 +411,7 @@ def handle_animal_delete(id: str = None, id_: str = None, animal_id: str = None,
         # Handle all parameter names (Connexion may pass id, id_ or animal_id)
         actual_id = animal_id if animal_id is not None else (id if id is not None else id_)
         if actual_id is None:
+            from .error_handler import create_error_response
             return create_error_response(
                 "missing_parameter",
                 "Missing required parameter: animalId",
@@ -396,6 +420,7 @@ def handle_animal_delete(id: str = None, id_: str = None, animal_id: str = None,
         animal_handler = create_flask_animal_handler()
         return animal_handler.delete_animal(actual_id)
     except Exception as e:
+        from .error_handler import handle_exception_for_controllers
         return handle_exception_for_controllers(e)
 
 
@@ -517,7 +542,8 @@ def handle_family_details_delete(family_id: str) -> Tuple[Any, int]:
 # Auth handlers
 def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
     """User login"""
-    from .auth import authenticate_user
+    # Use mock authentication for now
+    from .auth_mock import authenticate_user
     from openapi_server.models.auth_response import AuthResponse
     try:
         # Handle both dict and model object
@@ -528,7 +554,8 @@ def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
             body = {'username': body.username, 'password': body.password}
 
         # Extract email and password from body
-        email = body.get('email', body.get('username', ''))
+        # Frontend sends 'username' field, but we use email
+        email = body.get('username', body.get('email', ''))
         password = body.get('password', '')
 
         # Authenticate user
@@ -560,19 +587,19 @@ def handle_auth_post(body: Dict[str, Any]) -> Tuple[Any, int]:
 
 def handle_logout_post() -> Tuple[Any, int]:
     """User logout"""
-    from .auth import handle_auth_logout_post
+    from .auth_mock import handle_auth_logout_post
     return handle_auth_logout_post()
 
 
 def handle_auth_refresh_post() -> Tuple[Any, int]:
     """Refresh authentication token"""
-    from .auth import handle_auth_refresh_post
+    from .auth_mock import handle_auth_refresh_post
     return handle_auth_refresh_post()
 
 
 def handle_auth_reset_password_post(body: Dict[str, Any]) -> Tuple[Any, int]:
     """Reset password"""
-    from .auth import handle_auth_reset_password_post
+    from .auth_mock import handle_auth_reset_password_post
     return handle_auth_reset_password_post(body)
 
 

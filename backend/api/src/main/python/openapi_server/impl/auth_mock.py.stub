@@ -1,0 +1,139 @@
+"""
+Mock Authentication Module for Development
+Provides simple authentication with test users
+"""
+
+import logging
+from typing import Dict, Any, Tuple
+from .utils.jwt_utils import generate_jwt_token
+
+logger = logging.getLogger(__name__)
+
+# Mock users for development
+MOCK_USERS = {
+    "test@cmz.org": {
+        "password": "testpass123",
+        "user_id": "user_001",
+        "email": "test@cmz.org",
+        "displayName": "Test User",
+        "role": "member",
+        "userType": "member"
+    },
+    "admin@cmz.org": {
+        "password": "admin123",
+        "user_id": "admin_001",
+        "email": "admin@cmz.org",
+        "displayName": "Admin User",
+        "role": "admin",
+        "userType": "admin"
+    },
+    "parent1@test.cmz.org": {
+        "password": "testpass123",
+        "user_id": "parent_001",
+        "email": "parent1@test.cmz.org",
+        "displayName": "Test Parent One",
+        "role": "parent",
+        "userType": "parent"
+    },
+    "student1@test.cmz.org": {
+        "password": "testpass123",
+        "user_id": "student_001",
+        "email": "student1@test.cmz.org",
+        "displayName": "Test Student One",
+        "role": "student",
+        "userType": "student"
+    },
+    "user_parent_001@cmz.org": {
+        "password": "testpass123",
+        "user_id": "user_parent_001",
+        "email": "user_parent_001@cmz.org",
+        "displayName": "User Parent 001",
+        "role": "parent",
+        "userType": "parent"
+    }
+}
+
+
+def authenticate_user(email: str, password: str) -> Dict[str, Any]:
+    """
+    Authenticate user with mock data
+
+    Args:
+        email: User email
+        password: User password
+
+    Returns:
+        Dictionary with user data and JWT token
+
+    Raises:
+        Exception: If authentication fails
+    """
+    logger.info(f"Attempting mock authentication for email: {email}")
+
+    # Check if user exists in mock data
+    if email not in MOCK_USERS:
+        logger.warning(f"User not found: {email}")
+        raise Exception("Invalid email or password")
+
+    user_data = MOCK_USERS[email]
+
+    # Check password
+    if user_data["password"] != password:
+        logger.warning(f"Invalid password for user: {email}")
+        raise Exception("Invalid email or password")
+
+    # Generate JWT token
+    token_data = {
+        "user_id": user_data["user_id"],
+        "email": user_data["email"],
+        "role": user_data["role"],
+        "displayName": user_data.get("displayName", ""),
+        "userType": user_data.get("userType", "member")
+    }
+
+    token = generate_jwt_token(token_data)
+
+    # Return authentication result
+    result = {
+        "token": token,
+        "user": {
+            "userId": user_data["user_id"],
+            "email": user_data["email"],
+            "displayName": user_data.get("displayName", ""),
+            "role": user_data["role"],
+            "userType": user_data.get("userType", "member"),
+            "familyId": None,
+            "softDelete": False
+        }
+    }
+
+    logger.info(f"Mock authentication successful for: {email}")
+    return result
+
+
+def handle_auth_logout_post() -> Tuple[Any, int]:
+    """Mock logout handler"""
+    # Just return success for mock logout
+    return None, 204
+
+
+def handle_auth_refresh_post() -> Tuple[Any, int]:
+    """Mock token refresh handler"""
+    from openapi_server.models.error import Error
+    error = Error(
+        code="not_implemented",
+        message="Token refresh not implemented in mock mode",
+        details={}
+    )
+    return error.to_dict(), 501
+
+
+def handle_auth_reset_password_post(body: Dict[str, Any]) -> Tuple[Any, int]:
+    """Mock password reset handler"""
+    from openapi_server.models.error import Error
+    error = Error(
+        code="not_implemented",
+        message="Password reset not implemented in mock mode",
+        details={}
+    )
+    return error.to_dict(), 501

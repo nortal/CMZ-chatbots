@@ -1,8 +1,9 @@
 """Flask handlers for animal operations using hexagonal architecture"""
 from typing import Tuple, Any, List
+from openapi_server.models.error import Error
 from ...domain.animal_service import AnimalService
 from ...domain.common.exceptions import (
-    NotFoundError, ConflictError, ValidationError, 
+    NotFoundError, ConflictError, ValidationError,
     BusinessRuleError, InvalidStateError
 )
 from .serializers import FlaskAnimalSerializer, FlaskAnimalConfigSerializer

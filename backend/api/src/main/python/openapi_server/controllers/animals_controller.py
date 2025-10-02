@@ -621,3 +621,15 @@ def animal_post(body):  # noqa: E501
                 details={"controller": "AnimalsController", "operation": "animal_post"}
             )
             return error_obj, 500
+
+# Alias for OpenAPI spec compatibility
+animal_id_delete = animal_delete
+animal_id_get = animal_get
+animal_id_put = animal_put
+
+
+# Alias functions for operationId mismatches  
+animal_id_get = animal_get
+animal_id_put = animal_put
+animal_id_delete = animal_delete
+

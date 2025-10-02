@@ -12,6 +12,10 @@ def main():
                 arguments={'title': 'CMZ API'},
                 pythonic_params=True)
 
+    # Add CORS support
+    from flask_cors import CORS
+    CORS(app.app, origins=['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'])
+
     app.run(port=8080)
 
 
