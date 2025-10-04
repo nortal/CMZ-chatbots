@@ -14,15 +14,15 @@ class FamilyInput(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, family_name=None, parents=None, students=None, address=None, preferred_programs=None, status='active'):  # noqa: E501
+    def __init__(self, family_name=None, parent_ids=None, student_ids=None, address=None, preferred_programs=None, status='active'):  # noqa: E501
         """FamilyInput - a model defined in OpenAPI
 
         :param family_name: The family_name of this FamilyInput.  # noqa: E501
         :type family_name: str
-        :param parents: The parents of this FamilyInput.  # noqa: E501
-        :type parents: List[str]
-        :param students: The students of this FamilyInput.  # noqa: E501
-        :type students: List[str]
+        :param parent_ids: The parent_ids of this FamilyInput.  # noqa: E501
+        :type parent_ids: List[str]
+        :param student_ids: The student_ids of this FamilyInput.  # noqa: E501
+        :type student_ids: List[str]
         :param address: The address of this FamilyInput.  # noqa: E501
         :type address: FamilyInputAddress
         :param preferred_programs: The preferred_programs of this FamilyInput.  # noqa: E501
@@ -32,8 +32,8 @@ class FamilyInput(Model):
         """
         self.openapi_types = {
             'family_name': str,
-            'parents': List[str],
-            'students': List[str],
+            'parent_ids': List[str],
+            'student_ids': List[str],
             'address': FamilyInputAddress,
             'preferred_programs': List[str],
             'status': str
@@ -41,16 +41,16 @@ class FamilyInput(Model):
 
         self.attribute_map = {
             'family_name': 'familyName',
-            'parents': 'parents',
-            'students': 'students',
+            'parent_ids': 'parentIds',
+            'student_ids': 'studentIds',
             'address': 'address',
             'preferred_programs': 'preferredPrograms',
             'status': 'status'
         }
 
         self._family_name = family_name
-        self._parents = parents
-        self._students = students
+        self._parent_ids = parent_ids
+        self._student_ids = student_ids
         self._address = address
         self._preferred_programs = preferred_programs
         self._status = status
@@ -96,56 +96,56 @@ class FamilyInput(Model):
         self._family_name = family_name
 
     @property
-    def parents(self) -> List[str]:
-        """Gets the parents of this FamilyInput.
+    def parent_ids(self) -> List[str]:
+        """Gets the parent_ids of this FamilyInput.
 
 
-        :return: The parents of this FamilyInput.
+        :return: The parent_ids of this FamilyInput.
         :rtype: List[str]
         """
-        return self._parents
+        return self._parent_ids
 
-    @parents.setter
-    def parents(self, parents: List[str]):
-        """Sets the parents of this FamilyInput.
+    @parent_ids.setter
+    def parent_ids(self, parent_ids: List[str]):
+        """Sets the parent_ids of this FamilyInput.
 
 
-        :param parents: The parents of this FamilyInput.
-        :type parents: List[str]
+        :param parent_ids: The parent_ids of this FamilyInput.
+        :type parent_ids: List[str]
         """
-        if parents is None:
-            raise ValueError("Invalid value for `parents`, must not be `None`")  # noqa: E501
-        if parents is not None and len(parents) < 1:
-            raise ValueError("Invalid value for `parents`, number of items must be greater than or equal to `1`")  # noqa: E501
+        if parent_ids is None:
+            raise ValueError("Invalid value for `parent_ids`, must not be `None`")  # noqa: E501
+        if parent_ids is not None and len(parent_ids) < 1:
+            raise ValueError("Invalid value for `parent_ids`, number of items must be greater than or equal to `1`")  # noqa: E501
 
-        self._parents = parents
+        self._parent_ids = parent_ids
 
     @property
-    def students(self) -> List[str]:
-        """Gets the students of this FamilyInput.
+    def student_ids(self) -> List[str]:
+        """Gets the student_ids of this FamilyInput.
 
 
-        :return: The students of this FamilyInput.
+        :return: The student_ids of this FamilyInput.
         :rtype: List[str]
         """
-        return self._students
+        return self._student_ids
 
-    @students.setter
-    def students(self, students: List[str]):
-        """Sets the students of this FamilyInput.
+    @student_ids.setter
+    def student_ids(self, student_ids: List[str]):
+        """Sets the student_ids of this FamilyInput.
 
 
-        :param students: The students of this FamilyInput.
-        :type students: List[str]
+        :param student_ids: The student_ids of this FamilyInput.
+        :type student_ids: List[str]
         """
-        if students is None:
-            raise ValueError("Invalid value for `students`, must not be `None`")  # noqa: E501
-        if students is not None and len(students) > 8:
-            raise ValueError("Invalid value for `students`, number of items must be less than or equal to `8`")  # noqa: E501
-        if students is not None and len(students) < 1:
-            raise ValueError("Invalid value for `students`, number of items must be greater than or equal to `1`")  # noqa: E501
+        if student_ids is None:
+            raise ValueError("Invalid value for `student_ids`, must not be `None`")  # noqa: E501
+        if student_ids is not None and len(student_ids) > 8:
+            raise ValueError("Invalid value for `student_ids`, number of items must be less than or equal to `8`")  # noqa: E501
+        if student_ids is not None and len(student_ids) < 1:
+            raise ValueError("Invalid value for `student_ids`, number of items must be greater than or equal to `1`")  # noqa: E501
 
-        self._students = students
+        self._student_ids = student_ids
 
     @property
     def address(self) -> FamilyInputAddress:
