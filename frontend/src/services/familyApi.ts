@@ -100,13 +100,13 @@ class FamilyApiService {
       });
 
       if (!response.ok) {
-        console.warn(`Failed to fetch user ${userId}: ${response.statusText}`);
+        console.warn('Failed to fetch user:', userId, response.statusText);
         return null;
       }
 
       return await response.json();
     } catch (error) {
-      console.error(`Error fetching user ${userId}:`, error);
+      console.error('Error fetching user:', userId, error);
       return null;
     }
   }
