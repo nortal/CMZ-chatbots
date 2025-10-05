@@ -26,8 +26,6 @@ from .conversation import (
 )
 from .error_handler import create_error_response, handle_exception_for_controllers
 from .utils.jwt_utils import verify_jwt_token
-from .utils.float_validation import normalize_animal_config
-from .family import family_list_get, family_details_post, family_details_get, family_details_patch, family_details_delete
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +77,6 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'auth_refresh_post': handle_auth_refresh_post,
             'auth_reset_password_post': handle_auth_reset_password_post,
             'health_get': handle_health_get,
-            'system_health_get': handle_system_health_get,
             'system_status_get': handle_system_status_get,
             'homepage_get': handle_homepage_get,
             'admin_dashboard_get': handle_admin_dashboard_get,
@@ -587,7 +584,7 @@ def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
         email = body.get('username', body.get('email', ''))
         password = body.get('password', '')
 
-        # Debug logging
+        # Debug logging (password redacted for security)
         print(f"DEBUG: Auth attempt - body keys: {body.keys()}, email: {email}, has_password: {bool(password)}")
 
         # Authenticate user
