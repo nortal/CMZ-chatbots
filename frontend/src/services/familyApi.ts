@@ -165,8 +165,8 @@ class FamilyApiService {
       // Transform the data to match backend API structure
       const payload = {
         familyName: familyData.familyName,
-        parents: familyData.parents.map(p => p.userId),  // Backend expects array of user IDs
-        students: familyData.children.map(c => c.userId), // Backend expects 'students' not 'children'
+        parentIds: familyData.parents.map(p => p.userId),  // Backend expects parentIds array
+        studentIds: familyData.children.map(c => c.userId), // Backend expects studentIds array
         address: {
           street: familyData.address.streetAddress,  // Backend expects 'street' not 'streetAddress'
           city: familyData.address.city,
@@ -176,8 +176,8 @@ class FamilyApiService {
       };
 
       console.log('Sending to backend:', payload);
-      console.log('Parent IDs being sent:', payload.parents);
-      console.log('Student IDs being sent:', payload.students);
+      console.log('Parent IDs being sent:', payload.parentIds);
+      console.log('Student IDs being sent:', payload.studentIds);
 
       const response = await fetch(`${API_BASE_URL}/family`, {
         method: 'POST',
