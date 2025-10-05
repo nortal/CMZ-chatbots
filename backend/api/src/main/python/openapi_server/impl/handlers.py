@@ -584,8 +584,9 @@ def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
         email = body.get('username', body.get('email', ''))
         password = body.get('password', '')
 
-        # Debug logging (password redacted for security)
-        print(f"DEBUG: Auth attempt - body keys: {body.keys()}, email: {email}, has_password: {bool(password)}")
+        # Debug logging (password completely omitted for security)
+        has_password = bool(password)
+        print(f"DEBUG: Auth attempt - body keys: {body.keys()}, email: {email}, has_password: {has_password}")
 
         # Authenticate user
         result = authenticate_user(email, password)

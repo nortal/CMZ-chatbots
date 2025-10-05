@@ -121,9 +121,10 @@ def handle_convo_history_delete(*args, **kwargs) -> Tuple[Any, int]:
     session_id = kwargs.get('session_id') or kwargs.get('id')  # Handle both parameter names
     user_id = kwargs.get('user_id')
     animal_id = kwargs.get('animal_id')
-    older_than = kwargs.get('older_than')
     confirm_gdpr = kwargs.get('confirm_gdpr')
-    audit_reason = kwargs.get('audit_reason')
+    # Parameters reserved for future implementation
+    _ = kwargs.get('older_than')
+    _ = kwargs.get('audit_reason')
 
     # Validate GDPR confirmation for user data deletion
     if user_id and not confirm_gdpr:
@@ -136,22 +137,13 @@ def handle_convo_history_delete(*args, **kwargs) -> Tuple[Any, int]:
 
     # For now, return success
     # Later will implement actual DynamoDB deletion with try-except
-    deleted_count = 0
-
+    # Count tracking for future audit logging
     if session_id:
-        # Delete specific session
-        deleted_count = 1
+        pass  # Delete specific session
     elif user_id:
-        # Delete all sessions for user (GDPR right to erasure)
-        deleted_count = 5  # Mock count
+        pass  # Delete all sessions for user (GDPR right to erasure)
     elif animal_id:
-        # Delete all sessions for animal
-        deleted_count = 3  # Mock count
-
-    # Log audit trail
-    if audit_reason:
-        # Would log to audit table in production
-        pass
+        pass  # Delete all sessions for animal
 
     # Return 204 No Content on success
     return None, 204
@@ -166,10 +158,11 @@ def handle_convo_history_get(*args, **kwargs) -> Tuple[Any, int]:
     animal_id = kwargs.get('animal_id')
     user_id = kwargs.get('user_id')
     session_id = kwargs.get('session_id')
-    _start_date = kwargs.get('start_date')  # Reserved for future use
-    _end_date = kwargs.get('end_date')  # Reserved for future use
-    _limit = kwargs.get('limit', 100)  # Reserved for future pagination
-    _offset = kwargs.get('offset', 0)  # Reserved for future pagination
+    # Parameters reserved for future implementation
+    _ = kwargs.get('start_date')
+    _ = kwargs.get('end_date')
+    _ = kwargs.get('limit', 100)
+    _ = kwargs.get('offset', 0)
     include_metadata = kwargs.get('include_metadata', False)
 
     try:
