@@ -23,11 +23,22 @@ export interface FamilyFormData {
   };
 }
 
+export interface User {
+  userId: string;
+  displayName: string;
+  email: string;
+  role: string;
+  phone?: string;
+  familyIds?: string[];
+}
+
 export interface Family {
   familyId: string;
   familyName: string;
   parentIds: string[];
   studentIds: string[];
+  parents?: User[];
+  students?: User[];
   address?: {
     streetAddress: string;
     city: string;
@@ -81,6 +92,70 @@ class FamilyApiService {
     return headers;
   }
 
+  private async fetchUser(userId: string): Promise<User | null> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        console.warn('Failed to fetch user:', userId, response.statusText);
+        return null;
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching user:', userId, error);
+      return null;
+    }
+  }
+
+  private async batchGetUsers(userIds: string[]): Promise<Record<string, User>> {
+    console.log('FamilyAPI - Batch fetching users:', userIds);
+    const userMap: Record<string, User> = {};
+
+    // Fetch all users in parallel
+    const userPromises = userIds.map(userId => this.fetchUser(userId));
+    const users = await Promise.all(userPromises);
+
+    // Build user map
+    users.forEach((user, index) => {
+      if (user) {
+        userMap[userIds[index]] = user;
+      }
+    });
+
+    console.log('FamilyAPI - Fetched users:', Object.keys(userMap).length, 'out of', userIds.length);
+    return userMap;
+  }
+
+  private async populateFamilyUsers(families: Family[]): Promise<Family[]> {
+    // Extract all unique user IDs
+    const allUserIds = families.flatMap(f => [...f.parentIds, ...f.studentIds]);
+    const uniqueUserIds = [...new Set(allUserIds)];
+
+    if (uniqueUserIds.length === 0) {
+      return families;
+    }
+
+    // Batch fetch all users
+    const userMap = await this.batchGetUsers(uniqueUserIds);
+
+    // Populate each family with user details
+    families.forEach(family => {
+      family.parents = family.parentIds
+        .map(id => userMap[id])
+        .filter((user): user is User => user !== undefined);
+
+      family.students = family.studentIds
+        .map(id => userMap[id])
+        .filter((user): user is User => user !== undefined);
+    });
+
+    return families;
+  }
+
   async createFamily(familyData: FamilyFormData): Promise<Family> {
     try {
       console.log('FamilyAPI received data:', familyData);
@@ -90,8 +165,8 @@ class FamilyApiService {
       // Transform the data to match backend API structure
       const payload = {
         familyName: familyData.familyName,
-        parents: familyData.parents.map(p => p.userId),  // Backend expects array of user IDs
-        students: familyData.children.map(c => c.userId), // Backend expects 'students' not 'children'
+        parentIds: familyData.parents.map(p => p.userId),  // Backend expects parentIds array
+        studentIds: familyData.children.map(c => c.userId), // Backend expects studentIds array
         address: {
           street: familyData.address.streetAddress,  // Backend expects 'street' not 'streetAddress'
           city: familyData.address.city,
@@ -101,8 +176,8 @@ class FamilyApiService {
       };
 
       console.log('Sending to backend:', payload);
-      console.log('Parent IDs being sent:', payload.parents);
-      console.log('Student IDs being sent:', payload.students);
+      console.log('Parent IDs being sent:', payload.parentIds);
+      console.log('Student IDs being sent:', payload.studentIds);
 
       const response = await fetch(`${API_BASE_URL}/family`, {
         method: 'POST',
@@ -135,8 +210,16 @@ class FamilyApiService {
 
       const data = await response.json();
       console.log('FamilyAPI - Raw response from /family:', data);
+
       // The API returns an array directly, not wrapped in 'items'
-      return Array.isArray(data) ? data : (data.items || []);
+      const families = Array.isArray(data) ? data : (data.items || []);
+
+      // Populate user details for all families
+      console.log('FamilyAPI - Populating user details for', families.length, 'families');
+      const populatedFamilies = await this.populateFamilyUsers(families);
+      console.log('FamilyAPI - User population complete');
+
+      return populatedFamilies;
     } catch (error) {
       console.error('Error fetching families:', error);
       throw error;
@@ -154,7 +237,11 @@ class FamilyApiService {
         throw new Error(`Failed to fetch family: ${response.statusText}`);
       }
 
-      return await response.json();
+      const family = await response.json();
+
+      // Populate user details for single family
+      const populated = await this.populateFamilyUsers([family]);
+      return populated[0];
     } catch (error) {
       console.error('Error fetching family:', error);
       throw error;
