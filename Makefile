@@ -310,6 +310,8 @@ fix-common: ## Fix common development issues
 validate-api: ## Validate API generation and frontend-backend contract
 	@echo "🔍 Running comprehensive API validation..."
 	@python3 scripts/post_generation_validation.py
+	@echo "🔧 Fixing recurring issues (CORS, AWS deps, JWT, email extraction)..."
+	@python3 scripts/fix_recurring_issues.py $(SRC_APP_DIR)
 	@echo "🔧 Fixing controller signatures if needed..."
 	@python3 scripts/fix_controller_signatures.py
 	@echo "🏠 Applying Family Management fixes..."
