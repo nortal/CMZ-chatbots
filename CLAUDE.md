@@ -34,11 +34,23 @@ make generate-api
 # - Frontend-backend endpoint mismatches
 # - Hours of debugging "do some magic!" placeholders
 # - AUTH ENDPOINT REGRESSIONS (previously broke every time!)
+# - AWS DEPENDENCY LOSS (boto3/pynamodb automatically restored)
 
 # Note: make post-generate still works but is now redundant
 # If you need raw generation without fixes (NOT RECOMMENDED):
 make generate-api-raw  # WARNING: Will break auth endpoints!
 ```
+
+**Post-Generation Fixes Applied Automatically** (as of 2025-10-07):
+- ✅ **CORS Configuration**: Flask-CORS enabled for cross-origin frontend access (localhost:3000, localhost:3001)
+- ✅ **AWS Dependencies**: boto3, pynamodb automatically restored to requirements.txt
+- ✅ **JWT Token Generation**: Uses centralized jwt_utils.py with all required fields (user_id, userId, user_type, email, role)
+- ✅ **Email Extraction**: Auth handler properly extracts email from both 'username' and 'email' fields (handles null values)
+- ✅ **Auth Controller Routing**: Custom templates preserve handler connections
+- ✅ **Implementation Modules**: Automatically connected to controllers
+- ✅ All fixes are idempotent (safe to run multiple times)
+
+**⚠️ RECURRING ISSUES FIX**: If you experience CORS errors or frontend login failures after `make generate-api`, see `RECURRING-ISSUES-FIX.md` for root cause analysis and permanent solution. The `fix_recurring_issues.py` script runs automatically during `make generate-api` to prevent these issues.
 
 **Why validation is CRITICAL:**
 - OpenAPI Generator **destroys implementations** without warning
@@ -53,18 +65,34 @@ make generate-api-raw  # WARNING: Will break auth endpoints!
 - `501 Not Implemented` responses
 - Frontend getting 404s for valid endpoints
 - Auth endpoint returning 404 or "not implemented"
+- Authentication returns 401 "Invalid email or password" with correct credentials
 
-### 🔐 Auth Endpoint Architecture (Why It Keeps Breaking)
-**The Problem**: Every `make generate-api` overwrites auth_controller.py with broken routing
-**Location of Working Code**:
-- `impl/handlers.py` - Has correct routing: `'auth_post': handle_login_post`
-- `impl/auth.py` - Has working authentication with mock users
-- `impl/utils/jwt_utils.py` - JWT token generation/validation
-- `impl/utils/auth_decorator.py` - Authentication decorator for endpoints
+### 🔐 Authentication Issues
 
-**The Template Issue**: Even with custom templates in `backend/api/templates/python-flask/`, the generated controller still uses generic routing that fails to find auth handlers.
+⚠️ **CRITICAL**: Authentication breaks after EVERY OpenAPI regeneration!
 
-**Solution**: ALWAYS use `make post-generate` which runs validation scripts that fix the routing
+**If authentication stops working, see `AUTH-ADVICE.md` for complete troubleshooting guide.**
+
+**Quick Fix**:
+The generated `auth_controller.py` expects `impl/auth.py` to have a `handle_()` function. After regeneration, verify this function exists:
+
+```bash
+grep -q "def handle_" backend/api/src/main/python/openapi_server/impl/auth.py || echo "⚠️ Auth broken!"
+```
+
+If missing, add to `impl/auth.py`:
+```python
+def handle_(*args, **kwargs) -> Tuple[Any, int]:
+    """Route auth_post to login handler"""
+    return handlers.handle_login_post(*args, **kwargs)
+```
+
+**Full Documentation**: `AUTH-ADVICE.md` contains:
+- Complete authentication architecture
+- Step-by-step troubleshooting
+- Test user credentials
+- Common errors and solutions
+- Post-regeneration validation steps
 
 ### 🔧 ID Parameter Mismatch (Common Connexion Issue) - FIXED
 **The Problem**: Connexion automatically renames path parameters named `id` to `id_` to avoid shadowing Python's built-in `id()` function. This causes "unexpected keyword argument 'id_'" errors.
