@@ -17,8 +17,7 @@ lsof -i :3000 -i :3001 | grep LISTEN
 ### 2. Verify Backend API Status
 ```bash
 # Check if backend API is running
-curl -f http://localhost:8080/health || echo "Backend API not responding"
-curl -f http://localhost:8080/api/health || echo "Try /api/health endpoint"
+curl -f http://localhost:8080/system_health || echo "Backend API not responding"
 
 # Alternative: Check for Flask/Python server
 lsof -i :8080 | grep LISTEN
@@ -56,7 +55,7 @@ source .venv/openapi-venv/bin/activate
 python -m openapi_server
 
 # Verify with health check
-curl http://localhost:8080/health
+curl http://localhost:8080/system_health
 ```
 
 ### Container-Based Verification
@@ -139,7 +138,7 @@ cd backend/api/src/main/python && pip install -r requirements.txt
 
 ### ✅ System Status
 - [ ] Frontend accessible (http://localhost:3000 or 3001)
-- [ ] Backend API responding (http://localhost:8080/health)
+- [ ] Backend API responding (http://localhost:8080/system_health)
 - [ ] AWS credentials configured (aws sts get-caller-identity)
 - [ ] DynamoDB tables accessible (aws dynamodb list-tables)
 
@@ -226,7 +225,7 @@ make logs-api
 
 # Test specific API endpoints
 curl -v http://localhost:8080/animals
-curl -v http://localhost:8080/health
+curl -v http://localhost:8080/system_health
 ```
 
 ### Debug Authentication Issues
@@ -258,7 +257,7 @@ curl -X POST http://localhost:8080/auth/login \
 ```bash
 # One-liner to verify everything is working
 curl -f http://localhost:3000 && \
-curl -f http://localhost:8080/health && \
+curl -f http://localhost:8080/system_health && \
 aws dynamodb list-tables --region us-west-2 --profile cmz >/dev/null && \
 echo "✅ System ready for testing" || \
 echo "❌ System not ready - check components above"

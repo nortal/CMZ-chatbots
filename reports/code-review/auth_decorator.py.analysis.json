@@ -1,0 +1,24 @@
+{
+  "file": "backend/api/src/main/python/openapi_server/impl/utils/auth_decorator.py",
+  "language": "python",
+  "summary": "The code provides authentication decorators for protecting API endpoints. It handles authentication, role-based access control, and user context management.",
+  "issues": [
+    {
+      "severity": "MEDIUM",
+      "category": "security",
+      "line": 42,
+      "description": "Hardcoded error messages may expose implementation details.",
+      "recommendation": "Use generic error messages without revealing internal details.",
+      "example": "message='Authentication required'"
+    }
+  ],
+  "strengths": [
+    "Well-structured code",
+    "Clear documentation"
+  ],
+  "metrics": {
+    "lines_of_code": 65,
+    "complexity_estimate": "low",
+    "test_coverage": "unknown"
+  }
+}

@@ -284,7 +284,7 @@ aws dynamodb get-item \
 ### Common Issues and Solutions
 ```bash
 # Backend not running
-if ! curl -s http://localhost:8080/health > /dev/null; then
+if ! curl -s http://localhost:8080/system_health > /dev/null; then
   echo "Starting backend..."
   make run-api &
   sleep 5

@@ -44,31 +44,31 @@ def handle_animal_details_get(*args, **kwargs) -> Tuple[Any, int]:
     return not_implemented_error("animal_details_get")
 
 
-def handle_animal_delete(*args, **kwargs) -> Tuple[Any, int]:
+def handle_animal_id_delete(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for animal_delete
-    Routes to the actual implementation in handlers.py
+    Implementation handler for animal_id_delete
+
+    TODO: Implement business logic for this operation
     """
-    from . import handlers
-    return handlers.handle_animal_delete(*args, **kwargs)
+    return not_implemented_error("animal_id_delete")
 
 
-def handle_animal_get(*args, **kwargs) -> Tuple[Any, int]:
+def handle_animal_id_get(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for animal_get
-    Routes to the actual implementation in handlers.py
+    Implementation handler for animal_id_get
+
+    TODO: Implement business logic for this operation
     """
-    from . import handlers
-    return handlers.handle_animal_get(*args, **kwargs)
+    return not_implemented_error("animal_id_get")
 
 
-def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
+def handle_animal_id_put(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for animal_put
-    Routes to the actual implementation in handlers.py
+    Implementation handler for animal_id_put
+
+    TODO: Implement business logic for this operation
     """
-    from . import handlers
-    return handlers.handle_animal_put(*args, **kwargs)
+    return not_implemented_error("animal_id_put")
 
 
 def handle_animal_list_get(*args, **kwargs) -> Tuple[Any, int]:
@@ -87,4 +87,51 @@ def handle_animal_post(*args, **kwargs) -> Tuple[Any, int]:
     TODO: Implement business logic for this operation
     """
     return not_implemented_error("animal_post")
+
+
+# Auto-generated handler functions
+
+def handle_animal_delete(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for animal_delete
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation animal_delete not yet implemented",
+        details={"operation": "animal_delete", "handler": "handle_animal_delete"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_animal_get(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for animal_get
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation animal_get not yet implemented",
+        details={"operation": "animal_get", "handler": "handle_animal_get"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for animal_put
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation animal_put not yet implemented",
+        details={"operation": "animal_put", "handler": "handle_animal_put"}
+    )
+    return error_obj.to_dict(), 501
 

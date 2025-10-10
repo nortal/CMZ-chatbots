@@ -17,7 +17,7 @@ def not_implemented_error(operation_name: str) -> Tuple[Dict[str, Any], int]:
     return error_obj.to_dict(), 501
 
 
-def handle_admin_get(*args, **kwargs) -> Tuple[Any, int]:
+def admin_dashboard_get(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for admin_get
 
@@ -26,7 +26,7 @@ def handle_admin_get(*args, **kwargs) -> Tuple[Any, int]:
     return not_implemented_error("admin_get")
 
 
-def handle_member_get(*args, **kwargs) -> Tuple[Any, int]:
+def member_dashboard_get(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for member_get
 
@@ -35,7 +35,7 @@ def handle_member_get(*args, **kwargs) -> Tuple[Any, int]:
     return not_implemented_error("member_get")
 
 
-def handle_root_get(*args, **kwargs) -> Tuple[Any, int]:
+def homepage_get(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for root_get
 

@@ -16,6 +16,8 @@ tags:
 - name: Users
 - name: Conversation
 - name: Animals
+- name: Guardrails
+  description: Dynamic guardrails management for ChatGPT safety
 - name: Knowledge
 - name: Analytics
 - name: Admin
@@ -1430,6 +1432,271 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/ValidationError'
+
+  # Guardrails Management Endpoints
+  /guardrails:
+    get:
+      tags:
+      - Guardrails
+      summary: List all guardrails
+      operationId: listGuardrails
+      security: []
+      parameters:
+      - in: query
+        name: category
+        required: false
+        schema:
+          type: string
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+        description: Filter by category
+      - in: query
+        name: isActive
+        required: false
+        schema:
+          type: boolean
+        description: Filter by active status
+      - in: query
+        name: isGlobal
+        required: false
+        schema:
+          type: boolean
+        description: Filter by global status
+      responses:
+        '200':
+          description: List of guardrails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Guardrail'
+    post:
+      tags:
+      - Guardrails
+      summary: Create new guardrail
+      operationId: createGuardrail
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardrailInput'
+      responses:
+        '201':
+          description: Guardrail created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardrail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /guardrails/{guardrailId}:
+    get:
+      tags:
+      - Guardrails
+      summary: Get specific guardrail
+      operationId: getGuardrail
+      security: []
+      parameters:
+      - in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Guardrail details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardrail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+      - Guardrails
+      summary: Update guardrail
+      operationId: updateGuardrail
+      security: []
+      parameters:
+      - in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardrailUpdate'
+      responses:
+        '200':
+          description: Guardrail updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardrail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+      - Guardrails
+      summary: Delete guardrail (soft delete)
+      operationId: deleteGuardrail
+      security: []
+      parameters:
+      - in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Guardrail deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /guardrails/templates:
+    get:
+      tags:
+      - Guardrails
+      summary: Get pre-built guardrail templates
+      operationId: getGuardrailTemplates
+      security: []
+      responses:
+        '200':
+          description: List of guardrail templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GuardrailTemplate'
+
+  /guardrails/apply-template:
+    post:
+      tags:
+      - Guardrails
+      summary: Apply template to animal
+      operationId: applyGuardrailTemplate
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - templateId
+              - animalId
+              properties:
+                templateId:
+                  type: string
+                  description: ID of the template to apply
+                animalId:
+                  type: string
+                  description: ID of the animal to apply template to
+      responses:
+        '200':
+          description: Template applied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guardrailsApplied:
+                    type: integer
+                    description: Number of guardrails applied
+                  animalId:
+                    type: string
+                    description: Animal ID that received the guardrails
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /animal/{animalId}/guardrails/effective:
+    get:
+      tags:
+      - Guardrails
+      summary: Get effective guardrails for an animal
+      operationId: getAnimalEffectiveGuardrails
+      security: []
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of effective guardrails ordered by priority
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Guardrail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /animal/{animalId}/system-prompt:
+    get:
+      tags:
+      - Guardrails
+      summary: Get system prompt with guardrails
+      operationId: getAnimalSystemPrompt
+      security: []
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: System prompt including guardrails
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  prompt:
+                    type: string
+                    description: Complete system prompt with guardrails
+                  guardrailCount:
+                    type: integer
+                    description: Number of guardrails included
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /knowledge_article:
     post:
       tags:
@@ -1850,6 +2117,43 @@ paths:
                   status: ok
                 - name: ai
                   status: ok
+  /chatgpt/health:
+    get:
+      tags:
+      - System
+      summary: ChatGPT integration health check
+      operationId: chatgptHealthGet
+      security: []
+      responses:
+        '200':
+          description: ChatGPT integration health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - healthy
+                    - no_api_key
+                    - error
+                    description: Overall health status of ChatGPT integration
+                  api_key_configured:
+                    type: boolean
+                    description: Whether OPENAI_API_KEY is configured
+                  model:
+                    type: string
+                    description: ChatGPT model being used
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: Health check timestamp
+              example:
+                status: healthy
+                api_key_configured: true
+                model: gpt-3.5-turbo
+                timestamp: "2025-09-14T19:47:00Z"
   /feature_flags:
     get:
       tags:
@@ -2595,15 +2899,31 @@ components:
         guardrails:
           type: object
           properties:
-            safe_mode:
-              type: boolean
-            content_filter:
-              type: boolean
-            response_length_limit:
-              type: integer
-              minimum: 50
-              maximum: 2000
-          additionalProperties: false
+            selected:
+              type: array
+              items:
+                type: string
+              description: List of guardrail IDs to apply to this animal
+            custom:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - ALWAYS
+                    - NEVER
+                    - ENCOURAGE
+                    - DISCOURAGE
+                  rule:
+                    type: string
+                    minLength: 1
+                    maxLength: 500
+                required:
+                - type
+                - rule
+              description: Custom guardrails specific to this animal
     KnowledgeCreate:
       type: object
       required:
@@ -3010,3 +3330,264 @@ components:
       properties:
         flags:
           $ref: '#/components/schemas/FeatureFlags'
+
+    # Guardrails Schemas
+    Guardrail:
+      allOf:
+      - type: object
+        required:
+        - guardrailId
+        - name
+        - type
+        - rule
+        properties:
+          guardrailId:
+            type: string
+            pattern: '^gr_[a-zA-Z0-9]+$'
+            description: Unique identifier for the guardrail
+            readOnly: true
+          name:
+            type: string
+            minLength: 1
+            maxLength: 200
+            description: Human-readable name for the guardrail
+          type:
+            type: string
+            enum:
+            - ALWAYS
+            - NEVER
+            - ENCOURAGE
+            - DISCOURAGE
+            description: Type of guardrail rule
+          rule:
+            type: string
+            minLength: 1
+            maxLength: 500
+            description: The actual rule text
+          description:
+            type: string
+            maxLength: 1000
+            nullable: true
+            description: Optional detailed description
+          category:
+            type: string
+            enum:
+            - content_safety
+            - educational
+            - personality
+            - technical
+            default: content_safety
+            description: Guardrail category for organization
+          priority:
+            type: integer
+            minimum: 0
+            maximum: 100
+            default: 50
+            description: Priority level (higher = more important)
+          isActive:
+            type: boolean
+            default: true
+            description: Whether the guardrail is currently active
+          isGlobal:
+            type: boolean
+            default: false
+            description: Whether the guardrail applies to all animals by default
+          keywords:
+            type: array
+            items:
+              type: string
+              pattern: '^[a-zA-Z0-9_-]+$'
+            maxItems: 20
+            nullable: true
+            description: Keywords for search and filtering
+          examples:
+            type: object
+            nullable: true
+            properties:
+              good:
+                type: array
+                items:
+                  type: string
+                description: Examples of good behavior
+              bad:
+                type: array
+                items:
+                  type: string
+                description: Examples of behavior to avoid
+      - $ref: '#/components/schemas/AuditFields'
+
+    GuardrailInput:
+      type: object
+      required:
+      - name
+      - type
+      - rule
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Human-readable name for the guardrail
+        type:
+          type: string
+          enum:
+          - ALWAYS
+          - NEVER
+          - ENCOURAGE
+          - DISCOURAGE
+          description: Type of guardrail rule
+        rule:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: The actual rule text
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+          description: Optional detailed description
+        category:
+          type: string
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+          default: content_safety
+          description: Guardrail category for organization
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 100
+          default: 50
+          description: Priority level (higher = more important)
+        isActive:
+          type: boolean
+          default: true
+          description: Whether the guardrail is currently active
+        isGlobal:
+          type: boolean
+          default: false
+          description: Whether the guardrail applies to all animals by default
+        keywords:
+          type: array
+          items:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+          maxItems: 20
+          nullable: true
+          description: Keywords for search and filtering
+        examples:
+          type: object
+          nullable: true
+          properties:
+            good:
+              type: array
+              items:
+                type: string
+              description: Examples of good behavior
+            bad:
+              type: array
+              items:
+                type: string
+              description: Examples of behavior to avoid
+
+    GuardrailUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Human-readable name for the guardrail
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+          description: Optional detailed description
+        category:
+          type: string
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+          description: Guardrail category for organization
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Priority level (higher = more important)
+        isActive:
+          type: boolean
+          description: Whether the guardrail is currently active
+        keywords:
+          type: array
+          items:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+          maxItems: 20
+          nullable: true
+          description: Keywords for search and filtering
+        examples:
+          type: object
+          nullable: true
+          properties:
+            good:
+              type: array
+              items:
+                type: string
+              description: Examples of good behavior
+            bad:
+              type: array
+              items:
+                type: string
+              description: Examples of behavior to avoid
+
+    GuardrailTemplate:
+      type: object
+      required:
+      - id
+      - name
+      - rules
+      properties:
+        id:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          description: Template identifier
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Template name
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+          description: Template description
+        rules:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+            - type
+            - rule
+            properties:
+              type:
+                type: string
+                enum:
+                - ALWAYS
+                - NEVER
+                - ENCOURAGE
+                - DISCOURAGE
+              rule:
+                type: string
+                minLength: 1
+                maxLength: 500
+              priority:
+                type: integer
+                minimum: 0
+                maximum: 100
+                default: 50
+          description: Rules included in this template

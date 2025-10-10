@@ -205,7 +205,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await fetch(`${apiUrl}/health`);
+      const response = await fetch(`${apiUrl}/system_health`);
 
       if (response.ok) {
         setConnectionStatus('connected');

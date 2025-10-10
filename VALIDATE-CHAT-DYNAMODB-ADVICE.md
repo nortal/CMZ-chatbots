@@ -8,7 +8,7 @@ Best practices, troubleshooting guide, and lessons learned for Chat and Chat His
 **Always verify environment before testing:**
 ```bash
 # Check all services are running
-curl -s http://localhost:8080/health || echo "Backend not running"
+curl -s http://localhost:8080/system_health || echo "Backend not running"
 curl -s http://localhost:3001 || echo "Frontend not running"
 aws dynamodb list-tables --output table || echo "AWS access issue"
 
@@ -83,7 +83,7 @@ await page.waitForSelector('[data-conversation-row]');
 **Solution**:
 ```javascript
 // Re-authenticate if needed
-const response = await page.goto('/api/health');
+const response = await page.goto('/api/system_health');
 if (response.status() === 401) {
   await loginTestUser();
 }
@@ -175,7 +175,7 @@ The Chat History Epic (PR003946-170) introduces several components to validate:
 1. **Check Service Health**:
 ```bash
 # Backend health
-curl http://localhost:8080/health
+curl http://localhost:8080/system_health
 
 # Frontend status
 curl http://localhost:3001

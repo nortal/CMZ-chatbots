@@ -184,7 +184,7 @@ aws dynamodb update-item \
 ### 2. Progressive Testing
 ```bash
 # Step 1: Basic connectivity
-curl http://localhost:8080/health
+curl http://localhost:8080/system_health
 
 # Step 2: Auth verification
 curl -X POST http://localhost:8080/auth/login \

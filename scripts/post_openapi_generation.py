@@ -92,8 +92,23 @@ def not_implemented_error(operation_name: str) -> Tuple[Dict[str, Any], int]:
 
 '''
 
+    # UI module mapping: controller function names → domain function names
+    # handlers.py imports these exact function names from ui.py
+    ui_function_map = {
+        'root_get': 'homepage_get',
+        'admin_get': 'admin_dashboard_get',
+        'member_get': 'member_dashboard_get'
+    }
+
     for func_name in functions:
-        handler_name = f"handle_{func_name}"
+        # Special handling for UI module - use domain function names without handle_ prefix
+        if module_name == 'ui' and func_name in ui_function_map:
+            handler_name = ui_function_map[func_name]
+            print(f"  ✓ UI module: Generating {handler_name} (mapped from {func_name})")
+        else:
+            # Standard pattern: add handle_ prefix for other modules
+            handler_name = f"handle_{func_name}"
+
         content += f'''
 def {handler_name}(*args, **kwargs) -> Tuple[Any, int]:
     """
@@ -121,21 +136,36 @@ def ensure_handler_functions(impl_file: Path, functions: List[str]) -> None:
         print(f"Warning: Could not read {impl_file}: {e}")
         return
 
+    # UI module mapping: controller function names → domain function names
+    ui_function_map = {
+        'root_get': 'homepage_get',
+        'admin_get': 'admin_dashboard_get',
+        'member_get': 'member_dashboard_get'
+    }
+
+    module_name = impl_file.stem  # Get module name from filename (e.g., 'ui' from 'ui.py')
     missing_handlers = []
 
     for func_name in functions:
-        handler_name = f"handle_{func_name}"
+        # Special handling for UI module - use domain function names without handle_ prefix
+        if module_name == 'ui' and func_name in ui_function_map:
+            handler_name = ui_function_map[func_name]
+            print(f"  ✓ Checking UI function: {handler_name} (mapped from {func_name})")
+        else:
+            # Standard pattern: add handle_ prefix for other modules
+            handler_name = f"handle_{func_name}"
+
         if f"def {handler_name}" not in content:
-            missing_handlers.append(handler_name)
+            missing_handlers.append((handler_name, func_name))
 
     if missing_handlers:
-        print(f"Adding missing handlers to {impl_file}: {', '.join(missing_handlers)}")
+        handler_names = [h[0] for h in missing_handlers]
+        print(f"Adding missing handlers to {impl_file}: {', '.join(handler_names)}")
 
         # Add missing handler functions
         additional_content = "\n# Auto-generated handler functions\n"
 
-        for handler_name in missing_handlers:
-            func_name = handler_name.replace("handle_", "")
+        for handler_name, func_name in missing_handlers:
             additional_content += f'''
 def {handler_name}(*args, **kwargs) -> Tuple[Any, int]:
     """

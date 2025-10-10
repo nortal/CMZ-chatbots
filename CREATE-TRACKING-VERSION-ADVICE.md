@@ -100,7 +100,7 @@ cd /path/to/cmz-chatbots/
 **Troubleshooting Steps:**
 ```bash
 # Check if API server is running
-curl http://localhost:8080/system/health
+curl http://localhost:8080/system_health
 
 # Check Docker container status
 docker ps | grep cmz
@@ -143,7 +143,7 @@ cat version_history.md | tail -5
 ```bash
 # Check current system state
 cat version.json | jq '.'
-curl -s http://localhost:8080/system/health | jq '.'
+curl -s http://localhost:8080/system_health | jq '.'
 docker ps | grep cmz
 git rev-parse HEAD
 

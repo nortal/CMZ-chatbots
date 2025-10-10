@@ -1,0 +1,220 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - img "CMZ" [ref=e8]
+        - generic [ref=e9]: CMZ Dashboard
+      - generic [ref=e10]:
+        - text: Welcome back,
+        - generic [ref=e11]: User_parent_001 (Parent)
+      - generic [ref=e13]: Parent
+    - navigation [ref=e14]:
+      - button "Dashboard" [ref=e16] [cursor=pointer]:
+        - img [ref=e17] [cursor=pointer]
+        - generic [ref=e20] [cursor=pointer]: Dashboard
+      - button "Conversations" [ref=e22] [cursor=pointer]:
+        - img [ref=e23] [cursor=pointer]
+        - generic [ref=e25] [cursor=pointer]: Conversations
+        - img [ref=e26] [cursor=pointer]
+    - button "Sign Out" [ref=e29] [cursor=pointer]:
+      - img [ref=e30] [cursor=pointer]
+      - generic [ref=e33] [cursor=pointer]: Sign Out
+  - generic [ref=e34]:
+    - generic [ref=e35]:
+      - heading "Animal Ambassadors" [level=1] [ref=e38]
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - img [ref=e41]
+          - textbox "Search..." [ref=e44]
+        - button [ref=e45] [cursor=pointer]:
+          - img [ref=e46] [cursor=pointer]
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]: User_parent_001 (Parent)
+            - generic [ref=e53]: parent
+          - generic [ref=e55]: U
+    - main [ref=e56]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - heading "Meet Our Animal Ambassadors" [level=1] [ref=e60]
+          - paragraph [ref=e61]: Connect with our amazing animals through interactive chat!
+          - paragraph [ref=e62]: Click "Chat with Me!" to start a conversation with any of our animal friends
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - generic [ref=e65]:
+              - generic [ref=e67]: 🦊
+              - generic [ref=e68]: Active
+              - img [ref=e70]
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - heading "Charlie the Elephant" [level=3] [ref=e74]
+                - paragraph [ref=e75]: Loxodonta africana
+              - paragraph [ref=e77]: A wonderful animal waiting to meet you!
+              - generic [ref=e78]:
+                - button "View Details" [ref=e79] [cursor=pointer]:
+                  - img [ref=e80] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e82] [cursor=pointer]:
+                  - img [ref=e83] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - generic [ref=e88]: 🦁
+              - generic [ref=e89]: Active
+              - img [ref=e91]
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - heading "Leo Updated" [level=3] [ref=e95]
+                - paragraph [ref=e96]: lion
+              - paragraph [ref=e98]: Brave and confident king of the jungle
+              - generic [ref=e99]:
+                - button "View Details" [ref=e100] [cursor=pointer]:
+                  - img [ref=e101] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e103] [cursor=pointer]:
+                  - img [ref=e104] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e106]:
+            - generic [ref=e107]:
+              - generic [ref=e109]: 🦊
+              - generic [ref=e110]: Active
+              - img [ref=e112]
+            - generic [ref=e114]:
+              - generic [ref=e115]:
+                - heading "Maya - Partial Update Test 2025-09-19-132145" [level=3] [ref=e116]
+                - paragraph [ref=e117]: Macaca mulatta - Field Test 2025-09-16
+              - paragraph [ref=e119]: A wonderful animal waiting to meet you!
+              - generic [ref=e120]:
+                - button "View Details" [ref=e121] [cursor=pointer]:
+                  - img [ref=e122] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e124] [cursor=pointer]:
+                  - img [ref=e125] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e127]:
+            - generic [ref=e128]:
+              - generic [ref=e130]: 🦁
+              - generic [ref=e131]: Active
+              - img [ref=e133]
+            - generic [ref=e135]:
+              - generic [ref=e136]:
+                - heading "New Test Animal" [level=3] [ref=e137]
+                - paragraph [ref=e138]: Lion
+              - paragraph [ref=e140]: A wonderful animal waiting to meet you!
+              - generic [ref=e141]:
+                - button "View Details" [ref=e142] [cursor=pointer]:
+                  - img [ref=e143] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e145] [cursor=pointer]:
+                  - img [ref=e146] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e148]:
+            - generic [ref=e149]:
+              - generic [ref=e151]: 🐻
+              - generic [ref=e152]: Active
+              - img [ref=e154]
+            - generic [ref=e156]:
+              - generic [ref=e157]:
+                - heading "PUT Test Name" [level=3] [ref=e158]
+                - paragraph [ref=e159]: Grizzly Bear
+              - paragraph [ref=e161]: Friendly & curious; loves honey!
+              - generic [ref=e162]:
+                - button "View Details" [ref=e163] [cursor=pointer]:
+                  - img [ref=e164] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e166] [cursor=pointer]:
+                  - img [ref=e167] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e169]:
+            - generic [ref=e170]:
+              - generic [ref=e172]: 🦊
+              - generic [ref=e173]: Active
+              - img [ref=e175]
+            - generic [ref=e177]:
+              - generic [ref=e178]:
+                - heading "Test Animal" [level=3] [ref=e179]
+                - paragraph [ref=e180]: Test Species
+              - paragraph [ref=e182]: A wonderful animal waiting to meet you!
+              - generic [ref=e183]:
+                - button "View Details" [ref=e184] [cursor=pointer]:
+                  - img [ref=e185] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e187] [cursor=pointer]:
+                  - img [ref=e188] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e190]:
+            - generic [ref=e191]:
+              - generic [ref=e193]: 🦊
+              - generic [ref=e194]: Active
+              - img [ref=e196]
+            - generic [ref=e198]:
+              - generic [ref=e199]:
+                - heading "Test Animal 1758075905.194978" [level=3] [ref=e200]
+                - paragraph [ref=e201]: Test Species
+              - paragraph [ref=e203]: A wonderful animal waiting to meet you!
+              - generic [ref=e204]:
+                - button "View Details" [ref=e205] [cursor=pointer]:
+                  - img [ref=e206] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e208] [cursor=pointer]:
+                  - img [ref=e209] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e211]:
+            - generic [ref=e212]:
+              - generic [ref=e214]: 🦊
+              - generic [ref=e215]: Active
+              - img [ref=e217]
+            - generic [ref=e219]:
+              - generic [ref=e220]:
+                - heading "Test Animal 2" [level=3] [ref=e221]
+                - paragraph [ref=e222]: Test Species
+              - paragraph [ref=e224]: A wonderful animal waiting to meet you!
+              - generic [ref=e225]:
+                - button "View Details" [ref=e226] [cursor=pointer]:
+                  - img [ref=e227] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e229] [cursor=pointer]:
+                  - img [ref=e230] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e232]:
+            - generic [ref=e233]:
+              - generic [ref=e235]: 🦊
+              - generic [ref=e236]: Active
+              - img [ref=e238]
+            - generic [ref=e240]:
+              - generic [ref=e241]:
+                - heading "Test Animal for DELETE" [level=3] [ref=e242]
+                - paragraph [ref=e243]: Test Species
+              - paragraph [ref=e245]: A wonderful animal waiting to meet you!
+              - generic [ref=e246]:
+                - button "View Details" [ref=e247] [cursor=pointer]:
+                  - img [ref=e248] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e250] [cursor=pointer]:
+                  - img [ref=e251] [cursor=pointer]
+                  - text: Chat with Me!
+          - generic [ref=e253]:
+            - generic [ref=e254]:
+              - generic [ref=e256]: 🦊
+              - generic [ref=e257]: Active
+              - img [ref=e259]
+            - generic [ref=e261]:
+              - generic [ref=e262]:
+                - heading "Zara the Zebra" [level=3] [ref=e263]
+                - paragraph [ref=e264]: Equus quagga
+              - paragraph [ref=e266]: sdfgsdfgsdf
+              - generic [ref=e267]:
+                - button "View Details" [ref=e268] [cursor=pointer]:
+                  - img [ref=e269] [cursor=pointer]
+                  - text: View Details
+                - button "Chat with Me!" [ref=e271] [cursor=pointer]:
+                  - img [ref=e272] [cursor=pointer]
+                  - text: Chat with Me!
+        - generic [ref=e274]:
+          - heading "🌿 Visit Cougar Mountain Zoo Today! 🌿" [level=3] [ref=e275]
+          - paragraph [ref=e276]: Experience the wonder of wildlife in person! Our zoo is home to over 200 amazing animals from around the world. Come meet them and learn about conservation efforts.
+          - generic [ref=e277]: "Open Daily: 9:00 AM - 6:00 PM"
+```

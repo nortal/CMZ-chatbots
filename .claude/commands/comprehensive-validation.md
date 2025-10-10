@@ -32,7 +32,7 @@ Use MCP Sequential Thinking to systematically orchestrate all validations:
 ```bash
 # Check all services are healthy
 echo "=== Service Health Check ==="
-curl -s http://localhost:8080/health || (echo "❌ Backend not running" && exit 1)
+curl -s http://localhost:8080/system_health || (echo "❌ Backend not running" && exit 1)
 curl -s http://localhost:3001 || (echo "❌ Frontend not running" && exit 1)
 aws dynamodb list-tables > /dev/null || (echo "❌ AWS access failed" && exit 1)
 

@@ -7,7 +7,7 @@
 4. **ALWAYS** test endpoints before assuming they don't work
 5. **NEVER** trust "not_implemented" errors without investigation
 6. **NEVER** move an item from "IMPLEMENTED BUF FAILING" to "NOT IMPLEMENTED"
-**Last Updated**: 2025-10-02 (Session 2 - Fixed all remaining implementation issues)
+**Last Updated**: 2025-10-09 (Session 3 - Added Guardrails System)
 
 ## 🎉 FIXES APPLIED ON 2025-10-02
 
@@ -26,6 +26,12 @@
 5. **POST /family** - Fixed DynamoDB field name mismatches (familyName, parentIds, studentIds)
 6. **Duplicate handler issue** - Resolved animals.py stubs vs handlers.py implementations
 7. **DELETE /animal/{animalId}** - Verified working correctly with soft delete (sets softDelete=true, returns 204)
+
+### Session 3 Fixed Issues (2025-10-09):
+1. **Guardrails System Implementation** - Complete TDD implementation with 76% test coverage
+2. **OpenAPI Spec Updated** - Added 9 guardrails endpoints and 4 data models
+3. **ChatGPT Integration Enhanced** - Dynamic guardrails injection into system prompts
+4. **Safety Features Added** - Input validation, output filtering, circuit breaker
 
 ### All Endpoints Now Fixed:
 - ✅ POST /auth/reset_password - Working
@@ -76,6 +82,17 @@ These endpoints are fully working. DO NOT modify their core implementation witho
 
 ### System Endpoints
 - **GET /system_health** → `handlers.py:handle_system_health_get()` [✅ FIXED 2025-10-02]
+
+### Guardrails Management (NEW 2025-10-09 - ✅ ROUTES FIXED)
+- **GET /guardrails** → `guardrails.py:handle_list_guardrails()` [✅ Working - Needs DynamoDB table]
+- **POST /guardrails** → `guardrails.py:handle_create_guardrail()` [✅ Working - Needs DynamoDB table]
+- **GET /guardrails/{guardrailId}** → `guardrails.py:handle_get_guardrail()` [✅ Working - Needs DynamoDB table]
+- **PUT /guardrails/{guardrailId}** → `guardrails.py:handle_update_guardrail()` [✅ Working - Needs DynamoDB table]
+- **DELETE /guardrails/{guardrailId}** → `guardrails.py:handle_delete_guardrail()` [✅ Working - Needs DynamoDB table]
+- **GET /guardrails/templates** → `guardrails.py:handle_get_templates()` [✅ FULLY WORKING - Returns 3 templates]
+- **POST /guardrails/apply-template** → `guardrails.py:handle_apply_template()` [✅ Working - Needs DynamoDB table]
+- **GET /animal/{animalId}/guardrails/effective** → `guardrails.py:handle_get_animal_effective_guardrails()` [✅ Working]
+- **GET /animal/{animalId}/guardrails/system-prompt** → `guardrails.py:handle_get_animal_system_prompt()` [✅ Working]
 
 ### User Management
 - **GET /user** → `handlers.py:handle_user_list_get()` [✅ Working]

@@ -534,6 +534,24 @@ For automated resolution of issues identified in PR reviews:
 - **Key Features**: Parses review-mr output, applies categorized fixes, validates corrections, marks comments resolved
 - **Integration**: Use after `/review-mr` to automatically fix identified issues before merge
 
+## Comprehensive Code Review System
+For systematic multi-phase code review with OpenAI integration:
+- `.claude/commands/comprehensive-code-review.md` - Hybrid review using native tools, Sequential MCP, and OpenAI API
+- `COMPREHENSIVE-CODE-REVIEW-ADVICE.md` - Implementation guidance, cost optimization, and best practices
+- **Analysis Focus**: Style, security, logical correctness, DRY/SOLID principles, code duplication detection
+- **Key Features**: Module-by-module analysis, security scanning, embeddings-based duplication detection, Teams reporting
+- **Usage**: `/comprehensive-code-review [--focus area] [--module path]`
+
+## Code Review Issue Resolution
+For systematic application of code review findings with safety checkpoints:
+- `.claude/commands/fix-code-review-issues.md` - Automated fix application with testing and rollback
+- `FIX-CODE-REVIEW-ISSUES-ADVICE.md` - Safety principles, fix patterns, and troubleshooting
+- **Workflow**: Checkpoint commit → Apply fix groups → Test → Keep or revert → Document
+- **Safety Features**: CRITICAL checkpoint before changes, test after each group, auto-revert on regression, stop on unfixable issues
+- **Fix Groups**: Dead code removal, data handling improvements, auth refactoring, code organization
+- **Integration**: Use after `/comprehensive-code-review` to systematically address findings
+- **Usage**: `/fix-code-review-issues [--groups 1,2,3,4] [--skip-baseline] [--quick]`
+
 ## Infrastructure Hardening (Updated 2025-01-14)
 For systematic resolution of recurring development workflow issues:
 - `.claude/commands/systematic-cmz-infrastructure-hardening.md` - Permanent infrastructure improvements with TDD validation

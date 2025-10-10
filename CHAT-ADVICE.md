@@ -253,7 +253,7 @@ CONVERSATION_TTL_DAYS=90
 - Used EventSource API for SSE streaming
 - Maintained session ID for conversation tracking
 - Implemented auto-scroll to latest message
-- Added connection health checking with /health endpoint
+- Added connection health checking with /system_health endpoint
 - Used localStorage for JWT token retrieval
 
 **UI Features Implemented:**

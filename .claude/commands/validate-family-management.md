@@ -45,7 +45,7 @@ echo "⏳ Waiting for services..."
 sleep 5
 
 # Health check with visible output
-curl -s http://localhost:8080/health | jq '.'
+curl -s http://localhost:8080/system_health | jq '.'
 curl -s http://localhost:3001 | grep -q "React" && echo "✅ Frontend ready"
 ```
 
@@ -265,7 +265,7 @@ sleep 10
 
 # Phase 2: Health Check
 echo -e "\n${YELLOW}Phase 2: Health Check${NC}"
-if curl -s http://localhost:8080/health | jq '.status' | grep -q "healthy"; then
+if curl -s http://localhost:8080/system_health | jq '.status' | grep -q "healthy"; then
     echo -e "${GREEN}✅ API is healthy${NC}"
 else
     echo -e "${RED}❌ API is not healthy${NC}"
