@@ -122,3 +122,26 @@ class TestLogInjectionPrevention:
         assert '\n' not in sanitized
         # Content is preserved but can't create fake log entries
         assert "Database credentials leaked" in sanitized
+
+    def test_defense_in_depth_pattern(self):
+        """
+        Test that the defense-in-depth pattern (replace + sanitize) works correctly
+        """
+        # Simulate the pattern used in production code
+        user_id = "user123\n[FAKE LOG]\x1b[31mRED\x1b[0m\x00null"
+
+        # Step 1: CodeQL-recognized sanitization (what CodeQL sees)
+        step1 = str(user_id).replace("\n", " ").replace("\r", " ")
+        assert '\n' not in step1
+        assert '\r' not in step1
+
+        # Step 2: Comprehensive sanitization (additional protection)
+        step2 = sanitize_log_extra({"user_id": step1})
+
+        # Verify all attack vectors are neutralized
+        result = step2["user_id"]
+        assert '\n' not in result  # Newlines removed by replace
+        assert '\x1b' not in result  # ANSI codes removed by sanitize
+        assert '\x00' not in result  # Null bytes removed by sanitize
+        assert '[FAKE LOG]' in result  # Content preserved
+        assert 'RED' in result  # Content preserved (without color codes)

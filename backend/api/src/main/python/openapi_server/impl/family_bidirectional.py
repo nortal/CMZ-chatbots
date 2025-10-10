@@ -161,9 +161,10 @@ class FamilyUserRelationshipManager:
 
             # Check permissions
             if not requesting_user.can_view_family(family_id):
+                # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
                 logger.warning("User denied access to family", extra=sanitize_log_extra({
-                    "user_id": requesting_user_id,
-                    "family_id": family_id
+                    "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " "),
+                    "family_id": str(family_id).replace("\n", " ").replace("\r", " ")
                 }))
                 return None
 
@@ -508,14 +509,16 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
             user_family_ids = requesting_user.familyIds if hasattr(requesting_user, 'familyIds') else []
         except DoesNotExist:
             # If user doesn't exist, treat as anonymous with no families
+            # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
             logger.warning("User not found, returning empty family list", extra=sanitize_log_extra({
-                "user_id": requesting_user_id
+                "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " ")
             }))
             return [], 200
         except Exception as e:
+            # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
             logger.error("Error fetching user", extra=sanitize_log_extra({
-                "user_id": requesting_user_id,
-                "error": str(e)
+                "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " "),
+                "error": str(e).replace("\n", " ").replace("\r", " ")
             }))
             return [], 200
 
@@ -540,9 +543,10 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
                     if not family.softDelete:
                         families.append(family)
                 except DoesNotExist:
+                    # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
                     logger.warning("Family not found for user", extra=sanitize_log_extra({
-                        "family_id": family_id,
-                        "user_id": requesting_user_id
+                        "family_id": str(family_id).replace("\n", " ").replace("\r", " "),
+                        "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " ")
                     }))
                     continue
                 except Exception as e:

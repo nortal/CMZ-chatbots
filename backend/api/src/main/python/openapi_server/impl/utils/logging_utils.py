@@ -1,5 +1,21 @@
 """
 Logging utilities with security protections against log injection attacks
+
+Defense-in-Depth Strategy:
+1. Primary: Use .replace("\n", " ").replace("\r", " ") on values (CodeQL-recognized)
+2. Secondary: Use sanitize_log_extra() for comprehensive protection
+
+Example:
+    logger.warning("User action", extra=sanitize_log_extra({
+        "user_id": str(user_id).replace("\n", " ").replace("\r", " "),
+        "action": str(action).replace("\n", " ").replace("\r", " ")
+    }))
+
+The .replace() calls satisfy CodeQL's static analysis, while sanitize_log_extra()
+provides additional protection against:
+- ANSI escape sequences (terminal color injection)
+- Null bytes (log corruption)
+- Excessive length (log flooding)
 """
 import re
 from typing import Any, Dict
