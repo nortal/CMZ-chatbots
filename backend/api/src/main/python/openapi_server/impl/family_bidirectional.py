@@ -1,5 +1,7 @@
 """
 Family management with bidirectional user references and role-based access control
+
+Security: Uses structured logging to prevent log injection vulnerabilities
 """
 import uuid
 import logging
