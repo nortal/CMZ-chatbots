@@ -419,7 +419,7 @@ class TestGuardrailsPerformance:
         """Test that guardrails don't significantly impact response time"""
         # Baseline without guardrails
         start = time.time()
-        response = requests.post(f"{BASE_URL}/convo_turn", json={
+        requests.post(f"{BASE_URL}/convo_turn", json={
             "animalId": "pokey",
             "message": "Hello!",
             "sessionId": "perf-test-1"

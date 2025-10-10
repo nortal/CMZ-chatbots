@@ -151,13 +151,13 @@ class GuardrailsManager:
             response = _table().get_item(Key={'guardrailId': guardrail_id})
 
             if 'Item' not in response:
-                return not_found(f"Guardrail {guardrail_id} not found")
+                return not_found("Guardrail", guardrail_id), 404
 
             item = from_ddb(response['Item'])
 
             # Check if soft-deleted
             if item.get('softDelete', False):
-                return not_found(f"Guardrail {guardrail_id} not found")
+                return not_found("Guardrail", guardrail_id), 404
 
             return item, 200
 
@@ -172,13 +172,13 @@ class GuardrailsManager:
             response = _table().get_item(Key={'guardrailId': guardrail_id})
 
             if 'Item' not in response:
-                return not_found(f"Guardrail {guardrail_id} not found")
+                return not_found("Guardrail", guardrail_id), 404
 
             existing = from_ddb(response['Item'])
 
             # Check if soft-deleted
             if existing.get('softDelete', False):
-                return not_found(f"Guardrail {guardrail_id} not found")
+                return not_found("Guardrail", guardrail_id), 404
 
             # Update allowed fields
             allowed_fields = ['name', 'description', 'category', 'priority', 'isActive', 'keywords', 'examples']
@@ -208,7 +208,7 @@ class GuardrailsManager:
             response = _table().get_item(Key={'guardrailId': guardrail_id})
 
             if 'Item' not in response:
-                return not_found(f"Guardrail {guardrail_id} not found")
+                return not_found("Guardrail", guardrail_id), 404
 
             existing = from_ddb(response['Item'])
 
@@ -239,7 +239,7 @@ class GuardrailsManager:
         try:
             # Get template
             if template_id not in cls.TEMPLATES:
-                return not_found(f"Template {template_id} not found")
+                return not_found("Template", template_id), 404
 
             template = cls.TEMPLATES[template_id]
 
@@ -266,7 +266,7 @@ class GuardrailsManager:
             animal_response = animal_table.get_item(Key={'animalId': animal_id})
 
             if 'Item' not in animal_response:
-                return not_found(f"Animal {animal_id} not found")
+                return not_found("Animal", animal_id), 404
 
             animal = from_ddb(animal_response['Item'])
 
@@ -506,7 +506,7 @@ def handle_get_animal_system_prompt(animal_id, *args, **kwargs):
     animal_response = animal_table.get_item(Key={'animalId': animal_id})
 
     if 'Item' not in animal_response:
-        return not_found(f"Animal {animal_id} not found")
+        return not_found("Animal", animal_id), 404
 
     animal = from_ddb(animal_response['Item'])
 

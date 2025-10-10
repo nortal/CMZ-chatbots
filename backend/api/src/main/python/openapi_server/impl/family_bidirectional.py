@@ -158,7 +158,10 @@ class FamilyUserRelationshipManager:
 
             # Check permissions
             if not requesting_user.can_view_family(family_id):
-                logger.warning(f"User {requesting_user_id} denied access to family {family_id}")
+                logger.warning("User denied access to family", extra={
+                    "user_id": requesting_user_id,
+                    "family_id": family_id
+                })
                 return None
 
             family_dict = family.to_dict()
@@ -502,10 +505,15 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
             user_family_ids = requesting_user.familyIds if hasattr(requesting_user, 'familyIds') else []
         except DoesNotExist:
             # If user doesn't exist, treat as anonymous with no families
-            logger.warning(f"User {requesting_user_id} not found, returning empty family list")
+            logger.warning("User not found, returning empty family list", extra={
+                "user_id": requesting_user_id
+            })
             return [], 200
         except Exception as e:
-            logger.error(f"Error fetching user {requesting_user_id}: {str(e)}")
+            logger.error("Error fetching user", extra={
+                "user_id": requesting_user_id,
+                "error": str(e)
+            })
             return [], 200
 
         # Admin sees all families
@@ -529,7 +537,10 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
                     if not family.softDelete:
                         families.append(family)
                 except DoesNotExist:
-                    logger.warning(f"Family {family_id} not found for user {requesting_user_id}")
+                    logger.warning("Family not found for user", extra={
+                        "family_id": family_id,
+                        "user_id": requesting_user_id
+                    })
                     continue
                 except Exception as e:
                     logger.error(f"Error fetching family {family_id}: {str(e)}")
