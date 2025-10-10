@@ -1,7 +1,7 @@
 """
 Family management with bidirectional user references and role-based access control
 
-Security: Uses structured logging to prevent log injection vulnerabilities
+Security: Uses sanitized structured logging to prevent log injection vulnerabilities
 """
 import uuid
 import logging
@@ -13,6 +13,7 @@ from pynamodb.exceptions import DoesNotExist
 from ..models.error import Error
 from .utils.orm.models.family_bidirectional import FamilyModelBidirectional
 from .utils.orm.models.user_bidirectional import UserModelBidirectional
+from .utils.logging_utils import sanitize_log_extra
 
 logger = logging.getLogger(__name__)
 
@@ -160,10 +161,10 @@ class FamilyUserRelationshipManager:
 
             # Check permissions
             if not requesting_user.can_view_family(family_id):
-                logger.warning("User denied access to family", extra={
+                logger.warning("User denied access to family", extra=sanitize_log_extra({
                     "user_id": requesting_user_id,
                     "family_id": family_id
-                })
+                }))
                 return None
 
             family_dict = family.to_dict()
@@ -507,15 +508,15 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
             user_family_ids = requesting_user.familyIds if hasattr(requesting_user, 'familyIds') else []
         except DoesNotExist:
             # If user doesn't exist, treat as anonymous with no families
-            logger.warning("User not found, returning empty family list", extra={
+            logger.warning("User not found, returning empty family list", extra=sanitize_log_extra({
                 "user_id": requesting_user_id
-            })
+            }))
             return [], 200
         except Exception as e:
-            logger.error("Error fetching user", extra={
+            logger.error("Error fetching user", extra=sanitize_log_extra({
                 "user_id": requesting_user_id,
                 "error": str(e)
-            })
+            }))
             return [], 200
 
         # Admin sees all families
@@ -539,10 +540,10 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
                     if not family.softDelete:
                         families.append(family)
                 except DoesNotExist:
-                    logger.warning("Family not found for user", extra={
+                    logger.warning("Family not found for user", extra=sanitize_log_extra({
                         "family_id": family_id,
                         "user_id": requesting_user_id
-                    })
+                    }))
                     continue
                 except Exception as e:
                     logger.error(f"Error fetching family {family_id}: {str(e)}")
