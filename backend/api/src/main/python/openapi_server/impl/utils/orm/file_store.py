@@ -7,10 +7,12 @@ PR003946-95: Offline test mode for backend
 - Supports all CRUD operations without external dependencies
 """
 import json
+import logging
 import os
 import copy
 from typing import Any, Dict, List, Optional
 from pathlib import Path
+from botocore.exceptions import ClientError
 from ..core import now_iso
 from ..id_generator import add_audit_timestamps
 
@@ -63,7 +65,6 @@ class FileStore:
                 table_data = all_test_data.get(self.table_name, [])
             except (json.JSONDecodeError, IOError, OSError) as e:
                 # Log error and continue with empty dataset
-                import logging
                 logging.getLogger(__name__).warning(f"Failed to load test data from {test_data_path}: {e}")
                 table_data = []
             
@@ -76,7 +77,6 @@ class FileStore:
         
         # Validate that storage file is within expected directory
         if not self.storage_file.resolve().is_relative_to(self.storage_dir.resolve()):
-            import logging
             logging.getLogger(__name__).error(f"Storage file path {self.storage_file} is outside expected directory")
             return []
             
@@ -143,7 +143,6 @@ class FileStore:
                 item = self.id_generator(item)
                 pk_value = item.get(self.pk_name)
             else:
-                from botocore.exceptions import ClientError
                 raise ClientError(
                     {"Error": {"Code": "ValidationException",
                                "Message": f"Missing required primary key '{self.pk_name}' and no ID generator configured"}},
@@ -156,7 +155,6 @@ class FileStore:
         # Check if item already exists
         data = self._load_data()
         if self._find_item_index(data, pk_value) is not None:
-            from botocore.exceptions import ClientError
             raise ClientError(
                 {"Error": {"Code": "ConditionalCheckFailedException",
                            "Message": f"Item already exists: {self.pk_name}={pk_value}"}},

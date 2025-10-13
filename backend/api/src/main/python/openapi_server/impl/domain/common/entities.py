@@ -73,6 +73,7 @@ class Animal:
     animal_id: str
     name: str
     species: Optional[str] = None
+    description: Optional[str] = None
     status: Optional[str] = "active"
     personality: Optional[Dict[str, Any]] = field(default_factory=dict)
     configuration: Optional[Dict[str, Any]] = field(default_factory=dict)
@@ -132,3 +133,29 @@ class AuthenticatedUser:
     permissions: Optional[List[str]] = None
     is_verified: bool = False
     session_id: Optional[str] = None
+
+
+@dataclass
+class PasswordResetToken:
+    """Password reset token information"""
+    token_id: str
+    user_id: str
+    token: str
+    expires_at: datetime
+    created_at: datetime
+    used: bool = False
+
+
+@dataclass
+class AuthSession:
+    """User authentication session"""
+    session_id: str
+    user_id: str
+    username: str
+    email: Optional[str] = None
+    roles: Optional[List[str]] = None
+    permissions: Optional[List[str]] = None
+    expires_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+    last_accessed_at: Optional[datetime] = None
+    is_active: bool = True

@@ -479,6 +479,13 @@ For orchestrating all validation commands and generating consolidated reports:
 - `.claude/commands/comprehensive-validation.md` - Run all validate*.md commands with parallel execution and reporting
 - `COMPREHENSIVE-VALIDATION-ADVICE.md` - Optimization strategies, CI/CD integration, and performance tuning
 
+## Contract Validation (UI-API-OpenAPI Alignment)
+For systematic validation of three-way contract alignment to prevent runtime failures:
+- `.claude/commands/validate-contracts.md` - Validate UI code, API implementation, and OpenAPI spec alignment using `/validate-contracts`
+- `VALIDATE-CONTRACTS-ADVICE.md` - Best practices, edge cases, and troubleshooting for contract mismatches
+- **Key Detections**: Field name mismatches, parameter location errors, required field omissions, type mismatches, response structure differences
+- **Integration**: Run before deployment, in CI/CD pipeline, after OpenAPI spec changes
+
 ### Backend Health Testing Overview
 The backend health validation system ensures users receive appropriate error messages based on actual system status:
 

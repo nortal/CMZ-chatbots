@@ -128,14 +128,18 @@ class PynamoStore:
 
     def update_fields(self, pk: str, updates: dict, *, require_exists: bool = True):
         actions = []
+        logger.debug(f"update_fields: pk={pk}, updates keys={list(updates.keys())}")
         for key, value in updates.items():
             if key == self._pk:    # don't build actions for the hash key
                 continue
             if value is None:
+                logger.debug(f"  Skipping {key} (value is None)")
                 continue
             try:
                 attr = getattr(self._model, key)
+                logger.debug(f"  Adding action for {key}={value}")
             except AttributeError:
+                logger.warning(f"  Unknown attribute '{key}' on model {self._model.__name__}")
                 raise ClientError(
                     {"Error": {"Code": "ValidationException", "Message": f"Unknown attribute '{key}'"}},
                     "UpdateItem",

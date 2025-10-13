@@ -144,13 +144,28 @@ class FlaskAnimalHandler:
         Returns:
             Tuple of (response_body, http_status_code)
         """
+        # Import serialize_animal at function start (Bug #7 fix)
+        from ...domain.common.serializers import serialize_animal
+
         try:
+            # DEBUG: Trace incoming request
+            print(f"DEBUG update_animal: Received body type={type(body)}")
+            if hasattr(body, 'to_dict'):
+                body_dict = body.to_dict()
+                print(f"DEBUG update_animal: body.to_dict() keys={list(body_dict.keys())}")
+                print(f"DEBUG update_animal: description in body={body_dict.get('description')}")
+            else:
+                print(f"DEBUG update_animal: body keys={list(body.keys()) if isinstance(body, dict) else 'not a dict'}")
+                print(f"DEBUG update_animal: description in body={body.get('description') if isinstance(body, dict) else 'N/A'}")
+
             # For PUT requests with partial data, fetch existing data first
             # to merge with the update
             existing_animal = self._animal_service.get_animal(animal_id)
 
             # Convert OpenAPI model to business dict
             update_data = self._animal_serializer.from_openapi(body)
+            print(f"DEBUG update_animal: After from_openapi() keys={list(update_data.keys())}")
+            print(f"DEBUG update_animal: description after conversion={update_data.get('description')}")
 
             # Merge existing data with update data (update_data takes precedence)
             # This allows PUT to work like PATCH for partial updates
@@ -162,12 +177,14 @@ class FlaskAnimalHandler:
                     if value is not None:
                         existing_data[key] = value
                 update_data = existing_data
+                print(f"DEBUG update_animal: After merge keys={list(update_data.keys())}")
+                print(f"DEBUG update_animal: description after merge={update_data.get('description')}")
 
             # Execute business logic
+            print(f"DEBUG update_animal: About to call service.update_animal with data keys={list(update_data.keys())}")
             animal = self._animal_service.update_animal(animal_id, update_data)
 
             # Convert domain entity to dict directly to avoid validation issues
-            from ...domain.common.serializers import serialize_animal
             response_dict = serialize_animal(animal, include_api_id=True)
 
             return response_dict, 200

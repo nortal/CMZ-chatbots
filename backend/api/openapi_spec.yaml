@@ -2728,6 +2728,9 @@ components:
             type: string
           species:
             type: string
+          description:
+            type: string
+            maxLength: 500
           status:
             type: string
             enum:
@@ -2765,6 +2768,9 @@ components:
           type: string
           minLength: 1
           maxLength: 100
+        description:
+          type: string
+          maxLength: 500
         status:
           type: string
           enum:
@@ -2849,6 +2855,12 @@ components:
           maxLength: 1000
           pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
           description: Animal personality description supporting natural language with punctuation
+        systemPrompt:
+          type: string
+          minLength: 5
+          maxLength: 2000
+          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+          description: System prompt that defines the AI behavior for this animal
         aiModel:
           type: string
           enum:

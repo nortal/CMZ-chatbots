@@ -1,5 +1,6 @@
 """Standard audit service implementation supporting both domain audit stamps and logging"""
 import logging
+from datetime import datetime
 from typing import Dict, Any, Optional
 from ..ports.audit import AuditService
 
@@ -41,7 +42,6 @@ class StandardAuditService(AuditService):
             return domain_create_creation_audit(actor_data)
         else:
             # Fallback to simple timestamp audit
-            from datetime import datetime
             return {"created": {"at": datetime.utcnow().isoformat() + "Z"}}
     
     def create_modification_audit(self, actor_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:

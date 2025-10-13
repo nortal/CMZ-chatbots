@@ -236,6 +236,14 @@ def create_family_bidirectional(body: Dict[str, Any], requesting_user_id: str) -
         # For testing, allow anonymous creation
         if requesting_user_id == 'anonymous':
             logger.warning("Creating family with anonymous user - testing mode")
+            requesting_user_display_name = 'system'
+        else:
+            # Get requesting user for audit trail
+            try:
+                requesting_user = UserModelBidirectional.get(requesting_user_id)
+                requesting_user_display_name = requesting_user.displayName or 'unknown'
+            except DoesNotExist:
+                requesting_user_display_name = 'unknown'
 
         # Generate family ID
         family_id = f"family_{uuid.uuid4().hex[:8]}"
@@ -296,14 +304,14 @@ def create_family_bidirectional(body: Dict[str, Any], requesting_user_id: str) -
                 'at': now,
                 'by': {
                     'userId': requesting_user_id,
-                    'displayName': requesting_user.displayName
+                    'displayName': requesting_user_display_name
                 }
             },
             modified={
                 'at': now,
                 'by': {
                     'userId': requesting_user_id,
-                    'displayName': requesting_user.displayName
+                    'displayName': requesting_user_display_name
                 }
             }
         )

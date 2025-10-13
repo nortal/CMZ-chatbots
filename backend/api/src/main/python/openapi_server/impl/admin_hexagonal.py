@@ -17,6 +17,7 @@ from openapi_server.models.user_details_input import UserDetailsInput
 
 # Import hexagonal architecture components
 from .dependency_injection import create_flask_user_handler
+from .utils.core import not_found
 
 log = logging.getLogger(__name__)
 
@@ -121,7 +122,6 @@ def handle_get_user(user_id: str) -> User:
             return response
         elif status_code == 404:
             # Maintain existing not_found pattern
-            from .utils import not_found
             return not_found("userId", user_id)
         else:
             # Convert error to exception

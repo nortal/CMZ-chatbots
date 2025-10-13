@@ -1,0 +1,88 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - img "CMZ" [ref=e8]
+        - generic [ref=e9]: CMZ Dashboard
+      - generic [ref=e10]:
+        - text: Welcome back,
+        - generic [ref=e11]: Test (Administrator)
+      - generic [ref=e13]: Admin
+    - navigation [ref=e14]:
+      - button "Dashboard" [ref=e16] [cursor=pointer]:
+        - img [ref=e17] [cursor=pointer]
+        - generic [ref=e20] [cursor=pointer]: Dashboard
+      - button "Animal Management" [ref=e22] [cursor=pointer]:
+        - img [ref=e23] [cursor=pointer]
+        - generic [ref=e25] [cursor=pointer]: Animal Management
+        - img [ref=e26] [cursor=pointer]
+      - button "Family Groups" [ref=e29] [cursor=pointer]:
+        - img [ref=e30] [cursor=pointer]
+        - generic [ref=e35] [cursor=pointer]: Family Groups
+        - img [ref=e36] [cursor=pointer]
+      - button "Conversations" [ref=e39] [cursor=pointer]:
+        - img [ref=e40] [cursor=pointer]
+        - generic [ref=e42] [cursor=pointer]: Conversations
+        - img [ref=e43] [cursor=pointer]
+      - button "Knowledge Base" [ref=e46] [cursor=pointer]:
+        - img [ref=e47] [cursor=pointer]
+        - generic [ref=e49] [cursor=pointer]: Knowledge Base
+        - img [ref=e50] [cursor=pointer]
+      - button "User Management" [ref=e53] [cursor=pointer]:
+        - img [ref=e54] [cursor=pointer]
+        - generic [ref=e66] [cursor=pointer]: User Management
+        - img [ref=e67] [cursor=pointer]
+      - button "Analytics" [ref=e70] [cursor=pointer]:
+        - img [ref=e71] [cursor=pointer]
+        - generic [ref=e76] [cursor=pointer]: Analytics
+        - img [ref=e77] [cursor=pointer]
+      - button "System" [ref=e80] [cursor=pointer]:
+        - img [ref=e81] [cursor=pointer]
+        - generic [ref=e84] [cursor=pointer]: System
+        - img [ref=e85] [cursor=pointer]
+    - button "Sign Out" [ref=e88] [cursor=pointer]:
+      - img [ref=e89] [cursor=pointer]
+      - generic [ref=e93] [cursor=pointer]: Sign Out
+  - generic [ref=e94]:
+    - generic [ref=e95]:
+      - heading "Family Management" [level=1] [ref=e98]
+      - generic [ref=e99]:
+        - generic [ref=e100]:
+          - img [ref=e101]
+          - textbox "Search..." [ref=e104]
+        - button [ref=e105] [cursor=pointer]:
+          - img [ref=e106] [cursor=pointer]
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]: Test (Administrator)
+            - generic [ref=e113]: admin
+          - generic [ref=e115]: T
+    - main [ref=e116]:
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - heading "Family Management" [level=1] [ref=e120]
+            - paragraph [ref=e121]: Manage family registrations and educational program participation
+          - button "Add New Family" [ref=e122] [cursor=pointer]:
+            - img [ref=e123] [cursor=pointer]
+            - text: Add New Family
+        - paragraph [ref=e127]: Failed to load families. Using demo data.
+        - generic [ref=e128]:
+          - generic [ref=e129]:
+            - img [ref=e130]
+            - textbox "Search families by name, parent, or student..." [ref=e133]
+          - generic [ref=e134]:
+            - combobox [ref=e135]:
+              - option "All Families" [selected]
+              - option "Active"
+              - option "Inactive"
+              - option "Pending"
+            - generic [ref=e136]: 0 of 0 families
+        - generic [ref=e137]:
+          - img [ref=e139]
+          - heading "No families found" [level=3] [ref=e142]
+          - paragraph [ref=e143]: Try adjusting your search criteria or filters.
+```

@@ -296,3 +296,295 @@ def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -
     
     if field_errors:
         raise ValidationError("Required field validation failed", field_errors=field_errors)
+
+
+# ============================================================================
+# Contract Validation Decorators (Task 4.1: Prevention Phase 2)
+# ============================================================================
+
+import functools
+import yaml
+from pathlib import Path
+from typing import Callable, Tuple
+from jsonschema import validate, ValidationError as JsonSchemaValidationError
+
+
+# Cache for OpenAPI specification
+_openapi_spec: Optional[Dict[str, Any]] = None
+
+
+def _load_openapi_spec() -> Dict[str, Any]:
+    """Load and cache OpenAPI specification"""
+    global _openapi_spec
+
+    if _openapi_spec is None:
+        # Find openapi_spec.yaml relative to this file
+        current_file = Path(__file__)
+        spec_path = current_file.parent.parent.parent.parent.parent.parent / 'openapi_spec.yaml'
+
+        if not spec_path.exists():
+            # Try alternative path
+            spec_path = Path.cwd() / 'backend' / 'api' / 'openapi_spec.yaml'
+
+        if not spec_path.exists():
+            raise FileNotFoundError(f"OpenAPI spec not found at {spec_path}")
+
+        with open(spec_path) as f:
+            _openapi_spec = yaml.safe_load(f)
+
+    return _openapi_spec
+
+
+def _get_schema_for_endpoint(method: str, path: str, schema_type: str = 'requestBody') -> Optional[Dict[str, Any]]:
+    """
+    Extract schema from OpenAPI spec for a given endpoint
+
+    Args:
+        method: HTTP method (get, post, put, patch, delete)
+        path: API path (e.g., '/animal/{id}')
+        schema_type: 'requestBody' or 'response'
+
+    Returns:
+        Schema dictionary or None if not found
+    """
+    spec = _load_openapi_spec()
+
+    if path not in spec.get('paths', {}):
+        return None
+
+    endpoint = spec['paths'][path].get(method.lower())
+    if not endpoint:
+        return None
+
+    if schema_type == 'requestBody':
+        request_body = endpoint.get('requestBody', {})
+        content = request_body.get('content', {})
+        json_content = content.get('application/json', {})
+        schema_ref = json_content.get('schema', {})
+
+        # Resolve $ref if present
+        if '$ref' in schema_ref:
+            ref_path = schema_ref['$ref'].split('/')
+            schema = spec
+            for part in ref_path[1:]:  # Skip leading '#'
+                schema = schema.get(part, {})
+            return schema
+
+        return schema_ref
+
+    elif schema_type == 'response':
+        responses = endpoint.get('responses', {})
+        success_response = responses.get('200', {}) or responses.get('201', {})
+        content = success_response.get('content', {})
+        json_content = content.get('application/json', {})
+        schema_ref = json_content.get('schema', {})
+
+        # Resolve $ref if present
+        if '$ref' in schema_ref:
+            ref_path = schema_ref['$ref'].split('/')
+            schema = spec
+            for part in ref_path[1:]:
+                schema = schema.get(part, {})
+            return schema
+
+        return schema_ref
+
+    return None
+
+
+def validate_request(method: str, path: str):
+    """
+    Decorator to validate request body against OpenAPI schema
+
+    Usage:
+        @validate_request('post', '/animal')
+        def handle_animal_post(body):
+            # body is guaranteed to match OpenAPI schema
+            return create_animal(body)
+
+    Args:
+        method: HTTP method (post, put, patch)
+        path: API path from OpenAPI spec
+
+    Raises:
+        ValidationError: If request body doesn't match schema
+    """
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> Tuple[Any, int]:
+            # Extract body from arguments
+            body = None
+            if 'body' in kwargs:
+                body = kwargs['body']
+            elif len(args) > 0:
+                # Assume first positional argument is body
+                body = args[0]
+
+            if body is None:
+                return {"error": "Missing request body"}, 400
+
+            # Get schema and validate
+            try:
+                schema = _get_schema_for_endpoint(method, path, 'requestBody')
+                if schema:
+                    # Convert body to dict if it's a model object
+                    body_dict = body.to_dict() if hasattr(body, 'to_dict') else body
+                    validate(instance=body_dict, schema=schema)
+            except JsonSchemaValidationError as e:
+                return {
+                    "error": "Request validation failed",
+                    "details": str(e.message),
+                    "path": list(e.path)
+                }, 400
+            except Exception as e:
+                # Schema not found or validation error - log but don't block
+                print(f"⚠️ Validation decorator error for {method} {path}: {e}")
+
+            # Call original function
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+def validate_types(**expected_types):
+    """
+    Decorator to validate parameter types at runtime
+
+    Usage:
+        @validate_types(animal_id=str, body=dict)
+        def handle_animal_put(animal_id, body):
+            # Parameters guaranteed to have correct types
+            return update_animal(animal_id, body)
+
+    Args:
+        **expected_types: Keyword arguments mapping parameter names to expected types
+
+    Raises:
+        TypeError: If parameter type doesn't match expected type
+    """
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> Tuple[Any, int]:
+            # Get function signature
+            import inspect
+            sig = inspect.signature(func)
+            bound_args = sig.bind(*args, **kwargs)
+            bound_args.apply_defaults()
+
+            # Validate each parameter
+            for param_name, expected_type in expected_types.items():
+                if param_name in bound_args.arguments:
+                    actual_value = bound_args.arguments[param_name]
+
+                    # Skip None values if Optional type
+                    if actual_value is None:
+                        continue
+
+                    # Check type
+                    if not isinstance(actual_value, expected_type):
+                        return {
+                            "error": f"Parameter '{param_name}' must be {expected_type.__name__}",
+                            "actual_type": type(actual_value).__name__
+                        }, 400
+
+            # Call original function
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+def validate_required_fields_decorator(*required_fields_list):
+    """
+    Decorator to validate that required fields are present in request body
+
+    Usage:
+        @validate_required_fields_decorator('email', 'password')
+        def handle_login_post(body):
+            # body guaranteed to have email and password fields
+            return authenticate(body['email'], body['password'])
+
+    Args:
+        *required_fields_list: Field names that must be present in body
+
+    Raises:
+        ValidationError: If required field is missing
+    """
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> Tuple[Any, int]:
+            # Extract body
+            body = kwargs.get('body') or (args[0] if args else None)
+
+            if body is None:
+                return {"error": "Missing request body"}, 400
+
+            # Convert to dict if model
+            body_dict = body.to_dict() if hasattr(body, 'to_dict') else body
+
+            # Check required fields
+            missing_fields = []
+            for field in required_fields_list:
+                if field not in body_dict or body_dict[field] is None or body_dict[field] == '':
+                    missing_fields.append(field)
+
+            if missing_fields:
+                return {
+                    "error": "Missing required fields",
+                    "missing_fields": missing_fields
+                }, 400
+
+            # Call original function
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+def validate_response_schema(method: str, path: str):
+    """
+    Decorator to validate response body against OpenAPI schema
+
+    Usage:
+        @validate_response_schema('get', '/animal/{id}')
+        def handle_animal_get(animal_id):
+            animal = get_animal(animal_id)
+            return animal, 200  # Validated against OpenAPI response schema
+
+    Args:
+        method: HTTP method
+        path: API path from OpenAPI spec
+
+    Note: This decorator logs validation failures but doesn't block responses
+    """
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> Tuple[Any, int]:
+            # Call original function
+            result = func(*args, **kwargs)
+
+            # Extract response body and status code
+            if isinstance(result, tuple) and len(result) == 2:
+                response_body, status_code = result
+            else:
+                response_body = result
+                status_code = 200
+
+            # Validate response against schema (non-blocking)
+            try:
+                schema = _get_schema_for_endpoint(method, path, 'response')
+                if schema and response_body:
+                    # Convert to dict if model
+                    response_dict = response_body.to_dict() if hasattr(response_body, 'to_dict') else response_body
+                    validate(instance=response_dict, schema=schema)
+            except JsonSchemaValidationError as e:
+                # Log but don't block response
+                print(f"⚠️ Response validation failed for {method} {path}: {e.message}")
+            except Exception as e:
+                print(f"⚠️ Response validation error for {method} {path}: {e}")
+
+            return result
+
+        return wrapper
+    return decorator

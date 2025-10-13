@@ -9,7 +9,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "security:check": "../scripts/security-check.sh",
     "security:test": "npm test -- --testPathPattern=inputValidation",
-    "security:audit": "npm audit --audit-level=moderate"
+    "security:audit": "npm audit --audit-level=moderate",
+    "generate-types": "openapi-typescript ../backend/api/openapi_spec.yaml -o src/api/types.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -42,6 +43,7 @@
     "@types/react-dom": "^18.2.15",
     "@vitejs/plugin-react": "^4.1.0",
     "autoprefixer": "^10.4.16",
+    "openapi-typescript": "^6.7.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2",

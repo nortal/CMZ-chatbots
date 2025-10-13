@@ -139,8 +139,9 @@ class APIValidation:
             if param.get('in') == 'path':
                 param_name = param.get('name')
                 if param_name:
-                    # Convert to Python-safe name (same logic as Connexion)
-                    safe_name = param_name.replace('-', '_')
+                    # Convert to Python-safe name (camelCase → snake_case, then handle hyphens)
+                    # OpenAPI Generator converts camelCase to snake_case (e.g., animalId → animal_id)
+                    safe_name = self.to_snake_case(param_name).replace('-', '_')
 
                     # Handle Python reserved keywords
                     python_reserved = {

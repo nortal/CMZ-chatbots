@@ -1,11 +1,16 @@
 """Authentication domain service using AWS Cognito for managed authentication"""
 import boto3
+import hashlib
+import jwt
+import secrets
+import uuid
 from botocore.exceptions import ClientError
 from typing import Dict, Any, Optional, Tuple
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .common.entities import (
-    AuthCredentials, AuthToken, AuthenticatedUser
+    AuthCredentials, AuthToken, AuthenticatedUser,
+    PasswordResetToken, AuthSession
 )
 from .common.exceptions import (
     ValidationError, NotFoundError, ConflictError, 

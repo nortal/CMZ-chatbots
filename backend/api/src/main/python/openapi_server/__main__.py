@@ -13,7 +13,7 @@ def main():
     # Enable CORS for frontend access
     CORS(app.app, resources={
         r"/*": {
-            "origins": ["http://localhost:3000", "http://localhost:3001"],
+            "origins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"],
             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
             "supports_credentials": True

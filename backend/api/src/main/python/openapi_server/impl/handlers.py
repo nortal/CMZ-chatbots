@@ -116,7 +116,8 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'update_family': handle_update_family,
             'update_user': handle_update_user,
             'update_user_details': handle_update_user_details,
-            'upload_media_post': handle_upload_media_post,}
+            'upload_media_post': handle_upload_media_post,
+        }
 
         handler_func = handler_map.get(caller_name)
         if handler_func:
@@ -513,6 +514,49 @@ def handle_user_details_delete(user_id: str) -> Tuple[Any, int]:
 
 # Stub handlers for other endpoints that need implementation
 def handle_family_list_get() -> Tuple[Any, int]:
+    """Get list of families"""
+    from .family import family_list_get
+    from flask import request
+
+    # Extract user_id from JWT token
+    auth_header = request.headers.get('Authorization')
+    user_id = 'anonymous'
+
+    if auth_header and auth_header.startswith('Bearer '):
+        is_valid, payload = verify_jwt_token(auth_header)
+        if is_valid and payload:
+            user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+    return family_list_get(user_id=user_id)
+
+
+def handle_family_details_post(body: Any) -> Tuple[Any, int]:
+    """Create new family with proper model handling"""
+    from .family import family_details_post
+
+    # Convert FamilyInput model object to dict if needed
+    if hasattr(body, 'to_dict'):
+        body_dict = body.to_dict()
+        # The to_dict() method converts to snake_case, but we need camelCase for the family creation
+        # Convert family_name back to familyName
+        if 'family_name' in body_dict:
+            body_dict['familyName'] = body_dict.pop('family_name')
+        if 'preferred_programs' in body_dict:
+            body_dict['preferredPrograms'] = body_dict.pop('preferred_programs')
+    else:
+        body_dict = body
+
+    # Ensure all fields are present in the dictionary
+    # The model might not include all fields if not regenerated
+    if isinstance(body_dict, dict):
+        # Log what we received for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Creating family with data: {body_dict}")
+
+    return family_details_post(body_dict)
+
+
     """Get list of families"""
     from .family import family_list_get
     from flask import request
