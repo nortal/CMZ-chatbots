@@ -409,6 +409,75 @@ Resources:
             WriteCapacityUnits: !Ref DynamoWriteCapacity
           - !Ref "AWS::NoValue"
 
+  GuardrailsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ProjectName}-${StageName}-guardrails'
+      BillingMode: !Ref DynamoBillingMode
+      AttributeDefinitions:
+        - AttributeName: guardrailId
+          AttributeType: S
+        - AttributeName: category
+          AttributeType: S
+        - AttributeName: isActive
+          AttributeType: S
+        - AttributeName: isGlobal
+          AttributeType: S
+        - AttributeName: priority
+          AttributeType: N
+      KeySchema:
+        - AttributeName: guardrailId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: category-index
+          KeySchema:
+            - AttributeName: category
+              KeyType: HASH
+            - AttributeName: priority
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            Fn::If:
+              - IsProvisioned
+              - ReadCapacityUnits: !Ref DynamoReadCapacity
+                WriteCapacityUnits: !Ref DynamoWriteCapacity
+              - !Ref "AWS::NoValue"
+        - IndexName: isActive-index
+          KeySchema:
+            - AttributeName: isActive
+              KeyType: HASH
+            - AttributeName: priority
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            Fn::If:
+              - IsProvisioned
+              - ReadCapacityUnits: !Ref DynamoReadCapacity
+                WriteCapacityUnits: !Ref DynamoWriteCapacity
+              - !Ref "AWS::NoValue"
+        - IndexName: isGlobal-index
+          KeySchema:
+            - AttributeName: isGlobal
+              KeyType: HASH
+            - AttributeName: priority
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            Fn::If:
+              - IsProvisioned
+              - ReadCapacityUnits: !Ref DynamoReadCapacity
+                WriteCapacityUnits: !Ref DynamoWriteCapacity
+              - !Ref "AWS::NoValue"
+      ProvisionedThroughput:
+        Fn::If:
+          - IsProvisioned
+          - ReadCapacityUnits: !Ref DynamoReadCapacity
+            WriteCapacityUnits: !Ref DynamoWriteCapacity
+          - !Ref "AWS::NoValue"
+
   # Lambda Execution Role
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -444,6 +513,8 @@ Resources:
                   - !GetAtt FamilyTable.Arn
                   - !GetAtt AnimalConfigTable.Arn
                   - !GetAtt AnimalDetailsTable.Arn
+                  - !GetAtt GuardrailsTable.Arn
+                  - !Sub "${GuardrailsTable.Arn}/index/*"
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -484,6 +555,7 @@ Resources:
           FAMILY_TABLE: !Ref FamilyTable
           ANIMAL_CONFIG_TABLE: !Ref AnimalConfigTable
           ANIMAL_DETAILS_TABLE: !Ref AnimalDetailsTable
+          GUARDRAILS_TABLE: !Ref GuardrailsTable
           USER_POOL_ID: !If [HasCognito, !Ref UserPool, ""]
       Code:
         Fn::If:
@@ -838,6 +910,9 @@ Outputs:
   AnimalDetailsTableName:
     Description: DynamoDB AnimalDetails Table Name
     Value: !Ref AnimalDetailsTable
+  GuardrailsTableName:
+    Description: DynamoDB Guardrails Table Name
+    Value: !Ref GuardrailsTable
   FrontendS3BucketName:
     Condition: CreateFrontendS3
     Description: S3 bucket name for static frontend hosting
