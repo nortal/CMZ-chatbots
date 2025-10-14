@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: CMZ Chatbots - Core AWS Serverless Architecture
 
 Metadata:
@@ -198,8 +198,8 @@ Conditions:
   EnableFrontendCloudFront: !Equals [!Ref EnableFrontendHttps, true]
   EnableApiGatewayWaf: !Equals [!Ref EnableApiWaf, true]
   HasLambdaS3Bucket: !And
-      - !Not [!Equals [!Ref LambdaS3Bucket, ""]]
-      - !Not [!Equals [!Ref LambdaS3Key, ""]]
+    - !Not [!Equals [!Ref LambdaS3Bucket, ""]]
+    - !Not [!Equals [!Ref LambdaS3Key, ""]]
   HasApiGateway: !And
     - !Not [!Equals [!Ref OpenApiS3Bucket, ""]]
     - !Not [!Equals [!Ref OpenApiS3Key, ""]]
@@ -228,14 +228,12 @@ Conditions:
     - !Condition EnableFrontendCloudFront
     - !Condition CreateFrontendS3
 
-
 Resources:
-
   # DynamoDB Tables
   SessionTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-session'
+      TableName: !Sub "${ProjectName}-${StageName}-session"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: sessionId
@@ -253,7 +251,7 @@ Resources:
   ConversationTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-conversation'
+      TableName: !Sub "${ProjectName}-${StageName}-conversation"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: conversationId
@@ -271,7 +269,7 @@ Resources:
   AnimalTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-animal'
+      TableName: !Sub "${ProjectName}-${StageName}-animal"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: animalId
@@ -289,7 +287,7 @@ Resources:
   KnowledgeTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-knowledge'
+      TableName: !Sub "${ProjectName}-${StageName}-knowledge"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: knowledgeId
@@ -307,7 +305,7 @@ Resources:
   UserTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-user'
+      TableName: !Sub "${ProjectName}-${StageName}-user"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: userId
@@ -325,7 +323,7 @@ Resources:
   UserDetailsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-user-details'
+      TableName: !Sub "${ProjectName}-${StageName}-user-details"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: userDetailsId
@@ -358,7 +356,7 @@ Resources:
   FamilyTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-family'
+      TableName: !Sub "${ProjectName}-${StageName}-family"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: familyId
@@ -376,7 +374,7 @@ Resources:
   AnimalConfigTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-animal-config'
+      TableName: !Sub "${ProjectName}-${StageName}-animal-config"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: animalConfigId
@@ -394,7 +392,7 @@ Resources:
   AnimalDetailsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-animal-details'
+      TableName: !Sub "${ProjectName}-${StageName}-animal-details"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: animalDetailsId
@@ -412,7 +410,7 @@ Resources:
   GuardrailsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub '${ProjectName}-${StageName}-guardrails'
+      TableName: !Sub "${ProjectName}-${StageName}-guardrails"
       BillingMode: !Ref DynamoBillingMode
       AttributeDefinitions:
         - AttributeName: guardrailId
@@ -482,18 +480,18 @@ Resources:
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${ProjectName}-${StageName}-lambda-execution-role'
+      RoleName: !Sub "${ProjectName}-${StageName}-lambda-execution-role"
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: !Sub '${ProjectName}-${StageName}-lambda-policy'
+        - PolicyName: !Sub "${ProjectName}-${StageName}-lambda-policy"
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -520,7 +518,7 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${ProjectName}-${StageName}-chatbot-backend:*'
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${ProjectName}-${StageName}-chatbot-backend:*"
               - Effect: Allow
                 Action:
                   - s3:GetObject
@@ -538,7 +536,7 @@ Resources:
   ChatbotLambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub '${ProjectName}-${StageName}-chatbot-backend'
+      FunctionName: !Sub "${ProjectName}-${StageName}-chatbot-backend"
       Handler: main.lambda_handler
       Runtime: python3.11
       Role: !GetAtt LambdaExecutionRole.Arn
@@ -574,7 +572,7 @@ Resources:
     Condition: HasCognito
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: !Sub '${ProjectName}-${StageName}-user-pool'
+      UserPoolName: !Sub "${ProjectName}-${StageName}-user-pool"
       AutoVerifiedAttributes: [email]
       Policies:
         PasswordPolicy:
@@ -594,7 +592,7 @@ Resources:
     Condition: HasCognito
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      ClientName: !Sub '${ProjectName}-${StageName}-user-pool-client'
+      ClientName: !Sub "${ProjectName}-${StageName}-user-pool-client"
       UserPoolId: !Ref UserPool
       GenerateSecret: false
       AllowedOAuthFlowsUserPoolClient: true
@@ -620,7 +618,7 @@ Resources:
     Condition: HasApiGateway
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: !Sub '${ProjectName}-${StageName}-api'
+      Name: !Sub "${ProjectName}-${StageName}-api"
       BodyS3Location:
         Bucket: !Ref OpenApiS3Bucket
         Key: !Ref OpenApiS3Key
@@ -665,7 +663,7 @@ Resources:
     Condition: HasApiGateway
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub '/aws/cmz/${ProjectName}-${StageName}/apigw'
+      LogGroupName: !Sub "/aws/cmz/${ProjectName}-${StageName}/apigw"
       RetentionInDays: !Ref CloudwatchRetentionInDays
 
   ApiGatewayLambdaPermission:
@@ -732,14 +730,14 @@ Resources:
     Condition: CreateApiGatewayWithWaf
     Type: AWS::WAFv2::WebACL
     Properties:
-      Name: !Sub '${ProjectName}-${StageName}-api-waf'
+      Name: !Sub "${ProjectName}-${StageName}-api-waf"
       Scope: REGIONAL
       DefaultAction:
         Allow: {}
       VisibilityConfig:
         SampledRequestsEnabled: true
         CloudWatchMetricsEnabled: true
-        MetricName: !Sub '${ProjectName}-${StageName}-api-waf'
+        MetricName: !Sub "${ProjectName}-${StageName}-api-waf"
       Rules:
         - Name: AWS-AWSManagedRulesCommonRuleSet
           Priority: 1
@@ -752,13 +750,13 @@ Resources:
           VisibilityConfig:
             SampledRequestsEnabled: true
             CloudWatchMetricsEnabled: true
-            MetricName: !Sub '${ProjectName}-${StageName}-api-waf-common'
+            MetricName: !Sub "${ProjectName}-${StageName}-api-waf-common"
 
   ApiGatewayWebAclAssociation:
     Condition: CreateApiGatewayWithWaf
     Type: AWS::WAFv2::WebACLAssociation
     Properties:
-      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGateway}/stages/${ApiGatewayStageName}'
+      ResourceArn: !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGateway}/stages/${ApiGatewayStageName}"
       WebACLArn: !Ref ApiWafWebAcl
 
   # S3 bucket for static frontend hosting (HTTP only)
@@ -848,20 +846,18 @@ Resources:
       Type: A
       AliasTarget:
         DNSName: !GetAtt FrontendS3Bucket.WebsiteURL
-        HostedZoneId: !FindInMap [S3WebsiteHostedZoneIdMap, !Ref "AWS::Region", HostedZoneId]
+        HostedZoneId:
+          !FindInMap [
+            S3WebsiteHostedZoneIdMap,
+            !Ref "AWS::Region",
+            HostedZoneId,
+          ]
 
 Mappings:
   S3WebsiteHostedZoneIdMap:
-    us-east-1:      { HostedZoneId: Z3AQBSTGFYJSTF }
-    us-west-1:      { HostedZoneId: Z2F56UZL2M1ACD }
-    us-west-2:      { HostedZoneId: Z3BJ6K6RIION7M }
-    eu-west-1:      { HostedZoneId: Z1BKCTXD74EZPE }
-    ap-southeast-1: { HostedZoneId: Z3O0J2DXBE1FTB }
-    ap-southeast-2: { HostedZoneId: Z1WCIGYICN2BYD }
-    ap-northeast-1: { HostedZoneId: Z2M4EHUR26P7ZW }
-    sa-east-1:      { HostedZoneId: Z31GFT0UA1I2HV }
-    eu-central-1:   { HostedZoneId: Z21DNDUVLTQW6Q }
-    # ...add other regions as needed...
+    us-east-1: { HostedZoneId: Z3AQBSTGFYJSTF }
+    us-west-1: { HostedZoneId: Z2F56UZL2M1ACD }
+    us-west-2: { HostedZoneId: Z3BJ6K6RIION7M }
 
 Outputs:
   ApiUrl:
@@ -920,4 +916,4 @@ Outputs:
   FrontendDomainName:
     Condition: HasFrontendDomain
     Description: Custom domain name for the app frontend
-    Value: !Sub 'https://${FrontendDomainName}'
+    Value: !Sub "https://${FrontendDomainName}"
