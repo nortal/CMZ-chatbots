@@ -18,22 +18,6 @@ def not_implemented_error(operation_name: str) -> Tuple[Dict[str, Any], int]:
     return error_obj.to_dict(), 501
 
 
-def handle_create_family(*args, **kwargs) -> Tuple[Any, int]:
-    """
-    Implementation handler for create_family
-
-    TODO: Implement business logic for this operation
-    """
-    return not_implemented_error("create_family")
-
-
-def handle_delete_family(*args, **kwargs) -> Tuple[Any, int]:
-    """
-    Implementation handler for delete_family
-
-    TODO: Implement business logic for this operation
-    """
-    return not_implemented_error("delete_family")
 
 
 def handle_get_family(*args, **kwargs) -> Tuple[Any, int]:
@@ -45,22 +29,31 @@ def handle_get_family(*args, **kwargs) -> Tuple[Any, int]:
     return real_handler(*args, **kwargs)
 
 
+def family_list_get(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Forwarding handler for family_list_get
+    Routes to implementation in handlers.py
+    """
+    from .handlers import handle_family_list_get as real_handler
+    return real_handler(*args, **kwargs)
+
+
 def handle_list_all_families(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for list_all_families
-
-    TODO: Implement business logic for this operation
+    Forwarding handler for list_all_families
+    Routes to implementation in handlers.py
     """
-    return not_implemented_error("list_all_families")
+    from .handlers import handle_family_list_get as real_handler
+    return real_handler(*args, **kwargs)
 
 
 def handle_list_families(*args, **kwargs) -> Tuple[Any, int]:
     """
-    Implementation handler for list_families
-
-    TODO: Implement business logic for this operation
+    Forwarding handler for list_families
+    Routes to implementation in handlers.py
     """
-    return not_implemented_error("list_families")
+    from .handlers import handle_family_list_get as real_handler
+    return real_handler(*args, **kwargs)
 
 
 def handle_update_family(*args, **kwargs) -> Tuple[Any, int]:
@@ -70,4 +63,36 @@ def handle_update_family(*args, **kwargs) -> Tuple[Any, int]:
     """
     from .handlers import handle_update_family as real_handler
     return real_handler(*args, **kwargs)
+
+
+# Auto-generated handler functions (2025-10-12: Fixed to forward to handlers.py)
+
+def handle_create_family(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for create_family
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation create_family not yet implemented",
+        details={"operation": "create_family", "handler": "handle_create_family"}
+    )
+    return error_obj.to_dict(), 501
+
+
+def handle_delete_family(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Implementation handler for delete_family
+
+    TODO: Implement business logic for this operation
+    """
+    from ..models.error import Error
+    error_obj = Error(
+        code="not_implemented",
+        message=f"Operation delete_family not yet implemented",
+        details={"operation": "delete_family", "handler": "handle_delete_family"}
+    )
+    return error_obj.to_dict(), 501
 

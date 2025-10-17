@@ -19,8 +19,10 @@ Test Strategy:
 4. Validation: Query DynamoDB directly to confirm persistence (never infer from code)
 
 Test Users:
-- parent1@test.cmz.org / testpass123 (parent role)
-- student1@test.cmz.org / testpass123 (student role)
+- test@cmz.org / testpass123 (admin role - required for animal config updates)
+
+Note: Only admin and zookeeper roles can modify animal configuration.
+Parent role can only manage family operations and chat history.
 
 Expected Behavior After Fix:
 - PATCH /animal_config returns 200 OK
@@ -68,9 +70,8 @@ class TestBug001SystemPromptPersistence:
 
     @pytest.fixture
     def test_animal_config(self):
-        """Test animal configuration data"""
+        """Test animal configuration data (body only, animalId sent as query param)"""
         return {
-            "animalId": TEST_ANIMAL_ID,
             "systemPrompt": f"Bug #1 Regression Test - {int(time.time())}",
             "temperature": 0.75
         }
@@ -94,10 +95,10 @@ class TestBug001SystemPromptPersistence:
 
         url = f"{api_base_url}/animal_config"
 
-        # Get auth token first
+        # Get auth token first (admin role required for animal config updates)
         auth_response = requests.post(
             f"{api_base_url}/auth",
-            json={"email": "parent1@test.cmz.org", "password": "testpass123"}
+            json={"email": "test@cmz.org", "password": "testpass123"}
         )
         assert auth_response.status_code == 200, "Authentication failed"
         token = auth_response.json().get("token")
@@ -108,8 +109,9 @@ class TestBug001SystemPromptPersistence:
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
         }
+        params = {"animalId": TEST_ANIMAL_ID}
 
-        response = requests.patch(url, json=test_animal_config, headers=headers)
+        response = requests.patch(url, params=params, json=test_animal_config, headers=headers)
 
         # Critical assertion: Must return 200, not 501
         assert response.status_code == 200, (
@@ -119,7 +121,7 @@ class TestBug001SystemPromptPersistence:
 
         # Verify response contains expected data
         response_data = response.json()
-        assert "animalId" in response_data or "id" in response_data, "No animalId in response"
+        assert "animalConfigId" in response_data, "No animalConfigId in response"
 
         print(f"✅ API Layer: PATCH /animal_config returned {response.status_code}")
 
@@ -134,16 +136,17 @@ class TestBug001SystemPromptPersistence:
 
         url = f"{api_base_url}/animal_config"
 
-        # Get auth token
+        # Get auth token (admin role required for animal config updates)
         auth_response = requests.post(
             f"{api_base_url}/auth",
-            json={"email": "parent1@test.cmz.org", "password": "testpass123"}
+            json={"email": "test@cmz.org", "password": "testpass123"}
         )
         token = auth_response.json().get("token")
 
         # PATCH animal config
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-        response = requests.patch(url, json=test_animal_config, headers=headers)
+        params = {"animalId": TEST_ANIMAL_ID}
+        response = requests.patch(url, params=params, json=test_animal_config, headers=headers)
 
         assert response.status_code == 200
         response_data = response.json()
@@ -175,12 +178,13 @@ class TestBug001SystemPromptPersistence:
         url = f"{api_base_url}/animal_config"
         auth_response = requests.post(
             f"{api_base_url}/auth",
-            json={"email": "parent1@test.cmz.org", "password": "testpass123"}
+            json={"email": "test@cmz.org", "password": "testpass123"}
         )
         token = auth_response.json().get("token")
 
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-        response = requests.patch(url, json=test_animal_config, headers=headers)
+        params = {"animalId": TEST_ANIMAL_ID}
+        response = requests.patch(url, params=params, json=test_animal_config, headers=headers)
         assert response.status_code == 200, f"API call failed: {response.text}"
 
         # Step 2: Wait for eventual consistency
@@ -222,11 +226,13 @@ class TestBug001SystemPromptPersistence:
         )
 
         # Step 6: Verify temperature field also persists
+        # Note: Temperature is rounded to nearest 0.1 by validation logic (animal_service.py:353)
         assert "temperature" in config, "temperature field NOT in DynamoDB"
         stored_temp = float(config["temperature"]["N"])
         expected_temp = test_animal_config["temperature"]
 
-        assert abs(stored_temp - expected_temp) < 0.01, (
+        # Allow 0.1 tolerance for rounding (e.g., 0.75 rounds to 0.8)
+        assert abs(stored_temp - expected_temp) < 0.1, (
             f"temperature mismatch! "
             f"Expected: {expected_temp}, "
             f"Stored in DynamoDB: {stored_temp}"
@@ -249,12 +255,13 @@ class TestBug001SystemPromptPersistence:
         url = f"{api_base_url}/animal_config"
         auth_response = requests.post(
             f"{api_base_url}/auth",
-            json={"email": "parent1@test.cmz.org", "password": "testpass123"}
+            json={"email": "test@cmz.org", "password": "testpass123"}
         )
         token = auth_response.json().get("token")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        params = {"animalId": TEST_ANIMAL_ID}
 
-        patch_response = requests.patch(url, json=test_animal_config, headers=headers)
+        patch_response = requests.patch(url, params=params, json=test_animal_config, headers=headers)
         assert patch_response.status_code == 200
 
         time.sleep(1)
@@ -297,12 +304,13 @@ class TestBug001SystemPromptPersistence:
 
         auth_response = requests.post(
             f"{api_base_url}/auth",
-            json={"email": "parent1@test.cmz.org", "password": "testpass123"}
+            json={"email": "test@cmz.org", "password": "testpass123"}
         )
         token = auth_response.json().get("token")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        params = {"animalId": TEST_ANIMAL_ID}
 
-        response = requests.patch(url, json=test_animal_config, headers=headers)
+        response = requests.patch(url, params=params, json=test_animal_config, headers=headers)
 
         # Should never return 501
         assert response.status_code != 501, (

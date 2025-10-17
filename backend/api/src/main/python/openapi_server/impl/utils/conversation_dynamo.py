@@ -28,34 +28,57 @@ def get_sessions_table():
     """Get reference to conversation sessions table"""
     return dynamodb.Table(CONVERSATION_SESSION_TABLE)
 
-def create_conversation_session(user_id: str, animal_id: str) -> str:
+def create_conversation_session(user_id: str, animal_id: str, animal_name: str = None) -> str:
     """
-    Create a new conversation session
+    Create a new conversation session in quest-dev-conversation table
 
     Args:
         user_id: ID of the user
         animal_id: ID of the animal
+        animal_name: Optional name of the animal
 
     Returns:
-        session_id: Unique identifier for the session
+        conversation_id: Unique identifier for the conversation
     """
-    session_id = str(uuid.uuid4())
+    conversation_id = f"conv_{animal_id}_{user_id}_{str(uuid.uuid4())[:8]}"
     timestamp = datetime.utcnow().isoformat() + 'Z'
 
-    table = get_sessions_table()
-    table.put_item(
-        Item={
-            'sessionId': session_id,
-            'userId': user_id,
-            'animalId': animal_id,
-            'startTime': timestamp,
-            'lastActivity': timestamp,
-            'messageCount': 0,
-            'status': 'active'
-        }
-    )
+    table = get_conversations_table()
 
-    return session_id
+    # Create conversation with proper schema matching quest-dev-conversation
+    item = {
+        'conversationId': conversation_id,  # Primary key
+        'userId': user_id,
+        'animalId': animal_id,
+        'animalName': animal_name or animal_id,
+        'messageCount': 0,
+        'startTime': timestamp,
+        'endTime': timestamp,
+        'status': 'active',
+        'messages': []  # Initialize empty messages list
+    }
+
+    table.put_item(Item=item)
+
+    # Also create session record for backward compatibility
+    try:
+        sessions_table = get_sessions_table()
+        sessions_table.put_item(
+            Item={
+                'sessionId': conversation_id,
+                'userId': user_id,
+                'animalId': animal_id,
+                'startTime': timestamp,
+                'lastActivity': timestamp,
+                'messageCount': 0,
+                'status': 'active'
+            }
+        )
+    except Exception:
+        # Session table is optional, don't fail if it doesn't exist
+        pass
+
+    return conversation_id
 
 def store_conversation_turn(
     session_id: str,
@@ -64,45 +87,77 @@ def store_conversation_turn(
     metadata: Optional[Dict[str, Any]] = None
 ) -> str:
     """
-    Store a conversation turn in DynamoDB
+    Store a conversation turn in DynamoDB by appending to messages list
 
     Args:
-        session_id: Conversation session ID
+        session_id: Conversation ID (conversationId)
         user_message: User's message
         assistant_reply: Assistant's reply
         metadata: Additional metadata (tokens, latency, etc.)
 
     Returns:
-        turn_id: Unique identifier for the turn
+        message_id: Unique identifier for the user message
     """
-    turn_id = str(uuid.uuid4())
+    conversation_id = session_id  # session_id is actually conversationId
+    user_msg_id = str(uuid.uuid4())
+    assistant_msg_id = str(uuid.uuid4())
     timestamp = datetime.utcnow().isoformat() + 'Z'
 
     table = get_conversations_table()
 
-    item = {
-        'sessionId': session_id,
-        'turnId': turn_id,
-        'timestamp': timestamp,
-        'userMessage': user_message,
-        'assistantReply': assistant_reply,
-        'metadata': metadata or {}
+    # Create user message object
+    user_msg = {
+        'messageId': user_msg_id,
+        'role': 'user',
+        'text': user_message,
+        'timestamp': timestamp
     }
 
-    table.put_item(Item=item)
+    # Create assistant message object
+    assistant_msg = {
+        'messageId': assistant_msg_id,
+        'role': 'assistant',
+        'text': assistant_reply,
+        'timestamp': timestamp
+    }
 
-    # Update session last activity and message count
-    sessions_table = get_sessions_table()
-    sessions_table.update_item(
-        Key={'sessionId': session_id},
-        UpdateExpression='SET lastActivity = :time, messageCount = messageCount + :inc',
-        ExpressionAttributeValues={
-            ':time': timestamp,
-            ':inc': 1
-        }
-    )
+    # Add metadata if provided
+    if metadata:
+        assistant_msg['metadata'] = metadata
 
-    return turn_id
+    # Append both messages to the conversation
+    try:
+        table.update_item(
+            Key={'conversationId': conversation_id},
+            UpdateExpression='SET messages = list_append(messages, :msgs), '
+                           'messageCount = messageCount + :count, '
+                           'endTime = :time',
+            ExpressionAttributeValues={
+                ':msgs': [user_msg, assistant_msg],
+                ':count': 2,
+                ':time': timestamp
+            }
+        )
+    except Exception as e:
+        # If conversation doesn't exist, error will be raised
+        raise Exception(f"Failed to store conversation turn: {str(e)}")
+
+    # Update session table for backward compatibility
+    try:
+        sessions_table = get_sessions_table()
+        sessions_table.update_item(
+            Key={'sessionId': conversation_id},
+            UpdateExpression='SET lastActivity = :time, messageCount = messageCount + :inc',
+            ExpressionAttributeValues={
+                ':time': timestamp,
+                ':inc': 2
+            }
+        )
+    except Exception:
+        # Session table is optional
+        pass
+
+    return user_msg_id
 
 def get_conversation_history(
     session_id: str,
@@ -112,25 +167,33 @@ def get_conversation_history(
     Retrieve conversation history for a session
 
     Args:
-        session_id: Conversation session ID
-        limit: Maximum number of turns to retrieve
+        session_id: Conversation ID (conversationId)
+        limit: Maximum number of messages to retrieve
 
     Returns:
-        List of conversation turns
+        List of messages from the conversation
     """
+    conversation_id = session_id  # session_id is actually conversationId
     table = get_conversations_table()
 
-    response = table.query(
-        KeyConditionExpression=Key('sessionId').eq(session_id),
-        ScanIndexForward=False,  # Most recent first
-        Limit=limit
-    )
+    try:
+        response = table.get_item(Key={'conversationId': conversation_id})
+        item = response.get('Item')
 
-    # Reverse to get chronological order
-    items = response.get('Items', [])
-    items.reverse()
+        if not item:
+            return []
 
-    return items
+        # Get messages list and apply limit
+        messages = item.get('messages', [])
+
+        # Return most recent messages up to limit
+        if len(messages) > limit:
+            return messages[-limit:]
+
+        return messages
+
+    except Exception:
+        return []
 
 def get_user_sessions(
     user_id: str,
@@ -171,16 +234,28 @@ def get_session_info(session_id: str) -> Optional[Dict[str, Any]]:
     Get information about a conversation session
 
     Args:
-        session_id: Session ID
+        session_id: Conversation ID (conversationId)
 
     Returns:
-        Session information or None if not found
+        Conversation information or None if not found
     """
-    table = get_sessions_table()
+    conversation_id = session_id  # session_id is actually conversationId
+    table = get_conversations_table()
 
     try:
-        response = table.get_item(Key={'sessionId': session_id})
-        return response.get('Item')
+        response = table.get_item(Key={'conversationId': conversation_id})
+        item = response.get('Item')
+
+        if not item:
+            # Try session table as fallback for backward compatibility
+            try:
+                sessions_table = get_sessions_table()
+                response = sessions_table.get_item(Key={'sessionId': conversation_id})
+                return response.get('Item')
+            except Exception:
+                return None
+
+        return item
     except Exception:
         return None
 

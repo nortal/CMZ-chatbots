@@ -187,10 +187,28 @@ class ChatGPTAnimalChat:
                 guardrails = GuardrailsManager.get_guardrails_for_animal(animal_id)
                 guardrails_text = GuardrailsManager.format_guardrails_for_prompt(guardrails)
 
-                # Build prompt from DynamoDB data with guardrails
-                base_prompt = f"""You are {animal_data.get('name', 'an animal')} at Cougar Mountain Zoo.
-{animal_data.get('personality', '')}
-Key facts: {animal_data.get('facts', '')}
+                # Check if configuration.systemPrompt exists (full custom prompt)
+                configuration = animal_data.get('configuration', {})
+                if isinstance(configuration, dict) and 'systemPrompt' in configuration:
+                    # Use the full systemPrompt from configuration with guardrails appended
+                    base_prompt = configuration['systemPrompt']
+                    if guardrails_text:
+                        base_prompt += f"\n\n{guardrails_text}"
+                    return base_prompt
+
+                # Otherwise, build prompt from animal data fields
+                name = animal_data.get('name', 'an animal')
+
+                # Extract personality description (it's stored as a Map)
+                personality_data = animal_data.get('personality', {})
+                if isinstance(personality_data, dict):
+                    personality_desc = personality_data.get('description', '')
+                else:
+                    personality_desc = str(personality_data) if personality_data else ''
+
+                # Build prompt from available data
+                base_prompt = f"""You are {name} at Cougar Mountain Zoo.
+{personality_desc}
 
 {guardrails_text}
 

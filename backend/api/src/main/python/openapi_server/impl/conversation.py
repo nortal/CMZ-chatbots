@@ -57,10 +57,117 @@ def handle_convo_history_get(*args, **kwargs) -> Tuple[Any, int]:
 def handle_convo_turn_post(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for convo_turn_post
-
-    TODO: Implement business logic for this operation
+    Processes a chat message and returns AI-generated response
     """
-    return not_implemented_error("convo_turn_post")
+    try:
+        # Import required modules
+        from .chatgpt_integration import generate_chatgpt_response
+        from .utils.conversation_dynamo import (
+            store_conversation_turn,
+            create_conversation_session,
+            get_session_info
+        )
+        from flask import request
+
+        # Get request body
+        body = None
+        if args:
+            body = args[0]
+        else:
+            body = kwargs.get('body') or request.get_json()
+
+        # Convert model object to dict if needed
+        if hasattr(body, 'to_dict'):
+            body = body.to_dict()
+
+        # Extract parameters
+        message = body.get('message', '')
+        animal_id = body.get('animalId') or body.get('animal_id', 'pokey')
+        session_id = body.get('sessionId') or body.get('session_id')
+        metadata_input = body.get('metadata') or {}
+
+        # Validate message
+        if not message or not message.strip():
+            error_obj = Error(
+                code="missing_parameter",
+                message="Message is required",
+                details={"parameter": "message"}
+            )
+            return error_obj.to_dict(), 400
+
+        # Get user ID from JWT token or metadata
+        user_id = metadata_input.get('userId', 'anonymous')
+        from .utils.jwt_utils import verify_jwt_token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            is_valid, payload = verify_jwt_token(auth_header)
+            if is_valid and payload:
+                user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+        # Create or validate session
+        if not session_id:
+            session_id = create_conversation_session(user_id, animal_id)
+        else:
+            # Validate session exists
+            session_info = get_session_info(session_id)
+            if not session_info:
+                error_obj = Error(
+                    code="session_not_found",
+                    message="Session not found",
+                    details={"sessionId": session_id}
+                )
+                return error_obj.to_dict(), 404
+
+        # Generate AI response using ChatGPT
+        ai_response = generate_chatgpt_response(
+            animal_id=animal_id,
+            message=message,
+            user_id=user_id
+        )
+
+        # Store conversation turn in DynamoDB
+        turn_id = store_conversation_turn(
+            session_id=session_id,
+            user_message=message,
+            assistant_reply=ai_response['reply'],
+            metadata={
+                'tokens': ai_response.get('tokens', 0),
+                'model': ai_response.get('model', 'unknown'),
+                'finish_reason': ai_response.get('finish_reason', 'stop'),
+                'animal_id': animal_id,
+                'user_id': user_id
+            }
+        )
+
+        # Build response
+        from datetime import datetime
+        response = {
+            'reply': ai_response['reply'],
+            'sessionId': session_id,
+            'turnId': turn_id,
+            'timestamp': datetime.utcnow().isoformat() + 'Z',
+            'metadata': {
+                'tokens': ai_response.get('tokens', 0),
+                'model': ai_response.get('model', 'unknown'),
+                'animalId': animal_id
+            }
+        }
+
+        return response, 200
+
+    except Exception as e:
+        import logging
+        import traceback
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in handle_convo_turn_post: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+
+        error_obj = Error(
+            code="internal_error",
+            message="Failed to process conversation turn",
+            details={"error": str(e)}
+        )
+        return error_obj.to_dict(), 500
 
 
 def handle_summarize_convo_post(*args, **kwargs) -> Tuple[Any, int]:

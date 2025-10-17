@@ -16,3 +16,6 @@ flask-cors >= 3.0.10
 # AWS SDK and ORM
 boto3 >= 1.26.0
 pynamodb >= 5.5.0
+
+# OpenAI for ChatGPT integration
+openai >= 1.0.0
