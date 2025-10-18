@@ -1,3 +1,27 @@
+/**
+ * Animal Configuration Save Tests
+ *
+ * IMPORTANT: This test uses Playwright MCP browser automation.
+ * Static code analysis would not catch the bugs tested here.
+ * Always use real browser testing for frontend validation.
+ *
+ * Playwright MCP Tools Used:
+ * - mcp__playwright__browser_navigate: Navigate to animal config page
+ * - mcp__playwright__browser_fill_form: Fill animal configuration fields
+ * - mcp__playwright__browser_click: Save configuration
+ * - mcp__playwright__browser_wait_for: Wait for save confirmation
+ * - mcp__playwright__browser_snapshot: Verify UI state after save
+ * - mcp__playwright__browser_console_messages: Check for errors
+ *
+ * This test validates:
+ * - Animal configuration persistence to DynamoDB
+ * - UI updates after successful save
+ * - Error handling for invalid data
+ * - Modal dialogs open and close correctly
+ *
+ * See: FRONTEND-AGENT-PLAYWRIGHT-ADVICE.md for best practices
+ */
+
 const { test, expect } = require('@playwright/test');
 
 test.describe('Animal Configuration Save Test', () => {
