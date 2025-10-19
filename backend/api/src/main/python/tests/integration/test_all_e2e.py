@@ -17,11 +17,11 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import all test modules to ensure they're included
-from test_api_validation_epic import *
-from test_chatgpt_integration_epic import *
-from test_guardrails_system_e2e import *
-from test_animal_config_persistence import *
-from test_endpoints import *
+from .test_api_validation_epic import *
+from .test_chatgpt_integration_epic import *
+from .test_guardrails_system_e2e import *
+from .test_animal_config_persistence import *
+from .test_endpoints import *
 
 # Test suite metadata
 TEST_SUITE_INFO = {
