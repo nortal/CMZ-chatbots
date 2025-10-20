@@ -162,6 +162,11 @@ class FamilyApiService {
       console.log('Parent objects:', familyData.parents);
       console.log('Children objects:', familyData.children);
 
+      // Validate that we have at least one student (required by backend API specification)
+      if (!familyData.children || familyData.children.length === 0) {
+        throw new Error('At least one child is required to create a family. Please add a child before submitting.');
+      }
+
       // Transform the data to match backend API structure
       const payload = {
         familyName: familyData.familyName,

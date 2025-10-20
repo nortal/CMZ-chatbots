@@ -9,12 +9,14 @@ import AnimalConfig from './pages/AnimalConfig';
 import AnimalDetails from './pages/AnimalDetails';
 import FamilyManagement from './pages/FamilyManagement';
 import UserManagement from './pages/UserManagement';
+import UserSearchPage from './pages/UserSearchPage';
 import TestFamilyModalEnhanced from './pages/TestFamilyModalEnhanced';
 import Chat from './pages/Chat';
 import ChatHistory from './pages/ChatHistory';
 import ConversationViewer from './pages/ConversationViewer';
 import PublicAnimalList from './pages/PublicAnimalList';
 import ParentDashboard from './pages/ParentDashboard';
+import AIProviderSettings from './pages/AIProviderSettings';
 import './index.css';
 
 const AppRoutes: React.FC = () => {
@@ -42,8 +44,10 @@ const AppRoutes: React.FC = () => {
       case '/chat': return 'Chat with Animals';
       case '/conversations/history': return 'Conversation History';
       case '/users/accounts': return 'User Management';
+      case '/users/search': return 'User Search';
       case '/analytics/usage': return 'Usage Analytics';
       case '/system/health': return 'System Health';
+      case '/system/ai-provider': return 'AI Provider Settings';
       default: return 'CMZ Dashboard';
     }
   };
@@ -220,6 +224,34 @@ const AppRoutes: React.FC = () => {
             onLogout={handleLogout}
           >
             <UserManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/users/search" element={
+        <ProtectedRoute requiredRoles={['admin']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <UserSearchPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/system/ai-provider" element={
+        <ProtectedRoute requiredRoles={['admin']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <AIProviderSettings />
           </DashboardLayout>
         </ProtectedRoute>
       } />
