@@ -108,14 +108,13 @@ def handle_update_user(user_id: str, user_data: dict):
     except:
         return None, 404
 
-def handle_delete_user(user_id: str):
-    """Delete a user (soft delete) - delegates to service layer"""
-    try:
-        service = _get_service()
-        service.soft_delete_user(user_id)
-        return None, 204
-    except:
-        return None, 404
+def handle_delete_user(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Forwarding handler for delete_user
+    Routes to implementation in handlers.py
+    """
+    from .handlers import handle_delete_user as real_handler
+    return real_handler(*args, **kwargs)
 
 def _validate_foreign_keys(data: dict):
     """Validate foreign key references - delegates to service layer"""

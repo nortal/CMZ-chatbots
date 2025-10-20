@@ -1122,3 +1122,14 @@ def handle_conversations_sessions_session_id_get(*args, **kwargs) -> Tuple[Any, 
         details={"operation": "conversations_sessions_session_id_get"}
     )
     return error.to_dict(), 501
+
+
+# Alias functions for forwarding compatibility (fixes validation)
+def handle_create_family(*args, **kwargs) -> Tuple[Any, int]:
+    """Alias for handle_family_details_post for forwarding compatibility"""
+    return handle_family_details_post(*args, **kwargs)
+
+
+def handle_delete_family(*args, **kwargs) -> Tuple[Any, int]:
+    """Alias for handle_family_details_delete for forwarding compatibility"""
+    return handle_family_details_delete(*args, **kwargs)

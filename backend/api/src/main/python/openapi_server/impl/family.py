@@ -38,22 +38,8 @@ def family_list_get(*args, **kwargs) -> Tuple[Any, int]:
     return real_handler(*args, **kwargs)
 
 
-def handle_list_all_families(*args, **kwargs) -> Tuple[Any, int]:
-    """
-    Forwarding handler for list_all_families
-    Routes to implementation in handlers.py
-    """
-    from .handlers import handle_family_list_get as real_handler
-    return real_handler(*args, **kwargs)
-
-
-def handle_list_families(*args, **kwargs) -> Tuple[Any, int]:
-    """
-    Forwarding handler for list_families
-    Routes to implementation in handlers.py
-    """
-    from .handlers import handle_family_list_get as real_handler
-    return real_handler(*args, **kwargs)
+# Removed redundant handlers: handle_list_all_families and handle_list_families
+# These were duplicates of handle_family_list_get functionality
 
 
 def handle_family_list_get(*args, **kwargs) -> Tuple[Any, int]:
