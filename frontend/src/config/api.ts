@@ -24,7 +24,7 @@ export const API_ENDPOINTS = {
   CONVO_TURN: '/convo_turn',
 
   // Auth endpoints
-  AUTH_LOGIN: '/auth/login',
+  AUTH_LOGIN: '/auth',
   AUTH_LOGOUT: '/auth/logout',
 
   // User endpoints

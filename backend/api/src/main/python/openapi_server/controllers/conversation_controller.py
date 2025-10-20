@@ -10,7 +10,7 @@ from openapi_server.models.convo_turn_post_request import ConvoTurnPostRequest  
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.summarize_convo_post200_response import SummarizeConvoPost200Response  # noqa: E501
 from openapi_server.models.summarize_convo_post_request import SummarizeConvoPostRequest  # noqa: E501
-from openapi_server import util
+# from openapi_server import util  # Not used
 
 
 def conversations_sessions_get(user_id=None, animal_id=None, start_date=None, end_date=None, limit=None, last_evaluated_key=None, sort_by=None, sort_order=None):  # noqa: E501
@@ -47,7 +47,7 @@ def conversations_sessions_get(user_id=None, animal_id=None, start_date=None, en
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "conversation_controller".replace("_controller", "")
-        impl_function_name = "handle_conversations_sessions_get"
+        impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
@@ -122,7 +122,7 @@ def conversations_sessions_session_id_get(session_id):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "conversation_controller".replace("_controller", "")
-        impl_function_name = "handle_conversations_sessions_session_id_get"
+        impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:

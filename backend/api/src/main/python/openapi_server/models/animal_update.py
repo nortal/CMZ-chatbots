@@ -12,13 +12,15 @@ class AnimalUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name=None, species=None, status=None, personality=None):  # noqa: E501
+    def __init__(self, name=None, species=None, description=None, status=None, personality=None):  # noqa: E501
         """AnimalUpdate - a model defined in OpenAPI
 
         :param name: The name of this AnimalUpdate.  # noqa: E501
         :type name: str
         :param species: The species of this AnimalUpdate.  # noqa: E501
         :type species: str
+        :param description: The description of this AnimalUpdate.  # noqa: E501
+        :type description: str
         :param status: The status of this AnimalUpdate.  # noqa: E501
         :type status: str
         :param personality: The personality of this AnimalUpdate.  # noqa: E501
@@ -27,6 +29,7 @@ class AnimalUpdate(Model):
         self.openapi_types = {
             'name': str,
             'species': str,
+            'description': str,
             'status': str,
             'personality': str
         }
@@ -34,12 +37,14 @@ class AnimalUpdate(Model):
         self.attribute_map = {
             'name': 'name',
             'species': 'species',
+            'description': 'description',
             'status': 'status',
             'personality': 'personality'
         }
 
         self._name = name
         self._species = species
+        self._description = description
         self._status = status
         self._personality = personality
 
@@ -103,6 +108,29 @@ class AnimalUpdate(Model):
             raise ValueError("Invalid value for `species`, length must be greater than or equal to `1`")  # noqa: E501
 
         self._species = species
+
+    @property
+    def description(self) -> str:
+        """Gets the description of this AnimalUpdate.
+
+
+        :return: The description of this AnimalUpdate.
+        :rtype: str
+        """
+        return self._description
+
+    @description.setter
+    def description(self, description: str):
+        """Sets the description of this AnimalUpdate.
+
+
+        :param description: The description of this AnimalUpdate.
+        :type description: str
+        """
+        if description is not None and len(description) > 500:
+            raise ValueError("Invalid value for `description`, length must be less than or equal to `500`")  # noqa: E501
+
+        self._description = description
 
     @property
     def status(self) -> str:

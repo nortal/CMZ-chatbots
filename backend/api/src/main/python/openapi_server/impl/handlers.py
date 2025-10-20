@@ -20,9 +20,7 @@ from .conversation import (
     handle_convo_turn_post,
     handle_convo_history_get,
     handle_convo_history_delete,
-    handle_summarize_convo_post,
-    handle_conversations_sessions_get,
-    handle_conversations_sessions_session_id_get
+    handle_summarize_convo_post
 )
 from .error_handler import create_error_response, handle_exception_for_controllers
 from .utils.jwt_utils import verify_jwt_token
@@ -40,6 +38,8 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
     try:
         caller_frame = frame.f_back
         caller_name = caller_frame.f_code.co_name
+
+        print(f"🔥 DEBUG handle_(): caller_name={caller_name}, args={args}, kwargs={kwargs}")
 
         # Map controller function names to handler functions
         handler_map = {
@@ -111,11 +111,13 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'performance_metrics_get': handle_performance_metrics_get,
             'root_get': handle_homepage_get,
             'system_health_get': handle_system_health_get,
+            'chatgpt_health_get': handle_chatgpt_health_get,
             'test_stress_body': handle_test_stress_body,
             'update_family': handle_update_family,
             'update_user': handle_update_user,
             'update_user_details': handle_update_user_details,
-            'upload_media_post': handle_upload_media_post,}
+            'upload_media_post': handle_upload_media_post,
+        }
 
         handler_func = handler_map.get(caller_name)
         if handler_func:
@@ -511,15 +513,28 @@ def handle_user_details_delete(user_id: str) -> Tuple[Any, int]:
 
 
 # Stub handlers for other endpoints that need implementation
-def handle_family_list_get() -> Tuple[Any, int]:
-    """Get list of families"""
-    from .family import family_list_get
-    return family_list_get()
+def handle_family_list_get(user_id=None, **kwargs) -> Tuple[Any, int]:
+    """Get list of families for the current user"""
+    from .family_bidirectional import list_families_for_user
+    from flask import request
+
+    # Extract user_id from JWT token if not provided
+    if not user_id:
+        auth_header = request.headers.get('Authorization')
+        user_id = 'anonymous'
+
+        if auth_header and auth_header.startswith('Bearer '):
+            is_valid, payload = verify_jwt_token(auth_header)
+            if is_valid and payload:
+                user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+    # Get families for this user
+    return list_families_for_user(user_id)
 
 
 def handle_family_details_post(body: Any) -> Tuple[Any, int]:
     """Create new family with proper model handling"""
-    from .family import family_details_post
+    from .family_bidirectional import create_family_bidirectional
 
     # Convert FamilyInput model object to dict if needed
     if hasattr(body, 'to_dict'):
@@ -538,13 +553,19 @@ def handle_family_details_post(body: Any) -> Tuple[Any, int]:
         body_dict = body
 
     # Ensure all fields are present in the dictionary
-    # The model might not include all fields if not regenerated
     if isinstance(body_dict, dict):
         # Log what we received for debugging
-        logger = logging.getLogger(__name__)
         logger.info(f"Creating family with data: {body_dict}")
 
-    return family_details_post(body_dict)
+    # Get requesting user ID from JWT token or use anonymous for testing
+    requesting_user_id = 'anonymous'
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        is_valid, payload = verify_jwt_token(auth_header)
+        if is_valid and payload:
+            requesting_user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+    return create_family_bidirectional(body_dict, requesting_user_id)
 
 
 def handle_family_details_get(family_id: str) -> Tuple[Any, int]:
@@ -581,7 +602,7 @@ def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
 
         # Extract email and password from body
         # Frontend sends 'username' field, but we use email
-        email = body.get('username', body.get('email', ''))
+        email = body.get('username') or body.get('email', '')
         password = body.get('password', '')
 
         # Debug logging (password completely omitted for security)
@@ -956,6 +977,12 @@ def handle_system_health_get() -> Tuple[Any, int]:
     return {"status": "healthy", "timestamp": datetime.datetime.now().isoformat()}, 200
 
 
+def handle_chatgpt_health_get() -> Tuple[Any, int]:
+    """ChatGPT integration health check"""
+    from .chatgpt_integration import handle_health_check
+    return handle_health_check()
+
+
 def handle_system_status_get() -> Tuple[Any, int]:
     """System status check"""
     # Return system status information
@@ -1073,3 +1100,36 @@ def handle_upload_media_post(*args, **kwargs) -> Tuple[Any, int]:
         details={"operation": "upload_media_post"}
     )
     return error.to_dict(), 501
+
+
+def handle_conversations_sessions_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Get conversation sessions list"""
+    from openapi_server.models.error import Error
+    error = Error(
+        code="not_implemented",
+        message="Conversation sessions list not yet implemented",
+        details={"operation": "conversations_sessions_get"}
+    )
+    return error.to_dict(), 501
+
+
+def handle_conversations_sessions_session_id_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Get specific conversation session by ID"""
+    from openapi_server.models.error import Error
+    error = Error(
+        code="not_implemented",
+        message="Conversation session get not yet implemented",
+        details={"operation": "conversations_sessions_session_id_get"}
+    )
+    return error.to_dict(), 501
+
+
+# Alias functions for forwarding compatibility (fixes validation)
+def handle_create_family(*args, **kwargs) -> Tuple[Any, int]:
+    """Alias for handle_family_details_post for forwarding compatibility"""
+    return handle_family_details_post(*args, **kwargs)
+
+
+def handle_delete_family(*args, **kwargs) -> Tuple[Any, int]:
+    """Alias for handle_family_details_delete for forwarding compatibility"""
+    return handle_family_details_delete(*args, **kwargs)

@@ -16,6 +16,8 @@ tags:
 - name: Users
 - name: Conversation
 - name: Animals
+- description: Dynamic guardrails management for ChatGPT safety
+  name: Guardrails
 - name: Knowledge
 - name: Analytics
 - name: Admin
@@ -118,7 +120,7 @@ paths:
       x-openapi-router-controller: openapi_server.controllers.animals_controller
   /animal/{animalId}:
     delete:
-      operationId: animal_id_delete
+      operationId: animal_delete
       parameters:
       - explode: false
         in: path
@@ -147,7 +149,7 @@ paths:
       - Animals
       x-openapi-router-controller: openapi_server.controllers.animals_controller
     get:
-      operationId: animal_id_get
+      operationId: animal_get
       parameters:
       - explode: false
         in: path
@@ -197,7 +199,7 @@ paths:
       - Animals
       x-openapi-router-controller: openapi_server.controllers.animals_controller
     put:
-      operationId: animal_id_put
+      operationId: animal_put
       parameters:
       - explode: false
         in: path
@@ -258,6 +260,76 @@ paths:
       - Animals
       x-body-name: animal_update
       x-openapi-router-controller: openapi_server.controllers.animals_controller
+  /animal/{animalId}/guardrails/effective:
+    get:
+      operationId: get_animal_effective_guardrails
+      parameters:
+      - explode: false
+        in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Guardrail"
+                type: array
+          description: List of effective guardrails ordered by priority
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+      security: []
+      summary: Get effective guardrails for an animal
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
+  /animal/{animalId}/system-prompt:
+    get:
+      operationId: get_animal_system_prompt
+      parameters:
+      - explode: false
+        in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getAnimalSystemPrompt_200_response"
+          description: System prompt including guardrails
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+      security: []
+      summary: Get system prompt with guardrails
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
   /animal_config:
     get:
       operationId: animal_config_get
@@ -670,6 +742,26 @@ paths:
       tags:
       - Analytics
       x-openapi-router-controller: openapi_server.controllers.analytics_controller
+  /chatgpt/health:
+    get:
+      operationId: chatgpt_health_get
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                status: healthy
+                api_key_configured: true
+                model: gpt-3.5-turbo
+                timestamp: 2025-09-14T19:47:00Z
+              schema:
+                $ref: "#/components/schemas/chatgptHealthGet_200_response"
+          description: ChatGPT integration health status
+      security: []
+      summary: ChatGPT integration health check
+      tags:
+      - System
+      x-openapi-router-controller: openapi_server.controllers.system_controller
   /conversations/sessions:
     get:
       operationId: conversations_sessions_get
@@ -1380,6 +1472,345 @@ paths:
       tags:
       - System
       x-openapi-router-controller: openapi_server.controllers.system_controller
+  /guardrails:
+    get:
+      operationId: list_guardrails
+      parameters:
+      - description: Filter by category
+        explode: true
+        in: query
+        name: category
+        required: false
+        schema:
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+          type: string
+        style: form
+      - description: Filter by active status
+        explode: true
+        in: query
+        name: isActive
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: Filter by global status
+        explode: true
+        in: query
+        name: isGlobal
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Guardrail"
+                type: array
+          description: List of guardrails
+      security: []
+      summary: List all guardrails
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
+    post:
+      operationId: create_guardrail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GuardrailInput"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guardrail"
+          description: Guardrail created
+        "400":
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              examples:
+                unauthorized:
+                  value:
+                    code: unauthorized
+                    message: Missing or invalid token
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              examples:
+                forbidden:
+                  value:
+                    code: forbidden
+                    message: Insufficient permissions to access this resource
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Forbidden - Insufficient permissions
+      security: []
+      summary: Create new guardrail
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
+  /guardrails/apply-template:
+    post:
+      operationId: apply_guardrail_template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/applyGuardrailTemplate_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/applyGuardrailTemplate_200_response"
+          description: Template applied successfully
+        "400":
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              examples:
+                unauthorized:
+                  value:
+                    code: unauthorized
+                    message: Missing or invalid token
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              examples:
+                forbidden:
+                  value:
+                    code: forbidden
+                    message: Insufficient permissions to access this resource
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Forbidden - Insufficient permissions
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+      security: []
+      summary: Apply template to animal
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
+  /guardrails/templates:
+    get:
+      operationId: get_guardrail_templates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/GuardrailTemplate"
+                type: array
+          description: List of guardrail templates
+      security: []
+      summary: Get pre-built guardrail templates
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
+  /guardrails/{guardrailId}:
+    delete:
+      operationId: delete_guardrail
+      parameters:
+      - explode: false
+        in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Guardrail deleted
+        "401":
+          content:
+            application/json:
+              examples:
+                unauthorized:
+                  value:
+                    code: unauthorized
+                    message: Missing or invalid token
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              examples:
+                forbidden:
+                  value:
+                    code: forbidden
+                    message: Insufficient permissions to access this resource
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Forbidden - Insufficient permissions
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+      security: []
+      summary: Delete guardrail (soft delete)
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
+    get:
+      operationId: get_guardrail
+      parameters:
+      - explode: false
+        in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guardrail"
+          description: Guardrail details
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+      security: []
+      summary: Get specific guardrail
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
+    patch:
+      operationId: update_guardrail
+      parameters:
+      - explode: false
+        in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GuardrailUpdate"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guardrail"
+          description: Guardrail updated
+        "400":
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  value:
+                    code: invalid_request
+                    message: The request is invalid
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              examples:
+                unauthorized:
+                  value:
+                    code: unauthorized
+                    message: Missing or invalid token
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              examples:
+                forbidden:
+                  value:
+                    code: forbidden
+                    message: Insufficient permissions to access this resource
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Forbidden - Insufficient permissions
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  value:
+                    code: not_found
+                    message: Resource not found
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+      security: []
+      summary: Update guardrail
+      tags:
+      - Guardrails
+      x-openapi-router-controller: openapi_server.controllers.guardrails_controller
   /knowledge_article:
     delete:
       operationId: knowledge_article_delete
@@ -3163,6 +3594,9 @@ components:
             type: string
           species:
             type: string
+          description:
+            maxLength: 500
+            type: string
           status:
             enum:
             - active
@@ -3190,6 +3624,7 @@ components:
             displayName: displayName
             email: email
         name: name
+        description: description
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
@@ -3232,6 +3667,7 @@ components:
         personality: personality
         species: species
         name: name
+        description: description
         status: active
       properties:
         name:
@@ -3243,6 +3679,10 @@ components:
           maxLength: 100
           minLength: 1
           title: species
+          type: string
+        description:
+          maxLength: 500
+          title: description
           type: string
         status:
           enum:
@@ -3290,13 +3730,13 @@ components:
             email: email
         imageUrl: https://openapi-generator.tech
         name: name
+        description: description
         modified:
           at: 2000-01-23T04:56:07.000+00:00
           by:
             actorId: actorId
             displayName: displayName
             email: email
-        description: description
         animalId: animalId
         animalDetailId: animalDetailId
         status: active
@@ -3371,6 +3811,7 @@ components:
     AnimalConfigUpdate:
       example:
         voice: alloy
+        systemPrompt: systemPrompt
         personality: personality
         temperature: 0.1601656380922023
         maxTokens: 601
@@ -3381,9 +3822,14 @@ components:
         - facts
         - facts
         guardrails:
-          content_filter: true
-          safe_mode: true
-          response_length_limit: 1212
+          custom:
+          - rule: rule
+            type: ALWAYS
+          - rule: rule
+            type: ALWAYS
+          selected:
+          - selected
+          - selected
         responseFormat: text
         aiModel: gpt-4o-mini
         topP: 0.6027456183070403
@@ -3414,6 +3860,13 @@ components:
           pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]'\"\";@#&+=/\\\\|{}~`*%$^_<>]+$"
           title: personality
           type: string
+        systemPrompt:
+          description: System prompt that defines the AI behavior for this animal
+          maxLength: 2000
+          minLength: 5
+          pattern: "^[a-zA-Z0-9\\s\\.,!?\\-():\\[\\]'\"\";@#&+=/\\\\|{}~`*%$^_<>]+$"
+          title: systemPrompt
+          type: string
         aiModel:
           enum:
           - gpt-4o-mini
@@ -3429,14 +3882,12 @@ components:
           description: "AI model temperature (0.0-2.0, increments of 0.1)"
           maximum: 2.0
           minimum: 0.0
-          multipleOf: 0.1
           title: temperature
           type: number
         topP:
           description: "Top-p sampling parameter (0.0-1.0, increments of 0.01)"
           maximum: 1.0
           minimum: 0.0
-          multipleOf: 0.01
           title: topP
           type: number
         maxTokens:
@@ -3886,18 +4337,18 @@ components:
           street: street
           state: state
         familyName: familyName
-        students:
-        - students
-        - students
-        - students
-        - students
-        - students
+        parentIds:
+        - parentIds
+        - parentIds
+        studentIds:
+        - studentIds
+        - studentIds
+        - studentIds
+        - studentIds
+        - studentIds
         preferredPrograms:
         - preferredPrograms
         - preferredPrograms
-        parents:
-        - parents
-        - parents
         status: active
       properties:
         familyName:
@@ -3906,20 +4357,20 @@ components:
           minLength: 1
           title: familyName
           type: string
-        parents:
+        parentIds:
           items:
             description: User ID of a parent
             type: string
           minItems: 1
-          title: parents
+          title: parentIds
           type: array
-        students:
+        studentIds:
           items:
             description: User ID of a student
             type: string
           maxItems: 8
           minItems: 1
-          title: students
+          title: studentIds
           type: array
         address:
           $ref: "#/components/schemas/FamilyInput_address"
@@ -3938,8 +4389,8 @@ components:
           type: string
       required:
       - familyName
-      - parents
-      - students
+      - parentIds
+      - studentIds
       title: FamilyInput
       type: object
     UsageSummary:
@@ -4059,6 +4510,323 @@ components:
           title: flags
           type: object
       title: FeatureFlagsUpdate
+      type: object
+    Guardrail:
+      allOf:
+      - properties:
+          guardrailId:
+            description: Unique identifier for the guardrail
+            pattern: "^gr_[a-zA-Z0-9]+$"
+            readOnly: true
+            type: string
+          name:
+            description: Human-readable name for the guardrail
+            maxLength: 200
+            minLength: 1
+            type: string
+          type:
+            description: Type of guardrail rule
+            enum:
+            - ALWAYS
+            - NEVER
+            - ENCOURAGE
+            - DISCOURAGE
+            type: string
+          rule:
+            description: The actual rule text
+            maxLength: 500
+            minLength: 1
+            type: string
+          description:
+            description: Optional detailed description
+            maxLength: 1000
+            nullable: true
+            type: string
+          category:
+            default: content_safety
+            description: Guardrail category for organization
+            enum:
+            - content_safety
+            - educational
+            - personality
+            - technical
+            type: string
+          priority:
+            default: 50
+            description: Priority level (higher = more important)
+            maximum: 100
+            minimum: 0
+            type: integer
+          isActive:
+            default: true
+            description: Whether the guardrail is currently active
+            type: boolean
+          isGlobal:
+            default: false
+            description: Whether the guardrail applies to all animals by default
+            type: boolean
+          keywords:
+            description: Keywords for search and filtering
+            items:
+              pattern: "^[a-zA-Z0-9_-]+$"
+              type: string
+            maxItems: 20
+            nullable: true
+            type: array
+          examples:
+            $ref: "#/components/schemas/Guardrail_allOf_examples"
+        required:
+        - guardrailId
+        - name
+        - rule
+        - type
+        type: object
+      - $ref: "#/components/schemas/AuditFields"
+      example:
+        keywords:
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        created:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        rule: rule
+        description: description
+        type: ALWAYS
+        priority: 8
+        isActive: true
+        deleted:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        examples:
+          bad:
+          - bad
+          - bad
+          good:
+          - good
+          - good
+        softDelete: false
+        name: name
+        isGlobal: false
+        modified:
+          at: 2000-01-23T04:56:07.000+00:00
+          by:
+            actorId: actorId
+            displayName: displayName
+            email: email
+        guardrailId: guardrailId
+        category: content_safety
+      title: Guardrail
+    GuardrailInput:
+      example:
+        keywords:
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        examples:
+          bad:
+          - bad
+          - bad
+          good:
+          - good
+          - good
+        name: name
+        isGlobal: false
+        rule: rule
+        description: description
+        type: ALWAYS
+        category: content_safety
+        priority: 8
+        isActive: true
+      properties:
+        name:
+          description: Human-readable name for the guardrail
+          maxLength: 200
+          minLength: 1
+          title: name
+          type: string
+        type:
+          description: Type of guardrail rule
+          enum:
+          - ALWAYS
+          - NEVER
+          - ENCOURAGE
+          - DISCOURAGE
+          title: type
+          type: string
+        rule:
+          description: The actual rule text
+          maxLength: 500
+          minLength: 1
+          title: rule
+          type: string
+        description:
+          description: Optional detailed description
+          maxLength: 1000
+          nullable: true
+          title: description
+          type: string
+        category:
+          default: content_safety
+          description: Guardrail category for organization
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+          title: category
+          type: string
+        priority:
+          default: 50
+          description: Priority level (higher = more important)
+          maximum: 100
+          minimum: 0
+          title: priority
+          type: integer
+        isActive:
+          default: true
+          description: Whether the guardrail is currently active
+          title: isActive
+          type: boolean
+        isGlobal:
+          default: false
+          description: Whether the guardrail applies to all animals by default
+          title: isGlobal
+          type: boolean
+        keywords:
+          description: Keywords for search and filtering
+          items:
+            pattern: "^[a-zA-Z0-9_-]+$"
+            type: string
+          maxItems: 20
+          nullable: true
+          title: keywords
+          type: array
+        examples:
+          $ref: "#/components/schemas/Guardrail_allOf_examples"
+      required:
+      - name
+      - rule
+      - type
+      title: GuardrailInput
+      type: object
+    GuardrailUpdate:
+      example:
+        keywords:
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        - keywords
+        examples:
+          bad:
+          - bad
+          - bad
+          good:
+          - good
+          - good
+        name: name
+        description: description
+        category: content_safety
+        priority: 8
+        isActive: true
+      properties:
+        name:
+          description: Human-readable name for the guardrail
+          maxLength: 200
+          minLength: 1
+          title: name
+          type: string
+        description:
+          description: Optional detailed description
+          maxLength: 1000
+          nullable: true
+          title: description
+          type: string
+        category:
+          description: Guardrail category for organization
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+          title: category
+          type: string
+        priority:
+          description: Priority level (higher = more important)
+          maximum: 100
+          minimum: 0
+          title: priority
+          type: integer
+        isActive:
+          description: Whether the guardrail is currently active
+          title: isActive
+          type: boolean
+        keywords:
+          description: Keywords for search and filtering
+          items:
+            pattern: "^[a-zA-Z0-9_-]+$"
+            type: string
+          maxItems: 20
+          nullable: true
+          title: keywords
+          type: array
+        examples:
+          $ref: "#/components/schemas/Guardrail_allOf_examples"
+      title: GuardrailUpdate
+      type: object
+    GuardrailTemplate:
+      example:
+        name: name
+        description: description
+        rules:
+        - rule: rule
+          type: ALWAYS
+          priority: 8
+        - rule: rule
+          type: ALWAYS
+          priority: 8
+        id: id
+      properties:
+        id:
+          description: Template identifier
+          pattern: "^[a-zA-Z0-9_-]+$"
+          title: id
+          type: string
+        name:
+          description: Template name
+          maxLength: 200
+          minLength: 1
+          title: name
+          type: string
+        description:
+          description: Template description
+          maxLength: 1000
+          nullable: true
+          title: description
+          type: string
+        rules:
+          description: Rules included in this template
+          items:
+            $ref: "#/components/schemas/GuardrailTemplate_rules_inner"
+          minItems: 1
+          title: rules
+          type: array
+      required:
+      - id
+      - name
+      - rules
+      title: GuardrailTemplate
       type: object
     _convo_turn_post_request:
       allOf:
@@ -4466,6 +5234,51 @@ components:
           type: string
       title: _summarize_convo_post_200_response
       type: object
+    applyGuardrailTemplate_request:
+      properties:
+        templateId:
+          description: ID of the template to apply
+          title: templateId
+          type: string
+        animalId:
+          description: ID of the animal to apply template to
+          title: animalId
+          type: string
+      required:
+      - animalId
+      - templateId
+      title: applyGuardrailTemplate_request
+      type: object
+    applyGuardrailTemplate_200_response:
+      example:
+        guardrailsApplied: 0
+        animalId: animalId
+      properties:
+        guardrailsApplied:
+          description: Number of guardrails applied
+          title: guardrailsApplied
+          type: integer
+        animalId:
+          description: Animal ID that received the guardrails
+          title: animalId
+          type: string
+      title: applyGuardrailTemplate_200_response
+      type: object
+    getAnimalSystemPrompt_200_response:
+      example:
+        guardrailCount: 0
+        prompt: prompt
+      properties:
+        prompt:
+          description: Complete system prompt with guardrails
+          title: prompt
+          type: string
+        guardrailCount:
+          description: Number of guardrails included
+          title: guardrailCount
+          type: integer
+      title: getAnimalSystemPrompt_200_response
+      type: object
     _upload_media_post_request:
       properties:
         file:
@@ -4503,6 +5316,36 @@ components:
           $ref: "#/components/schemas/Media"
         type: array
       title: _media_get_200_response
+    chatgptHealthGet_200_response:
+      example:
+        api_key_configured: true
+        model: model
+        status: healthy
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        status:
+          description: Overall health status of ChatGPT integration
+          enum:
+          - healthy
+          - no_api_key
+          - error
+          title: status
+          type: string
+        api_key_configured:
+          description: Whether OPENAI_API_KEY is configured
+          title: api_key_configured
+          type: boolean
+        model:
+          description: ChatGPT model being used
+          title: model
+          type: string
+        timestamp:
+          description: Health check timestamp
+          format: date-time
+          title: timestamp
+          type: string
+      title: chatgptHealthGet_200_response
+      type: object
     testStressBody_request:
       properties:
         data:
@@ -4573,24 +5416,52 @@ components:
           type: string
       title: ConvoHistory_turns_inner
       type: object
-    AnimalConfigUpdate_guardrails:
-      additionalProperties: false
+    AnimalConfigUpdate_guardrails_custom_inner:
       example:
-        content_filter: true
-        safe_mode: true
-        response_length_limit: 1212
+        rule: rule
+        type: ALWAYS
       properties:
-        safe_mode:
-          title: safe_mode
-          type: boolean
-        content_filter:
-          title: content_filter
-          type: boolean
-        response_length_limit:
-          maximum: 2000
-          minimum: 50
-          title: response_length_limit
-          type: integer
+        type:
+          enum:
+          - ALWAYS
+          - NEVER
+          - ENCOURAGE
+          - DISCOURAGE
+          title: type
+          type: string
+        rule:
+          maxLength: 500
+          minLength: 1
+          title: rule
+          type: string
+      required:
+      - rule
+      - type
+      title: AnimalConfigUpdate_guardrails_custom_inner
+      type: object
+    AnimalConfigUpdate_guardrails:
+      example:
+        custom:
+        - rule: rule
+          type: ALWAYS
+        - rule: rule
+          type: ALWAYS
+        selected:
+        - selected
+        - selected
+      properties:
+        selected:
+          description: List of guardrail IDs to apply to this animal
+          items:
+            type: string
+          title: selected
+          type: array
+        custom:
+          description: Custom guardrails specific to this animal
+          items:
+            $ref: "#/components/schemas/AnimalConfigUpdate_guardrails_custom_inner"
+          title: custom
+          type: array
       title: AnimalConfigUpdate_guardrails
       type: object
     Media_allOf_dimensions:
@@ -4791,6 +5662,60 @@ components:
           title: rollout
           type: number
       title: FeatureFlags_value
+      type: object
+    Guardrail_allOf_examples:
+      example:
+        bad:
+        - bad
+        - bad
+        good:
+        - good
+        - good
+      nullable: true
+      properties:
+        good:
+          description: Examples of good behavior
+          items:
+            type: string
+          title: good
+          type: array
+        bad:
+          description: Examples of behavior to avoid
+          items:
+            type: string
+          title: bad
+          type: array
+      title: Guardrail_allOf_examples
+      type: object
+    GuardrailTemplate_rules_inner:
+      example:
+        rule: rule
+        type: ALWAYS
+        priority: 8
+      properties:
+        type:
+          enum:
+          - ALWAYS
+          - NEVER
+          - ENCOURAGE
+          - DISCOURAGE
+          title: type
+          type: string
+        rule:
+          maxLength: 500
+          minLength: 1
+          title: rule
+          type: string
+        priority:
+          default: 50
+          maximum: 100
+          minimum: 0
+          title: priority
+          type: integer
+      required:
+      - rule
+      - type
+      title: GuardrailTemplate_rules_inner
       type: object
   securitySchemes:
     bearerAuth:

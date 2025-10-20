@@ -311,6 +311,8 @@ class AnimalService:
             current_config["toolsEnabled"] = config_data["toolsEnabled"]
         if "guardrails" in config_data and config_data["guardrails"] is not None:
             current_config["guardrails"] = config_data["guardrails"]
+        if "systemPrompt" in config_data and config_data["systemPrompt"] is not None:
+            current_config["systemPrompt"] = config_data["systemPrompt"]
 
         # Handle personality - store as dict with description
         if "personality" in config_data:

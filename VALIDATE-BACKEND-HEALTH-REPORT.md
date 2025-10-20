@@ -15,7 +15,7 @@ Generated: 2025-09-16 04:10:00 UTC
 ### Service Health Endpoint
 | Service | Status | Response Time | Details |
 |---------|--------|---------------|---------|
-| Overall Health | ❌ Not Implemented | N/A | `/health` endpoint returns 404 |
+| Overall Health | ❌ Not Implemented | N/A | `/system_health` endpoint returns 404 |
 | DynamoDB | ✅ Working | < 500ms | Tables accessible via API |
 | Authentication | ✅ Working | < 1000ms | JWT generation functional |
 | AWS Services | ✅ Working | < 1000ms | DynamoDB operations successful |
@@ -44,13 +44,13 @@ Generated: 2025-09-16 04:10:00 UTC
 - User Experience: **FAIL** - Users see wrong error when service is down
 
 **Network Requests Analysis**:
-- Health Check Call: `GET /health` returns 404 NOT FOUND
+- Health Check Call: `GET /system_health` returns 404 NOT FOUND
 - Login API Call with Backend Down: `POST /auth` returns `net::ERR_CONNECTION_REFUSED`
 - Error Messages: Frontend incorrectly interprets connection failure as authentication failure
 - Browser Console: Shows `ERR_CONNECTION_REFUSED` but UI displays auth error
 
 **Identified Issues**:
-1. **Missing Health Endpoint**: `/health` endpoint not implemented in backend
+1. **Missing Health Endpoint**: `/system_health` endpoint not implemented in backend
 2. **Frontend Error Handling Bug**: Network errors are not distinguished from auth errors
 3. **User Impact**: When backend is down, users think their credentials are wrong
 
@@ -88,7 +88,7 @@ Screenshots captured during testing:
 
 ### 1. Implement Health Endpoint in Backend
 ```python
-@app.route('/health', methods=['GET'])
+@app.route('/system_health', methods=['GET'])
 def health_check():
     try:
         # Check DynamoDB connectivity
@@ -143,7 +143,7 @@ try {
 ```javascript
 async function checkBackendHealth() {
     try {
-        const response = await fetch('http://localhost:8080/health', {
+        const response = await fetch('http://localhost:8080/system_health', {
             method: 'GET',
             timeout: 5000
         });

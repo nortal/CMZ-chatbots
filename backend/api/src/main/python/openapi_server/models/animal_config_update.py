@@ -16,13 +16,15 @@ class AnimalConfigUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, voice=None, personality=None, ai_model=None, temperature=None, top_p=None, max_tokens=None, tools_enabled=None, response_format='text', guardrails=None):  # noqa: E501
+    def __init__(self, voice=None, personality=None, system_prompt=None, ai_model=None, temperature=None, top_p=None, max_tokens=None, tools_enabled=None, response_format='text', guardrails=None):  # noqa: E501
         """AnimalConfigUpdate - a model defined in OpenAPI
 
         :param voice: The voice of this AnimalConfigUpdate.  # noqa: E501
         :type voice: str
         :param personality: The personality of this AnimalConfigUpdate.  # noqa: E501
         :type personality: str
+        :param system_prompt: The system_prompt of this AnimalConfigUpdate.  # noqa: E501
+        :type system_prompt: str
         :param ai_model: The ai_model of this AnimalConfigUpdate.  # noqa: E501
         :type ai_model: str
         :param temperature: The temperature of this AnimalConfigUpdate.  # noqa: E501
@@ -41,6 +43,7 @@ class AnimalConfigUpdate(Model):
         self.openapi_types = {
             'voice': str,
             'personality': str,
+            'system_prompt': str,
             'ai_model': str,
             'temperature': float,
             'top_p': float,
@@ -53,6 +56,7 @@ class AnimalConfigUpdate(Model):
         self.attribute_map = {
             'voice': 'voice',
             'personality': 'personality',
+            'system_prompt': 'systemPrompt',
             'ai_model': 'aiModel',
             'temperature': 'temperature',
             'top_p': 'topP',
@@ -64,6 +68,7 @@ class AnimalConfigUpdate(Model):
 
         self._voice = voice
         self._personality = personality
+        self._system_prompt = system_prompt
         self._ai_model = ai_model
         self._temperature = temperature
         self._top_p = top_p
@@ -140,6 +145,35 @@ class AnimalConfigUpdate(Model):
             raise ValueError(r"Invalid value for `personality`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=\/\\|{}~`*%$^_<>]+$/`")  # noqa: E501
 
         self._personality = personality
+
+    @property
+    def system_prompt(self) -> str:
+        """Gets the system_prompt of this AnimalConfigUpdate.
+
+        System prompt that defines the AI behavior for this animal  # noqa: E501
+
+        :return: The system_prompt of this AnimalConfigUpdate.
+        :rtype: str
+        """
+        return self._system_prompt
+
+    @system_prompt.setter
+    def system_prompt(self, system_prompt: str):
+        """Sets the system_prompt of this AnimalConfigUpdate.
+
+        System prompt that defines the AI behavior for this animal  # noqa: E501
+
+        :param system_prompt: The system_prompt of this AnimalConfigUpdate.
+        :type system_prompt: str
+        """
+        if system_prompt is not None and len(system_prompt) > 2000:
+            raise ValueError("Invalid value for `system_prompt`, length must be less than or equal to `2000`")  # noqa: E501
+        if system_prompt is not None and len(system_prompt) < 5:
+            raise ValueError("Invalid value for `system_prompt`, length must be greater than or equal to `5`")  # noqa: E501
+        if system_prompt is not None and not re.search(r'^[a-zA-Z0-9\s\.,!?\-():\[\]\'"";@#&+=\/\\|{}~`*%$^_<>]+$', system_prompt):  # noqa: E501
+            raise ValueError(r"Invalid value for `system_prompt`, must be a follow pattern or equal to `/^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=\/\\|{}~`*%$^_<>]+$/`")  # noqa: E501
+
+        self._system_prompt = system_prompt
 
     @property
     def ai_model(self) -> str:

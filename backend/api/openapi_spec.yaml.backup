@@ -1,0 +1,3014 @@
+openapi: 3.0.3
+info:
+  title: CMZ API
+  description: API for the Cougar Mountain Zoo digital ambassador platform
+  version: 1.0.2
+servers:
+- url: https://api.cmz.example.com
+  description: Production
+- url: https://staging.api.cmz.example.com
+  description: Staging
+- url: http://localhost:8080
+  description: Local
+tags:
+- name: UI
+- name: Auth
+- name: Users
+- name: Conversation
+- name: Animals
+- name: Knowledge
+- name: Analytics
+- name: Admin
+- name: System
+- name: Media
+- name: Later
+  description: Backlog endpoints (not in v1)
+- name: Family
+  description: Manage parent-student family groups
+paths:
+  /:
+    get:
+      tags:
+      - UI
+      summary: Public homepage
+      operationId: root_get
+      responses:
+        '200':
+          description: Health/info banner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicHome'
+              example:
+                message: Welcome to CMZ API
+                status: ok
+  /admin:
+    get:
+      tags:
+      - UI
+      summary: Admin dashboard shell data
+      security: []
+      responses:
+        '200':
+          description: Admin shell data/widgets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminShell'
+              example:
+                widgets:
+                - activeUsers
+                - latency
+                - errors
+  /member:
+    get:
+      tags:
+      - UI
+      summary: User portal shell data
+      security: []
+      responses:
+        '200':
+          description: Portal shell data/widgets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberShell'
+              example:
+                preferences: {}
+                alerts: []
+  /auth:
+    post:
+      operationId: authPost
+      x-body-name: auth_request
+      tags:
+      - Auth
+      summary: Login or register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Auth token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                token: eyJhbGciOi...
+                expiresIn: 3600
+                user:
+                  userId: user_1
+                  email: user1@cmz.org
+                  displayName: User 1
+                  role: admin
+                  created: &id002
+                    at: '2025-08-11T09:00:00Z'
+                    by: &id001
+                      userId: user_1
+                      email: system@cmz.org
+                      displayName: System
+                  modified: &id003
+                    at: '2025-08-11T09:00:00Z'
+                    by: *id001
+                  softDelete: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/refresh:
+    post:
+      operationId: authRefreshPost
+      tags:
+      - Auth
+      summary: Refresh access token
+      responses:
+        '200':
+          description: New token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                token: eyJhbGciOi...
+                expiresIn: 3600
+                user:
+                  userId: user_1
+                  email: user1@cmz.org
+                  displayName: User 1
+                  role: admin
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+  /auth/logout:
+    post:
+      operationId: authLogoutPost
+      tags:
+      - Auth
+      summary: Logout current user (invalidate token/session)
+      security: []
+      responses:
+        '204':
+          description: Logged out
+  /auth/reset_password:
+    post:
+      operationId: authResetPasswordPost
+      x-body-name: password_reset_request
+      tags:
+      - Auth
+      summary: Initiate password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '204':
+          description: Email sent if account exists
+  /me:
+    get:
+      tags:
+      - Users
+      summary: Current authenticated user
+      security: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                userId: 7f2f7e55-40...
+                email: user2@cmz.org
+                displayName: User 2
+                role: member
+                created: *id002
+                modified: *id003
+                softDelete: false
+  /user:
+    get:
+      tags:
+      - Admin
+      summary: Get list of all users
+      operationId: listUsers
+      security: []
+      parameters:
+      - in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        description: Search query for user name or email
+      - in: query
+        name: role
+        required: false
+        schema:
+          type: string
+          enum:
+          - visitor
+          - user
+          - member
+          - editor
+          - admin
+          - parent
+          - student
+        description: Filter by user role
+      - in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Page number (1-based)
+      - in: query
+        name: page_size
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 15
+        description: Number of items per page (max 100)
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedUsers'
+              example:
+                items:
+                  - userId: 92f3dd74-ed...
+                    email: user1@cmz.org
+                    displayName: User One
+                    role: admin
+                    userType: parent
+                    familyId: family_1
+                    created: *id002
+                    modified: *id003
+                    softDelete: false
+                  - userId: 7f2f7e55-40b...
+                    email: user2@cmz.org
+                    displayName: User Two
+                    role: user
+                    userType: student
+                    familyId: family_1
+                    created: *id002
+                    modified: *id003
+                    softDelete: false
+                page: 1
+                pageSize: 50
+                total: 2
+
+    post:
+      tags:
+      - Admin
+      summary: Create a new user
+      operationId: createUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+            example:
+              email: user3@cmz.org
+              displayName: User Three
+              role: editor
+              userType: none
+              familyId: null
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                userId: 7f2f7e55-40...
+                email: user3@cmz.org
+                displayName: User Three
+                role: editor
+                userType: none
+                familyId: null
+                created: *id002
+                modified: *id003
+
+  /user/{userId}:
+    get:
+      tags:
+      - Admin
+      summary: Get user by ID
+      operationId: getUser
+      security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                userId: 92f3dd74-ed...
+                email: user2@cmz.org
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+      - Admin
+      summary: Update a user
+      operationId: updateUser
+      security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              displayName: Updated Name
+              role: admin
+              userType: parent
+              familyId: family_1
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                userId: 92f3dd74-ed...
+                email: user2@cmz.org
+                displayName: Updated Name
+                role: admin
+                userType: parent
+                familyId: family_1
+                created: *id002
+                modified: *id003
+    delete:
+      tags:
+        - Admin
+      summary: Delete user
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+  /user_details:
+    get:
+      tags:
+      - Admin
+      summary: Get list of all user details
+      operationId: listUserDetails
+      security: []
+      responses:
+        '200':
+          description: List of user details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetails'
+              example:
+                - userId: 92f3dd74-ed...
+                  email: user2@cmz.org
+                  displayName: User Two
+                  role: user
+                  userType: student
+                  familyId: family_1
+                  created: *id002
+                  modified: *id003
+                  usage:
+                    totalSessions: 5
+                    totalTurns: 42
+                    lastActive: '2025-08-11T12:00:00Z'
+
+    post:
+      tags:
+      - Admin
+      summary: Create user details
+      operationId: createUserDetails
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetailsInput'
+            example:
+              userId: 92f3dd74-ed...
+              usage:
+                totalSessions: 0
+                totalTurns: 0
+                lastActive: null
+      responses:
+        '201':
+          description: UserDetails created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+              example:
+                userId: 92f3dd74-ed...
+                created: *id002
+                modified: *id003
+                usage:
+                  totalSessions: 0
+                  totalTurns: 0
+                  lastActive: null
+
+  /user_details/{userId}:
+    get:
+      tags:
+      - Admin
+      summary: Get user details by ID
+      operationId: getUserDetails
+      security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+              example:
+                userId: user_2
+                email: user2@cmz.org
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+                usage:
+                  totalSessions: 5
+                  totalTurns: 42
+                  lastActive: '2025-08-11T12:00:00Z'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+      - Admin
+      summary: Update user details
+      operationId: updateUserDetails
+      security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetailsInput'
+            example:
+              userId: "userId_2"
+              usage:
+                totalSessions: 6
+                totalTurns: 50
+                lastActive: '2025-08-12T09:00:00Z'
+      responses:
+        '200':
+          description: UserDetails updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+              example:
+                userId: user_2
+                created: *id002
+                modified: *id003
+                usage:
+                  totalSessions: 6
+                  totalTurns: 50
+                  lastActive: '2025-08-12T09:00:00Z'
+
+    delete:
+      tags:
+      - Admin
+      summary: Delete user details
+      operationId: deleteUserDetails
+      security: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: UserDetails deleted
+
+  /convo_turn:
+    post:
+      tags:
+      - Conversation
+      summary: Send conversation turn with enhanced validation and rate limiting
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/ConvoTurnRequest'
+              - type: object
+                properties:
+                  priority:
+                    type: string
+                    enum:
+                    - low
+                    - normal
+                    - high
+                    default: normal
+                    description: Processing priority for queue management
+                  maxTokens:
+                    type: integer
+                    minimum: 10
+                    maximum: 1000
+                    default: 300
+                    description: Maximum tokens for AI response
+                  temperature:
+                    type: number
+                    minimum: 0.0
+                    maximum: 2.0
+                    default: 0.7
+                    description: AI response creativity (0=deterministic, 2=very creative)
+                  contextWindow:
+                    type: integer
+                    minimum: 1
+                    maximum: 20
+                    default: 5
+                    description: Number of previous conversation turns to include as context
+                  moderationLevel:
+                    type: string
+                    enum:
+                    - permissive
+                    - standard
+                    - strict
+                    default: standard
+                    description: Content moderation strictness level
+      responses:
+        '200':
+          description: AI response with enhanced metadata and analytics
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ConvoTurnResponse'
+                - type: object
+                  properties:
+                    analytics:
+                      type: object
+                      properties:
+                        responseQuality:
+                          type: number
+                          minimum: 0
+                          maximum: 10
+                          description: AI response quality score
+                        topicRelevance:
+                          type: number
+                          minimum: 0
+                          maximum: 10
+                          description: How relevant response is to conversation topic
+                        educationalValue:
+                          type: number
+                          minimum: 0
+                          maximum: 10
+                          description: Educational content value score
+                        userEngagementPrediction:
+                          type: number
+                          minimum: 0
+                          maximum: 10
+                          description: Predicted user engagement with response
+                    moderation:
+                      type: object
+                      properties:
+                        flagged:
+                          type: boolean
+                          description: Whether content was flagged by moderation
+                        categories:
+                          type: array
+                          items:
+                            type: string
+                          description: Specific moderation categories triggered
+                        confidence:
+                          type: number
+                          minimum: 0
+                          maximum: 1
+                          description: Moderation confidence score
+                    rateLimit:
+                      type: object
+                      properties:
+                        remaining:
+                          type: integer
+                          description: Remaining API calls in current window
+                        resetTime:
+                          type: string
+                          format: date-time
+                          description: When rate limit resets
+                        dailyUsage:
+                          type: integer
+                          description: Total API calls used today
+              example:
+                reply: Hi there! I'm Pokey the porcupine! Did you know that porcupines have about 30,000 quills? Each quill has tiny barbs that make them stick when we use them for defense. What would you like to learn about porcupines today?
+                turn:
+                  convoTurnId: turn_001
+                  timestamp: '2025-08-11T09:00:00Z'
+                  tokensPrompt: 120
+                  tokensCompletion: 58
+                  latencyMs: 420
+                analytics:
+                  responseQuality: 8.5
+                  topicRelevance: 9.2
+                  educationalValue: 9.0
+                  userEngagementPrediction: 8.7
+                moderation:
+                  flagged: false
+                  categories: []
+                  confidence: 0.99
+                rateLimit:
+                  remaining: 47
+                  resetTime: '2025-08-11T10:00:00Z'
+                  dailyUsage: 203
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: API rate limit exceeded. Please try again later.
+                details:
+                  limit: 50
+                  window: 3600
+                  resetTime: '2025-08-11T10:00:00Z'
+        '503':
+          description: Service temporarily unavailable due to high load
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /convo_history:
+    get:
+      tags:
+      - Conversation
+      summary: Get conversation history with enhanced filtering and pagination
+      security: []
+      parameters:
+      - in: query
+        name: animalId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Filter conversations by animal identifier
+      - in: query
+        name: userId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Filter conversations by user identifier
+      - in: query
+        name: sessionId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Get specific conversation session
+      - in: query
+        name: startDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter conversations from this date (ISO8601)
+      - in: query
+        name: endDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter conversations until this date (ISO8601)
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 100
+        description: Maximum number of conversation turns to return
+      - in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: Number of conversation turns to skip (pagination)
+      - in: query
+        name: includeMetadata
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Include turn metadata (tokens, latency, etc.)
+      responses:
+        '200':
+          description: Conversation history with optional metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvoHistory'
+              example:
+                sessionId: sess_123
+                animalId: animal_1
+                userId: user_2
+                totalTurns: 24
+                turns:
+                - role: user
+                  content: Hi Pokey
+                  timestamp: '2025-08-11T09:00:00Z'
+                  metadata:
+                    tokensPrompt: 12
+                    latencyMs: 45
+                - role: assistant
+                  content: Hello! I'm Pokey the porcupine. What would you like to know?
+                  timestamp: '2025-08-11T09:00:05Z'
+                  metadata:
+                    tokensCompletion: 28
+                    latencyMs: 420
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Conversation
+      summary: Delete conversation history with enhanced GDPR compliance
+      security: []
+      parameters:
+      - in: query
+        name: sessionId
+        description: Specific conversation session to delete
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+      - in: query
+        name: userId
+        description: Delete all conversations for specific user (GDPR right to erasure)
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+      - in: query
+        name: animalId
+        description: Delete all conversations with specific animal
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+      - in: query
+        name: olderThan
+        description: Delete conversations older than specified date (ISO8601)
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: confirmGDPR
+        description: Required confirmation for bulk user data deletion
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - in: query
+        name: auditReason
+        description: Reason for deletion (for audit logs)
+        required: false
+        schema:
+          type: string
+          maxLength: 500
+          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+      responses:
+        '204':
+          description: Conversation history deleted successfully
+        '400':
+          description: Invalid request or missing GDPR confirmation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gdpr_confirmation_required
+                message: GDPR confirmation required for bulk user data deletion
+                details:
+                  required_parameter: confirmGDPR
+        '403':
+          description: Insufficient permissions for bulk deletion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Invalid parameters or conflicting deletion criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /conversations/sessions:
+    get:
+      tags:
+      - Conversation
+      summary: List conversation sessions with pagination
+      security: []
+      parameters:
+      - in: query
+        name: userId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Filter sessions by user identifier
+      - in: query
+        name: animalId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Filter sessions by animal identifier
+      - in: query
+        name: startDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter sessions from this date
+      - in: query
+        name: endDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter sessions until this date
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        description: Maximum number of sessions to return
+      - in: query
+        name: lastEvaluatedKey
+        required: false
+        schema:
+          type: string
+        description: Pagination cursor from previous response
+      - in: query
+        name: sortBy
+        required: false
+        schema:
+          type: string
+          enum:
+          - timestamp
+          - messageCount
+          - duration
+          default: timestamp
+        description: Sort sessions by field
+      - in: query
+        name: sortOrder
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Sort order
+      responses:
+        '200':
+          description: List of conversation sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sessionId:
+                          type: string
+                        userId:
+                          type: string
+                        animalId:
+                          type: string
+                        animalName:
+                          type: string
+                        startTime:
+                          type: string
+                          format: date-time
+                        lastMessageTime:
+                          type: string
+                          format: date-time
+                        messageCount:
+                          type: integer
+                        duration:
+                          type: integer
+                          description: Duration in seconds
+                        summary:
+                          type: string
+                          description: Brief summary of conversation
+                  lastEvaluatedKey:
+                    type: string
+                    description: Cursor for next page
+                  totalCount:
+                    type: integer
+                    description: Total number of sessions matching filters
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /conversations/sessions/{sessionId}:
+    get:
+      tags:
+      - Conversation
+      summary: Get detailed conversation session
+      security: []
+      parameters:
+      - in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Session identifier
+      responses:
+        '200':
+          description: Detailed conversation session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvoHistory'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /summarize_convo:
+    post:
+      tags:
+      - Conversation
+      summary: Advanced conversation summarization with personalization and analytics
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sessionId
+              properties:
+                sessionId:
+                  type: string
+                  pattern: '^[a-zA-Z0-9_-]+$'
+                  description: Conversation session to summarize
+                summaryType:
+                  type: string
+                  enum:
+                  - brief
+                  - detailed
+                  - behavioral
+                  - educational
+                  - personalization
+                  default: brief
+                  description: Type of summary to generate
+                maxLength:
+                  type: integer
+                  minimum: 50
+                  maximum: 2000
+                  default: 200
+                  description: Maximum length of summary in characters
+                includeMetrics:
+                  type: boolean
+                  default: false
+                  description: Include conversation metrics (turn count, duration, etc.)
+                includeTopics:
+                  type: boolean
+                  default: true
+                  description: Extract main topics and themes discussed
+                includeSentiment:
+                  type: boolean
+                  default: false
+                  description: Analyze user sentiment and engagement
+                personalizationGoals:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - learning_style
+                    - interests
+                    - knowledge_level
+                    - engagement_patterns
+                    - preferred_topics
+                  maxItems: 5
+                  description: Specific personalization insights to extract
+      responses:
+        '200':
+          description: Conversation summary with optional analytics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    description: Original session identifier
+                  summaryType:
+                    type: string
+                    description: Type of summary generated
+                  summary:
+                    type: string
+                    description: Generated conversation summary
+                  topics:
+                    type: array
+                    items:
+                      type: string
+                    description: Main topics discussed
+                  metrics:
+                    type: object
+                    properties:
+                      totalTurns:
+                        type: integer
+                      durationMinutes:
+                        type: number
+                      avgResponseTime:
+                        type: number
+                      engagementScore:
+                        type: number
+                        minimum: 0
+                        maximum: 10
+                    description: Conversation metrics and analytics
+                  sentiment:
+                    type: object
+                    properties:
+                      overall:
+                        type: string
+                        enum: [positive, neutral, negative]
+                      confidence:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                      progression:
+                        type: array
+                        items:
+                          type: string
+                    description: Sentiment analysis results
+                  personalizationInsights:
+                    type: object
+                    additionalProperties:
+                      type: string
+                    description: Extracted personalization insights
+                  generatedAt:
+                    type: string
+                    format: date-time
+                    description: When summary was generated
+              example:
+                sessionId: sess_123
+                summaryType: detailed
+                summary: User engaged enthusiastically about porcupine quills and defense mechanisms. Showed strong interest in animal behavior and asked several follow-up questions about nocturnal habits.
+                topics:
+                - porcupine_behavior
+                - animal_defense
+                - nocturnal_animals
+                metrics:
+                  totalTurns: 12
+                  durationMinutes: 8.5
+                  avgResponseTime: 420
+                  engagementScore: 8.2
+                sentiment:
+                  overall: positive
+                  confidence: 0.85
+                  progression:
+                  - curious
+                  - engaged
+                  - enthusiastic
+                personalizationInsights:
+                  learning_style: visual_and_interactive
+                  interests: animal_behavior,_wildlife
+                  knowledge_level: intermediate
+                generatedAt: '2025-08-11T09:15:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Conversation session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /animal_list:
+    get:
+      tags:
+      - Animals
+      summary: List animals
+      parameters:
+      - in: query
+        name: status
+        required: false
+        description: Filter animals by status
+        schema:
+          type: string
+          enum: [active, inactive, hidden, breeding, retired]
+          default: null
+      responses:
+        '200':
+          description: List of animals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Animal'
+              example:
+                - animalId: animal_1
+                  name: Pokey
+                  species: Coendou prehensilis
+                  status: active
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+                - animalId: animal_2
+                  name: Animal 2
+                  species: Speciesus exampleus
+                  status: hidden
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /animal:
+    post:
+      tags:
+      - Animals
+      summary: Create a new animal
+      operationId: animal_post
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalInput'
+      responses:
+        '201':
+          description: Animal created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+              example:
+                animalId: animal_123
+                name: New Animal
+                species: Test Species
+                status: active
+                created:
+                  at: '2025-09-11T10:30:00Z'
+                modified:
+                  at: '2025-09-11T10:30:00Z'
+                softDelete: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /animal/{animalId}:
+    get:
+      tags:
+      - Animals
+      summary: Get a specific animal by ID
+      operationId: animal_get
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Animal details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+              example:
+                animalId: animal_1
+                name: Simba
+                species: Lion
+                status: active
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Animals
+      summary: Update an existing animal
+      operationId: animal_put
+      x-body-name: animal_update
+      security: []
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalUpdate'
+      responses:
+        '200':
+          description: Animal updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      tags:
+      - Animals
+      summary: Delete an animal (soft delete)
+      operationId: animal_delete
+      security: []
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Animal deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal_details:
+    get:
+      tags:
+      - Animals
+      summary: Fetch animal details
+      parameters:
+      - in: query
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Animal details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimalDetails'
+              example:
+                animalId: animal_1
+                name: Pokey
+                species: Coendou prehensilis
+                status: active
+                created: *id002
+                modified: *id003
+                softDelete: false
+                description: A friendly prehensile-tailed porcupine ambassador.
+                habitat: Tropical forests
+                imageUrl: https://example.com/pokey.jpg
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal_config:
+    get:
+      tags:
+      - Animals
+      summary: Get animal configuration
+      parameters:
+      - in: query
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Animal config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimalConfig'
+              example:
+                voice: pokey_v1
+                personality: goofy-friendly
+                aiModel: gpt-5o-mini
+                temperature: 0.7
+                topP: 1
+                toolsEnabled:
+                - facts
+                - media_lookup
+                guardrails:
+                  safe_mode: true
+                created: *id002
+                modified: *id003
+                softDelete: false
+    patch:
+      tags:
+      - Animals
+      summary: Update animal configuration
+      security: []
+      parameters:
+      - in: query
+        name: animalId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalConfigUpdate'
+      responses:
+        '200':
+          description: Updated config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimalConfig'
+              example:
+                animalConfigId: config_1
+                voice: pokey_v1
+                personality: goofy-friendly
+                aiModel: gpt-5o-mini
+                temperature: 0.7
+                topP: 1
+                toolsEnabled:
+                - facts
+                - media_lookup
+                guardrails:
+                  safe_mode: true
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /knowledge_article:
+    post:
+      tags:
+      - Knowledge
+      summary: Create knowledge article
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeArticle'
+              example:
+                knowledgeId: ka_123
+                title: Porcupine Diet
+                body: Porcupines are herbivores that enjoy leaves, herbs, twigs, and
+                  bark.
+                tags:
+                - diet
+                - porcupine
+                visibility: public
+                animalId: animal_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+    get:
+      tags:
+      - Knowledge
+      summary: Get article by id
+      parameters:
+      - in: query
+        name: knowledgeId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeArticle'
+              example:
+                knowledgeId: ka_123
+                title: Porcupine Diet
+                body: Porcupines are herbivores that enjoy leaves, herbs, twigs, and
+                  bark.
+                tags:
+                - diet
+                - porcupine
+                visibility: public
+                animalId: animal_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Knowledge
+      summary: Delete knowledge article
+      security: []
+      parameters:
+      - in: query
+        name: knowledgeId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted
+  /upload_media:
+    post:
+      tags:
+      - Media
+      summary: Upload media (image/audio/video) with enhanced validation
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Media file to upload (max 50MB)
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                  pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+                  description: Human-readable title for the media with natural language support
+                animalId:
+                  type: string
+                  pattern: '^[a-zA-Z0-9_-]+$'
+                  description: Associated animal identifier
+                description:
+                  type: string
+                  maxLength: 1000
+                  description: Optional description or context for the media
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    pattern: '^[a-zA-Z0-9_-]+$'
+                  maxItems: 10
+                  description: Optional metadata tags
+      responses:
+        '201':
+          description: Media created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+              example:
+                mediaId: m_001
+                title: Pokey portrait
+                url: https://cdn.example.com/m_001.jpg
+                kind: image
+                animalId: animal_1
+                created: *id002
+                modified: *id003
+                softDelete: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported media type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /media:
+    get:
+      tags:
+      - Media
+      summary: Fetch media metadata by id with enhanced filters
+      parameters:
+      - in: query
+        name: mediaId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Specific media identifier to retrieve
+      - in: query
+        name: animalId
+        required: false
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Filter media by animal identifier
+      - in: query
+        name: kind
+        required: false
+        schema:
+          type: string
+          enum: [image, audio, video]
+        description: Filter media by type
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        description: Maximum number of media items to return
+      responses:
+        '200':
+          description: Media metadata (single item or array based on parameters)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Media'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/Media'
+              examples:
+                single_media:
+                  summary: Single media item
+                  value:
+                    mediaId: m_001
+                    title: Pokey portrait
+                    url: https://cdn.example.com/m_001.jpg
+                    kind: image
+                    animalId: animal_1
+                    created: *id002
+                    modified: *id003
+                    softDelete: false
+                media_list:
+                  summary: List of media items
+                  value:
+                  - mediaId: m_001
+                    title: Pokey portrait
+                    url: https://cdn.example.com/m_001.jpg
+                    kind: image
+                    animalId: animal_1
+                  - mediaId: m_002
+                    title: Pokey video clip
+                    url: https://cdn.example.com/m_002.mp4
+                    kind: video
+                    animalId: animal_1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Media
+      summary: Delete media by id (soft delete with validation)
+      security: []
+      parameters:
+      - in: query
+        name: mediaId
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        description: Media identifier to delete
+      - in: query
+        name: permanent
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Whether to permanently delete (true) or soft delete (false, default)
+      responses:
+        '204':
+          description: Media deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          description: Forbidden - Cannot delete referenced media
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /performance_metrics:
+    get:
+      tags:
+      - Analytics
+      summary: Performance metrics between dates
+      security: []
+      parameters:
+      - in: query
+        name: start
+        required: true
+        description: ISO8601 start (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: end
+        required: true
+        description: ISO8601 end (exclusive)
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Metrics payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+              example:
+                window:
+                  start: '2025-08-11T09:00:00Z'
+                  end: '2025-08-11T09:00:00Z'
+                totals:
+                  requests: 1240
+                  tokensPrompt: 221000
+                  tokensCompletion: 78000
+                  costUsd: 37.55
+                perAnimal:
+                - animalId: animal_1
+                  requests: 800
+                  avgLatencyMs: 380
+                - animalId: animal_2
+                  requests: 440
+                  avgLatencyMs: 410
+  /logs:
+    get:
+      tags:
+      - Analytics
+      summary: Application logs (paged/filtered)
+      security: []
+      parameters:
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - debug
+          - info
+          - warn
+          - error
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - in: query
+        name: pageSize
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 200
+      responses:
+        '200':
+          description: Paged logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedLogs'
+              example:
+                items:
+                - ts: '2025-08-11T09:00:00Z'
+                  level: info
+                  msg: startup complete
+                  meta:
+                    service: api
+                - ts: '2025-08-11T09:00:00Z'
+                  level: error
+                  msg: LLM timeout
+                  meta:
+                    service: ai
+                    requestId: req_9
+                page: 1
+                pageSize: 200
+                total: 2
+  /billing:
+    get:
+      tags:
+      - Analytics
+      summary: Billing summary
+      security: []
+      parameters:
+      - in: query
+        name: period
+        description: Billing period (e.g., 2025-08)
+        schema:
+          type: string
+          pattern: ^[0-9]{4}-[0-9]{2}$
+      responses:
+        '200':
+          description: Billing breakdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingSummary'
+              example:
+                period: 2025-08
+                totalUsd: 123.45
+                byService:
+                - service: OpenAI
+                  usd: 77.3
+                - service: Storage
+                  usd: 12.1
+  /system_health:
+    get:
+      tags:
+      - System
+      summary: System/health check for status page
+      security: []
+      responses:
+        '200':
+          description: Health details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemHealth'
+              example:
+                status: ok
+                timestamp: "2025-09-14T19:47:00Z"
+                apiVersionUuid: "01293541-4175-4109-a6c2-c5da286aa4e9"
+                frontendCompatibility:
+                  version: "1.0"
+                  minVersion: "1.0"
+                  maxVersion: "1.1"
+                gitCommitHash: "f4de03049a1d23244f15ed0c9deb069baa7fcab5"
+                checks:
+                - name: db
+                  status: ok
+                - name: ai
+                  status: ok
+  /feature_flags:
+    get:
+      tags:
+      - System
+      summary: Get feature flags
+      security: []
+      responses:
+        '200':
+          description: All flags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagsDocument'
+              example:
+                flags:
+                  betaAudio:
+                    enabled: true
+                    rollout: 0.2
+                created: *id002
+                modified: *id003
+                softDelete: false
+    patch:
+      tags:
+      - System
+      summary: Update feature flags
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureFlagsUpdate'
+      responses:
+        '200':
+          description: Updated flags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagsDocument'
+              example:
+                flags:
+                  betaAudio:
+                    enabled: true
+                    rollout: 0.2
+                created: *id002
+                modified: *id003
+                softDelete: false
+  /family:
+    get:
+      tags:
+      - Family
+      summary: Get list of all families
+      operationId: listFamilies
+      security: []
+      responses:
+        '200':
+          description: List of families
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Family'
+    post:
+      tags:
+      - Family
+      summary: Create a new family
+      operationId: createFamily
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyInput'
+      responses:
+        '201':
+          description: Family created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+  /family/{familyId}:
+    get:
+      tags:
+      - Family
+      summary: Get specific family by ID
+      operationId: getFamily
+      security: []
+      parameters:
+      - in: path
+        name: familyId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Family details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Family
+      summary: Update an existing family
+      operationId: updateFamily
+      security: []
+      parameters:
+      - in: path
+        name: familyId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Family'
+      responses:
+        '200':
+          description: Family updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+    delete:
+      tags:
+      - Family
+      summary: Delete a family
+      operationId: deleteFamily
+      security: []
+      parameters:
+      - in: path
+        name: familyId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Family deleted
+
+  /family_list:
+    get:
+      tags:
+      - Family
+      summary: List all families
+      operationId: listAllFamilies
+      security: []
+      responses:
+        '200':
+          description: List of all families
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Family'
+
+  # Test endpoints for stress testing regression prevention
+  /test/stress/body:
+    post:
+      operationId: testStressBody
+      tags:
+        - test
+      summary: Test endpoint for body parameter validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+              required:
+                - data
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  data:
+                    type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            unauthorized:
+              value:
+                code: unauthorized
+                message: Missing or invalid token
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            forbidden:
+              value:
+                code: forbidden
+                message: Insufficient permissions to access this resource
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            notFound:
+              value:
+                code: not_found
+                message: Resource not found
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            badRequest:
+              value:
+                code: invalid_request
+                message: The request is invalid
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            validationError:
+              value:
+                code: validation_error
+                message: Request validation failed
+  schemas:
+    ActorRef:
+      type: object
+      properties:
+        actorId:
+          type: string
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+    AuditStamp:
+      type: object
+      properties:
+        at:
+          type: string
+          format: date-time
+        by:
+          $ref: '#/components/schemas/ActorRef'
+    AuditFields:
+      type: object
+      properties:
+        created:
+          $ref: '#/components/schemas/AuditStamp'
+        modified:
+          $ref: '#/components/schemas/AuditStamp'
+        deleted:
+          $ref: '#/components/schemas/AuditStamp'
+        softDelete:
+          type: boolean
+          default: false
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+    PublicHome:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+          enum:
+          - ok
+          - maintenance
+    AdminShell:
+      type: object
+      properties:
+        widgets:
+          type: array
+          items:
+            type: string
+    MemberShell:
+      type: object
+      properties:
+        preferences:
+          type: object
+          additionalProperties: true
+        alerts:
+          type: array
+          items:
+            type: string
+    AuthRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          format: email
+          description: Email address (for backend compatibility)
+        email:
+          type: string
+          format: email
+          description: Email address (frontend sends this)
+        password:
+          type: string
+        register:
+          type: boolean
+          description: If true, create account if not found
+      required:
+      - password
+      # Note: Either username OR email must be provided, handled in implementation
+    AuthResponse:
+      type: object
+      required:
+      - token
+      - expiresIn
+      - user
+      properties:
+        token:
+          type: string
+        expiresIn:
+          type: integer
+          description: Seconds until expiry
+        user:
+          $ref: '#/components/schemas/User'
+    PasswordResetRequest:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+    User:
+      allOf:
+      - type: object
+        properties:
+          userId:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+            description: Unique user identifier
+          email:
+            type: string
+            format: email
+            pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            description: RFC 5322 compliant email address
+          displayName:
+            type: string
+            minLength: 1
+            maxLength: 100
+            pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+            description: Display name with natural language character validation
+          phoneNumber:
+            type: string
+            pattern: '^\+[1-9]\d{1,14}$'
+            description: E.164 international phone number format
+            nullable: true
+          age:
+            type: integer
+            minimum: 3
+            maximum: 120
+            description: Age validation for reasonable ranges
+            nullable: true
+          role:
+            type: string
+            enum:
+            - visitor
+            - user
+            - member
+            - editor
+            - admin
+            - parent
+            - student
+          userType:
+            type: string
+            enum:
+            - none
+            - parent
+            - student
+            default: none
+          familyId:
+            type: string
+            nullable: true
+      - $ref: '#/components/schemas/AuditFields'
+    UserInput:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required:
+          - email
+          - role
+          properties:
+            userId:
+              type: string
+              readOnly: true
+            email:
+              type: string
+              format: email
+            role:
+              type: string
+              enum:
+              - visitor
+              - user
+              - member
+              - editor
+              - admin
+              - parent
+              - student
+    UserDetails:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            usage:
+              $ref: '#/components/schemas/UsageSummary'
+            userDetailsId:
+              type: string
+              description: Unique identifier for the user details
+
+    UserDetailsInput:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+        usage:
+          $ref: '#/components/schemas/UsageSummary'
+
+    PagedUsers:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+    ConvoTurnRequest:
+      type: object
+      required:
+      - animalId
+      - message
+      properties:
+        animalId:
+          type: string
+        message:
+          type: string
+        sessionId:
+          type: string
+        contextSummary:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties: true
+    ConvoTurnResponse:
+      type: object
+      required:
+      - reply
+      - turn
+      properties:
+        reply:
+          type: string
+        turn:
+          type: object
+          properties:
+            convoTurnId:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+            tokensPrompt:
+              type: integer
+            tokensCompletion:
+              type: integer
+            latencyMs:
+              type: integer
+    ConvoHistory:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        animalId:
+          type: string
+        userId:
+          type: string
+        turns:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum:
+                - user
+                - assistant
+                - system
+              content:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+    SummarizeRequest:
+      type: object
+      required:
+      - sessionId
+      properties:
+        sessionId:
+          type: string
+        maxChars:
+          type: integer
+          default: 2000
+    Summary:
+      allOf:
+      - type: object
+        properties:
+          sessionId:
+            type: string
+          summary:
+            type: string
+      - $ref: '#/components/schemas/AuditFields'
+    Animal:
+      allOf:
+      - type: object
+        required:
+        - animalId
+        - name
+        - species
+        properties:
+          animalId:
+            type: string
+          name:
+            type: string
+          species:
+            type: string
+          status:
+            type: string
+            enum:
+            - active
+            - hidden
+      - $ref: '#/components/schemas/AuditFields'
+    AnimalInput:
+      type: object
+      required:
+      - name
+      - species
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        species:
+          type: string
+          minLength: 1
+          maxLength: 100
+        status:
+          type: string
+          enum:
+          - active
+          - hidden
+          default: active
+    AnimalUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        species:
+          type: string
+          minLength: 1
+          maxLength: 100
+        status:
+          type: string
+          enum:
+          - active
+          - hidden
+        personality:
+          type: string
+          description: The personality description of the animal
+          maxLength: 500
+    AnimalDetails:
+      allOf:
+      - $ref: '#/components/schemas/Animal'
+      - type: object
+        properties:
+          animalDetailId:
+            type: string
+            readOnly: true
+          description:
+            type: string
+          habitat:
+            type: string
+          imageUrl:
+            type: string
+            format: uri
+    AnimalConfig:
+      allOf:
+      - type: object
+        properties:
+          animalConfigId:
+            type: string
+            readOnly: true
+          voice:
+            type: string
+          personality:
+            type: string
+          systemPrompt:
+            type: string
+            description: System prompt that defines the AI behavior for this animal
+          aiModel:
+            type: string
+          temperature:
+            type: number
+            minimum: 0
+            maximum: 2
+            default: 0.7
+          topP:
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 1
+          toolsEnabled:
+            type: array
+            items:
+              type: string
+          guardrails:
+            type: object
+            additionalProperties: true
+      - $ref: '#/components/schemas/AuditFields'
+    AnimalConfigUpdate:
+      type: object
+      properties:
+        voice:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 50
+          enum:
+          - alloy
+          - echo
+          - fable
+          - onyx
+          - nova
+          - shimmer
+          - ruth
+          - joanna
+          - matthew
+          - amy
+          description: Validated voice ID from supported TTS voices
+        personality:
+          type: string
+          minLength: 5
+          maxLength: 1000
+          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+          description: Animal personality description supporting natural language with punctuation
+        aiModel:
+          type: string
+          enum:
+          - gpt-4o-mini
+          - gpt-4o
+          - gpt-4
+          - gpt-3.5-turbo
+          - claude-3-sonnet
+          - claude-3-haiku
+          - claude-3-opus
+        temperature:
+          type: number
+          minimum: 0.0
+          maximum: 2.0
+          multipleOf: 0.1
+          description: AI model temperature (0.0-2.0, increments of 0.1)
+        topP:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          multipleOf: 0.01
+          description: Top-p sampling parameter (0.0-1.0, increments of 0.01)
+        maxTokens:
+          type: integer
+          minimum: 1
+          maximum: 4096
+          description: Maximum response tokens (1-4096)
+        toolsEnabled:
+          type: array
+          items:
+            type: string
+            enum:
+            - facts
+            - media_lookup
+            - weather
+            - calculator
+            - web_search
+            - image_generation
+          maxItems: 6
+          uniqueItems: true
+          description: Enabled tools (no duplicates allowed)
+        responseFormat:
+          type: string
+          enum:
+          - text
+          - json
+          - markdown
+          default: text
+          description: Preferred response format
+        guardrails:
+          type: object
+          properties:
+            safe_mode:
+              type: boolean
+            content_filter:
+              type: boolean
+            response_length_limit:
+              type: integer
+              minimum: 50
+              maximum: 2000
+          additionalProperties: false
+    KnowledgeCreate:
+      type: object
+      required:
+      - title
+      - body
+      - visibility
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        visibility:
+          type: string
+          enum:
+          - public
+          - staff
+          - internal
+        animalId:
+          type: string
+          nullable: true
+    KnowledgeArticle:
+      allOf:
+      - $ref: '#/components/schemas/KnowledgeCreate'
+      - $ref: '#/components/schemas/AuditFields'
+      - type: object
+        required:
+        - knowledgeId
+        properties:
+          knowledgeId:
+            type: string
+    Media:
+      allOf:
+      - type: object
+        required:
+        - mediaId
+        - url
+        - kind
+        properties:
+          mediaId:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+            description: Unique identifier for the media item
+          title:
+            type: string
+            minLength: 1
+            maxLength: 200
+            description: Human-readable title for the media
+          url:
+            type: string
+            format: uri
+            description: CDN or storage URL for the media file
+          kind:
+            type: string
+            enum:
+            - image
+            - audio
+            - video
+            description: Type of media content
+          animalId:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+            nullable: true
+            description: Associated animal identifier
+          description:
+            type: string
+            maxLength: 1000
+            nullable: true
+            description: Optional description or context for the media
+          tags:
+            type: array
+            items:
+              type: string
+              pattern: '^[a-zA-Z0-9_-]+$'
+            maxItems: 10
+            nullable: true
+            description: Optional metadata tags for categorization
+          fileSize:
+            type: integer
+            minimum: 1
+            maximum: 104857600  # 100MB limit
+            nullable: true
+            description: File size in bytes (max 100MB)
+          mimeType:
+            type: string
+            enum:
+            - image/jpeg
+            - image/png
+            - image/gif
+            - image/webp
+            - audio/mpeg
+            - audio/wav
+            - audio/ogg
+            - video/mp4
+            - video/webm
+            - video/quicktime
+            nullable: true
+            description: MIME type of the media file (validated against supported types)
+          duration:
+            type: number
+            minimum: 0
+            nullable: true
+            description: Duration in seconds (for audio/video)
+          dimensions:
+            type: object
+            nullable: true
+            properties:
+              width:
+                type: integer
+                minimum: 1
+              height:
+                type: integer
+                minimum: 1
+            description: Image/video dimensions in pixels
+      - $ref: '#/components/schemas/AuditFields'
+    PerformanceMetrics:
+      type: object
+      properties:
+        window:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        totals:
+          type: object
+          properties:
+            requests:
+              type: integer
+            tokensPrompt:
+              type: integer
+            tokensCompletion:
+              type: integer
+            costUsd:
+              type: number
+        perAnimal:
+          type: array
+          items:
+            type: object
+            properties:
+              animalId:
+                type: string
+              requests:
+                type: integer
+              avgLatencyMs:
+                type: integer
+    LogEntry:
+      type: object
+      properties:
+        ts:
+          type: string
+          format: date-time
+        level:
+          type: string
+        msg:
+          type: string
+        meta:
+          type: object
+          additionalProperties: true
+    PagedLogs:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogEntry'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+    BillingSummary:
+      type: object
+      properties:
+        period:
+          type: string
+        totalUsd:
+          type: number
+        byService:
+          type: array
+          items:
+            type: object
+            properties:
+              service:
+                type: string
+              usd:
+                type: number
+    Family:
+      type: object
+      required:
+      - familyName
+      - parents
+      - students
+      properties:
+        familyId:
+          type: string
+          example: family_abc123
+          description: Unique family ID
+          readOnly: true
+        familyName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Smith Family"
+          description: Name of the family group
+        parents:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            example: user_parent_001
+            pattern: '^[a-zA-Z0-9_-]+$'
+            description: User ID of a parent
+        students:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            type: string
+            example: student_001
+            pattern: '^[a-zA-Z0-9_-]+$'
+            description: User ID of a student
+        address:
+          type: object
+          description: Family address information
+          properties:
+            street:
+              type: string
+              maxLength: 200
+              example: "123 Main St"
+            city:
+              type: string
+              maxLength: 100
+              example: "Seattle"
+            state:
+              type: string
+              minLength: 2
+              maxLength: 2
+              pattern: '^[A-Z]{2}$'
+              example: "WA"
+            zipCode:
+              type: string
+              pattern: '^\d{5}(-\d{4})?$'
+              example: "98101"
+        preferredPrograms:
+          type: array
+          items:
+            type: string
+          example: ["Junior Zookeeper", "Conservation Club"]
+          description: Educational programs the family is interested in
+        status:
+          type: string
+          enum: [active, inactive, pending]
+          default: active
+          description: Family enrollment status
+        memberSince:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the family joined
+        created:
+          $ref: '#/components/schemas/AuditStamp'
+          readOnly: true
+        modified:
+          $ref: '#/components/schemas/AuditStamp'
+          readOnly: true
+    FamilyInput:
+      type: object
+      required:
+      - familyName
+      - parents
+      - students
+      properties:
+        familyName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Name of the family group
+        parents:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            description: User ID of a parent
+        students:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            type: string
+            description: User ID of a student
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+              maxLength: 200
+            city:
+              type: string
+              maxLength: 100
+            state:
+              type: string
+              minLength: 2
+              maxLength: 2
+              pattern: '^[A-Z]{2}$'
+            zipCode:
+              type: string
+              pattern: '^\d{5}(-\d{4})?$'
+        preferredPrograms:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, inactive, pending]
+          default: active
+    UsageSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+        totalSessions:
+          type: integer
+        totalTurns:
+          type: integer
+        lastActive:
+          type: string
+          format: date-time
+    SystemHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ok
+          - degraded
+          - down
+        checks:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+                enum:
+                - ok
+                - warn
+                - fail
+              detail:
+                type: string
+        timestamp:
+          type: string
+          format: date-time
+          description: Current server timestamp
+        apiVersionUuid:
+          type: string
+          format: uuid
+          description: Unique identifier for this API version
+        frontendCompatibility:
+          type: object
+          description: Frontend version compatibility information
+          properties:
+            version:
+              type: string
+              description: Current frontend compatibility version
+            minVersion:
+              type: string
+              description: Minimum supported frontend version
+            maxVersion:
+              type: string
+              description: Maximum supported frontend version
+        gitCommitHash:
+          type: string
+          description: Git commit hash of the current deployment
+    FeatureFlags:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          rollout:
+            type: number
+            minimum: 0
+            maximum: 1
+    FeatureFlagsDocument:
+      allOf:
+      - type: object
+        properties:
+          flags:
+            $ref: '#/components/schemas/FeatureFlags'
+      - $ref: '#/components/schemas/AuditFields'
+    FeatureFlagsUpdate:
+      type: object
+      properties:
+        flags:
+          $ref: '#/components/schemas/FeatureFlags'

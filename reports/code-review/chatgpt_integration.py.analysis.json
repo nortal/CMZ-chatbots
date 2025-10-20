@@ -1,0 +1,32 @@
+{
+  "file": "backend/api/src/main/python/openapi_server/impl/utils/chatgpt_integration.py",
+  "language": "python",
+  "summary": "The code shows good error handling and async design. However, it has security vulnerabilities related to secrets exposure and lacks input validation.",
+  "issues": [
+    {
+      "severity": "HIGH",
+      "category": "security",
+      "line": 15,
+      "description": "Hardcoded OpenAI API key in code",
+      "recommendation": "Use environment variables or a secure secret management solution",
+      "example": "api_key = os.getenv('OPENAI_API_KEY')"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "security",
+      "line": 90,
+      "description": "Missing input validation for 'animal_id'",
+      "recommendation": "Validate and sanitize user inputs to prevent injection attacks",
+      "example": "animal_id = sanitize_input(animal_id)"
+    }
+  ],
+  "strengths": [
+    "Well-structured async design",
+    "Good error handling with logging"
+  ],
+  "metrics": {
+    "lines_of_code": 165,
+    "complexity_estimate": "medium",
+    "test_coverage": "unknown"
+  }
+}

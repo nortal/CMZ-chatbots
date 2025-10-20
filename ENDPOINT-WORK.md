@@ -7,7 +7,14 @@
 4. **ALWAYS** test endpoints before assuming they don't work
 5. **NEVER** trust "not_implemented" errors without investigation
 6. **NEVER** move an item from "IMPLEMENTED BUF FAILING" to "NOT IMPLEMENTED"
-**Last Updated**: 2025-10-02 (Session 2 - Fixed all remaining implementation issues)
+**Last Updated**: 2025-10-17 (Added /convo_turn/stream critical issue)
+
+## 🚨 CRITICAL ISSUE DISCOVERED (2025-10-17)
+**Frontend calls `/convo_turn/stream` for chat streaming but endpoint is NOT in OpenAPI spec!**
+- Frontend uses EventSource/SSE to stream chat responses
+- This causes 404 errors breaking chat functionality
+- Must add GET /convo_turn/stream endpoint to OpenAPI spec with SSE support
+- See "Conversation Management" section below for details
 
 ## 🎉 FIXES APPLIED ON 2025-10-02
 
@@ -26,6 +33,12 @@
 5. **POST /family** - Fixed DynamoDB field name mismatches (familyName, parentIds, studentIds)
 6. **Duplicate handler issue** - Resolved animals.py stubs vs handlers.py implementations
 7. **DELETE /animal/{animalId}** - Verified working correctly with soft delete (sets softDelete=true, returns 204)
+
+### Session 3 Fixed Issues (2025-10-09):
+1. **Guardrails System Implementation** - Complete TDD implementation with 76% test coverage
+2. **OpenAPI Spec Updated** - Added 9 guardrails endpoints and 4 data models
+3. **ChatGPT Integration Enhanced** - Dynamic guardrails injection into system prompts
+4. **Safety Features Added** - Input validation, output filtering, circuit breaker
 
 ### All Endpoints Now Fixed:
 - ✅ POST /auth/reset_password - Working
@@ -77,6 +90,17 @@ These endpoints are fully working. DO NOT modify their core implementation witho
 ### System Endpoints
 - **GET /system_health** → `handlers.py:handle_system_health_get()` [✅ FIXED 2025-10-02]
 
+### Guardrails Management (NEW 2025-10-09 - ✅ ROUTES FIXED)
+- **GET /guardrails** → `guardrails.py:handle_list_guardrails()` [✅ Working - Needs DynamoDB table]
+- **POST /guardrails** → `guardrails.py:handle_create_guardrail()` [✅ Working - Needs DynamoDB table]
+- **GET /guardrails/{guardrailId}** → `guardrails.py:handle_get_guardrail()` [✅ Working - Needs DynamoDB table]
+- **PUT /guardrails/{guardrailId}** → `guardrails.py:handle_update_guardrail()` [✅ Working - Needs DynamoDB table]
+- **DELETE /guardrails/{guardrailId}** → `guardrails.py:handle_delete_guardrail()` [✅ Working - Needs DynamoDB table]
+- **GET /guardrails/templates** → `guardrails.py:handle_get_templates()` [✅ FULLY WORKING - Returns 3 templates]
+- **POST /guardrails/apply-template** → `guardrails.py:handle_apply_template()` [✅ Working - Needs DynamoDB table]
+- **GET /animal/{animalId}/guardrails/effective** → `guardrails.py:handle_get_animal_effective_guardrails()` [✅ Working]
+- **GET /animal/{animalId}/guardrails/system-prompt** → `guardrails.py:handle_get_animal_system_prompt()` [✅ Working]
+
 ### User Management
 - **GET /user** → `handlers.py:handle_user_list_get()` [✅ Working]
 - **POST /user** → `handlers.py:handle_create_user()` [✅ FIXED 2025-10-02: Connected to handler]
@@ -103,13 +127,21 @@ No endpoints are currently in a failing state. All implemented endpoints are wor
 ## ❌ NOT IMPLEMENTED
 These endpoints truly have no implementation and need to be created.
 
-### Conversation Management
-- **POST /conversation** - Start new conversation
-- **GET /conversation/list** - List all conversations
-- **GET /conversation/history/{id}** - Get conversation history
-- **POST /conversation/chat** - Send chat message
-- **GET /conversation/{id}** - Get conversation details
-- **DELETE /conversation/{id}** - Delete conversation
+### Conversation Management (Status Unknown - Need to Test)
+- **POST /convo_turn** - Send conversation turn [IN SPEC - implementation status unknown]
+- **GET /convo_history** - Get conversation history [IN SPEC - implementation status unknown]
+- **GET /conversations/sessions** - List conversation sessions [IN SPEC - implementation status unknown]
+- **GET /conversations/sessions/{sessionId}** - Get specific session [IN SPEC - implementation status unknown]
+- **DELETE /conversations/sessions/{sessionId}** - Delete session [IN SPEC - implementation status unknown]
+
+### Conversation Management (Not in Spec)
+- **POST /conversation** - Start new conversation [NOT IN SPEC]
+- **GET /conversation/list** - List all conversations [NOT IN SPEC]
+- **GET /conversation/history/{id}** - Get conversation history [NOT IN SPEC - but /convo_history exists]
+- **POST /conversation/chat** - Send chat message [NOT IN SPEC - but /convo_turn exists]
+- **GET /conversation/{id}** - Get conversation details [NOT IN SPEC]
+- **DELETE /conversation/{id}** - Delete conversation [NOT IN SPEC]
+- **GET /convo_turn/stream** - Stream chat responses via Server-Sent Events (SSE) [⚠️ CRITICAL: Frontend calls this but endpoint missing from OpenAPI spec]
 
 ### Analytics
 - **GET /analytics/usage** - Usage statistics

@@ -222,7 +222,7 @@ All test users have password `testpass123`:
 
 3. **Backend Health Check**:
    - Verify backend is running on `http://localhost:8080`
-   - Check `/health` endpoint
+   - Check `/system_health` endpoint
    - Check `/convo_turn` endpoint exists
    - Check WebSocket endpoint (if applicable)
 
@@ -319,7 +319,7 @@ await page.waitForURL(/dashboard|member|admin/, { timeout: 10000 });
 ## Questions To Answer
 
 1. **Is the backend actually running on port 8080?**
-   - Check: `curl http://localhost:8080/health`
+   - Check: `curl http://localhost:8080/system_health`
 
 2. **Does the chat connection require WebSocket endpoint?**
    - Inspect Chat.tsx for WebSocket initialization

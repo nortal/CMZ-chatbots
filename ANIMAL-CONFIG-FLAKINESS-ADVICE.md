@@ -173,7 +173,7 @@ fi
 
 Add these checks to your CI/CD:
 1. **Import Test**: `python -c "from openapi_server.impl import handlers"`
-2. **API Health**: `curl http://localhost:8080/health`
+2. **API Health**: `curl http://localhost:8080/system_health`
 3. **Handler Count**: Verify handler_map has all expected operations
 4. **Frontend Build**: Ensure no TypeScript errors in form components
 

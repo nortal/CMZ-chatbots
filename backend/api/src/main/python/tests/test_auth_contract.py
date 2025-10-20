@@ -13,7 +13,8 @@ from unittest.mock import patch, MagicMock
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from openapi_server.impl.auth import authenticate_user, generate_jwt
+from openapi_server.impl.auth import authenticate_user
+from openapi_server.impl.utils.jwt_utils import generate_jwt_token as generate_jwt
 
 
 class TestJWTFormat:

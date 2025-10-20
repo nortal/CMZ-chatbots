@@ -209,6 +209,8 @@ class DynamoAnimalRepository(AnimalRepository):
     def update(self, animal: Animal) -> Animal:
         """Update existing animal in DynamoDB"""
         animal_data = serialize_animal(animal, include_api_id=False)
+        print(f"DEBUG DynamoAnimalRepository.update: animal_data keys={list(animal_data.keys())}")
+        print(f"DEBUG DynamoAnimalRepository.update: description={animal_data.get('description')}")
         self._store.update_fields(animal.animal_id, animal_data)
         return animal
     

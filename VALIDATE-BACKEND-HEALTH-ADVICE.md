@@ -11,7 +11,7 @@
 ### Service Endpoints
 - **Frontend**: `http://localhost:3000`
 - **Backend API**: `http://localhost:8080`
-- **Health Check**: `http://localhost:8080/health`
+- **Health Check**: `http://localhost:8080/system_health`
 - **Authentication**: `http://localhost:8080/api/auth`
 
 ## Backend Service Management
@@ -36,10 +36,10 @@ ps aux | grep openapi_server  # Verify stopped
 ### Service Health Verification
 ```bash
 # Quick health check
-curl -f http://localhost:8080/health
+curl -f http://localhost:8080/system_health
 
 # Detailed health status
-curl -s http://localhost:8080/health | jq '.'
+curl -s http://localhost:8080/system_health | jq '.'
 
 # Check if services are responding
 curl -I http://localhost:3000  # Frontend
@@ -173,7 +173,7 @@ await page.route('**/*', route => {
 ### Network Timeout Testing
 ```javascript
 // Simulate network timeout
-await page.route('**/health', route => {
+await page.route('**/system_health', route => {
   // Don't respond, let it timeout
   // route.abort('timedout');
 });
@@ -190,7 +190,7 @@ await page.route('**/health', route => {
 - Restart Docker if needed: `docker restart`
 
 ### Issue 2: Health Endpoint Returns 404
-**Symptoms**: `curl http://localhost:8080/health` returns 404
+**Symptoms**: `curl http://localhost:8080/system_health` returns 404
 **Solutions**:
 - Verify endpoint implementation in backend code
 - Check route registration in Flask app
@@ -281,11 +281,11 @@ function showLoading() {
 ```bash
 # Multiple health check timing
 for i in {1..10}; do
-  time curl -s http://localhost:8080/health > /dev/null
+  time curl -s http://localhost:8080/system_health > /dev/null
 done
 
 # Average response time calculation
-curl -w "@curl-format.txt" -o /dev/null -s http://localhost:8080/health
+curl -w "@curl-format.txt" -o /dev/null -s http://localhost:8080/system_health
 ```
 
 ## Security Considerations
@@ -319,7 +319,7 @@ DEBUG=1 make run-api
 make logs-api
 
 # Test health endpoint directly
-curl -v http://localhost:8080/health
+curl -v http://localhost:8080/system_health
 ```
 
 ### Playwright Debugging
@@ -382,11 +382,11 @@ make stop-api         # Stop backend
 make logs-api         # View backend logs
 
 # Health Verification
-curl -f http://localhost:8080/health    # Quick health check
-curl -s http://localhost:8080/health | jq '.status'  # Status only
+curl -f http://localhost:8080/system_health    # Quick health check
+curl -s http://localhost:8080/system_health | jq '.status'  # Status only
 
 # Performance Testing
-time curl -s http://localhost:8080/health > /dev/null
+time curl -s http://localhost:8080/system_health > /dev/null
 
 # Service Process Check
 ps aux | grep openapi_server

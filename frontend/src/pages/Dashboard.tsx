@@ -60,33 +60,26 @@ const Dashboard: React.FC = () => {
     switch (user.role) {
       case 'admin':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <DashboardCard
-              title="Total Users"
-              value="1,234"
+              title="Total Active Users"
+              value="247"
               icon={<Users className="w-6 h-6 text-green-600" />}
-              change="+12% from last month"
+              change="+12 this week"
               changeType="positive"
+            />
+            <DashboardCard
+              title="Total Animals"
+              value="24"
+              icon={<Zap className="w-6 h-6 text-green-600" />}
+              change="3 GPTs active"
+              changeType="neutral"
             />
             <DashboardCard
               title="Active Conversations"
               value="89"
               icon={<MessageCircle className="w-6 h-6 text-green-600" />}
-              change="+5% from yesterday"
-              changeType="positive"
-            />
-            <DashboardCard
-              title="Animal Configs"
-              value="24"
-              icon={<Zap className="w-6 h-6 text-green-600" />}
-              change="2 updated today"
-              changeType="neutral"
-            />
-            <DashboardCard
-              title="System Health"
-              value="98.9%"
-              icon={<BarChart3 className="w-6 h-6 text-green-600" />}
-              change="All systems operational"
+              change="+15% today"
               changeType="positive"
             />
           </div>

@@ -1,0 +1,63 @@
+{
+  "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+  "language": "python",
+  "summary": "The code file contains functions for handling authentication operations, but lacks implementation details.",
+  "issues": [
+    {
+      "severity": "MEDIUM",
+      "category": "style",
+      "line": 1,
+      "description": "Module docstring is generic and lacks specific details.",
+      "recommendation": "Provide more detailed information in the docstring.",
+      "example": ""
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 13,
+      "description": "Function name 'not_implemented_error' does not follow snake_case naming convention.",
+      "recommendation": "Rename the function to 'not_implemented_error' to comply with PEP 8.",
+      "example": ""
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 23,
+      "description": "Function name 'handle_auth_logout_post' does not follow snake_case naming convention.",
+      "recommendation": "Rename the function to 'handle_auth_logout_post' to comply with PEP 8.",
+      "example": ""
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 32,
+      "description": "Function name 'handle_auth_post' does not follow snake_case naming convention.",
+      "recommendation": "Rename the function to 'handle_auth_post' to comply with PEP 8.",
+      "example": ""
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 41,
+      "description": "Function name 'handle_auth_refresh_post' does not follow snake_case naming convention.",
+      "recommendation": "Rename the function to 'handle_auth_refresh_post' to comply with PEP 8.",
+      "example": ""
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 50,
+      "description": "Function name 'handle_auth_reset_password_post' does not follow snake_case naming convention.",
+      "recommendation": "Rename the function to 'handle_auth_reset_password_post' to comply with PEP 8.",
+      "example": ""
+    }
+  ],
+  "strengths": [
+    "Functions have clear purpose"
+  ],
+  "metrics": {
+    "lines_of_code": 36,
+    "complexity_estimate": "low",
+    "test_coverage": "unknown"
+  }
+}
