@@ -56,6 +56,15 @@ def handle_list_families(*args, **kwargs) -> Tuple[Any, int]:
     return real_handler(*args, **kwargs)
 
 
+def handle_family_list_get(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Forwarding handler for handle_family_list_get
+    Routes to implementation in handlers.py
+    """
+    from .handlers import handle_family_list_get as real_handler
+    return real_handler(*args, **kwargs)
+
+
 def handle_update_family(*args, **kwargs) -> Tuple[Any, int]:
     """
     Forwarding handler for update_family
@@ -79,6 +88,24 @@ def handle_create_family(*args, **kwargs) -> Tuple[Any, int]:
 def handle_delete_family(*args, **kwargs) -> Tuple[Any, int]:
     """
     Forwarding handler for delete_family
+    Routes to implementation in handlers.py
+    """
+    from .handlers import handle_family_details_delete as real_handler
+    return real_handler(*args, **kwargs)
+
+
+def handle_family_details_post(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Forwarding handler for family_details_post
+    Routes to implementation in handlers.py
+    """
+    from .handlers import handle_family_details_post as real_handler
+    return real_handler(*args, **kwargs)
+
+
+def handle_family_details_delete(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Forwarding handler for family_details_delete
     Routes to implementation in handlers.py
     """
     from .handlers import handle_family_details_delete as real_handler
