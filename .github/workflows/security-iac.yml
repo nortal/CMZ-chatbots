@@ -1,0 +1,287 @@
+# Infrastructure as Code (IaC) Security Scanning with Checkov
+# Scans infrastructure configurations for security misconfigurations
+
+name: IaC Security Scan
+on:
+  push:
+    branches: [ main, dev, 'kcs/*' ]
+    paths:
+      - 'infrastructure/**'
+      - 'backend/api/src/main/python/Dockerfile'
+      - '.github/workflows/**'
+      - '**/*.tf'
+      - '**/*.yaml'
+      - '**/*.yml'
+      - '**/*.json'
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - 'infrastructure/**'
+      - 'backend/api/src/main/python/Dockerfile'
+      - '.github/workflows/**'
+      - '**/*.tf'
+      - '**/*.yaml'
+      - '**/*.yml'
+      - '**/*.json'
+  schedule:
+    # Run daily at 5 AM UTC
+    - cron: '0 5 * * *'
+
+jobs:
+  checkov-scan:
+    name: Checkov IaC Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Checkov
+        run: |
+          pip install checkov
+          checkov --version
+
+      - name: Create Checkov configuration
+        run: |
+          mkdir -p .checkov
+          
+          # Create Checkov configuration file
+          cat > .checkov/config.yaml << 'EOF'
+          # Checkov configuration for CMZ project
+          framework:
+            - dockerfile
+            - github_actions  
+            - yaml
+            - json
+            - terraform
+            - cloudformation
+            
+          # Skip specific checks that are not applicable
+          skip-check:
+            # Docker checks that may not be relevant for our use case
+            - CKV_DOCKER_7   # Ensure 'COPY' is used instead of 'ADD' (we use ADD intentionally)
+            
+          # Enable severity filtering  
+          compact: true
+          quiet: false
+          
+          # Output formats
+          output:
+            - cli
+            - sarif
+            
+          # Set baseline for progressive improvement
+          baseline: .checkov/baseline.json
+          EOF
+
+      - name: Run Checkov scan on Dockerfile
+        id: checkov-docker
+        continue-on-error: true
+        run: |
+          if [ -f "backend/api/src/main/python/Dockerfile" ]; then
+            echo "🐳 Scanning Dockerfile..."
+            checkov -f backend/api/src/main/python/Dockerfile \
+              --framework dockerfile \
+              --output cli --output sarif \
+              --sarif-file-name checkov-docker.sarif \
+              --compact || true
+          else
+            echo "ℹ️ No Dockerfile found to scan"
+          fi
+
+      - name: Run Checkov scan on GitHub Actions workflows
+        id: checkov-gha
+        continue-on-error: true
+        run: |
+          echo "⚙️ Scanning GitHub Actions workflows..."
+          checkov -d .github/workflows/ \
+            --framework github_actions \
+            --output cli --output sarif \
+            --sarif-file-name checkov-gha.sarif \
+            --compact || true
+
+      - name: Run Checkov scan on YAML/JSON files
+        id: checkov-config
+        continue-on-error: true
+        run: |
+          echo "📄 Scanning configuration files..."
+          
+          # Scan YAML files
+          find . -name "*.yml" -o -name "*.yaml" | grep -v node_modules | grep -v .git | while read -r file; do
+            echo "Scanning: $file"
+            checkov -f "$file" \
+              --framework yaml \
+              --output cli \
+              --compact || true
+          done
+          
+          # Scan JSON files (excluding package files and generated files)
+          find . -name "*.json" | grep -v node_modules | grep -v package | grep -v .git | while read -r file; do
+            echo "Scanning: $file"
+            checkov -f "$file" \
+              --framework json \
+              --output cli \
+              --compact || true
+          done
+
+      - name: Run Checkov scan on Terraform (if exists)
+        id: checkov-terraform
+        continue-on-error: true
+        run: |
+          if find . -name "*.tf" | grep -q .; then
+            echo "🏗️ Scanning Terraform files..."
+            checkov -d . \
+              --framework terraform \
+              --output cli --output sarif \
+              --sarif-file-name checkov-terraform.sarif \
+              --compact || true
+          else
+            echo "ℹ️ No Terraform files found to scan"
+          fi
+
+      - name: Run Checkov scan on CloudFormation (if exists)
+        id: checkov-cfn
+        continue-on-error: true  
+        run: |
+          if find . -name "*.template" -o -name "*cloudformation*" | grep -q .; then
+            echo "☁️ Scanning CloudFormation templates..."
+            checkov -d . \
+              --framework cloudformation \
+              --output cli --output sarif \
+              --sarif-file-name checkov-cfn.sarif \
+              --compact || true
+          else
+            echo "ℹ️ No CloudFormation templates found to scan"
+          fi
+
+      - name: Upload Checkov SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-docker.sarif
+        continue-on-error: true
+
+      - name: Upload GitHub Actions SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-gha.sarif
+        continue-on-error: true
+
+      - name: Upload Terraform SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-terraform.sarif
+        continue-on-error: true
+
+      - name: Create IaC security summary
+        if: always()
+        run: |
+          {
+            echo "## 🏗️ Infrastructure as Code Security Scan"
+            echo ""
+            echo "**Scan Date**: $(date -u)"
+            echo "**Frameworks Scanned**:"
+            echo "- 🐳 Docker configurations"
+            echo "- ⚙️ GitHub Actions workflows"
+            echo "- 📄 YAML/JSON configuration files"
+          } > iac-summary.md
+          
+          if find . -name "*.tf" | grep -q .; then
+            echo "- 🏗️ Terraform infrastructure" >> iac-summary.md
+          fi
+          
+          if find . -name "*.template" -o -name "*cloudformation*" | grep -q .; then
+            echo "- ☁️ CloudFormation templates" >> iac-summary.md
+          fi
+          
+          {
+            echo ""
+            echo "📋 **Key Security Areas Checked:**"
+            echo "- Container security configurations"
+            echo "- Secrets management in workflows"
+            echo "- Network security settings"
+            echo "- Access control configurations"
+            echo "- Resource encryption settings"
+            echo ""
+            echo "🔍 **Next Steps:**"
+            echo "1. Review findings in the Security tab"
+            echo "2. Address high/critical severity issues first"
+            echo "3. Consider implementing policy-as-code for ongoing compliance"
+          } >> iac-summary.md
+
+      - name: Comment PR with IaC scan results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('iac-summary.md')) {
+              const summary = fs.readFileSync('iac-summary.md', 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: summary
+              });
+            }
+
+      - name: Upload IaC scan artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: iac-security-results-${{ github.sha }}
+          path: |
+            checkov-*.sarif
+            iac-summary.md
+            .checkov/
+          retention-days: 30
+
+  hadolint:
+    name: Dockerfile Linting with Hadolint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Hadolint Dockerfile linter
+        uses: hadolint/hadolint-action@v3.1.0
+        if: hashFiles('backend/api/src/main/python/Dockerfile') != ''
+        with:
+          dockerfile: backend/api/src/main/python/Dockerfile
+          format: sarif
+          output-file: hadolint.sarif
+
+      - name: Upload Hadolint SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('hadolint.sarif') != ''
+        with:
+          sarif_file: hadolint.sarif
+
+  actionlint:
+    name: GitHub Actions Workflow Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        uses: raven-actions/actionlint@v2
+        with:
+          files: .github/workflows/*.yml
+
+      - name: Upload actionlint results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: actionlint-results
+          path: actionlint-results.json
+          retention-days: 15

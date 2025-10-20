@@ -1,0 +1,91 @@
+{
+    "personality": {
+        "M": {
+            "description": {
+                "S": ""
+            }
+        }
+    },
+    "species": {
+        "S": "Macaca mulatta - Field Test 2025-09-16"
+    },
+    "softDelete": {
+        "BOOL": false
+    },
+    "deleted": {
+        "M": {
+            "at": {
+                "S": "2025-09-15T23:02:07.036912+00:00"
+            },
+            "by": {
+                "M": {
+                    "userId": {
+                        "S": "system"
+                    },
+                    "displayName": {
+                        "S": "System"
+                    },
+                    "email": {
+                        "S": "system@cmz.org"
+                    }
+                }
+            }
+        }
+    },
+    "configuration": {
+        "M": {
+            "temperature": {
+                "N": "0.8"
+            }
+        }
+    },
+    "animalId": {
+        "S": "animal_003"
+    },
+    "status": {
+        "S": "active"
+    },
+    "created": {
+        "M": {
+            "at": {
+                "S": "2025-09-13T15:30:00Z"
+            },
+            "by": {
+                "M": {
+                    "userId": {
+                        "S": "system"
+                    },
+                    "displayName": {
+                        "S": "System"
+                    },
+                    "email": {
+                        "S": "system@cmz.org"
+                    }
+                }
+            }
+        }
+    },
+    "name": {
+        "S": "Maya the Monkey - Partial Update Test 2025-09-19"
+    },
+    "modified": {
+        "M": {
+            "at": {
+                "S": "2025-09-19T19:56:12.733011+00:00"
+            },
+            "by": {
+                "M": {
+                    "userId": {
+                        "S": "system"
+                    },
+                    "displayName": {
+                        "S": "System"
+                    },
+                    "email": {
+                        "S": "system@cmz.org"
+                    }
+                }
+            }
+        }
+    }
+}

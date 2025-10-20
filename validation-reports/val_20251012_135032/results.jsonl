@@ -1,0 +1,6 @@
+{"test": "architecture_validation", "status": "PASS", "duration": 0, "critical": true, "priority": "P0"}
+{"test": "bug_001_systemprompt_persistence", "status": "FAIL", "duration": 5, "critical": true, "priority": "P1"}
+{"test": "bug_007_animal_put_functionality", "status": "FAIL", "duration": 2, "critical": true, "priority": "P1"}
+{"test": "frontend_health", "status": "PASS", "duration": 1, "priority": "P2"}
+{"test": "backend_health", "status": "PASS", "duration": 1, "priority": "P2"}
+{"test": "dynamodb_access", "status": "PASS", "duration": 1, "priority": "P2"}

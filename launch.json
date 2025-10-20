@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API (openapi_server __main__)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/api/src/main/python/openapi_server/__main__.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}${pathSeparator}${workspaceFolder}/backend/api/src/main/python"
+      },
+      "justMyCode": true
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}${pathSeparator}${workspaceFolder}/backend/api/src/main/python"
+      },
+      "justMyCode": true
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+# TruffleHog ignore patterns for CMZ Chatbots
+# Exclude demo files and documentation from secrets scanning
+
+# Demo access documentation
+DEMO_ACCESS.md
+
+# Test and demo directories using simple patterns
+demo/
+test/
+tests/
+
+# Documentation files that may contain example credentials
+docs/
+README.md
+
+# Configuration files that may have placeholder secrets
+.env.example
+.env.template

@@ -1,0 +1,1 @@
+{"baseline_date": "2025-10-10-0844", "services_healthy": true, "auth_working": true, "playwright_timeout": true, "note": "Full E2E tests timeout - using service health as baseline. Auth tested successfully with test@cmz.org. All services running: backend (8080), frontend (3000, 3001), DynamoDB."}

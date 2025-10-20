@@ -1,0 +1,40 @@
+{
+  "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+  "language": "python",
+  "summary": "The code file contains multiple not-implemented error handlers and lacks actual business logic implementation for the API operations.",
+  "issues": [
+    {
+      "severity": "MEDIUM",
+      "category": "style",
+      "line": 9,
+      "description": "Function name 'not_implemented_error' does not follow PEP 8 naming conventions",
+      "recommendation": "Rename the function to 'not_implemented_error'",
+      "example": "def not_implemented_error(operation_name: str) -> Tuple[Dict[str, Any], int]:"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "style",
+      "line": 42,
+      "description": "Import statement for Error model should be at the top of the file",
+      "recommendation": "Move the import statement to the top of the file",
+      "example": "from ..models.error import Error"
+    },
+    {
+      "severity": "LOW",
+      "category": "dry",
+      "line": 42,
+      "description": "Code duplication for creating Error object in multiple handler functions",
+      "recommendation": "Create a helper function to generate Error objects",
+      "example": "def create_error(code: str, message: str, details: Dict[str, Any]) -> Dict[str, Any]:"
+    }
+  ],
+  "strengths": [
+    "Well-structured code with clear separation of handler functions",
+    "Consistent use of error handling"
+  ],
+  "metrics": {
+    "lines_of_code": 77,
+    "complexity_estimate": "low",
+    "test_coverage": "unknown"
+  }
+}

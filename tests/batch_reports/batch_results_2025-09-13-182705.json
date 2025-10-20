@@ -1,0 +1,401 @@
+{
+  "summary": {
+    "execution_summary": {
+      "total_tests": 34,
+      "total_duration": 8.813790999999997,
+      "execution_time": 2.977912,
+      "start_time": "2025-09-13T18:27:05.077128",
+      "end_time": "2025-09-13T18:27:08.055040",
+      "parallel_efficiency": 2.959721778212384
+    },
+    "status_breakdown": {
+      "FAIL": 34
+    },
+    "pass_rate": 0.0,
+    "category_breakdown": {
+      "integration": {
+        "total": 34,
+        "passed": 0
+      }
+    },
+    "failed_tickets": [
+      "PR003946-136",
+      "PR003946-123",
+      "PR003946-120",
+      "PR003946-23",
+      "PR003946-24",
+      "PR003946-25",
+      "PR003946-27",
+      "PR003946-28",
+      "PR003946-29",
+      "PR003946-26",
+      "PR003946-31",
+      "PR003946-32",
+      "PR003946-30",
+      "PR003946-34",
+      "PR003946-33",
+      "PR003946-36",
+      "PR003946-35",
+      "PR003946-38",
+      "PR003946-39",
+      "PR003946-43",
+      "PR003946-37",
+      "PR003946-46",
+      "PR003946-44",
+      "PR003946-45",
+      "PR003946-48",
+      "PR003946-47",
+      "PR003946-50",
+      "PR003946-49",
+      "PR003946-53",
+      "PR003946-57",
+      "PR003946-51",
+      "PR003946-66",
+      "PR003946-76",
+      "PR003946-91"
+    ],
+    "error_tickets": []
+  },
+  "detailed_results": [
+    {
+      "ticket": "PR003946-136",
+      "status": "FAIL",
+      "duration": 0.231387,
+      "start_time": "2025-09-13T18:27:05.080019",
+      "end_time": "2025-09-13T18:27:05.311406",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-136\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-136/PR003946-136-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-136/PR003946-136-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-123",
+      "status": "FAIL",
+      "duration": 0.231724,
+      "start_time": "2025-09-13T18:27:05.079915",
+      "end_time": "2025-09-13T18:27:05.311639",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-123\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-123/PR003946-123-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-123/PR003946-123-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-120",
+      "status": "FAIL",
+      "duration": 0.234151,
+      "start_time": "2025-09-13T18:27:05.079831",
+      "end_time": "2025-09-13T18:27:05.313982",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-120\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-120/PR003946-120-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-120/PR003946-120-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-23",
+      "status": "FAIL",
+      "duration": 0.194781,
+      "start_time": "2025-09-13T18:27:05.311514",
+      "end_time": "2025-09-13T18:27:05.506295",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-23\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-23/PR003946-23-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-23/PR003946-23-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-24",
+      "status": "FAIL",
+      "duration": 0.196301,
+      "start_time": "2025-09-13T18:27:05.311654",
+      "end_time": "2025-09-13T18:27:05.507955",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-24\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-24/PR003946-24-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-24/PR003946-24-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-25",
+      "status": "FAIL",
+      "duration": 0.195023,
+      "start_time": "2025-09-13T18:27:05.314098",
+      "end_time": "2025-09-13T18:27:05.509121",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-25\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-25/PR003946-25-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-25/PR003946-25-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-27",
+      "status": "FAIL",
+      "duration": 0.200159,
+      "start_time": "2025-09-13T18:27:05.508084",
+      "end_time": "2025-09-13T18:27:05.708243",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-27\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-27/PR003946-27-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-27/PR003946-27-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-28",
+      "status": "FAIL",
+      "duration": 0.231296,
+      "start_time": "2025-09-13T18:27:05.509234",
+      "end_time": "2025-09-13T18:27:05.740530",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-28\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-28/PR003946-28-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-28/PR003946-28-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-29",
+      "status": "FAIL",
+      "duration": 0.218683,
+      "start_time": "2025-09-13T18:27:05.708374",
+      "end_time": "2025-09-13T18:27:05.927057",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-29\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-29/PR003946-29-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-29/PR003946-29-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-26",
+      "status": "FAIL",
+      "duration": 0.51828,
+      "start_time": "2025-09-13T18:27:05.506396",
+      "end_time": "2025-09-13T18:27:06.024676",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-26\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-26/PR003946-26-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-26/PR003946-26-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-31",
+      "status": "FAIL",
+      "duration": 0.179841,
+      "start_time": "2025-09-13T18:27:05.927202",
+      "end_time": "2025-09-13T18:27:06.107043",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-31\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-31/PR003946-31-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-31/PR003946-31-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-32",
+      "status": "FAIL",
+      "duration": 0.184304,
+      "start_time": "2025-09-13T18:27:06.024745",
+      "end_time": "2025-09-13T18:27:06.209049",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-32\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-32/PR003946-32-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-32/PR003946-32-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-30",
+      "status": "FAIL",
+      "duration": 0.515189,
+      "start_time": "2025-09-13T18:27:05.740606",
+      "end_time": "2025-09-13T18:27:06.255795",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-30\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-30/PR003946-30-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-30/PR003946-30-2025-09-13-182705-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-34",
+      "status": "FAIL",
+      "duration": 0.225043,
+      "start_time": "2025-09-13T18:27:06.209148",
+      "end_time": "2025-09-13T18:27:06.434191",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-34\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-34/PR003946-34-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-34/PR003946-34-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-33",
+      "status": "FAIL",
+      "duration": 0.513603,
+      "start_time": "2025-09-13T18:27:06.107133",
+      "end_time": "2025-09-13T18:27:06.620736",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-33\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-33/PR003946-33-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-33/PR003946-33-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-36",
+      "status": "FAIL",
+      "duration": 0.220148,
+      "start_time": "2025-09-13T18:27:06.434281",
+      "end_time": "2025-09-13T18:27:06.654429",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-36\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-36/PR003946-36-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-36/PR003946-36-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-35",
+      "status": "FAIL",
+      "duration": 0.561584,
+      "start_time": "2025-09-13T18:27:06.255886",
+      "end_time": "2025-09-13T18:27:06.817470",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-35\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-35/PR003946-35-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-35/PR003946-35-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-38",
+      "status": "FAIL",
+      "duration": 0.2121,
+      "start_time": "2025-09-13T18:27:06.654507",
+      "end_time": "2025-09-13T18:27:06.866607",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-38\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-38/PR003946-38-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-38/PR003946-38-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-39",
+      "status": "FAIL",
+      "duration": 0.211627,
+      "start_time": "2025-09-13T18:27:06.817556",
+      "end_time": "2025-09-13T18:27:07.029183",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-39\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-39/PR003946-39-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-39/PR003946-39-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-43",
+      "status": "FAIL",
+      "duration": 0.195013,
+      "start_time": "2025-09-13T18:27:06.866682",
+      "end_time": "2025-09-13T18:27:07.061695",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-43\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-43/PR003946-43-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-43/PR003946-43-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-37",
+      "status": "FAIL",
+      "duration": 0.444447,
+      "start_time": "2025-09-13T18:27:06.620817",
+      "end_time": "2025-09-13T18:27:07.065264",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-37\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-37/PR003946-37-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-37/PR003946-37-2025-09-13-182706-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-46",
+      "status": "FAIL",
+      "duration": 0.16613,
+      "start_time": "2025-09-13T18:27:07.065340",
+      "end_time": "2025-09-13T18:27:07.231470",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-46\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-46/PR003946-46-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-46/PR003946-46-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-44",
+      "status": "FAIL",
+      "duration": 0.202417,
+      "start_time": "2025-09-13T18:27:07.029274",
+      "end_time": "2025-09-13T18:27:07.231691",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-44\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-44/PR003946-44-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-44/PR003946-44-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-45",
+      "status": "FAIL",
+      "duration": 0.171043,
+      "start_time": "2025-09-13T18:27:07.061783",
+      "end_time": "2025-09-13T18:27:07.232826",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-45\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-45/PR003946-45-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-45/PR003946-45-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-48",
+      "status": "FAIL",
+      "duration": 0.200251,
+      "start_time": "2025-09-13T18:27:07.231707",
+      "end_time": "2025-09-13T18:27:07.431958",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-48\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-48/PR003946-48-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-48/PR003946-48-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-47",
+      "status": "FAIL",
+      "duration": 0.226029,
+      "start_time": "2025-09-13T18:27:07.231570",
+      "end_time": "2025-09-13T18:27:07.457599",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-47\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-47/PR003946-47-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-47/PR003946-47-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-50",
+      "status": "FAIL",
+      "duration": 0.170589,
+      "start_time": "2025-09-13T18:27:07.432055",
+      "end_time": "2025-09-13T18:27:07.602644",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-50\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-50/PR003946-50-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-50/PR003946-50-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-49",
+      "status": "FAIL",
+      "duration": 0.46388,
+      "start_time": "2025-09-13T18:27:07.232927",
+      "end_time": "2025-09-13T18:27:07.696807",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-49\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-49/PR003946-49-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-49/PR003946-49-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-53",
+      "status": "FAIL",
+      "duration": 0.186848,
+      "start_time": "2025-09-13T18:27:07.602730",
+      "end_time": "2025-09-13T18:27:07.789578",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-53\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-53/PR003946-53-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-53/PR003946-53-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-57",
+      "status": "FAIL",
+      "duration": 0.205869,
+      "start_time": "2025-09-13T18:27:07.696901",
+      "end_time": "2025-09-13T18:27:07.902770",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-57\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-57/PR003946-57-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-57/PR003946-57-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-51",
+      "status": "FAIL",
+      "duration": 0.45289,
+      "start_time": "2025-09-13T18:27:07.457679",
+      "end_time": "2025-09-13T18:27:07.910569",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-51\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-51/PR003946-51-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-51/PR003946-51-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-66",
+      "status": "FAIL",
+      "duration": 0.161762,
+      "start_time": "2025-09-13T18:27:07.789660",
+      "end_time": "2025-09-13T18:27:07.951422",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-66\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-66/PR003946-66-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-66/PR003946-66-2025-09-13-182707-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-76",
+      "status": "FAIL",
+      "duration": 0.147189,
+      "start_time": "2025-09-13T18:27:07.902855",
+      "end_time": "2025-09-13T18:27:08.050044",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-76\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-76/PR003946-76-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-76/PR003946-76-2025-09-13-182708-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    },
+    {
+      "ticket": "PR003946-91",
+      "status": "FAIL",
+      "duration": 0.14421,
+      "start_time": "2025-09-13T18:27:07.910655",
+      "end_time": "2025-09-13T18:27:08.054865",
+      "stdout": "\ud83c\udfaf EXECUTING TEST: PR003946-91\n\ud83d\udcc1 Category: INTEGRATION\n==================================================\n\ud83d\udccb Test instructions loaded from: tests/integration/PR003946-91/PR003946-91-howto-test.md\n\n\ud83d\udd27 EXECUTING INTEGRATION TEST\n  \ud83d\udd0d Checking prerequisites...\n    \u2705 Backend service running\n    \u2705 Environment configuration found\n  \ud83d\udce1 Testing valid API request...\n  \ud83d\udce1 Testing invalid API request...\n\n\u2705 TEST COMPLETED: FAIL\n\ud83d\udcc4 Results saved: tests/integration/PR003946-91/PR003946-91-2025-09-13-182708-results.md\n",
+      "stderr": "",
+      "exit_code": 1
+    }
+  ]
+}

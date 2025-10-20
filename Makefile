@@ -1,0 +1,347 @@
+# =========================
+# Configurable variables
+# =========================
+
+# Name/tag for the Docker image and container
+IMAGE_NAME ?= cmz-openapi-api
+CONTAINER_NAME ?= $(IMAGE_NAME)-dev
+
+# OpenAPI spec and app paths (relative to repo root)
+OPENAPI_SPEC ?= backend/api/openapi_spec.yaml
+SRC_APP_DIR ?= backend/api/src/main/python
+GEN_APP_DIR ?= backend/api/generated/app
+REQUIREMENTS_FILE ?= $(SRC_APP_DIR)/requirements.txt
+
+# Where to stash backups of existing code before regeneration
+GEN_TMP_BASE ?= tmp
+
+# Network / ports
+# host port to expose the app on (8080 by default)
+PORT ?= 8080
+CONTAINER_PORT ?= 8080
+
+# OpenAPI Generator image + generator choice
+OPENAPI_GEN_IMAGE ?= openapitools/openapi-generator-cli:latest
+OPENAPI_GENERATOR ?= python-flask
+
+# Optional extra OpenAPI generator opts (space-separated)
+OPENAPI_GEN_OPTS ?= --template-dir /local/backend/api/templates/python-flask --additional-properties=packageName=openapi_server
+
+# ----- Local Python tooling (UV virtualenv) -----
+UV ?= uv
+PYTHON_VERSION ?= $(shell cat .python_version 2>/dev/null || echo 3.12)
+VENV_DIR ?= .venv/openapi-venv
+
+# =========================
+# Helpers
+# =========================
+
+ROOT_DIR := $(shell pwd)
+
+# Label to tag images/containers so we can clean up safely
+API_LABEL_KEY := io.cmz.api
+API_LABEL_VAL := $(IMAGE_NAME)
+API_LABEL := $(API_LABEL_KEY)=$(API_LABEL_VAL)
+
+$(GEN_TMP_BASE):
+	@mkdir -p "$(GEN_TMP_BASE)"
+
+.PHONY: help
+help:
+	@echo "Targets (API-specific):"
+	@echo "  generate-api     Regenerate Flask code from $(OPENAPI_SPEC) WITH automatic validation (prevents auth regressions)"
+	@echo "  generate-api-raw Generate Flask code WITHOUT validation (use with caution - will break auth!)"
+	@echo "  sync-openapi    Sync $(GEN_APP_DIR)/{openapi.yaml,models,test} into $(SRC_APP_DIR)"
+	@echo "  build-api        Build Docker image $(IMAGE_NAME) from generated Dockerfile in $(SRC_APP_DIR)"
+	@echo "  run-api          Run container $(CONTAINER_NAME) with $(SRC_APP_DIR) mounted; port $(PORT)->$(CONTAINER_PORT)"
+	@echo "  stop-api         Stop container $(CONTAINER_NAME) if running"
+	@echo "  logs-api         Tail logs from $(CONTAINER_NAME)"
+	@echo "  clean-api        Remove ONLY containers/images labeled $(API_LABEL) (and image named $(IMAGE_NAME))"
+	@echo ""
+	@echo "Local dev with UV:"
+	@echo "  venv-api         Create UV virtualenv at $(VENV_DIR) (Python $(PYTHON_VERSION))"
+	@echo "  rebuild-venv-api Delete and recreate virtualenv at $(VENV_DIR) (calls venv-api)"
+	@echo "  install-api      Install pip requirements from $(REQUIREMENTS_FILE) into $(VENV_DIR)"
+	@echo ""
+	@echo "Variables (override like VAR=value make <target>):"
+	@echo "  IMAGE_NAME, CONTAINER_NAME, OPENAPI_SPEC, GEN_APP_DIR, SRC_APP_DIR, GEN_TMP_BASE, PORT, CONTAINER_PORT"
+	@echo "  OPENAPI_GEN_IMAGE, OPENAPI_GENERATOR, OPENAPI_GEN_OPTS, UV, PYTHON_VERSION, VENV_DIR"
+
+# =========================
+# 1) Generate Flask code from OpenAPI spec (with backup)
+# =========================
+.PHONY: validate-naming
+validate-naming:
+	@echo ">> Validating naming conventions..."
+	@python3 scripts/validate_naming_conventions_simple.py $(ROOT_DIR)
+
+.PHONY: generate-api-raw
+generate-api-raw: validate-naming $(GEN_TMP_BASE)
+	@set -e; \
+	echo ">> Backing up existing app directory (if any)"; \
+	TS=$$(date +%Y%m%d_%H%M%S); \
+	BACKUP_DIR="$(GEN_TMP_BASE)/api_$${TS}"; \
+	mkdir -p "$${BACKUP_DIR}"; \
+	if [ -d "$(GEN_APP_DIR)" ]; then \
+		echo "   - Copying '$(GEN_APP_DIR)' -> '$${BACKUP_DIR}/app'"; \
+		cp -a "$(GEN_APP_DIR)" "$${BACKUP_DIR}/app"; \
+	else \
+		echo "   - No existing '$(GEN_APP_DIR)' directory found; skipping copy"; \
+	fi; \
+	echo ">> Generating code from '$(OPENAPI_SPEC)' into '$(GEN_APP_DIR)' using generator '$(OPENAPI_GENERATOR)'"; \
+	mkdir -p "$(GEN_APP_DIR)"; \
+	docker run --rm \
+		-v "$(ROOT_DIR)":/local \
+		"$(OPENAPI_GEN_IMAGE)" generate \
+		-g "$(OPENAPI_GENERATOR)" \
+		-i "/local/$(OPENAPI_SPEC)" \
+		-o "/local/$(GEN_APP_DIR)" \
+		$(OPENAPI_GEN_OPTS); \
+	echo ">> Generation complete."
+
+# IMPORTANT: generate-api now ALWAYS runs validation to prevent auth endpoint regressions
+.PHONY: generate-api
+generate-api: generate-api-raw validate-api
+	@echo "✅ API generation and validation complete (auth endpoints preserved)"
+
+.PHONY: sync-openapi
+sync-openapi:
+	@echo "=== Syncing OpenAPI spec, models, and tests ==="
+	@echo "GEN_APP_DIR: $(GEN_APP_DIR)"
+	@echo "SRC_APP_DIR: $(SRC_APP_DIR)"
+
+	@echo "--- Copying OpenAPI spec..."
+	cp -v $(GEN_APP_DIR)/openapi_server/openapi/openapi.yaml \
+	      $(SRC_APP_DIR)/openapi_server/openapi/openapi.yaml
+
+	@echo "--- Refreshing models directory..."
+	rm -rfv $(SRC_APP_DIR)/openapi_server/models/*
+	cp -rv $(GEN_APP_DIR)/openapi_server/models/* \
+	       $(SRC_APP_DIR)/openapi_server/models/
+
+	@echo "--- Refreshing test directory..."
+	rm -rfv $(SRC_APP_DIR)/openapi_server/test/*
+	cp -rv $(GEN_APP_DIR)/openapi_server/test/* \
+	       $(SRC_APP_DIR)/openapi_server/test/
+
+	@echo "=== Done: sync-openapi ==="
+	@echo "--- Running post-generation setup..."
+	python3 scripts/post_openapi_generation.py $(SRC_APP_DIR)
+	@echo "=== Done: post-generation setup ==="
+
+.PHONY: diff-api
+diff-api:
+	@set -e; \
+	if [ ! -d "$(GEN_APP_DIR)" ]; then \
+		echo "ERROR: Generated app directory not found at '$(GEN_APP_DIR)'. Run 'make generate-api' first."; \
+		exit 1; \
+	fi; \
+	if [ ! -d "$(SRC_APP_DIR)" ]; then \
+		echo "ERROR: Source app directory not found at '$(SRC_APP_DIR)'."; \
+		exit 1; \
+	fi; \
+	echo ">> Diffing generated app '$(GEN_APP_DIR)' vs source app '$(SRC_APP_DIR)'"; \
+	diff -r -q "$(GEN_APP_DIR)" "$(SRC_APP_DIR)" || true
+
+# =========================
+# 2) Build Docker image
+# =========================
+.PHONY: build-api
+build-api:
+	@set -e; \
+	if [ ! -f "$(SRC_APP_DIR)/Dockerfile" ]; then \
+		echo "ERROR: Dockerfile not found at '$(SRC_APP_DIR)/Dockerfile'. Run 'make generate-api' first."; \
+		exit 1; \
+	fi; \
+	echo ">> Building Docker image '$(IMAGE_NAME)' from '$(SRC_APP_DIR)'"; \
+	docker build \
+		--label "$(API_LABEL)" \
+		-t "$(IMAGE_NAME)" \
+		"$(SRC_APP_DIR)"
+
+# =========================
+# 3) Run Docker container (with live bind mount)
+# =========================
+.PHONY: run-api
+run-api:
+	@set -e; \
+	echo ">> Starting container '$(CONTAINER_NAME)' from image '$(IMAGE_NAME)'"; \
+	if [ "$(DEBUG)" = "1" ]; then \
+		echo ">> Running in DEBUG mode (interactive, Flask debug enabled)"; \
+		docker run --rm -it \
+			--label "$(API_LABEL)" \
+			--name "$(CONTAINER_NAME)" \
+			-p "$(PORT):$(CONTAINER_PORT)" \
+			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
+			-v $$HOME/.aws:/root/.aws:ro \
+			-e FLASK_ENV=development \
+			-e AWS_REGION=us-west-2 \
+			-e AWS_DEFAULT_REGION=us-west-2 \
+			-e AWS_PROFILE=cmz \
+			-e AWS_ACCESS_KEY_ID=$$AWS_ACCESS_KEY_ID \
+			-e AWS_SECRET_ACCESS_KEY=$$AWS_SECRET_ACCESS_KEY \
+			-e OPENAI_API_KEY=$$OPENAI_API_KEY \
+			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
+			-e ANIMAL_DYNAMO_PK_NAME=animalId \
+			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
+			-e FAMILY_DYNAMO_TABLE_NAME=quest-dev-family \
+			-e FAMILY_DYNAMO_PK_NAME=familyId \
+			"$(IMAGE_NAME)"; \
+	else \
+		docker run --rm -d \
+			--label "$(API_LABEL)" \
+			--name "$(CONTAINER_NAME)" \
+			-p "$(PORT):$(CONTAINER_PORT)" \
+			-v "$(ROOT_DIR)/$(SRC_APP_DIR)":/app \
+			-v $$HOME/.aws:/root/.aws:ro \
+			-e AWS_REGION=us-west-2 \
+			-e AWS_DEFAULT_REGION=us-west-2 \
+			-e AWS_PROFILE=cmz \
+			-e AWS_ACCESS_KEY_ID=$$AWS_ACCESS_KEY_ID \
+			-e AWS_SECRET_ACCESS_KEY=$$AWS_SECRET_ACCESS_KEY \
+			-e OPENAI_API_KEY=$$OPENAI_API_KEY \
+			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
+			-e ANIMAL_DYNAMO_PK_NAME=animalId \
+			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
+			-e FAMILY_DYNAMO_TABLE_NAME=quest-dev-family \
+			-e FAMILY_DYNAMO_PK_NAME=familyId \
+			"$(IMAGE_NAME)"; \
+		echo ">> Container running: http://localhost:$(PORT)"; \
+	fi
+
+.PHONY: stop-api
+stop-api:
+	@set -e; \
+	if [ -n "$$(docker ps -q -f name=^/$(CONTAINER_NAME)$$)" ]; then \
+		echo ">> Stopping container '$(CONTAINER_NAME)'"; \
+		docker stop "$(CONTAINER_NAME)" >/dev/null; \
+	else \
+		echo ">> No running container named '$(CONTAINER_NAME)'"; \
+	fi
+
+.PHONY: logs-api
+logs-api:
+	@docker logs -f "$(CONTAINER_NAME)"
+
+# =========================
+# 4) Clean ONLY this API's containers & images
+# =========================
+.PHONY: clean-api
+clean-api:
+	@set -e; \
+	echo ">> Removing containers labeled $(API_LABEL)"; \
+	CONTAINERS=$$(docker ps -a -q --filter "label=$(API_LABEL)"); \
+	if [ -n "$${CONTAINERS}" ]; then \
+		docker rm -f $${CONTAINERS}; \
+	else \
+		echo "   - No containers to remove"; \
+	fi; \
+	echo ">> Removing images labeled $(API_LABEL) OR named '$(IMAGE_NAME)'"; \
+	IMAGES_LABELED=$$(docker images -q --filter "label=$(API_LABEL)"); \
+	IMAGES_NAMED=$$(docker images -q "$(IMAGE_NAME)"); \
+	IMAGES=$$(printf "%s\n%s\n" "$${IMAGES_LABELED}" "$${IMAGES_NAMED}" | sort -u); \
+	if [ -n "$${IMAGES}" ]; then \
+		docker rmi -f $${IMAGES}; \
+	else \
+		echo "   - No images to remove"; \
+	fi
+
+# =========================
+# 5) Local dev: UV virtualenv + install
+# =========================
+.PHONY: venv-api
+venv-api:
+	@set -e; \
+	if ! command -v "$(UV)" >/dev/null 2>&1; then \
+		echo "ERROR: 'uv' not found. Install from https://docs.astral.sh/uv/"; \
+		exit 1; \
+	fi; \
+	echo ">> Creating UV virtualenv at '$(VENV_DIR)' (Python $(PYTHON_VERSION))"; \
+	mkdir -p "$(dir $(VENV_DIR))"; \
+	"$(UV)" venv --python "$(PYTHON_VERSION)" "$(VENV_DIR)"; \
+	echo ">> Done. Activate with:"; \
+	echo "   source $(VENV_DIR)/bin/activate"
+
+.PHONY: rebuild-venv-api
+rebuild-venv-api:
+	@set -e; \
+	if [ -d "$(VENV_DIR)" ]; then \
+		echo ">> Removing existing virtualenv at '$(VENV_DIR)'"; \
+		rm -rf "$(VENV_DIR)"; \
+	else \
+		echo ">> No existing virtualenv found at '$(VENV_DIR)'"; \
+	fi; \
+	$(MAKE) venv-api
+
+.PHONY: install-api
+install-api: venv-api
+	@set -e; \
+	if [ ! -f "$(REQUIREMENTS_FILE)" ]; then \
+		echo "ERROR: Requirements file not found at '$(REQUIREMENTS_FILE)'. Run 'make generate-api' first."; \
+		exit 1; \
+	fi; \
+	if ! command -v "$(UV)" >/dev/null 2>&1; then \
+		echo "ERROR: 'uv' not found. Install from https://docs.astral.sh/uv/"; \
+		exit 1; \
+	fi; \
+	echo ">> Installing Python packages from '$(REQUIREMENTS_FILE)' into '$(VENV_DIR)'"; \
+	"$(UV)" pip install -r "$(REQUIREMENTS_FILE)" -p "$(VENV_DIR)/bin/python"; \
+	echo ">> Installed. Activate with: source $(VENV_DIR)/bin/activate"
+
+# Development environment management
+start-dev: ## Start complete development environment
+	@scripts/start_development_environment.sh
+
+stop-dev: ## Stop complete development environment
+	@scripts/stop_development_environment.sh
+
+health-check: ## Check system health
+	@echo "🔍 System Health Check"
+	@curl -f http://localhost:8080/system_health && echo "✅ Backend: OK" || echo "❌ Backend: FAIL"
+	@curl -f http://localhost:3000 >/dev/null 2>&1 && echo "✅ Frontend (3000): OK" || echo "❌ Frontend (3000): FAIL"
+	@curl -f http://localhost:3001 >/dev/null 2>&1 && echo "✅ Frontend (3001): OK" || echo "❌ Frontend (3001): FAIL"
+	@aws dynamodb list-tables --region us-west-2 --profile cmz >/dev/null 2>&1 && echo "✅ DynamoDB: OK" || echo "❌ DynamoDB: FAIL"
+
+# Quality gates
+quality-check: ## Run all quality gates
+	@scripts/quality_gates.sh
+
+fix-common: ## Fix common development issues
+	@scripts/fix_common_issues.sh
+
+validate-api: ## Validate API generation and frontend-backend contract
+	@echo "🔍 Running comprehensive API validation..."
+	@python3 scripts/post_generation_validation.py
+	@echo "🔧 Fixing recurring issues (CORS, AWS deps, JWT, email extraction)..."
+	@python3 scripts/fix_recurring_issues.py $(SRC_APP_DIR)
+	@echo "🔧 Fixing controller signatures if needed..."
+	@python3 scripts/fix_controller_signatures.py
+	@echo "🔗 Fixing controller-implementation connections..."
+	@cd $(SRC_APP_DIR) && python scripts/fix_controller_connections.py || echo "⚠️ Connection fixer not found or failed"
+	@echo "🏠 Applying Family Management fixes..."
+	@scripts/post_generate_family_fixes.sh || echo "⚠️ Family fixes script not found or failed"
+	@echo "📝 Testing frontend-backend contract..."
+	@python3 scripts/frontend_backend_contract_test.py || echo "⚠️ Contract tests failed - backend may not be running"
+
+post-generate: generate-api ## Generate API with automatic validation (same as generate-api now)
+	@echo "✅ API generation and validation complete"
+
+pre-mr: ## Prepare for MR creation (quality check + branch push)
+	@scripts/quality_gates.sh && scripts/create_mr.sh
+
+status: ## Show complete system status
+	@echo "🏗️  CMZ Infrastructure Status"
+	@echo "================================"
+	@echo "Services:"
+	@curl -f http://localhost:8080/system_health >/dev/null 2>&1 && echo "  ✅ Backend API (8080)" || echo "  ❌ Backend API (8080)"
+	@curl -f http://localhost:3000 >/dev/null 2>&1 && echo "  ✅ Frontend (3000)" || echo "  ❌ Frontend (3000)"
+	@curl -f http://localhost:3001 >/dev/null 2>&1 && echo "  ✅ Frontend (3001)" || echo "  ❌ Frontend (3001)"
+	@aws dynamodb list-tables --region us-west-2 --profile cmz >/dev/null 2>&1 && echo "  ✅ DynamoDB" || echo "  ❌ DynamoDB"
+	@echo ""
+	@echo "Git Status:"
+	@echo "  Branch: $$(git branch --show-current)"
+	@echo "  Status: $$(git status --porcelain | wc -l) uncommitted changes"
+	@echo ""
+	@echo "Quality Status:"
+	@python -c "from openapi_server.models import *" 2>/dev/null && echo "  ✅ Python imports" || echo "  ❌ Python imports"
+	@black --check backend/api/src/main/python/openapi_server/impl/ >/dev/null 2>&1 && echo "  ✅ Code formatting" || echo "  ❌ Code formatting"

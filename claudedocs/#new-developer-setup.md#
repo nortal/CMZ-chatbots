@@ -1,0 +1,347 @@
+# CMZ Chatbots New Developer Setup Guide
+
+This guide will help a new developer get productive on the CMZ Chatbots project using Claude Code with the project's MCP servers.
+
+## Prerequisites
+
+1. **Claude Code CLI** - Install from [claude.ai/code](https://claude.ai/code)
+2. **AWS CLI** - Configured with CMZ account credentials
+3. **Docker Desktop** - For containerized development
+4. **Python 3.11+** and **Node.js 18+**
+
+## Project Overview
+
+CMZ Chatbots is a Python Flask-based API server for the Cougar Mountain Zoo digital ambassador chatbot platform. Key features:
+
+- **OpenAPI-First Development** - All APIs defined in `backend/api/openapi_spec.yaml`
+- **AWS Cognito Authentication** - Complete role-based access control
+- **DynamoDB Persistence** - 10+ production tables for zoo data
+- **Docker Containerized** - Full development and deployment workflow
+- **MCP-Enhanced Development** - 24+ specialized tools for AWS and Python
+
+## Initial Project Setup
+
+```bash
+# Clone and enter project
+git clone <repository-url>
+cd CMZ-chatbots
+
+# Check out the Cognito authentication branch
+git checkout kcs/cognito-authentication
+
+# Set up AWS profile (required for MCP servers)
+aws configure --profile cmz
+# Enter your CMZ AWS credentials when prompted
+
+# Verify AWS access
+aws sts get-caller-identity --profile cmz
+```
+
+## MCP Server Configuration for Claude Code
+
+Save this configuration to your Claude Code MCP settings. This enables all 24 MCP servers used in the project:
+
+### Core MCP Servers (Required)
+
+```json
+{
+  "mcpServers": {
+    "aws-core": {
+      "command": "uvx",
+      "args": ["mcp-aws-core"],
+      "env": {
+        "AWS_PROFILE": "cmz",
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "sequential-thinking": {
+      "command": "uvx", 
+      "args": ["mcp-sequential-thinking"]
+    },
+    "context7": {
+      "command": "uvx",
+      "args": ["mcp-context7"]
+    },
+    "magic": {
+      "command": "uvx",
+      "args": ["mcp-magic"]
+    }
+  }
+}
+```
+
+### Full Production MCP Configuration
+
+For complete development capabilities, use this comprehensive configuration:
+
+```json
+{
+  "mcpServers": {
+    "aws-core": {
+      "command": "uvx",
+      "args": ["mcp-aws-core"],
+      "env": {
+        "AWS_PROFILE": "cmz",
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "aws-dynamo": {
+      "command": "uvx", 
+      "args": ["mcp-aws-dynamodb"],
+      "env": {
+        "AWS_PROFILE": "cmz",
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "aws-s3": {
+      "command": "uvx",
+      "args": ["mcp-aws-s3"],
+      "env": {
+        "AWS_PROFILE": "cmz",
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "aws-athena": {
+      "command": "uvx",
+      "args": ["mcp-aws-athena"],
+      "env": {
+        "AWS_PROFILE": "cmz",
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "aws-cognito": {
+      "command": "uvx",
+      "args": ["mcp-aws-cognito"],
+      "env": {
+        "AWS_PROFILE": "cmz", 
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "aws-cost-explorer": {
+      "command": "uvx",
+      "args": ["mcp-aws-cost-explorer"],
+      "env": {
+        "AWS_PROFILE": "cmz",
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "aws-resources": {
+      "command": "uvx",
+      "args": ["mcp-aws-resources"],
+      "env": {
+        "AWS_PROFILE": "cmz",
+        "AWS_REGION": "us-west-2"
+      }
+    },
+    "aws-cdk": {
+      "command": "uvx",
+      "args": ["mcp-aws-cdk"]
+    },
+    "aws-terraform": {
+      "command": "uvx",
+      "args": ["mcp-terraform"]
+    },
+    "aws-sam": {
+      "command": "uvx",
+      "args": ["mcp-serverless"]
+    },
+    "aws-diagrams": {
+      "command": "uvx",
+      "args": ["mcp-aws-diagrams"]
+    },
+    "sequential-thinking": {
+      "command": "uvx",
+      "args": ["mcp-sequential-thinking"]
+    },
+    "context7": {
+      "command": "uvx",
+      "args": ["mcp-context7"]
+    },
+    "magic": {
+      "command": "uvx",
+      "args": ["mcp-magic"]
+    },
+    "morphllm": {
+      "command": "uvx",
+      "args": ["mcp-morphllm"]
+    },
+    "serena": {
+      "command": "uvx",
+      "args": ["mcp-serena"]
+    },
+    "playwright": {
+      "command": "uvx",
+      "args": ["mcp-playwright"]
+    },
+    "fastmcp": {
+      "command": "uvx",
+      "args": ["fastmcp"]
+    },
+    "prims": {
+      "command": "uvx",
+      "args": ["mcp-prims"]
+    },
+    "jupyter": {
+      "command": "uvx",
+      "args": ["mcp-jupyter"]
+    },
+    "python-interpreter": {
+      "command": "uvx",
+      "args": ["mcp-python"]
+    },
+    "django": {
+      "command": "uvx",
+      "args": ["mcp-django"]
+    },
+    "openapi": {
+      "command": "uvx",
+      "args": ["mcp-openapi"]
+    },
+    "filesystem": {
+      "command": "uvx",
+      "args": ["mcp-filesystem"]
+    }
+  }
+}
+```
+
+## Development Workflow Commands
+
+### Core Development Cycle
+```bash
+# Complete regeneration and deployment cycle
+make generate-api && make build-api && make run-api
+
+# Quick development iteration 
+make generate-api
+make build-api
+make run-api
+
+# Monitor running container
+make logs-api
+
+# Stop and cleanup
+make stop-api
+make clean-api
+```
+
+### Testing & Quality
+```bash
+# Full test suite with coverage
+tox
+
+# Quick unit tests
+pytest --cov=openapi_server
+
+# Test specific module
+pytest backend/api/src/main/python/openapi_server/test/test_family.py
+```
+
+## Essential Claude Code Prompts
+
+Use these prompts to get productive quickly:
+
+### Project Initialization
+```
+I'm a new developer on the CMZ Chatbots project. Please:
+1. Review the current branch state and recent commits
+2. Check if the development environment is properly set up
+3. Identify any incomplete features or pending work
+4. Run the test suite to verify everything works
+```
+
+### Understanding Architecture
+```
+Help me understand the CMZ Chatbots architecture:
+1. Explain the OpenAPI-first development approach
+2. Show me the key business domains (Animals, Families, Users, etc.)
+3. Walk through the hexagonal architecture implementation
+4. Explain how Cognito authentication integrates
+```
+
+### Working with AWS Infrastructure
+```
+I need to work with the AWS infrastructure:
+1. Show me the current Cognito setup and configuration
+2. List all DynamoDB tables and their purposes  
+3. Check the current AWS spending and resource usage
+4. Help me understand the deployment process
+```
+
+### Code Generation and API Development
+```
+I want to add a new API endpoint:
+1. Show me how to modify the OpenAPI spec
+2. Regenerate the server code
+3. Implement the business logic in the impl/ directory
+4. Test the new endpoint
+```
+
+## Project Structure Key Points
+
+```
+backend/api/
+├── openapi_spec.yaml              # SOURCE OF TRUTH - All API definitions
+├── src/main/python/
+│   ├── openapi_server/
+│   │   ├── controllers/           # GENERATED - Route handlers (DO NOT EDIT)
+│   │   ├── models/                # GENERATED - Data models (DO NOT EDIT)  
+│   │   ├── impl/                  # IMPLEMENTATION - Business logic only
+│   │   │   ├── cognito_authentication.py  # Cognito auth integration
+│   │   │   ├── family.py          # Family management CRUD
+│   │   │   └── utils/dynamo.py    # DynamoDB utilities
+│   │   └── test/                  # GENERATED - Test stubs
+```
+
+## Critical Rules
+
+1. **NEVER modify generated files** - Controllers, models, tests are regenerated
+2. **All business logic in impl/** - Only implement in the impl/ directory
+3. **OpenAPI spec is source of truth** - API changes start with the YAML file
+4. **Use DynamoDB utilities** - All database operations use `impl/utils/dynamo.py`
+5. **Environment configuration** - AWS_PROFILE=cmz is required for MCP servers
+
+## Getting Help
+
+### In Claude Code
+```
+# Check project documentation
+Please read the CLAUDE.md file and explain the current project setup
+
+# Understand specific implementations  
+Explain how the Cognito authentication system works in this project
+
+# Debug issues
+The API is returning errors - help me troubleshoot the authentication flow
+q
+# Review code quality
+Run the linting and type checking tools to verify code quality
+```
+
+### Development Resources
+- **Project Documentation**: `CLAUDE.md` in project root
+- **API Documentation**: Generated from OpenAPI spec at `/docs` endpoint
+- **History Tracking**: See `history/` directory for development session logs
+- **AWS Console**: CMZ account (195275676211) in us-west-2 region
+
+## Quick Start Checklist
+
+- [ ] AWS CLI configured with CMZ profile (`aws sts get-caller-identity --profile cmz`)
+- [ ] Docker Desktop running
+- [ ] Claude Code MCP servers configured and working
+- [ ] Project cloned and on `kcs/cognito-authentication` branch
+- [ ] Environment variables set (`AWS_PROFILE=cmz`, `AWS_REGION=us-west-2`)
+- [ ] Development containers built (`make build-api`)
+- [ ] Tests passing (`tox` or `pytest`)
+- [ ] API server running (`make run-api`)
+
+## Success Indicators
+
+You're properly set up when:
+1. `make run-api` starts the server without errors
+2. Claude Code can list AWS resources using MCP servers  
+3. Tests pass with `pytest --cov=openapi_server`
+4. You can access the API documentation at `http://localhost:8080/docs`
+5. AWS Cognito authentication is configured and working
+
+This setup provides you with a complete development environment leveraging Claude Code's MCP servers for AWS integration, code analysis, and productivity tools.

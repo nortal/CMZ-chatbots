@@ -1,0 +1,27 @@
+#!/bin/bash
+# Pre-commit hook for contract validation
+# Ensures OpenAPI spec, UI code, and API implementation stay aligned
+
+set -e
+
+echo "🔍 Running contract validation..."
+
+# Run contract validation script
+if ! python3 scripts/validate_contracts.py --quick; then
+    echo ""
+    echo "❌ Contract validation failed!"
+    echo ""
+    echo "The OpenAPI spec, UI code, or API implementation are misaligned."
+    echo "Please fix the issues above before committing."
+    echo ""
+    echo "For detailed analysis, run:"
+    echo "  ./scripts/validate_contracts.sh"
+    echo ""
+    echo "To bypass this check (NOT RECOMMENDED):"
+    echo "  git commit --no-verify"
+    echo ""
+    exit 1
+fi
+
+echo "✅ Contract validation passed"
+exit 0

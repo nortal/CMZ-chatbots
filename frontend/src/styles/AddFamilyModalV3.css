@@ -1,0 +1,496 @@
+/* Add Family Modal V3 Styles */
+
+/* Overlay */
+.afm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal Container */
+.afm-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 600px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Header */
+.afm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.afm-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.afm-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.afm-close-btn:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Content Area */
+.afm-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f9fafb;
+}
+
+.afm-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.afm-content::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 4px;
+}
+
+.afm-content::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 4px;
+  border: 2px solid #f9fafb;
+}
+
+/* Form Sections */
+.afm-section {
+  margin-bottom: 24px;
+}
+
+.afm-section-header {
+  margin-bottom: 12px;
+}
+
+.afm-section-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+/* Form Elements */
+.afm-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.afm-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.afm-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.afm-input::placeholder {
+  color: #9ca3af;
+}
+
+.afm-required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+/* Add Button */
+.afm-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.afm-add-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.afm-add-btn:active {
+  transform: translateY(0);
+}
+
+/* Search Container */
+.afm-search-container {
+  position: relative;
+}
+
+.afm-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.afm-search-icon {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.afm-search-input {
+  flex: 1;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.afm-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.afm-cancel-link {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.afm-cancel-link:hover {
+  color: #374151;
+}
+
+/* Search Results Dropdown */
+.afm-search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.afm-result-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.afm-result-item:last-child {
+  border-bottom: none;
+}
+
+.afm-result-item:hover {
+  background-color: #f3f4f6;
+}
+
+.afm-result-item:focus {
+  outline: none;
+  background-color: #eff6ff;
+}
+
+.afm-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.afm-result-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.afm-result-email {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.afm-search-loading,
+.afm-no-results {
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Chips */
+.afm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.afm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #f3f4f6;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+.afm-chip-text {
+  color: #374151;
+}
+
+.afm-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 2px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.afm-chip-remove:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+/* Address Fields */
+.afm-address-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.afm-field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.afm-full-width {
+  width: 100%;
+}
+
+.afm-address-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+}
+
+.afm-city {
+  grid-column: span 1;
+}
+
+.afm-state {
+  grid-column: span 1;
+}
+
+.afm-zip {
+  grid-column: span 1;
+}
+
+/* Footer */
+.afm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Buttons */
+.afm-btn-secondary {
+  padding: 8px 16px;
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.afm-btn-secondary:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.afm-btn-primary {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.afm-btn-primary:hover:not(:disabled) {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.afm-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.afm-btn-primary:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Accessibility */
+.afm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .afm-container {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .afm-content {
+    padding: 16px;
+  }
+
+  .afm-address-row {
+    grid-template-columns: 1fr;
+  }
+
+  .afm-city,
+  .afm-state,
+  .afm-zip {
+    grid-column: span 1;
+  }
+
+  .afm-footer {
+    padding: 16px;
+  }
+}
+
+/* Focus Visible for Keyboard Navigation */
+.afm-add-btn:focus-visible,
+.afm-close-btn:focus-visible,
+.afm-btn-primary:focus-visible,
+.afm-btn-secondary:focus-visible,
+.afm-chip-remove:focus-visible,
+.afm-cancel-link:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .afm-container {
+    border: 2px solid currentColor;
+  }
+
+  .afm-input,
+  .afm-search-input {
+    border-width: 2px;
+  }
+
+  .afm-btn-primary:disabled {
+    opacity: 0.6;
+  }
+}

@@ -1,0 +1,37 @@
+{"test": "POST /auth", "status": "PASS", "duration": 0, "details": "Login successful"}
+{"test": "POST /auth/logout", "status": "PASS", "duration": 0, "details": "Logout successful"}
+{"test": "POST /auth/refresh", "status": "PASS", "duration": 0, "details": "Refresh successful"}
+{"test": "POST /auth/reset_password", "status": "PASS", "duration": 0, "details": "Password reset successful"}
+{"test": "GET /", "status": "FAIL", "duration": 0, "details": "HTTP 501"}
+{"test": "GET /admin", "status": "FAIL", "duration": 0, "details": "HTTP 501"}
+{"test": "GET /animal_list", "status": "PASS", "duration": 0, "details": "Animal list retrieved"}
+{"test": "GET /animal/{animalId}", "status": "PASS", "duration": 0, "details": "Animal retrieved"}
+{"test": "PUT /animal/{animalId}", "status": "FAIL", "duration": 0, "details": "HTTP 500"}
+{"test": "DELETE /animal/{animalId}", "status": "PASS", "duration": 0, "details": "HTTP 404 (expected)"}
+{"test": "GET /animal_config", "status": "FAIL", "duration": 0, "details": "HTTP 401"}
+{"test": "PATCH /animal_config", "status": "FAIL", "duration": 0, "details": "HTTP 400"}
+{"test": "POST /animal", "status": "FAIL", "duration": 0, "details": "HTTP 500"}
+{"test": "GET /system_health", "status": "PASS", "duration": 0, "details": "Health check successful"}
+{"test": "GET /guardrails", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "POST /guardrails", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /guardrails/test123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "PUT /guardrails/test123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "DELETE /guardrails/test123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /guardrails/templates", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "POST /guardrails/apply-template", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /animal/charlie_003/guardrails/effective", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /animal/charlie_003/guardrails/system-prompt", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /user", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "POST /user", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /user/test_user_123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "PATCH /user/test_user_123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "DELETE /user/test_user_123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /family/list", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "POST /family", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /family/details/test123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "PATCH /family/details/test123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "DELETE /family/details/test123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /family", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "GET /family/test_family_123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "PATCH /family/test_family_123", "status": "FAIL", "duration": 0, "details": "HTTP "}
+{"test": "DELETE /family/test_family_123", "status": "FAIL", "duration": 0, "details": "HTTP "}

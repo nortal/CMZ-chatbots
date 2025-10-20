@@ -1,0 +1,48 @@
+{
+  "file": "backend/api/src/main/python/openapi_server/impl/utils/jwt_utils.py",
+  "language": "python",
+  "summary": "The code shows good practices in handling JWT token generation and decoding. However, there are some security vulnerabilities and potential improvements in terms of code quality.",
+  "issues": [
+    {
+      "severity": "HIGH",
+      "category": "security",
+      "line": 12,
+      "description": "Hardcoded JWT secret in code",
+      "recommendation": "Use environment variables or a secure secret management solution",
+      "example": "JWT_SECRET = os.getenv('JWT_SECRET')"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "security",
+      "line": 97,
+      "description": "Incomplete input validation in create_auth_response function",
+      "recommendation": "Validate and sanitize input data to prevent injection attacks",
+      "example": "Ensure all user_data fields are properly validated and sanitized"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "dry",
+      "line": 67,
+      "description": "Code duplication in create_auth_response and generate_jwt_token functions",
+      "recommendation": "Extract common logic into a shared function",
+      "example": "Create a function to handle common user data processing tasks"
+    },
+    {
+      "severity": "LOW",
+      "category": "solid",
+      "line": 97,
+      "description": "Violation of Single Responsibility Principle in create_auth_response function",
+      "recommendation": "Separate token generation and response building into distinct functions",
+      "example": "Split create_auth_response into generate_token and build_auth_response functions"
+    }
+  ],
+  "strengths": [
+    "Well-structured code",
+    "Use of type hints for function parameters"
+  ],
+  "metrics": {
+    "lines_of_code": 150,
+    "complexity_estimate": "medium",
+    "test_coverage": "unknown"
+  }
+}

@@ -1,0 +1,48 @@
+[
+  {
+    "test": "GET /invalid_endpoint - Error Format Test",
+    "command": "curl -s -i -X GET -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/invalid_endpoint",
+    "status_code": 404,
+    "response": {
+      "detail": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
+      "status": 404,
+      "title": "Not Found",
+      "type": "about:blank"
+    },
+    "raw_output": "HTTP/1.1 404 NOT FOUND\nServer: Werkzeug/2.2.3 Python/3.12.12\nDate: Tue, 14 Oct 2025 13:51:48 GMT\nContent-Type: application/problem+json\nContent-Length: 205\nAccess-Control-Allow-Origin: http://localhost:3000\nAccess-Control-Allow-Credentials: true\nVary: Origin\nConnection: close\n\n{\n  \"detail\": \"The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.\",\n  \"status\": 404,\n  \"title\": \"Not Found\",\n  \"type\": \"about:blank\"\n}\n"
+  },
+  {
+    "test": "GET /user/999999 - Error Format Test",
+    "command": "curl -s -i -X GET -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/user/999999",
+    "status_code": 404,
+    "response": {
+      "detail": "User not found: 999999",
+      "error": "Not found"
+    },
+    "raw_output": "HTTP/1.1 404 NOT FOUND\nServer: Werkzeug/2.2.3 Python/3.12.12\nDate: Tue, 14 Oct 2025 13:51:48 GMT\nContent-Type: application/json\nContent-Length: 65\nAccess-Control-Allow-Origin: http://localhost:3000\nAccess-Control-Allow-Credentials: true\nVary: Origin\nConnection: close\n\n{\n  \"detail\": \"User not found: 999999\",\n  \"error\": \"Not found\"\n}\n"
+  },
+  {
+    "test": "POST /auth - Error Format Test",
+    "command": "curl -s -i -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/auth",
+    "status_code": 400,
+    "response": {
+      "detail": "None is not of type 'object'",
+      "status": 400,
+      "title": "Bad Request",
+      "type": "about:blank"
+    },
+    "raw_output": "HTTP/1.1 400 BAD REQUEST\nServer: Werkzeug/2.2.3 Python/3.12.12\nDate: Tue, 14 Oct 2025 13:51:49 GMT\nContent-Type: application/problem+json\nContent-Length: 115\nAccess-Control-Allow-Origin: http://localhost:3000\nAccess-Control-Allow-Credentials: true\nVary: Origin\nConnection: close\n\n{\n  \"detail\": \"None is not of type 'object'\",\n  \"status\": 400,\n  \"title\": \"Bad Request\",\n  \"type\": \"about:blank\"\n}\n"
+  },
+  {
+    "test": "DELETE /family - Error Format Test",
+    "command": "curl -s -i -X DELETE -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/family",
+    "status_code": 405,
+    "response": {
+      "detail": "The method is not allowed for the requested URL.",
+      "status": 405,
+      "title": "Method Not Allowed",
+      "type": "about:blank"
+    },
+    "raw_output": "HTTP/1.1 405 METHOD NOT ALLOWED\nServer: Werkzeug/2.2.3 Python/3.12.12\nDate: Tue, 14 Oct 2025 13:51:49 GMT\nContent-Type: application/problem+json\nAllow: HEAD, GET, OPTIONS, POST\nContent-Length: 142\nAccess-Control-Allow-Origin: http://localhost:3000\nAccess-Control-Allow-Credentials: true\nVary: Origin\nConnection: close\n\n{\n  \"detail\": \"The method is not allowed for the requested URL.\",\n  \"status\": 405,\n  \"title\": \"Method Not Allowed\",\n  \"type\": \"about:blank\"\n}\n"
+  }
+]

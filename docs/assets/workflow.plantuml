@@ -1,0 +1,23 @@
+@startuml
+actor User
+participant "Web UI (S3/CloudFront)" as WebUI
+participant "Amazon Cognito" as Cognito
+participant "API Gateway" as APIGW
+participant "AWS Lambda" as Lambda
+database "DynamoDB" as Dynamo
+participant "External AI Service" as AI
+
+User -> WebUI : Access via browser/QR code
+WebUI -> Cognito : Authenticate (login/signup)
+Cognito -> WebUI : Return token (OAuth callback)
+User -> WebUI : Enter chat prompt
+WebUI -> APIGW : Send prompt (with Cognito token)
+APIGW -> Lambda : Invoke Lambda (pass prompt, token)
+Lambda -> Dynamo : Read/write session/conversation/animal/knowledge/user data
+Lambda -> AI : Send prompt/context
+AI -> Lambda : Return AI response
+Lambda -> Dynamo : Update conversation/session
+Lambda -> APIGW : Return response
+APIGW -> WebUI : Return response
+WebUI -> User : Display chatbot reply
+@enduml

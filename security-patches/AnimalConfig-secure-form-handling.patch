@@ -1,0 +1,194 @@
+--- a/frontend/src/pages/AnimalConfig.tsx
++++ b/frontend/src/pages/AnimalConfig.tsx
+@@ -3,6 +3,8 @@ import { Zap, Settings, Eye, Edit, Plus, Save, BookOpen, Shield, Brain, Message
+ import { useAnimals, useAnimalConfig, useApiHealth } from '../hooks/useAnimals';
+ import { Animal as BackendAnimal, AnimalConfig as BackendAnimalConfig } from '../services/api';
+ import { utils } from '../services/api';
++import { useSecureFormHandling, getSecureAnimalConfigData } from '../hooks/useSecureFormHandling';
++import { ValidationError } from '../utils/inputValidation';
+ 
+ interface KnowledgeEntry {
+   id: string;
+@@ -84,12 +86,15 @@ const AnimalConfig: React.FC = () => {
+   // Handle configuration save
+   const handleSaveConfig = async (configData: any) => {
+     try {
+       await updateConfig(configData);
+       // Refresh the animals list to get updated data
+       refetch();
+     } catch (error) {
+-      console.error('Failed to save configuration:', error);
++      // Secure error handling - don't expose sensitive details
++      if (process.env.NODE_ENV === 'development') {
++        console.error('Failed to save configuration:', error);
++      }
++      throw error; // Re-throw for form handler
+     }
+   };
+ 
+@@ -164,6 +169,12 @@ const AnimalConfig: React.FC = () => {
+ 
+   const ConfigurationModal: React.FC = () => {
+     if (!selectedAnimal) return null;
++    
++    // Use secure form handling
++    const { errors, isSubmitting, submitForm, clearErrors, getFieldError } = useSecureFormHandling(
++      handleSaveConfig
++    );
++    
+     const [activeTab, setActiveTab] = useState<'basic' | 'prompt' | 'knowledge' | 'guardrails' | 'settings'>('basic');
+ 
+     const getSeverityColor = (severity: string) => {
+@@ -244,11 +255,14 @@ const AnimalConfig: React.FC = () => {
+                 <div className="grid grid-cols-2 gap-6">
+                   <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                       Animal Name
+                     </label>
+                     <input
++                      id="animal-name-input"
+                       type="text"
+                       value={animalConfig?.name || ''}
++                      onChange={(e) => clearErrors()}
+                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
++                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${getFieldError('name') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'}`}
+                     />
++                    {getFieldError('name') && <p className="text-red-500 text-sm mt-1">{getFieldError('name')}</p>}
+                   </div>
+                   <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+@@ -256,9 +270,13 @@ const AnimalConfig: React.FC = () => {
+                     </label>
+                     <input
++                      id="animal-species-input"
+                       type="text"
+                       value={animalConfig?.species || ''}
++                      onChange={(e) => clearErrors()}
+-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
++                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${getFieldError('species') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'}`}
+                     />
++                    {getFieldError('species') && <p className="text-red-500 text-sm mt-1">{getFieldError('species')}</p>}
+                   </div>
+                 </div>
+ 
+@@ -270,11 +288,15 @@ const AnimalConfig: React.FC = () => {
+                   <textarea
+                     rows={4}
+                     value={animalConfig?.personality || ''}
+-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
++                    onChange={(e) => clearErrors()}
++                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${getFieldError('personality') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-green-500'}`}
+                     placeholder="Describe the animal's personality, how it should interact with visitors..."
+                     id="personality-textarea"
++                    maxLength={2000}
+                   />
++                  {getFieldError('personality') && <p className="text-red-500 text-sm mt-1">{getFieldError('personality')}</p>}
++                  <p className="text-sm text-gray-500 mt-1">Maximum 2000 characters</p>
+                 </div>
+ 
+                 <div className="grid grid-cols-3 gap-4">
+@@ -282,6 +304,7 @@ const AnimalConfig: React.FC = () => {
+                     <label className="flex items-center">
+                       <input
++                        id="animal-active-checkbox"
+                         type="checkbox"
+                         defaultChecked={animalConfig?.active || false}
+                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+@@ -292,6 +315,7 @@ const AnimalConfig: React.FC = () => {
+                     <label className="flex items-center">
+                       <input
++                        id="educational-focus-checkbox"
+                         type="checkbox"
+                         defaultChecked={animalConfig?.conversationSettings?.educationalFocus || false}
+                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+@@ -302,6 +326,7 @@ const AnimalConfig: React.FC = () => {
+                     <label className="flex items-center">
+                       <input
++                        id="age-appropriate-checkbox"
+                         type="checkbox"
+                         defaultChecked={animalConfig?.conversationSettings?.ageAppropriate || false}
+                         className="mr-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+@@ -437,6 +462,7 @@ const AnimalConfig: React.FC = () => {
+                       </label>
+                       <input
++                        id="max-response-length-input"
+                         type="number"
+                         value={animalConfig?.conversationSettings?.maxResponseLength || ''}
+                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+@@ -449,6 +475,7 @@ const AnimalConfig: React.FC = () => {
+                       </label>
+                       <select 
++                        id="scientific-accuracy-select"
+                         value={animalConfig?.conversationSettings?.scientificAccuracy || ''}
+                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                       >
+@@ -477,6 +504,7 @@ const AnimalConfig: React.FC = () => {
+                       </label>
+                       <select 
++                        id="tone-select"
+                         value={animalConfig?.voiceSettings?.tone || ''}
+                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                       >
+@@ -494,6 +522,7 @@ const AnimalConfig: React.FC = () => {
+                       </label>
+                       <select 
++                        id="formality-select"
+                         value={animalConfig?.voiceSettings?.formality || ''}
+                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                       >
+@@ -509,6 +538,7 @@ const AnimalConfig: React.FC = () => {
+                       </label>
+                       <input
++                        id="enthusiasm-range"
+                         type="range"
+                         min="1"
+                         max="10"
+@@ -521,6 +551,17 @@ const AnimalConfig: React.FC = () => {
+           </div>
+ 
+           <div className="p-6 border-t bg-gray-50 flex justify-between">
++            {/* Display validation errors */}
++            {errors.length > 0 && (
++              <div className="flex-1 mr-4">
++                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
++                  <div className="flex items-center">
++                    <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
++                    <span className="text-sm text-red-800">{errors[0].message}</span>
++                  </div>
++                </div>
++              </div>
++            )}
+             <button
+               onClick={() => {
+                 setSelectedAnimal(null);
+@@ -537,15 +578,18 @@ const AnimalConfig: React.FC = () => {
+               <button 
+                 onClick={() => {
+-                  // Get form data and save
+-                  const personalityEl = document.getElementById('personality-textarea') as HTMLTextAreaElement;
+-                  const configData = {
+-                    personality: personalityEl?.value || animalConfig?.personality,
+-                    // Add other form fields as needed
+-                  };
+-                  handleSaveConfig(configData);
++                  // Secure form submission
++                  try {
++                    const configData = getSecureAnimalConfigData();
++                    submitForm(configData);
++                  } catch (error) {
++                    if (error instanceof ValidationError) {
++                      // Validation errors are handled by the form handler
++                      console.debug('Form validation error:', error.message);
++                    }
++                  }
+                 }}
+-                disabled={configSaving}
++                disabled={configSaving || isSubmitting}
+                 className="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+               >
+                 <Save className="w-4 h-4 mr-2" />
+-                {configSaving ? 'Saving...' : 'Save Configuration'}
++                {(configSaving || isSubmitting) ? 'Saving...' : 'Save Configuration'}
+               </button>
+             </div>
+           </div>

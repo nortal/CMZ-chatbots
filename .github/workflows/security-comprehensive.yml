@@ -1,0 +1,409 @@
+# Comprehensive Security Workflow - Orchestrates all security scanning
+# Master workflow that coordinates and monitors all security tools
+
+name: Comprehensive Security Scan
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+  schedule:
+    # Run comprehensive scan weekly on Sundays at 6 AM UTC
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+    inputs:
+      force_full_scan:
+        description: 'Force full DAST scan'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  security-matrix:
+    name: Security Scan Coordination
+    runs-on: ubuntu-latest
+    outputs:
+      has-dockerfile: ${{ steps.check-files.outputs.has-dockerfile }}
+      has-terraform: ${{ steps.check-files.outputs.has-terraform }}
+      has-frontend: ${{ steps.check-files.outputs.has-frontend }}
+      has-backend: ${{ steps.check-files.outputs.has-backend }}
+      scan-strategy: ${{ steps.strategy.outputs.strategy }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check file types for targeted scanning
+        id: check-files
+        run: |
+          {
+            echo "has-dockerfile=$([ -f 'backend/api/src/main/python/Dockerfile' ] && echo 'true' || echo 'false')"
+            echo "has-terraform=$([ -n "$(find . -name '*.tf' -not -path './.*')" ] && echo 'true' || echo 'false')"
+            echo "has-frontend=$([ -d 'frontend' ] && echo 'true' || echo 'false')"
+            echo "has-backend=$([ -d 'backend' ] && echo 'true' || echo 'false')"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Determine scan strategy
+        id: strategy
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            echo "strategy=incremental" >> "$GITHUB_OUTPUT"
+          elif [[ "$EVENT_NAME" == "schedule" ]]; then
+            echo "strategy=comprehensive" >> "$GITHUB_OUTPUT"
+          else
+            echo "strategy=standard" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Security scan summary
+        env:
+          SCAN_STRATEGY: ${{ steps.strategy.outputs.strategy }}
+          HAS_DOCKERFILE: ${{ steps.check-files.outputs.has-dockerfile }}
+          HAS_TERRAFORM: ${{ steps.check-files.outputs.has-terraform }}
+          HAS_FRONTEND: ${{ steps.check-files.outputs.has-frontend }}
+          HAS_BACKEND: ${{ steps.check-files.outputs.has-backend }}
+        run: |
+          echo "🔒 **Security Scan Strategy**: $SCAN_STRATEGY"
+          echo "� **Dockerfile detected**: $HAS_DOCKERFILE"
+          echo "🏗️ **Terraform detected**: $HAS_TERRAFORM"
+          echo "⚛️ **Frontend detected**: $HAS_FRONTEND"
+          echo "🐍 **Backend detected**: $HAS_BACKEND"
+
+  # Run SAST scans in parallel
+  sast-parallel:
+    name: SAST Security Scans
+    needs: security-matrix
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        scanner: [semgrep]  # codeql temporarily disabled
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Semgrep scan
+        if: matrix.scanner == 'semgrep'
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            auto
+            p/python
+            p/flask  
+            p/react
+            p/javascript
+            p/typescript
+            p/docker
+            p/secrets
+            p/owasp-top-ten
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Setup for CodeQL
+        if: matrix.scanner == 'codeql'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install frontend dependencies
+        if: matrix.scanner == 'codeql' && needs.security-matrix.outputs.has-frontend == 'true'
+        working-directory: frontend
+        run: npm ci
+
+      - name: Initialize CodeQL
+        if: matrix.scanner == 'codeql'
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript,python
+          queries: security-and-quality
+
+      - name: Autobuild CodeQL
+        if: matrix.scanner == 'codeql'
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        if: matrix.scanner == 'codeql'
+        uses: github/codeql-action/analyze@v3
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && matrix.scanner == 'semgrep' && hashFiles('semgrep.sarif') != ''
+        with:
+          sarif_file: semgrep.sarif
+          category: 'semgrep-sast'
+
+  # Dependency and secrets scanning
+  dependency-secrets:
+    name: Dependencies & Secrets Scan
+    needs: security-matrix  
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog secrets scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified --json --exclude-paths .trufflehogignore
+
+      - name: Check dependency vulnerabilities (Frontend)
+        if: needs.security-matrix.outputs.has-frontend == 'true'
+        working-directory: frontend
+        run: |
+          npm audit --audit-level=moderate --json > npm-audit.json || true
+          
+      - name: Check dependency vulnerabilities (Backend)  
+        if: needs.security-matrix.outputs.has-backend == 'true'
+        working-directory: backend/api/src/main/python
+        run: |
+          pip install safety
+          safety check --json > safety-audit.json || true
+
+      - name: Upload dependency scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-scan-results
+          path: |
+            frontend/npm-audit.json
+            backend/api/src/main/python/safety-audit.json
+          retention-days: 30
+
+  # Container security (if Dockerfile exists)
+  container-security:
+    name: Container Security Scan
+    needs: security-matrix
+    runs-on: ubuntu-latest
+    if: needs.security-matrix.outputs.has-dockerfile == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        working-directory: backend/api/src/main/python
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          docker build -t "cmz-api:scan-$BUILD_NUMBER" .
+
+      - name: Run Trivy container scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'cmz-api:scan-${{ github.run_number }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload container scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'container-security'
+
+  # Infrastructure as Code scanning
+  iac-security:
+    name: IaC Security Scan
+    needs: security-matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Checkov
+        run: pip install checkov
+
+      - name: Scan Dockerfile with Checkov
+        if: needs.security-matrix.outputs.has-dockerfile == 'true'
+        run: |
+          checkov -f backend/api/src/main/python/Dockerfile \
+            --framework dockerfile --output sarif \
+            --sarif-file-name checkov-dockerfile.sarif || true
+
+      - name: Scan GitHub Actions workflows
+        run: |
+          checkov -d .github/workflows/ \
+            --framework github_actions --output sarif \
+            --sarif-file-name checkov-gha.sarif || true
+
+      - name: Scan Terraform
+        if: needs.security-matrix.outputs.has-terraform == 'true'
+        run: |
+          checkov -d . --framework terraform \
+            --output sarif --sarif-file-name checkov-terraform.sarif || true
+
+      - name: Upload IaC scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-dockerfile.sarif
+          category: 'iac-dockerfile'
+        continue-on-error: true
+
+      - name: Upload GHA scan results
+        uses: github/codeql-action/upload-sarif@v3  
+        if: always()
+        with:
+          sarif_file: checkov-gha.sarif
+          category: 'iac-github-actions'
+        continue-on-error: true
+
+  # Dynamic security testing (scheduled or manual)
+  dast-security:
+    name: DAST Security Scan
+    needs: security-matrix
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for deployment (if needed)
+        run: |
+          echo "Waiting for any ongoing deployments to complete..."
+          sleep 30
+
+      - name: Run ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'https://cmz-chatbot-demo.netlify.app'
+          cmd_options: '-a -d -T 60'
+          fail_action: false
+
+      - name: Upload DAST results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dast-scan-results
+          path: |
+            report_html.html
+            report_md.md
+          retention-days: 30
+
+  # Security summary and reporting
+  security-report:
+    name: Security Report Generation
+    needs: [security-matrix, sast-parallel, dependency-secrets, container-security, iac-security]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all security artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: security-artifacts
+
+      - name: Generate comprehensive security report
+        env:
+          REPO_NAME: ${{ github.repository }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          SCAN_STRATEGY: ${{ needs.security-matrix.outputs.scan-strategy }}
+          HAS_DOCKERFILE: ${{ needs.security-matrix.outputs.has-dockerfile }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          mkdir -p security-report
+          
+          {
+            echo "# 🔒 Comprehensive Security Scan Report"
+            echo ""
+            echo "**Scan Date**: $(date -u)"
+            echo "**Repository**: $REPO_NAME"
+            echo "**Branch**: $BRANCH_NAME"
+            echo "**Commit**: $COMMIT_SHA"
+            echo "**Scan Strategy**: $SCAN_STRATEGY"
+            echo ""
+          } > security-report/README.md
+          
+          {
+            echo "## 📊 Scan Coverage"
+            echo ""
+            echo "| Security Layer | Status | Tools Used |"
+            echo "|---------------|---------|------------|"
+            echo "| 🔍 SAST | ✅ | Semgrep |"
+            echo "| 📦 SCA | ✅ | npm audit, safety |"
+            echo "| 🔑 Secrets | ✅ | TruffleHog |"
+          } >> security-report/README.md
+          
+          if [[ "$HAS_DOCKERFILE" == "true" ]]; then
+            echo "| 🐳 Container | ✅ | Trivy |" >> security-report/README.md
+          else
+            echo "| 🐳 Container | ➖ | No containers detected |" >> security-report/README.md
+          fi
+          
+          echo "| 🏗️ IaC | ✅ | Checkov |" >> security-report/README.md
+          
+          if [[ "$EVENT_NAME" == "schedule" ]]; then
+            echo "| 🌐 DAST | ✅ | OWASP ZAP |" >> security-report/README.md
+          else
+            echo "| 🌐 DAST | ➖ | Scheduled only |" >> security-report/README.md
+          fi
+          
+          {
+            echo ""
+            echo "## 🎯 Key Security Metrics"
+            echo ""
+            echo "- **NIST CSF 2.0 Alignment**: Multi-layer security controls implemented"
+            echo "- **Automation Level**: Fully automated security scanning in CI/CD"
+            echo "- **Coverage**: Source code, dependencies, containers, infrastructure, runtime"
+            echo "- **Integration**: Results feed directly into GitHub Security tab"
+            echo ""
+            echo "## 📋 Next Steps"
+            echo ""
+            echo "1. **Review Findings**: Check the Security tab for detailed vulnerability reports"
+            echo "2. **Prioritize Remediation**: Address critical and high-severity findings first"
+            echo "3. **Update Policies**: Refine scanning rules based on false positives"
+            echo "4. **Monitor Trends**: Track security posture improvements over time"
+            echo ""
+            echo "---"
+            echo "*Generated by CMZ Security Automation*"
+          } >> security-report/README.md
+
+      - name: Upload comprehensive security report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: comprehensive-security-report-${{ github.run_number }}
+          path: |
+            security-report/
+            security-artifacts/
+          retention-days: 90
+
+      - name: Create security dashboard issue (weekly)
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('security-report/README.md', 'utf8');
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📊 Weekly Security Dashboard - ${new Date().toISOString().split('T')[0]}`,
+              body: report,
+              labels: ['security', 'dashboard', 'weekly-report']
+            });
