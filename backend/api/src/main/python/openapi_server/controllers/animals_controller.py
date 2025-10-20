@@ -167,17 +167,26 @@ def animal_config_patch(animal_id, body):  # noqa: E501
             return error_obj, 500
 
 
-def animal_delete(animalId):  # noqa: E501
+def animal_delete(animalId=None, animal_id=None):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
 
-    :param animal_id: 
+    :param animal_id:
     :type animal_id: str
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    # Auto-generated parameter handling
+    # Handle both parameter names (Connexion renames animalId to animal_id)
+    actual_id = animal_id if animal_id is not None else animalId
+    if actual_id is None:
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="missing_parameter",
+            message="Missing required parameter: animalId",
+            details={"parameter": "animalId"}
+        )
+        return error_obj, 400
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
@@ -208,7 +217,7 @@ def animal_delete(animalId):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(animal_id)
+        result = impl_function(actual_id)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -317,17 +326,26 @@ def animal_details_get(animal_id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_get(animalId):  # noqa: E501
+def animal_get(animalId=None, animal_id=None):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
 
-    :param animal_id: 
+    :param animal_id:
     :type animal_id: str
 
     :rtype: Union[Animal, Tuple[Animal, int], Tuple[Animal, int, Dict[str, str]]
     """
-    # Auto-generated parameter handling
+    # Handle both parameter names (Connexion renames animalId to animal_id)
+    actual_id = animal_id if animal_id is not None else animalId
+    if actual_id is None:
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="missing_parameter",
+            message="Missing required parameter: animalId",
+            details={"parameter": "animalId"}
+        )
+        return error_obj, 400
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
@@ -358,7 +376,7 @@ def animal_get(animalId):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(animal_id)
+        result = impl_function(actual_id)
 
         # Handle different return types
         if isinstance(result, tuple):

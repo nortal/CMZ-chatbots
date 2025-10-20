@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 import { X, Plus, Trash2, UserPlus } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from './ui/dialog';
 
 interface Student {
   name: string;
@@ -113,20 +120,12 @@ const AddFamilyModal: React.FC<AddFamilyModalProps> = ({ isOpen, onClose, onSave
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Add New Family</h2>
-          <button
-            onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogHeader className="sticky top-0 bg-white border-b px-6 py-4">
+          <DialogTitle className="text-2xl font-bold text-gray-900">Add New Family</DialogTitle>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Family Name */}
@@ -358,7 +357,7 @@ const AddFamilyModal: React.FC<AddFamilyModalProps> = ({ isOpen, onClose, onSave
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <DialogFooter className="pt-4 border-t">
             <button
               type="button"
               onClick={handleClose}
@@ -372,10 +371,10 @@ const AddFamilyModal: React.FC<AddFamilyModalProps> = ({ isOpen, onClose, onSave
             >
               Add Family
             </button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

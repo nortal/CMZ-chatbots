@@ -58,11 +58,12 @@ class UserService:
         # Create audit trail
         actor_data = self._audit_service.extract_actor_data(user_data)
         audit_stamps = self._audit_service.create_creation_audit(actor_data)
-        
-        # Merge audit data
+
+        # Merge audit data - convert AuditStamp objects to dicts
+        from .common.serializers import serialize_audit_stamp
         user_data.update({
-            "created": audit_stamps["created"],
-            "modified": audit_stamps["modified"],
+            "created": serialize_audit_stamp(audit_stamps["created"]),
+            "modified": serialize_audit_stamp(audit_stamps["modified"]),
             "deleted": None
         })
         
@@ -172,12 +173,19 @@ class UserService:
         merged_data = current_data.copy()
         merged_data.update(update_data)
         merged_data["userId"] = user_id  # Ensure ID consistency
-        
+
         # Create modification audit
         actor_data = self._audit_service.extract_actor_data(update_data)
         audit_stamps = self._audit_service.create_modification_audit(actor_data)
-        merged_data.update(audit_stamps)
-        
+
+        # Serialize AuditStamp objects to dicts before merging
+        from .common.serializers import serialize_audit_stamp
+        serialized_stamps = {
+            key: serialize_audit_stamp(value) if value else None
+            for key, value in audit_stamps.items()
+        }
+        merged_data.update(serialized_stamps)
+
         # Convert to domain entity
         updated_user = deserialize_user(merged_data)
         
@@ -207,11 +215,18 @@ class UserService:
         
         # Mark as soft deleted
         current_data["softDelete"] = True
-        
+
         # Create deletion audit
         audit_stamps = self._audit_service.create_deletion_audit(actor_data)
-        current_data.update(audit_stamps)
-        
+
+        # Serialize AuditStamp objects to dicts before merging
+        from .common.serializers import serialize_audit_stamp
+        serialized_stamps = {
+            key: serialize_audit_stamp(value) if value else None
+            for key, value in audit_stamps.items()
+        }
+        current_data.update(serialized_stamps)
+
         # Convert to domain entity and persist
         updated_user = deserialize_user(current_data)
         self._user_repo.update(updated_user)
@@ -266,11 +281,12 @@ class UserService:
         # Create audit trail
         actor_data = self._audit_service.extract_actor_data(user_details_data)
         audit_stamps = self._audit_service.create_creation_audit(actor_data)
-        
-        # Merge audit data
+
+        # Merge audit data - convert AuditStamp objects to dicts
+        from .common.serializers import serialize_audit_stamp
         user_details_data.update({
-            "created": audit_stamps["created"],
-            "modified": audit_stamps["modified"],
+            "created": serialize_audit_stamp(audit_stamps["created"]),
+            "modified": serialize_audit_stamp(audit_stamps["modified"]),
             "deleted": None
         })
         
@@ -353,12 +369,19 @@ class UserService:
         # Merge current data with updates
         merged_data = current_data.copy()
         merged_data.update(update_data)
-        
+
         # Create modification audit
         actor_data = self._audit_service.extract_actor_data(update_data)
         audit_stamps = self._audit_service.create_modification_audit(actor_data)
-        merged_data.update(audit_stamps)
-        
+
+        # Serialize AuditStamp objects to dicts before merging
+        from .common.serializers import serialize_audit_stamp
+        serialized_stamps = {
+            key: serialize_audit_stamp(value) if value else None
+            for key, value in audit_stamps.items()
+        }
+        merged_data.update(serialized_stamps)
+
         # Convert to domain entity
         updated_details = deserialize_user_details(merged_data)
         
@@ -388,11 +411,18 @@ class UserService:
         
         # Mark as soft deleted
         current_data["softDelete"] = True
-        
+
         # Create deletion audit
         audit_stamps = self._audit_service.create_deletion_audit(actor_data)
-        current_data.update(audit_stamps)
-        
+
+        # Serialize AuditStamp objects to dicts before merging
+        from .common.serializers import serialize_audit_stamp
+        serialized_stamps = {
+            key: serialize_audit_stamp(value) if value else None
+            for key, value in audit_stamps.items()
+        }
+        current_data.update(serialized_stamps)
+
         # Convert to domain entity and persist
         updated_details = deserialize_user_details(current_data)
         self._user_details_repo.update(updated_details)

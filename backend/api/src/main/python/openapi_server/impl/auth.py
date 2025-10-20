@@ -53,3 +53,9 @@ def handle_auth_reset_password_post(*args, **kwargs) -> Tuple[Any, int]:
     from .handlers import handle_auth_reset_password_post as real_handler
     return real_handler(*args, **kwargs)
 
+
+# Function aliases for unit tests
+def authenticate_user(*args, **kwargs):
+    """Alias for handle_auth_post - performs user authentication"""
+    return handle_auth_post(*args, **kwargs)
+

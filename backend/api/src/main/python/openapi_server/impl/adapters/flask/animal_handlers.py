@@ -41,7 +41,6 @@ class FlaskAnimalHandler:
             return response, 201
             
         except ValidationError as e:
-            from openapi_server.models.error import Error
             error_obj = Error(
                 code="validation_error",
                 message=str(e),

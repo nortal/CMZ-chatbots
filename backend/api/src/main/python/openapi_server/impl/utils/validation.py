@@ -244,19 +244,23 @@ def validate_family_data(family_data: Dict[str, Any], existing_users: List[str])
 def validate_email(email: str) -> None:
     """
     Validate email format using regex pattern.
-    
+
     Args:
         email: Email address to validate
-        
+
     Raises:
         ValidationError: If email format is invalid
     """
     if not email:
         raise ValidationError("Invalid email", field_errors={"email": ["Email is required"]})
-    
+
+    # Check for invalid patterns first
+    if '..' in email:  # Double dots are invalid
+        raise ValidationError("Invalid email format", field_errors={"email": ["Email format is invalid - consecutive dots not allowed"]})
+
     # Basic email regex pattern
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    
+
     if not re.match(pattern, email):
         raise ValidationError("Invalid email format", field_errors={"email": ["Email format is invalid"]})
 

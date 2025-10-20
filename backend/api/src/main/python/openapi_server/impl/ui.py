@@ -21,10 +21,12 @@ def not_implemented_error(operation_name: str) -> Tuple[Dict[str, Any], int]:
 def admin_dashboard_get(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for admin_get
-
-    TODO: Implement business logic for this operation
+    Returns static admin shell data per OpenAPI spec (AdminShell schema)
     """
-    return not_implemented_error("admin_get")
+    response = {
+        "widgets": ["activeUsers", "recentActivity", "systemHealth"]
+    }
+    return response, 200
 
 
 def member_dashboard_get(*args, **kwargs) -> Tuple[Any, int]:
@@ -39,8 +41,11 @@ def member_dashboard_get(*args, **kwargs) -> Tuple[Any, int]:
 def homepage_get(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for root_get
-
-    TODO: Implement business logic for this operation
+    Returns static homepage data per OpenAPI spec (PublicHome schema)
     """
-    return not_implemented_error("root_get")
+    response = {
+        "message": "Welcome to CMZ API",
+        "status": "ok"
+    }
+    return response, 200
 

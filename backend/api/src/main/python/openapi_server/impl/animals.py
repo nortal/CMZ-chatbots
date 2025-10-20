@@ -89,3 +89,38 @@ def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
     from .handlers import handle_animal_put as real_handler
     return real_handler(*args, **kwargs)
 
+
+# Function aliases for unit tests
+def handle_create_animal(*args, **kwargs):
+    """Alias for handle_animal_post"""
+    return handle_animal_post(*args, **kwargs)
+
+def handle_get_animal(*args, **kwargs):
+    """Alias for handle_animal_get"""
+    return handle_animal_get(*args, **kwargs)
+
+def handle_list_animals(*args, **kwargs):
+    """Alias for handle_animal_list_get"""
+    return handle_animal_list_get(*args, **kwargs)
+
+def handle_update_animal(*args, **kwargs):
+    """Alias for handle_animal_put"""
+    return handle_animal_put(*args, **kwargs)
+
+def handle_delete_animal(*args, **kwargs):
+    """Alias for handle_animal_delete"""
+    return handle_animal_delete(*args, **kwargs)
+
+def handle_get_animal_config(*args, **kwargs):
+    """Alias for handle_animal_config_get"""
+    return handle_animal_config_get(*args, **kwargs)
+
+def handle_update_animal_config(*args, **kwargs):
+    """Alias for handle_animal_config_patch"""
+    return handle_animal_config_patch(*args, **kwargs)
+
+def _get_flask_handler():
+    """Return the handlers module for testing - endpoints already work"""
+    from . import handlers
+    return handlers
+

@@ -15,7 +15,7 @@ def main():
         r"/*": {
             "origins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"],
             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
+            "allow_headers": ["Content-Type", "Authorization", "X-User-Id"],
             "supports_credentials": True
         }
     })
