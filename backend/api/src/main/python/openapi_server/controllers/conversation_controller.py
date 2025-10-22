@@ -433,6 +433,80 @@ def convo_turn_post(body):  # noqa: E501
             return error_obj, 500
 
 
+def convo_turn_stream_get(message, animalId, sessionId, token):  # noqa: E501
+    """Stream conversation turn with Server-Sent Events
+
+    Real-time streaming chat response using OpenAI Assistants API # noqa: E501
+
+    :param message: User's chat message
+    :type message: str
+    :param animal_id: Animal identifier
+    :type animal_id: str
+    :param session_id: Conversation session ID (created if not provided)
+    :type session_id: str
+    :param token: JWT authentication token
+    :type token: str
+
+    :rtype: str (text/event-stream)
+    """
+    # Import SSE streaming support
+    from flask import Response, stream_with_context
+    import asyncio
+
+    # CMZ Auto-Generated Implementation Connection
+    try:
+        from openapi_server.impl import conversation
+
+        # Create async generator wrapper for Flask streaming
+        def generate():
+            # Create new event loop for this request
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+            try:
+                # Run the async generator
+                async_gen = conversation.handle_convo_turn_stream_get(
+                    message=message,
+                    animalId=animalId,
+                    sessionId=sessionId,
+                    token=token
+                )
+
+                # Convert async generator to sync for Flask
+                while True:
+                    try:
+                        chunk = loop.run_until_complete(async_gen.__anext__())
+                        yield chunk
+                    except StopAsyncIteration:
+                        break
+            finally:
+                loop.close()
+
+        # Return SSE response
+        return Response(
+            stream_with_context(generate()),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'X-Accel-Buffering': 'no'
+            }
+        )
+
+    except Exception as e:
+        # Fallback error response
+        from openapi_server.models.error import Error
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in convo_turn_stream_get: {str(e)}")
+
+        error_obj = Error(
+            code="internal_error",
+            message=f"Internal server error in convo_turn_stream_get: {str(e)}",
+            details={"controller": "ConversationController", "operation": "convo_turn_stream_get"}
+        )
+        return error_obj, 500
+
+
 def summarize_convo_post(body):  # noqa: E501
     """Advanced conversation summarization with personalization and analytics
 

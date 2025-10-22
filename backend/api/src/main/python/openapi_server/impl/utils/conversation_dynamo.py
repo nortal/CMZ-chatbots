@@ -340,3 +340,67 @@ def get_conversation_analytics(session_id: str) -> Dict[str, Any]:
         analytics['averageResponseLength'] = total_length // len(history)
 
     return analytics
+
+
+def get_thread_id(session_id: str) -> Optional[str]:
+    """
+    Get OpenAI thread ID for a conversation session
+
+    Args:
+        session_id: Conversation session ID
+
+    Returns:
+        Thread ID or None if not found
+    """
+    try:
+        table = get_conversations_table()
+
+        # Get the conversation item
+        response = table.get_item(
+            Key={'conversationId': session_id}
+        )
+
+        if 'Item' in response:
+            return response['Item'].get('threadId')
+
+        return None
+
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error getting thread ID for session {session_id}: {e}")
+        return None
+
+
+def store_thread_id(session_id: str, thread_id: str) -> bool:
+    """
+    Store OpenAI thread ID for a conversation session
+
+    Args:
+        session_id: Conversation session ID
+        thread_id: OpenAI thread ID
+
+    Returns:
+        True if successful, False otherwise
+    """
+    try:
+        table = get_conversations_table()
+        timestamp = datetime.utcnow().isoformat() + 'Z'
+
+        # Update the conversation item with thread ID
+        table.update_item(
+            Key={'conversationId': session_id},
+            UpdateExpression='SET threadId = :threadId, lastActivity = :lastActivity',
+            ExpressionAttributeValues={
+                ':threadId': thread_id,
+                ':lastActivity': timestamp
+            }
+        )
+
+        return True
+
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error storing thread ID for session {session_id}: {e}")
+        return False

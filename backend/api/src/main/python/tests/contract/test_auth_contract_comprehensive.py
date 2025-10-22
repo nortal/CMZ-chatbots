@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
 from openapi_server.impl import handlers
 from openapi_server.impl.utils import jwt_utils
 from openapi_server.models.error import Error
-from openapi_server.models.login_request import LoginRequest
-from openapi_server.models.login_response import LoginResponse
+from openapi_server.models.auth_request import AuthRequest
+from openapi_server.models.auth_response import AuthResponse
 
 
 class TestAuthContractCompliance:

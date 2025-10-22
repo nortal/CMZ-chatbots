@@ -1,273 +1,211 @@
-# Tasks: CMZ Chatbots Enhancement
+# Implementation Tasks: Chat Frontend Migration to POST Polling
 
-**Input**: Design documents from `.specify/memory/`
-**Prerequisites**: plan.md (✓), spec.md (✓), constitution.md (✓)
-**Organization**: Tasks grouped by phase from improvement plan, then by user story priority
+Generated from migration plan and specification on 2025-10-22.
 
-## Format: `[ID] [P?] [Phase] Description`
-- **[P]**: Can run in parallel (different files, no dependencies)
-- **[Phase]**: Which phase/story this task belongs to (PH1, US1, etc.)
-- Include exact file paths in descriptions
+**Feature**: Replace Server-Sent Events with POST polling for Lambda-compatible chat functionality
+**Timeline**: 1-2 days implementation
+**Architecture**: Frontend POST polling → Backend API → DynamoDB persistence
 
-## Path Conventions
-- **Backend**: `backend/api/src/main/python/openapi_server/`
-- **Frontend**: `frontend/src/`
-- **Tests**: `backend/api/src/main/python/tests/`
-- **Scripts**: `scripts/`
+## Task Organization
 
----
+Tasks are organized by implementation phase to enable systematic execution and testing. The existing POST /convo_turn endpoint is working and tested - this migration focuses solely on frontend changes.
 
-## Phase 1: Stabilization (Critical Fixes) - Week 1-2
-
-**Purpose**: Fix critical issues blocking development without disrupting service
-**Goal**: Zero 501 errors, 85% test coverage, validated forwarding chains
-
-### Handler Forwarding Fixes (CRITICAL - Do First)
-
-- [ ] T001 [PH1] Analyze all impl modules with validate_handler_forwarding_comprehensive.py
-- [ ] T002 [PH1] Fix family.py forwarding - remove redundant handle_list_all_families, handle_list_families
-- [ ] T003 [PH1] Fix users.py handle_delete_user to properly forward to handlers.py
-- [ ] T004 [PH1] Regenerate impl stubs with post_openapi_generation.py for broken modules
-- [ ] T005 [PH1] Validate all forwarding chains pass with zero critical failures
-- [ ] T006 [P] [PH1] Document forwarding pattern in FORWARDING-PATTERN.md
-
-### Test Coverage Improvements (HIGH Priority)
-
-- [ ] T007 [P] [PH1] Add unit tests for uncovered handlers in `impl/handlers.py`
-- [ ] T008 [P] [PH1] Create integration tests for DynamoDB operations in `impl/utils/dynamo.py`
-- [ ] T009 [P] [PH1] Add contract tests for auth endpoints in `tests/unit/test_auth_contract.py`
-- [ ] T010 [P] [PH1] Create family CRUD tests in `tests/integration/test_family_integration.py`
-- [ ] T011 [P] [PH1] Add animal configuration tests in `tests/integration/test_animal_config.py`
-- [ ] T012 [PH1] Run coverage report and verify ≥85% coverage achieved
-
-### E2E Test Suite Expansion
-
-- [ ] T013 [P] [PH1] Create Playwright test for admin role login and dashboard
-- [ ] T014 [P] [PH1] Create Playwright test for zookeeper animal configuration flow
-- [ ] T015 [P] [PH1] Create Playwright test for educator family management
-- [ ] T016 [P] [PH1] Create Playwright test for parent viewing children's activity
-- [ ] T017 [P] [PH1] Create Playwright test for visitor chat with animal
-- [ ] T018 [P] [PH1] Create Playwright test for student educational interaction
-- [ ] T019 [PH1] Validate all tests pass in ≥5/6 browsers
+**Task Format**: Each task follows SpecKit checklist format: `- [ ] [TaskID] [P] [Story] Description with file path`
+- **[P] marker**: Task can be parallelized (different files, no dependencies)
+- **[US1] label**: User Story 1 (Chat Frontend Migration to POST Polling)
 
 ---
 
-## Phase 2: Observability (Week 3-4)
+## Phase 1: Research & Discovery
 
-**Purpose**: Implement monitoring to understand system behavior
-**Goal**: Full request tracing, real-time metrics, <5min detection time
+**Purpose**: Understand current frontend architecture and SSE implementation patterns
+**Goal**: Complete analysis of existing chat components and SSE usage
+**Success Criteria**: All frontend files identified, SSE usage patterns documented
 
-### Structured Logging
-
-- [ ] T020 [PH2] Create logging configuration in `impl/utils/logger.py`
-- [ ] T021 [P] [PH2] Add request ID generation middleware in `__main__.py`
-- [ ] T022 [P] [PH2] Update all handlers to use structured logging with context
-- [ ] T023 [P] [PH2] Add performance timing logs to DynamoDB operations
-- [ ] T024 [P] [PH2] Configure JSON formatter for CloudWatch compatibility
-- [ ] T025 [PH2] Deploy and verify logs appear in CloudWatch
-
-### Metrics Collection
-
-- [ ] T026 [P] [PH2] Implement metrics utility in `impl/utils/metrics.py`
-- [ ] T027 [P] [PH2] Add API response time metrics (p50, p95, p99)
-- [ ] T028 [P] [PH2] Add ChatGPT completion duration metrics
-- [ ] T029 [P] [PH2] Add DynamoDB operation latency metrics
-- [ ] T030 [P] [PH2] Track active user sessions count
-- [ ] T031 [P] [PH2] Monitor error rates by endpoint
-- [ ] T032 [PH2] Create CloudWatch dashboard with all metrics
-
-### Distributed Tracing
-
-- [ ] T033 [PH2] Configure AWS X-Ray SDK in `__main__.py`
-- [ ] T034 [P] [PH2] Add X-Ray tracing to Flask routes
-- [ ] T035 [P] [PH2] Add X-Ray segments for DynamoDB calls
-- [ ] T036 [P] [PH2] Add X-Ray segments for ChatGPT API calls
-- [ ] T037 [PH2] Create X-Ray service map
-- [ ] T038 [PH2] Set up alerts for high latency traces
+- [ ] T001 Locate and catalog frontend project structure and React components
+- [ ] T002 [P] Analyze current Chat.tsx component and SSE EventSource implementation
+- [ ] T003 [P] Document current session management and state handling patterns
+- [ ] T004 [P] Identify all SSE-related code and dependencies to be removed
+- [ ] T005 [P] Review current error handling and loading state implementations
+- [ ] T006 Document current chat message flow and component interactions
 
 ---
 
-## Phase 3: Performance Optimization (Week 5-6)
+## Phase 2: Foundation & Service Layer
 
-**Purpose**: Reduce latency and costs while maintaining quality
-**Goal**: API p95 <200ms, 50% DynamoDB cost reduction, <2s page load
+**Purpose**: Create abstraction layer and prepare infrastructure for POST implementation
+**Goal**: ChatService abstraction ready to replace SSE with POST calls
+**Success Criteria**: Service layer interfaces defined, ready for implementation
 
-### Caching Layer Implementation
-
-- [ ] T039 [PH3] Set up Redis/ElastiCache connection in `impl/utils/cache.py`
-- [ ] T040 [P] [PH3] Cache animal list with 1-hour TTL
-- [ ] T041 [P] [PH3] Cache animal details with 1-hour TTL
-- [ ] T042 [P] [PH3] Cache user sessions with 30-minute TTL
-- [ ] T043 [P] [PH3] Cache static configuration with 24-hour TTL
-- [ ] T044 [PH3] Implement cache invalidation on configuration updates
-- [ ] T045 [PH3] Monitor cache hit rates and adjust TTLs
-
-### Database Optimization
-
-- [ ] T046 [P] [PH3] Add GSI for common query patterns in DynamoDB
-- [ ] T047 [P] [PH3] Implement batch get operations in `impl/utils/dynamo.py`
-- [ ] T048 [P] [PH3] Implement batch write operations for bulk updates
-- [ ] T049 [P] [PH3] Add connection pooling for boto3 clients
-- [ ] T050 [PH3] Measure and verify 50% cost reduction
-
-### Frontend Optimization
-
-- [ ] T051 [P] [PH3] Implement code splitting for React routes
-- [ ] T052 [P] [PH3] Add lazy loading for route components
-- [ ] T053 [P] [PH3] Tree shake unused dependencies
-- [ ] T054 [P] [PH3] Convert images to WebP format
-- [ ] T055 [P] [PH3] Set up CDN for static assets
-- [ ] T056 [PH3] Verify <2 second initial load time
+- [ ] T007 [P] [US1] Create TypeScript interfaces for ChatRequest and ChatResponse in src/types/chat.ts
+- [ ] T008 [P] [US1] Create ChatService class abstraction in src/services/ChatService.ts
+- [ ] T009 [P] [US1] Implement POST request method in ChatService.sendMessage()
+- [ ] T010 [P] [US1] Add session management methods (getSessionId, resetSession) in ChatService
+- [ ] T011 [P] [US1] Implement error handling and retry logic in ChatService
+- [ ] T012 [P] [US1] Add request timeout handling (30 seconds for Lambda compatibility)
 
 ---
 
-## User Story 1: Enhanced Visitor Chat (Priority: P1)
+## Phase 3: User Story 1 - Chat Frontend Migration Implementation
 
-**Goal**: Improve chat experience with context persistence and quick replies
-**Independent Test**: Start chat, use quick reply, reload page, continue conversation
+**Purpose**: Replace SSE with POST polling in main chat component
+**Goal**: Complete chat functionality using POST /convo_turn endpoint
+**Success Criteria**: Chat works end-to-end without SSE, session persistence verified
 
-- [ ] T057 [US1] Implement conversation context storage in DynamoDB
-- [ ] T058 [P] [US1] Add context retrieval on chat session resume
-- [ ] T059 [P] [US1] Create quick reply suggestions based on animal type
-- [ ] T060 [P] [US1] Add reaction emojis to animal responses in frontend
-- [ ] T061 [P] [US1] Implement share conversation link generator
-- [ ] T062 [US1] Create E2E test for enhanced chat features
+### Frontend Component Updates
 
----
+- [ ] T013 [US1] Remove SSE EventSource import and initialization from Chat.tsx
+- [ ] T014 [US1] Replace SSE connection logic with ChatService integration in Chat.tsx
+- [ ] T015 [US1] Update message sending flow to use POST requests in Chat.tsx
+- [ ] T016 [US1] Modify loading states to show processing instead of streaming in Chat.tsx
+- [ ] T017 [US1] Update error handling to use HTTP status codes instead of SSE errors in Chat.tsx
+- [ ] T018 [P] [US1] Remove streaming animations and update message display in ChatMessage.tsx
 
-## User Story 2: Educational Modules (Priority: P2)
+### State Management Updates
 
-**Goal**: Add structured lessons with progress tracking
-**Independent Test**: Start lesson, complete quiz, receive badge, view certificate
+- [ ] T019 [US1] Update chat state interface to remove SSE connectionStatus in Chat.tsx
+- [ ] T020 [US1] Implement sessionId persistence in component state in Chat.tsx
+- [ ] T021 [US1] Add request cancellation for component unmount in Chat.tsx
+- [ ] T022 [US1] Update connection status to reflect POST request states in Chat.tsx
 
-- [ ] T063 [US2] Create lesson content schema in `models/lesson.py`
-- [ ] T064 [US2] Add lessons table to DynamoDB
-- [ ] T065 [P] [US2] Create age-appropriate lesson paths (5-8, 9-12, 13+)
-- [ ] T066 [P] [US2] Implement progress tracking in user profile
-- [ ] T067 [P] [US2] Create quiz component in `frontend/src/components/Quiz.tsx`
-- [ ] T068 [P] [US2] Design achievement badges (10 types)
-- [ ] T069 [P] [US2] Generate completion certificates (PDF)
-- [ ] T070 [US2] Create E2E test for complete education flow
+### Session Persistence
 
----
-
-## User Story 3: Multi-Language Support (Priority: P2)
-
-**Goal**: Enable Spanish and Mandarin conversations
-**Independent Test**: Switch language, chat in Spanish, verify responses in Spanish
-
-- [ ] T071 [US3] Install and configure react-i18next in frontend
-- [ ] T072 [P] [US3] Extract all UI strings to translation files
-- [ ] T073 [P] [US3] Translate UI strings to Spanish
-- [ ] T074 [P] [US3] Translate UI strings to Mandarin
-- [ ] T075 [US3] Add language selector to header component
-- [ ] T076 [P] [US3] Configure ChatGPT for multi-language responses
-- [ ] T077 [P] [US3] Add language preference to user profile
-- [ ] T078 [US3] Create E2E test for language switching
+- [ ] T023 [P] [US1] Add sessionId persistence to localStorage/sessionStorage
+- [ ] T024 [P] [US1] Implement session restoration on component mount
+- [ ] T025 [P] [US1] Add session cleanup for inactive sessions
 
 ---
 
-## User Story 4: Admin Analytics Dashboard (Priority: P3)
+## Phase 4: Testing & Validation
 
-**Goal**: Provide real-time insights on usage and engagement
-**Independent Test**: View dashboard, filter by date, export report
+**Purpose**: Verify chat functionality works completely with POST implementation
+**Goal**: All chat scenarios work without regressions
+**Success Criteria**: End-to-end testing passes, session persistence verified
 
-- [ ] T079 [US4] Create analytics aggregation Lambda function
-- [ ] T080 [P] [US4] Design analytics dashboard UI in `frontend/src/pages/Analytics.tsx`
-- [ ] T081 [P] [US4] Implement date range filtering
-- [ ] T082 [P] [US4] Add usage metrics visualization (Chart.js)
-- [ ] T083 [P] [US4] Create engagement heatmap component
-- [ ] T084 [P] [US4] Add CSV export functionality
-- [ ] T085 [US4] Create E2E test for analytics features
+### Functional Testing
 
----
+- [ ] T026 Test basic chat message send/receive with POST /convo_turn endpoint
+- [ ] T027 Verify session persistence across page refreshes using DynamoDB validation
+- [ ] T028 Test multiple animal conversations with independent session management
+- [ ] T029 Validate error handling for network failures and timeout scenarios
+- [ ] T030 Test loading states and user feedback during message processing
 
-## Phase 5: Innovation Features (Week 11-12)
+### Cross-Browser Testing
 
-**Goal**: Differentiate with voice and AR capabilities
-**Note**: These are stretch goals after core improvements
+- [ ] T031 [P] Validate chat functionality in Chrome browser
+- [ ] T032 [P] Validate chat functionality in Firefox browser
+- [ ] T033 [P] Validate chat functionality in Safari browser
+- [ ] T034 [P] Validate chat functionality in Edge browser
 
-### Voice Interaction (Optional)
+### Performance Testing
 
-- [ ] T086 [P] [PH5] Integrate Amazon Polly for TTS
-- [ ] T087 [P] [PH5] Configure unique voice per animal
-- [ ] T088 [P] [PH5] Implement Web Speech API for STT
-- [ ] T089 [PH5] Add voice toggle button to chat interface
-- [ ] T090 [PH5] Ensure WCAG AAA compliance
-
-### AR Integration (Optional)
-
-- [ ] T091 [PH5] Set up AR.js or 8th Wall framework
-- [ ] T092 [P] [PH5] Create AR markers for exhibits
-- [ ] T093 [P] [PH5] Design 3D animal models
-- [ ] T094 [PH5] Implement AR chat overlay
-- [ ] T095 [PH5] Test on iOS and Android devices
+- [ ] T035 Test response time handling for slow API responses
+- [ ] T036 Verify no memory leaks from removed SSE connections
+- [ ] T037 Test request cancellation for rapid message sending
 
 ---
 
-## Dependencies & Execution Order
+## Phase 5: Cleanup & Documentation
 
-### Critical Path
-```
-Phase 1 (Stabilization) → Phase 2 (Observability) → Phase 3 (Performance)
-                      ↓
-              User Stories (can start after Phase 1)
-                      ↓
-              Phase 5 (Innovation - optional)
-```
+**Purpose**: Remove all SSE-related code and update documentation
+**Goal**: Clean codebase with no SSE references
+**Success Criteria**: No SSE imports, clean console logs, updated documentation
+
+### Code Cleanup
+
+- [ ] T038 [P] Remove all SSE-related imports and dependencies from package.json
+- [ ] T039 [P] Remove unused SSE utility functions and helper methods
+- [ ] T040 [P] Clean up any SSE-related configuration or constants
+- [ ] T041 [P] Update comment blocks and documentation to reflect POST implementation
+
+### Documentation Updates
+
+- [ ] T042 [P] Update CLAUDE.md with new chat architecture (POST polling)
+- [ ] T043 [P] Document ChatService API and usage patterns
+- [ ] T044 [P] Create troubleshooting guide for POST chat implementation
+- [ ] T045 [P] Update README with Lambda-compatible chat deployment notes
+
+---
+
+## Dependencies & Execution Strategy
+
+### Critical Path Dependencies
+1. **Phase 1**: Must complete discovery before implementation
+2. **Phase 2**: Service layer must be ready before frontend changes
+3. **Phase 3**: Component updates must be systematic (service → state → UI)
+4. **Phase 4**: Testing validates each phase completion
+5. **Phase 5**: Cleanup only after testing passes
 
 ### Parallel Execution Opportunities
+- **Phase 1**: T002-T005 can run in parallel (different analysis areas)
+- **Phase 2**: T007-T012 can run in parallel (different service methods)
+- **Phase 3**: T018, T023-T025 can run in parallel (independent features)
+- **Phase 4**: T031-T034 browser testing can run in parallel
+- **Phase 5**: T038-T045 cleanup tasks can run in parallel
 
-**Phase 1 Parallel Groups:**
-- Group A: Handler forwarding fixes (T001-T006)
-- Group B: Test improvements (T007-T012)
-- Group C: E2E tests (T013-T019)
+### MVP Scope Definition
+**Minimum Viable Product**: Phase 1-3 completion
+- Complete frontend migration from SSE to POST
+- Basic session management working
+- Chat functionality restored
 
-**Phase 2 Parallel Groups:**
-- Group A: Logging (T020-T025)
-- Group B: Metrics (T026-T032)
-- Group C: Tracing (T033-T038)
-
-**Phase 3 Parallel Groups:**
-- Group A: Caching (T039-T045)
-- Group B: Database (T046-T050)
-- Group C: Frontend (T051-T056)
-
-**User Stories:** Each story (US1-US4) can be implemented independently in parallel
+**Full Feature Complete**: All phases (includes testing and cleanup)
 
 ---
 
-## Implementation Strategy
+## Success Criteria & Validation
 
-### MVP Delivery Approach
-1. **Week 1-2**: Complete Phase 1 - System is stable, tests pass
-2. **Week 3-4**: Complete Phase 2 - Full visibility into system behavior
-3. **Week 5-6**: Complete Phase 3 - Performance optimized, costs reduced
-4. **Week 7-8**: Implement P1 user stories (Enhanced Chat)
-5. **Week 9-10**: Implement P2 user stories (Education, Multi-language)
-6. **Week 11-12**: Implement P3 stories and innovation features
+### Phase 1 Complete When:
+- ✅ All frontend files and SSE usage documented
+- ✅ Current architecture understood and documented
+- ✅ Implementation approach validated
 
-### Success Metrics
-- **Phase 1**: ✅ 0 handler errors, 85% test coverage, 95% E2E pass rate
-- **Phase 2**: ✅ All requests traced, <5min incident detection
-- **Phase 3**: ✅ API p95 <200ms, 50% cost reduction, <2s load time
-- **User Stories**: ✅ Each story independently testable and deployable
-- **Overall**: ✅ 30% engagement increase, 4.5/5 user satisfaction
+### Phase 2 Complete When:
+- ✅ ChatService abstraction created and interfaces defined
+- ✅ POST request handling implemented
+- ✅ Session management methods ready
+
+### Phase 3 Complete When:
+- ✅ Chat.tsx migrated to use POST requests
+- ✅ All SSE references removed from chat components
+- ✅ Session persistence working across page refreshes
+- ✅ Loading states and error handling functional
+
+### Phase 4 Complete When:
+- ✅ End-to-end chat testing passes
+- ✅ Cross-browser compatibility verified
+- ✅ Performance meets requirements (< 30 second responses)
+- ✅ Session management validated via DynamoDB
+
+### Phase 5 Complete When:
+- ✅ All SSE code removed from codebase
+- ✅ Documentation updated with new architecture
+- ✅ Clean console logs with no SSE errors
+
+## Technical Notes
+
+### Existing Backend API (No Changes Required)
+- **Endpoint**: POST /convo_turn
+- **Status**: Working and tested ✅
+- **Contract**: JSON request/response
+- **Session**: DynamoDB-based, stateless
+- **Performance**: < 10 second typical response
+
+### Frontend Framework Stack
+- **React 18** with TypeScript
+- **Vite** build system
+- **Tailwind CSS** for styling
+- **Standard fetch API** for HTTP requests
+
+### Lambda Compatibility Benefits
+- ✅ **No persistent connections** (Lambda friendly)
+- ✅ **Stateless architecture** (load balancer friendly)
+- ✅ **Request-response pattern** (API Gateway compatible)
+- ✅ **Cost efficient** (pay per request vs connection time)
 
 ---
 
-## Task Summary
-
-**Total Tasks**: 95
-- Phase 1 (Stabilization): 19 tasks
-- Phase 2 (Observability): 19 tasks
-- Phase 3 (Performance): 18 tasks
-- User Story 1 (Chat): 6 tasks
-- User Story 2 (Education): 8 tasks
-- User Story 3 (Multi-language): 8 tasks
-- User Story 4 (Analytics): 7 tasks
-- Phase 5 (Innovation): 10 tasks
-
-**Parallel Opportunities**: 70+ tasks can run in parallel within their groups
-**Independent Stories**: 4 user stories can be developed simultaneously
-**Critical Path Length**: 6 weeks for core improvements, 12 weeks total
+**Total Tasks**: 45 tasks organized across 5 phases
+**Parallel Opportunities**: 28 tasks can run in parallel
+**Independent Testing**: Each phase independently validatable
+**Deployment Impact**: Zero downtime (frontend-only changes)

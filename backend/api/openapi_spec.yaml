@@ -551,6 +551,7 @@ paths:
       tags:
       - Conversation
       summary: Send conversation turn with enhanced validation and rate limiting
+      operationId: convo_turn_post
       security: []
       requestBody:
         required: true
@@ -701,11 +702,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /convo_turn/stream:
+    get:
+      tags:
+      - Conversation
+      summary: Stream conversation turn with Server-Sent Events
+      description: Real-time streaming chat response using OpenAI Assistants API
+      operationId: convo_turn_stream_get
+      security: []
+      parameters:
+      - in: query
+        name: message
+        required: true
+        schema:
+          type: string
+        description: User's chat message
+      - in: query
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      - in: query
+        name: sessionId
+        required: false
+        schema:
+          type: string
+        description: Conversation session ID (created if not provided)
+      - in: query
+        name: token
+        required: false
+        schema:
+          type: string
+        description: JWT authentication token
+      responses:
+        '200':
+          description: Server-Sent Events stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: SSE formatted events (metadata, message, complete, error)
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Animal not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /convo_history:
     get:
       tags:
       - Conversation
       summary: Get conversation history with enhanced filtering and pagination
+      operationId: convo_history_get
       security: []
       parameters:
       - in: query
@@ -800,6 +861,7 @@ paths:
       tags:
       - Conversation
       summary: Delete conversation history with enhanced GDPR compliance
+      operationId: convo_history_delete
       security: []
       parameters:
       - in: query
@@ -1185,7 +1247,6 @@ paths:
         schema:
           type: string
           enum: [active, inactive, hidden, breeding, retired]
-          default: null
       responses:
         '200':
           description: List of animals
@@ -1694,6 +1755,147 @@ paths:
                   guardrailCount:
                     type: integer
                     description: Number of guardrails included
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal/{animalId}/documents:
+    post:
+      tags:
+      - Animal
+      summary: Upload document to animal's knowledge base
+      description: Upload PDF, DOCX, or TXT file to the animal's OpenAI Assistant Vector Store
+      operationId: uploadAnimalDocument
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Document file (PDF, DOCX, TXT, MD)
+                title:
+                  type: string
+                  description: Document title
+                description:
+                  type: string
+                  description: Document description
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Document tags
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documentId:
+                    type: string
+                    description: Unique document identifier
+                  fileId:
+                    type: string
+                    description: OpenAI file ID
+                  vectorStoreId:
+                    type: string
+                    description: Vector Store ID
+                  fileName:
+                    type: string
+                    description: Original filename
+                  fileSize:
+                    type: integer
+                    description: File size in bytes
+                  status:
+                    type: string
+                    enum: [processing, completed, failed]
+                    description: Processing status
+                  uploadedAt:
+                    type: string
+                    format: date-time
+                    description: Upload timestamp
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+      - Animal
+      summary: List documents in animal's knowledge base
+      operationId: listAnimalDocuments
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      responses:
+        '200':
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        documentId:
+                          type: string
+                        fileId:
+                          type: string
+                        fileName:
+                          type: string
+                        status:
+                          type: string
+                        uploadedAt:
+                          type: string
+                          format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal/{animalId}/documents/{documentId}:
+    delete:
+      tags:
+      - Animal
+      summary: Delete document from knowledge base
+      operationId: deleteAnimalDocument
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      - in: path
+        name: documentId
+        required: true
+        schema:
+          type: string
+        description: Document identifier (OpenAI file ID)
+      responses:
+        '204':
+          description: Document deleted successfully
         '404':
           $ref: '#/components/responses/NotFound'
 

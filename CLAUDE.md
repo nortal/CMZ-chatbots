@@ -39,7 +39,51 @@ All Microsoft Teams notifications MUST be delegated to a sub-agent using the Tas
 
 **Script:** `scripts/send_teams_report.py` (requires TEAMS_WEBHOOK_URL environment variable)
 
-## ⚠️ OpenAPI Generation - NOW SAFE BY DEFAULT
+## 🚨 CRITICAL: OpenAPI Generation - Routing Regression Prevention
+
+**CONSTITUTION RULE: Always validate operationId completeness after ANY OpenAPI regeneration**
+
+### The Hidden Regression Pattern (Discovered 2025-10-22)
+OpenAPI regeneration can **silently break Flask routing** by removing `operationId` fields from endpoints, causing:
+- ✅ Implementation code remains intact (431 lines of conversation logic)
+- ✅ Controllers exist and import properly
+- ❌ Flask/Connexion **cannot route requests** → 404 errors
+- ❌ Entire features appear "unimplemented" when they're just unreachable
+- ❌ Frontend shows connection errors, users can't access functionality
+
+### Mandatory Post-Regeneration Validation Protocol
+
+**NEVER assume OpenAPI regeneration is complete without this check:**
+
+```bash
+# 1. ALWAYS run this validation after ANY generate-api operation:
+grep -c "operationId:" backend/api/openapi_spec.yaml
+# Expected: Should match number of endpoints (typically 40-60)
+
+# 2. Check conversation endpoints specifically (most critical):
+grep -A2 -B2 "operationId.*convo" backend/api/openapi_spec.yaml
+# Must see: convo_turn_post, convo_turn_stream_get, convo_history_get, convo_history_delete
+
+# 3. Test routing validation:
+python -c "
+from openapi_server.controllers import conversation_controller
+print('✅ Available:', [f for f in dir(conversation_controller) if 'convo' in f])
+"
+
+# 4. If ANY operationIds are missing, ADD THEM IMMEDIATELY before continuing
+```
+
+### Why This Regression is Devastating
+- **Silent Failure**: No error during generation, routes just disappear
+- **False "Not Implemented"**: Full features appear broken when they're just unreachable
+- **Production Impact**: 24 animal ambassadors completely inaccessible to users
+- **Hard to Debug**: 404s look like missing implementation, not routing config
+
+### Prevention Strategy
+1. **Pre-Commit Hook**: Add operationId validation to git hooks
+2. **Documentation**: Update this section after every regeneration incident
+3. **Testing**: Playwright tests detect routing failures as 404s
+4. **Systematic Fix**: When found, fix ALL endpoints at once, not just the one that broke
 
 **As of 2025-09-17, `make generate-api` automatically includes validation:**
 ```bash

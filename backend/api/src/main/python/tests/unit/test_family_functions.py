@@ -12,16 +12,17 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from openapi_server.impl.family import (
-    handle_list_families, handle_get_family, handle_create_family,
-    handle_update_family, handle_delete_family, family_list_get
+    handle_get_family, handle_create_family,
+    handle_update_family, handle_delete_family, family_list_get,
+    handle_family_list_get, handle_family_details_post, handle_family_details_delete
 )
 
 
-class TestHandleListFamilies:
-    """Test handle_list_families function."""
+class TestHandleFamilyListGet:
+    """Test handle_family_list_get function."""
 
     @patch('openapi_server.impl.handlers.handle_family_list_get')
-    def test_handle_list_families_success(self, mock_list_get):
+    def test_handle_family_list_get_success(self, mock_list_get):
         """Test successful family listing."""
         mock_families = [
             {'familyId': 'family1', 'familyName': 'Family One'},
@@ -29,7 +30,7 @@ class TestHandleListFamilies:
         ]
         mock_list_get.return_value = (mock_families, 200)
 
-        result, status = handle_list_families()
+        result, status = handle_family_list_get()
 
         assert len(result) == 2
         assert result[0]['familyId'] == 'family1'
@@ -38,11 +39,11 @@ class TestHandleListFamilies:
         mock_list_get.assert_called_once()
 
     @patch('openapi_server.impl.handlers.handle_family_list_get')
-    def test_handle_list_families_empty(self, mock_list_get):
+    def test_handle_family_list_get_empty(self, mock_list_get):
         """Test family listing when no families exist."""
         mock_list_get.return_value = ([], 200)
 
-        result, status = handle_list_families()
+        result, status = handle_family_list_get()
 
         assert result == []
         assert status == 200

@@ -24,7 +24,7 @@ from openapi_server.impl.handlers import (
     handle_animal_put,
     handle_animal_delete,
     handle_animal_config_get,
-    handle_animal_config_put
+    handle_animal_config_patch
 )
 from openapi_server.models.animal import Animal
 from openapi_server.models.error import Error

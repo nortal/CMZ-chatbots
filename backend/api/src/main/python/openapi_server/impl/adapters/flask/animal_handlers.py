@@ -1,5 +1,6 @@
 """Flask handlers for animal operations using hexagonal architecture"""
 from typing import Tuple, Any, List
+import logging
 from openapi_server.models.error import Error
 from ...domain.animal_service import AnimalService
 from ...domain.common.exceptions import (
@@ -7,6 +8,9 @@ from ...domain.common.exceptions import (
     BusinessRuleError, InvalidStateError
 )
 from .serializers import FlaskAnimalSerializer, FlaskAnimalConfigSerializer
+from ...assistant_manager import assistant_manager
+
+logger = logging.getLogger(__name__)
 
 
 class FlaskAnimalHandler:
@@ -20,25 +24,69 @@ class FlaskAnimalHandler:
     
     def create_animal(self, body: Any) -> Tuple[Any, int]:
         """
-        Flask handler for animal creation
-        
+        Flask handler for animal creation with OpenAI Assistant integration
+
         Args:
             body: OpenAPI Animal model or dict
-            
+
         Returns:
             Tuple of (response_body, http_status_code)
         """
         try:
             # Convert OpenAPI model to business dict
             animal_data = self._animal_serializer.from_openapi(body)
-            
-            # Execute business logic
+
+            # Execute business logic (creates animal in DynamoDB)
             animal = self._animal_service.create_animal(animal_data)
-            
-            # Convert domain entity to OpenAPI response
-            response = self._animal_serializer.to_openapi(animal)
-            
-            return response, 201
+
+            # Extract animal details for Assistant creation
+            animal_id = animal.animal_id
+            name = animal.name or "Unknown Animal"
+
+            # Get personality description
+            personality_desc = ""
+            if animal.personality and isinstance(animal.personality, dict):
+                personality_desc = animal.personality.get('description', '')
+
+            # Get scientific name
+            scientific_name = animal.scientific_name if hasattr(animal, 'scientific_name') else None
+
+            # Create OpenAI Assistant for this animal
+            logger.info(f"Creating OpenAI Assistant for animal: {animal_id} ({name})")
+            assistant_result = assistant_manager.create_assistant_for_animal(
+                animal_id=animal_id,
+                name=name,
+                personality_description=personality_desc or f"Friendly {name} chatbot",
+                scientific_name=scientific_name
+            )
+
+            if assistant_result['success']:
+                # Store Assistant ID and Vector Store ID in DynamoDB
+                logger.info(f"Assistant created successfully: {assistant_result['assistant_id']}")
+
+                # Update animal with Assistant IDs
+                update_data = {
+                    'assistantId': assistant_result['assistant_id'],
+                    'vectorStoreId': assistant_result['vector_store_id'],
+                    'assistantModel': assistant_result.get('model', 'gpt-4-turbo')
+                }
+
+                # Update the animal with Assistant IDs
+                updated_animal = self._animal_service.update_animal(animal_id, update_data)
+
+                # Convert updated entity to OpenAPI response
+                response = self._animal_serializer.to_openapi(updated_animal)
+
+                logger.info(f"Animal created with Assistant: {animal_id}")
+                return response, 201
+            else:
+                # Assistant creation failed - log warning but don't fail animal creation
+                logger.warning(f"Failed to create Assistant for {animal_id}: {assistant_result.get('error')}")
+                logger.warning("Animal created without Assistant - can be added later")
+
+                # Return animal without Assistant IDs
+                response = self._animal_serializer.to_openapi(animal)
+                return response, 201
             
         except ValidationError as e:
             error_obj = Error(

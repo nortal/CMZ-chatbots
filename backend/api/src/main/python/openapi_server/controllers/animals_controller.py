@@ -167,7 +167,7 @@ def animal_config_patch(animal_id, body):  # noqa: E501
             return error_obj, 500
 
 
-def animal_delete(animalId=None, animal_id=None):  # noqa: E501
+def animal_delete(animalId):  # noqa: E501
     """Delete an animal (soft delete)
 
      # noqa: E501
@@ -326,7 +326,7 @@ def animal_details_get(animal_id):  # noqa: E501
             return error_obj, 500
 
 
-def animal_get(animalId=None, animal_id=None):  # noqa: E501
+def animal_get(animalId):  # noqa: E501
     """Get a specific animal by ID
 
      # noqa: E501
@@ -562,7 +562,7 @@ def animal_post(body):  # noqa: E501
             return error_obj, 500
 
 
-def animal_put(animal_id, body):  # noqa: E501
+def animal_put(animalId, body):  # noqa: E501
     """Update an existing animal
 
      # noqa: E501
@@ -639,3 +639,95 @@ def animal_put(animal_id, body):  # noqa: E501
                 details={"controller": "AnimalsController", "operation": "animal_put"}
             )
             return error_obj, 500
+
+
+def upload_animal_document(animal_id, body=None):  # noqa: E501
+    """Upload document to animal's knowledge base
+
+     # noqa: E501
+
+    :param animal_id: Animal identifier
+    :type animal_id: str
+    :param body: Request body (multipart/form-data)
+    :type body: dict | bytes
+
+    :rtype: Union[dict, Tuple[dict, int], Tuple[dict, int, Dict[str, str]]
+    """
+    # Document uploads are handled via multipart/form-data, not JSON
+    # Files accessed via connexion.request.files['file']
+
+    # Route to document_handlers module
+    try:
+        from openapi_server.impl import document_handlers
+        result = document_handlers.handle_upload_animal_document(animal_id, body)
+
+        if isinstance(result, tuple):
+            return result
+        else:
+            return result, 201
+    except Exception as e:
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="internal_error",
+            message=f"Internal server error in upload_animal_document: {str(e)}",
+            details={"controller": "AnimalsController", "operation": "upload_animal_document"}
+        )
+        return error_obj, 500
+
+
+def list_animal_documents(animal_id):  # noqa: E501
+    """List documents in animal's knowledge base
+
+     # noqa: E501
+
+    :param animal_id: Animal identifier
+    :type animal_id: str
+
+    :rtype: Union[dict, Tuple[dict, int], Tuple[dict, int, Dict[str, str]]
+    """
+    try:
+        from openapi_server.impl import document_handlers
+        result = document_handlers.handle_list_animal_documents(animal_id)
+
+        if isinstance(result, tuple):
+            return result
+        else:
+            return result, 200
+    except Exception as e:
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="internal_error",
+            message=f"Internal server error in list_animal_documents: {str(e)}",
+            details={"controller": "AnimalsController", "operation": "list_animal_documents"}
+        )
+        return error_obj, 500
+
+
+def delete_animal_document(animal_id, document_id):  # noqa: E501
+    """Delete document from animal's knowledge base
+
+     # noqa: E501
+
+    :param animal_id: Animal identifier
+    :type animal_id: str
+    :param document_id: Document identifier
+    :type document_id: str
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    """
+    try:
+        from openapi_server.impl import document_handlers
+        result = document_handlers.handle_delete_animal_document(animal_id, document_id)
+
+        if isinstance(result, tuple):
+            return result
+        else:
+            return None, 204
+    except Exception as e:
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="internal_error",
+            message=f"Internal server error in delete_animal_document: {str(e)}",
+            details={"controller": "AnimalsController", "operation": "delete_animal_document"}
+        )
+        return error_obj, 500

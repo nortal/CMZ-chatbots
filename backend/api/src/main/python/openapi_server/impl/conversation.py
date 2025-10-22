@@ -57,16 +57,19 @@ def handle_convo_history_get(*args, **kwargs) -> Tuple[Any, int]:
 def handle_convo_turn_post(*args, **kwargs) -> Tuple[Any, int]:
     """
     Implementation handler for convo_turn_post
-    Processes a chat message and returns AI-generated response
+    Processes a chat message using OpenAI Assistants API with document knowledge
     """
     try:
         # Import required modules
-        from .chatgpt_integration import generate_chatgpt_response
+        from .conversation_assistants import assistant_conversation_manager
         from .utils.conversation_dynamo import (
             store_conversation_turn,
             create_conversation_session,
-            get_session_info
+            get_session_info,
+            get_thread_id,
+            store_thread_id
         )
+        from .dependency_injection import create_animal_service
         from flask import request
 
         # Get request body
@@ -104,6 +107,23 @@ def handle_convo_turn_post(*args, **kwargs) -> Tuple[Any, int]:
             if is_valid and payload:
                 user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
 
+        # Get animal and verify it has an Assistant
+        animal_service = create_animal_service()
+        animal = animal_service.get_animal(animal_id)
+
+        # Check if animal has Assistant ID (T012: Error handling for missing Assistant)
+        assistant_id = None
+        if hasattr(animal, 'configuration') and isinstance(animal.configuration, dict):
+            assistant_id = animal.configuration.get('assistantId')
+
+        if not assistant_id:
+            error_obj = Error(
+                code="no_assistant",
+                message=f"Animal {animal_id} does not have an Assistant. Please create one first.",
+                details={"animal_id": animal_id}
+            )
+            return error_obj.to_dict(), 400
+
         # Create or validate session
         if not session_id:
             session_id = create_conversation_session(user_id, animal_id)
@@ -118,38 +138,89 @@ def handle_convo_turn_post(*args, **kwargs) -> Tuple[Any, int]:
                 )
                 return error_obj.to_dict(), 404
 
-        # Generate AI response using ChatGPT
-        ai_response = generate_chatgpt_response(
-            animal_id=animal_id,
+        # Get or create OpenAI thread for this session
+        thread_id = get_thread_id(session_id)
+        if not thread_id:
+            # Create new thread
+            thread_result = assistant_conversation_manager.create_thread(
+                metadata={
+                    'session_id': session_id,
+                    'animal_id': animal_id,
+                    'user_id': user_id
+                }
+            )
+
+            if not thread_result['success']:
+                error_obj = Error(
+                    code="thread_creation_failed",
+                    message=f"Failed to create conversation thread: {thread_result.get('error')}",
+                    details=thread_result
+                )
+                return error_obj.to_dict(), 500
+
+            thread_id = thread_result['thread_id']
+            store_thread_id(session_id, thread_id)
+
+        # Add user message to thread
+        add_message_result = assistant_conversation_manager.add_message_to_thread(
+            thread_id=thread_id,
             message=message,
-            user_id=user_id
+            role="user"
         )
+
+        if not add_message_result['success']:
+            error_obj = Error(
+                code="message_add_failed",
+                message=f"Failed to add message to thread: {add_message_result.get('error')}",
+                details=add_message_result
+            )
+            return error_obj.to_dict(), 500
+
+        # Run the assistant
+        run_result = assistant_conversation_manager.run_assistant(
+            thread_id=thread_id,
+            assistant_id=assistant_id
+        )
+
+        if not run_result['success']:
+            error_obj = Error(
+                code="assistant_run_failed",
+                message=f"Assistant run failed: {run_result.get('error')}",
+                details=run_result
+            )
+            return error_obj.to_dict(), 500
+
+        assistant_reply = run_result.get('response', '')
+        annotations = run_result.get('annotations', [])
 
         # Store conversation turn in DynamoDB
         turn_id = store_conversation_turn(
             session_id=session_id,
             user_message=message,
-            assistant_reply=ai_response['reply'],
+            assistant_reply=assistant_reply,
             metadata={
-                'tokens': ai_response.get('tokens', 0),
-                'model': ai_response.get('model', 'unknown'),
-                'finish_reason': ai_response.get('finish_reason', 'stop'),
+                'thread_id': thread_id,
+                'run_id': run_result.get('run_id'),
+                'message_id': run_result.get('message_id'),
                 'animal_id': animal_id,
-                'user_id': user_id
+                'user_id': user_id,
+                'annotations': annotations,
+                'assistant_id': assistant_id
             }
         )
 
         # Build response
         from datetime import datetime
         response = {
-            'reply': ai_response['reply'],
+            'reply': assistant_reply,
             'sessionId': session_id,
             'turnId': turn_id,
             'timestamp': datetime.utcnow().isoformat() + 'Z',
             'metadata': {
-                'tokens': ai_response.get('tokens', 0),
-                'model': ai_response.get('model', 'unknown'),
-                'animalId': animal_id
+                'animalId': animal_id,
+                'threadId': thread_id,
+                'annotations': annotations,
+                'hasKnowledge': len(annotations) > 0
             }
         }
 
@@ -168,6 +239,185 @@ def handle_convo_turn_post(*args, **kwargs) -> Tuple[Any, int]:
             details={"error": str(e)}
         )
         return error_obj.to_dict(), 500
+
+
+async def handle_convo_turn_stream_get(*args, **kwargs):
+    """
+    Implementation handler for convo_turn_stream_get
+    Streams a chat message using OpenAI Assistants API with SSE
+    """
+    try:
+        # Import required modules
+        from .conversation_assistants import assistant_conversation_manager
+        from .utils.conversation_dynamo import (
+            store_conversation_turn,
+            create_conversation_session,
+            get_session_info,
+            get_thread_id,
+            store_thread_id
+        )
+        from .dependency_injection import create_animal_service
+        from .streaming_response import SSEStreamer
+        from flask import request, Response
+        import json
+        import asyncio
+
+        # Extract query parameters
+        message = kwargs.get('message') or request.args.get('message', '')
+        animal_id = kwargs.get('animalId') or request.args.get('animalId', 'default')
+        session_id = kwargs.get('sessionId') or request.args.get('sessionId')
+
+        # Get user ID from JWT or metadata
+        user_id = 'anonymous'
+        from .utils.jwt_utils import verify_jwt_token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            is_valid, payload = verify_jwt_token(auth_header)
+            if is_valid and payload:
+                user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+        # Validate message
+        if not message or not message.strip():
+            error_data = {'error': 'Message is required', 'code': 'missing_parameter'}
+            yield SSEStreamer.format_sse(json.dumps(error_data), event='error')
+            return
+
+        # Get animal and verify it has an Assistant
+        animal_service = create_animal_service()
+        try:
+            animal = animal_service.get_animal(animal_id)
+        except Exception:
+            # Animal not found
+            error_data = {'error': f'Animal not found: {animal_id}', 'code': 'animal_not_found'}
+            yield SSEStreamer.format_sse(json.dumps(error_data), event='error')
+            return
+
+        # Check if animal has Assistant ID
+        assistant_id = None
+        if hasattr(animal, 'configuration') and isinstance(animal.configuration, dict):
+            assistant_id = animal.configuration.get('assistantId')
+
+        if not assistant_id:
+            error_data = {
+                'error': f'Animal {animal_id} does not have an Assistant. Please create one first.',
+                'code': 'no_assistant',
+                'animal_id': animal_id
+            }
+            yield SSEStreamer.format_sse(json.dumps(error_data), event='error')
+            return
+
+        # Create or validate session
+        if not session_id:
+            session_id = create_conversation_session(user_id, animal_id)
+        else:
+            # Validate session exists
+            session_info = get_session_info(session_id)
+            if not session_info:
+                error_data = {'error': 'Session not found', 'code': 'session_not_found'}
+                yield SSEStreamer.format_sse(json.dumps(error_data), event='error')
+                return
+
+        # Get or create OpenAI thread for this session
+        thread_id = get_thread_id(session_id)
+        if not thread_id:
+            # Create new thread
+            thread_result = assistant_conversation_manager.create_thread(
+                metadata={
+                    'session_id': session_id,
+                    'animal_id': animal_id,
+                    'user_id': user_id
+                }
+            )
+
+            if not thread_result['success']:
+                error_data = {
+                    'error': f"Failed to create conversation thread: {thread_result.get('error')}",
+                    'code': 'thread_creation_failed'
+                }
+                yield SSEStreamer.format_sse(json.dumps(error_data), event='error')
+                return
+
+            thread_id = thread_result['thread_id']
+            store_thread_id(session_id, thread_id)
+
+        # Add user message to thread
+        add_message_result = assistant_conversation_manager.add_message_to_thread(
+            thread_id=thread_id,
+            message=message,
+            role="user"
+        )
+
+        if not add_message_result['success']:
+            error_data = {
+                'error': f"Failed to add message to thread: {add_message_result.get('error')}",
+                'code': 'message_add_failed'
+            }
+            yield SSEStreamer.format_sse(json.dumps(error_data), event='error')
+            return
+
+        # Stream the assistant response
+        full_response = ""
+        async for stream_event in assistant_conversation_manager.stream_assistant_response(
+            thread_id=thread_id,
+            assistant_id=assistant_id
+        ):
+            event_type = stream_event.get('event')
+            event_data = stream_event.get('data', {})
+
+            # Forward metadata event
+            if event_type == 'metadata':
+                event_data['sessionId'] = session_id
+                event_data['animalId'] = animal_id
+                yield SSEStreamer.format_sse(json.dumps(event_data), event='metadata')
+
+            # Forward message deltas
+            elif event_type == 'message':
+                delta = event_data.get('delta', '')
+                full_response += delta
+                yield SSEStreamer.format_sse(json.dumps(event_data), event='message')
+
+            # Handle completion
+            elif event_type == 'complete':
+                # Store conversation turn in DynamoDB
+                turn_id = store_conversation_turn(
+                    session_id=session_id,
+                    user_message=message,
+                    assistant_reply=full_response,
+                    metadata={
+                        'thread_id': thread_id,
+                        'run_id': event_data.get('run_id'),
+                        'animal_id': animal_id,
+                        'user_id': user_id,
+                        'assistant_id': assistant_id
+                    }
+                )
+
+                complete_data = {
+                    'sessionId': session_id,
+                    'turnId': turn_id,
+                    'threadId': thread_id,
+                    'status': 'completed',
+                    'timestamp': event_data.get('timestamp')
+                }
+                yield SSEStreamer.format_sse(json.dumps(complete_data), event='complete')
+
+            # Forward errors
+            elif event_type == 'error':
+                yield SSEStreamer.format_sse(json.dumps(event_data), event='error')
+
+    except Exception as e:
+        import logging
+        import traceback
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in handle_convo_turn_stream_get: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+
+        error_data = {
+            'error': 'Failed to process streaming conversation',
+            'code': 'internal_error',
+            'details': str(e)
+        }
+        yield SSEStreamer.format_sse(json.dumps(error_data), event='error')
 
 
 def handle_summarize_convo_post(*args, **kwargs) -> Tuple[Any, int]:

@@ -34,20 +34,28 @@ The CMZ Chatbots platform is an existing production system that enables zoo visi
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Visitor Chat Experience (Priority: P1)
+### User Story 1 - Chat Frontend Migration to POST Polling (Priority: P1)
 
-A zoo visitor can browse available animal ambassadors and have an educational conversation with their chosen animal, learning about the species, conservation, and the individual animal's personality.
+A zoo visitor can use the chat interface that works reliably with Lambda deployment by using POST requests instead of Server-Sent Events (SSE), ensuring scalable, load-balancer friendly architecture.
 
-**Why this priority**: Core value proposition - enables the primary educational mission of the zoo through engaging AI conversations.
+**Why this priority**: CRITICAL - Current SSE implementation is incompatible with AWS Lambda, API Gateway timeout limits, and load balancing. This blocks serverless deployment.
 
-**Independent Test**: Can be fully tested by visiting /animals, selecting an animal, initiating chat, and verifying educational responses are personality-appropriate and factually accurate.
+**Independent Test**: Can be fully tested by initiating chat with any animal, verifying messages send/receive without SSE connections, and confirming session persistence via DynamoDB.
+
+**Technical Context**:
+- ✅ POST /convo_turn endpoint working (tested with curl)
+- ❌ GET /convo_turn/stream endpoint returns 404 (Connexion SSE limitation)
+- ✅ DynamoDB session management is stateless and ready
+- ✅ OpenAI integration complete in backend
 
 **Acceptance Scenarios**:
 
-1. **Given** a visitor on the animals page, **When** they view the list, **Then** they see all 24 available animal ambassadors with photos and brief descriptions
-2. **Given** a visitor selects "Bella the Bear", **When** they start a chat, **Then** they receive responses in Bella's unique personality with bear-specific educational content
-3. **Given** an active conversation, **When** the visitor asks about conservation, **Then** the animal provides age-appropriate educational information
-4. **Given** a chat session ends, **When** the visitor returns later, **Then** they can view their conversation history
+1. **Given** a visitor opens chat with any animal, **When** they send a message, **Then** the system uses POST /convo_turn instead of SSE streaming
+2. **Given** a message is sent via POST, **When** the response arrives, **Then** the complete message appears in chat without streaming animations
+3. **Given** an active chat session, **When** the page refreshes, **Then** the sessionId persists and conversation continues
+4. **Given** multiple chat sessions, **When** switching between animals, **Then** each conversation maintains independent session state
+5. **Given** a network error occurs, **When** sending a message, **Then** appropriate error handling shows user-friendly feedback
+6. **Given** a message takes time to process, **When** waiting for response, **Then** loading indicators show clear processing status
 
 ---
 
