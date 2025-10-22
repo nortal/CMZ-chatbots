@@ -23,18 +23,12 @@ from .conversation import (
     handle_summarize_convo_post
 )
 from .error_handler import create_error_response, handle_exception_for_controllers
-from 
-from 
-from 
-from 
-from 
-from 
-from 
-from 
-from 
-from 
-from 
-from .test import handle_test_stress_body.knowledge import handle_knowledge_article_post.knowledge import handle_knowledge_article_get.knowledge import handle_knowledge_article_delete.media import handle_media_get.media import handle_media_delete.auth import handle_auth_reset_password_post.auth import handle_auth_refresh_post.auth import handle_auth_post.auth import handle_auth_logout_post.system import handle_system_health_get.utils.jwt_utils import verify_jwt_token
+from .test import handle_test_stress_body
+from .knowledge import handle_knowledge_article_post, handle_knowledge_article_get, handle_knowledge_article_delete
+from .media import handle_media_get, handle_media_delete
+from .auth import handle_auth_reset_password_post, handle_auth_refresh_post, handle_auth_post, handle_auth_logout_post
+from .system import handle_system_health_get
+from .utils.jwt_utils import verify_jwt_token
 
 logger = logging.getLogger(__name__)
 
@@ -569,24 +563,6 @@ def handle_family_details_post(body: Any) -> Tuple[Any, int]:
         logger.info(f"Creating family with data: {body_dict}")
 
     return family_details_post(body_dict)
-
-
-    """Get list of families for the current user"""
-    from .family_bidirectional import list_families_for_user
-    from flask import request
-
-    # Extract user_id from JWT token if not provided
-    if not user_id:
-        auth_header = request.headers.get('Authorization')
-        user_id = 'anonymous'
-
-        if auth_header and auth_header.startswith('Bearer '):
-            is_valid, payload = verify_jwt_token(auth_header)
-            if is_valid and payload:
-                user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
-
-    # Get families for this user
-    return list_families_for_user(user_id)
 
 
 def handle_family_details_post(body: Any) -> Tuple[Any, int]:
