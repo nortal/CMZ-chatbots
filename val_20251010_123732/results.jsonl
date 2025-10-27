@@ -1,0 +1,12 @@
+{"test": "backend-health-endpoint", "status": "PASS", "duration": 1}
+{"test": "frontend-accessibility", "status": "PASS", "duration": 0}
+{"test": "backend-api-root", "status": "FAIL", "duration": 0, "error": "Unexpected API response"}
+{"test": "dynamodb-connectivity", "status": "PASS", "duration": 24}
+{"test": "animal-list-endpoint", "status": "FAIL", "duration": 0}
+{"test": "animal-config-retrieval", "status": "SKIP", "duration": 0, "error": "No animals found to test"}
+{"test": "animal-dynamodb-persistence", "status": "PASS", "duration": 4, "details": "Table exists with  items"}
+{"test": "family-list-endpoint", "status": "PASS", "duration": 1, "details": "Found 0 families"}
+{"test": "family-dynamodb-persistence", "status": "PASS", "duration": 4, "details": "Table exists with 0 items"}
+{"test": "conversation-dynamodb-tables", "status": "FAIL", "duration": 23}
+{"test": "user-dynamodb-table", "status": "PASS", "duration": 6, "details": "Table exists with  users, test user NOT found"}
+{"test": "knowledge-base-dynamodb-table", "status": "FAIL", "duration": 3}

@@ -147,3 +147,20 @@ def handle_update_animal_config(*args, **kwargs) -> Tuple[Any, int]:
     """Stub for handle_update_animal_config expected by tests"""
     return not_implemented_error("handle_update_animal_config")
 
+# Animal config management functions expected by handlers.py
+def save_animal_config_changes(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for save_animal_config_changes expected by handlers.py"""
+    return not_implemented_error("save_animal_config_changes")
+
+def start_animal_config_editing(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for start_animal_config_editing expected by handlers.py"""
+    return not_implemented_error("start_animal_config_editing")
+
+def end_animal_config_editing(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for end_animal_config_editing expected by handlers.py"""
+    return not_implemented_error("end_animal_config_editing")
+
+def get_animal_config_editors(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for get_animal_config_editors expected by handlers.py"""
+    return not_implemented_error("get_animal_config_editors")
+

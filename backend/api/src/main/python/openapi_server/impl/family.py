@@ -96,3 +96,20 @@ def handle_family_details_delete(*args, **kwargs) -> Tuple[Any, int]:
     """Stub for handle_family_details_delete expected by tests"""
     return not_implemented_error("handle_family_details_delete")
 
+# Functions expected by handlers.py (without handle_ prefix)
+def family_details_post(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for family_details_post expected by handlers.py"""
+    return not_implemented_error("family_details_post")
+
+def family_details_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for family_details_get expected by handlers.py"""
+    return not_implemented_error("family_details_get")
+
+def family_details_patch(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for family_details_patch expected by handlers.py"""
+    return not_implemented_error("family_details_patch")
+
+def family_details_delete(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for family_details_delete expected by handlers.py"""
+    return not_implemented_error("family_details_delete")
+

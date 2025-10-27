@@ -54,3 +54,8 @@ def handle_chatgpt_health_get(*args, **kwargs) -> Tuple[Any, int]:
     from .handlers import handle_chatgpt_health_get as real_handler
     return real_handler(*args, **kwargs)
 
+# Function expected by handlers.py
+def health_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for health_get expected by handlers.py"""
+    return not_implemented_error("health_get")
+
