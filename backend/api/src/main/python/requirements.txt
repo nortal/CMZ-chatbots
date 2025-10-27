@@ -24,3 +24,6 @@ openai >= 1.3.0
 tiktoken >= 0.5.0  # Token counting for context optimization
 redis >= 4.5.0     # Caching for context and guardrails
 tenacity >= 8.2.0  # Retry logic for OpenAI API calls
+
+# Testing dependencies
+flask-testing >= 0.8.0  # Flask test case framework for unit tests

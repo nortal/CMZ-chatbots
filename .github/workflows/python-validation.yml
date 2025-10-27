@@ -30,7 +30,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install flake8 pytest pytest-cov flask-testing
+        pip install flake8 pytest pytest-cov
 
     - name: Python syntax validation (F821 checks)
       working-directory: backend/api/src/main/python
