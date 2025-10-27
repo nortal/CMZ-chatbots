@@ -722,7 +722,7 @@ class ContentModerator:
         Returns:
             Unique validation ID
         """
-        content_hash = hashlib.md5(request.content.encode()).hexdigest()[:8]
+        content_hash = hashlib.sha256(request.content.encode()).hexdigest()[:8]
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         return f"val_{timestamp}_{content_hash}"
 

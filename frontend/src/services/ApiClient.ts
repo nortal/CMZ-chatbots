@@ -90,7 +90,7 @@ export class ApiClient {
     }
 
     try {
-      console.log(`[API] ${method} ${url}`, data ? { body: data } : '');
+      console.log('[API] Request:', { method, url }, data ? { body: data } : '');
 
       const response = await fetch(url, config);
 
@@ -104,7 +104,7 @@ export class ApiClient {
         responseData = await response.text();
       }
 
-      console.log(`[API] ${method} ${url} - ${response.status}`, responseData);
+      console.log('[API] Response:', { method, url, status: response.status }, responseData);
 
       if (!response.ok) {
         throw new ApiError(
@@ -122,7 +122,7 @@ export class ApiClient {
       }
 
       // Network or other errors
-      console.error(`[API] ${method} ${url} - Error:`, error);
+      console.error('[API] Error:', { method, url }, error);
       throw new ApiError(
         'Network error or server unavailable',
         0,
