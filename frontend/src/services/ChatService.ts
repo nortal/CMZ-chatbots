@@ -48,14 +48,12 @@ export class ChatService {
   ): Promise<ChatResponse> {
     const effectiveSessionId = sessionId || this.currentSessionId;
 
-    const request: ChatRequest = {
+    // Backend expects: message, animalId, sessionId, userId
+    const request = {
       message: message.trim(),
       animalId,
-      sessionId: effectiveSessionId || undefined,
-      metadata: {
-        source: 'web',
-        timestamp: new Date().toISOString()
-      }
+      sessionId: effectiveSessionId || `session_${Date.now()}`,
+      userId: 'frontend_user'
     };
 
     try {
@@ -72,7 +70,23 @@ export class ChatService {
         throw await this.createErrorFromResponse(response);
       }
 
-      const chatResponse: ChatResponse = await response.json();
+      const backendResponse = await response.json();
+
+      // Transform backend response format to frontend ChatResponse format
+      const chatResponse: ChatResponse = {
+        reply: backendResponse.response || backendResponse.reply || 'No response received',
+        sessionId: backendResponse.conversationId || backendResponse.sessionId || 'unknown',
+        turnId: backendResponse.turnId || `${Date.now()}`,
+        timestamp: backendResponse.timestamp || new Date().toISOString(),
+        metadata: {
+          animalId: backendResponse.animalId || animalId,
+          annotations: [],
+          hasKnowledge: false,
+          tokens: undefined,
+          model: undefined,
+          latencyMs: undefined
+        }
+      };
 
       // Update session ID for continuity
       if (chatResponse.sessionId) {

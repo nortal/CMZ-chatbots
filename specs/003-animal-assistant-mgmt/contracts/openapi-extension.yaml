@@ -1,0 +1,1034 @@
+# OpenAPI Extension: Animal Assistant Management System
+# This file defines the new API endpoints to be added to the existing openapi_spec.yaml
+
+openapi: 3.0.3
+info:
+  title: CMZ Animal Assistant Management API Extensions
+  version: 1.0.0
+  description: API endpoints for managing animal assistants, personalities, guardrails, and knowledge base
+
+paths:
+  # Assistant Management Endpoints
+  /assistant:
+    post:
+      operationId: assistant_create_post
+      summary: Create new animal assistant
+      tags: ["Assistant Management"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssistantRequest'
+      responses:
+        '201':
+          description: Assistant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '400':
+          description: Invalid request data
+        '409':
+          description: Assistant already exists for animal
+    get:
+      operationId: assistant_list_get
+      summary: List all assistants
+      tags: ["Assistant Management"]
+      parameters:
+        - name: animalId
+          in: query
+          description: Filter by animal ID
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by assistant status
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE, ERROR]
+      responses:
+        '200':
+          description: List of assistants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantListResponse'
+
+  /assistant/{assistantId}:
+    get:
+      operationId: assistant_get
+      summary: Get assistant by ID
+      tags: ["Assistant Management"]
+      parameters:
+        - name: assistantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Assistant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '404':
+          description: Assistant not found
+    put:
+      operationId: assistant_update_put
+      summary: Update assistant configuration
+      tags: ["Assistant Management"]
+      parameters:
+        - name: assistantId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssistantRequest'
+      responses:
+        '200':
+          description: Assistant updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '404':
+          description: Assistant not found
+    delete:
+      operationId: assistant_delete
+      summary: Delete assistant
+      tags: ["Assistant Management"]
+      parameters:
+        - name: assistantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Assistant deleted successfully
+        '404':
+          description: Assistant not found
+
+  # Personality Management Endpoints
+  /personality:
+    post:
+      operationId: personality_create_post
+      summary: Create new personality
+      tags: ["Personality Management"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePersonalityRequest'
+      responses:
+        '201':
+          description: Personality created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityResponse'
+    get:
+      operationId: personality_list_get
+      summary: List all personalities
+      tags: ["Personality Management"]
+      parameters:
+        - name: animalType
+          in: query
+          description: Filter by animal type
+          schema:
+            type: string
+        - name: isTemplate
+          in: query
+          description: Filter by template status
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of personalities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityListResponse'
+
+  /personality/{personalityId}:
+    get:
+      operationId: personality_get
+      summary: Get personality by ID
+      tags: ["Personality Management"]
+      parameters:
+        - name: personalityId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Personality details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityResponse'
+    put:
+      operationId: personality_update_put
+      summary: Update personality
+      tags: ["Personality Management"]
+      parameters:
+        - name: personalityId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonalityRequest'
+      responses:
+        '200':
+          description: Personality updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityResponse'
+    delete:
+      operationId: personality_delete
+      summary: Delete personality
+      tags: ["Personality Management"]
+      parameters:
+        - name: personalityId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Personality deleted successfully
+        '409':
+          description: Personality in use by assistants
+
+  # Guardrail Management Endpoints
+  /guardrail:
+    post:
+      operationId: guardrail_create_post
+      summary: Create new guardrail
+      tags: ["Guardrail Management"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGuardrailRequest'
+      responses:
+        '201':
+          description: Guardrail created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailResponse'
+    get:
+      operationId: guardrail_list_get
+      summary: List all guardrails
+      tags: ["Guardrail Management"]
+      parameters:
+        - name: category
+          in: query
+          description: Filter by guardrail category
+          schema:
+            type: string
+        - name: isDefault
+          in: query
+          description: Filter by default status
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of guardrails
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailListResponse'
+
+  /guardrail/{guardrailId}:
+    get:
+      operationId: guardrail_get
+      summary: Get guardrail by ID
+      tags: ["Guardrail Management"]
+      parameters:
+        - name: guardrailId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Guardrail details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailResponse'
+    put:
+      operationId: guardrail_update_put
+      summary: Update guardrail
+      tags: ["Guardrail Management"]
+      parameters:
+        - name: guardrailId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGuardrailRequest'
+      responses:
+        '200':
+          description: Guardrail updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailResponse'
+    delete:
+      operationId: guardrail_delete
+      summary: Delete guardrail
+      tags: ["Guardrail Management"]
+      parameters:
+        - name: guardrailId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Guardrail deleted successfully
+        '409':
+          description: Guardrail in use by assistants
+
+  # Knowledge Base Management Endpoints
+  /assistant/{assistantId}/knowledge:
+    post:
+      operationId: knowledge_upload_post
+      summary: Upload knowledge base file
+      tags: ["Knowledge Base"]
+      parameters:
+        - name: assistantId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Educational document file
+                description:
+                  type: string
+                  description: Optional file description
+              required: [file]
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeFileResponse'
+        '400':
+          description: Invalid file or size limit exceeded
+        '413':
+          description: File too large
+    get:
+      operationId: knowledge_list_get
+      summary: List knowledge base files
+      tags: ["Knowledge Base"]
+      parameters:
+        - name: assistantId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by processing status
+          schema:
+            type: string
+            enum: [UPLOADED, PROCESSING, COMPLETED, FAILED]
+      responses:
+        '200':
+          description: List of knowledge base files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeFileListResponse'
+
+  /assistant/{assistantId}/knowledge/{fileId}:
+    get:
+      operationId: knowledge_file_get
+      summary: Get knowledge file details
+      tags: ["Knowledge Base"]
+      parameters:
+        - name: assistantId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Knowledge file details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeFileResponse'
+    delete:
+      operationId: knowledge_file_delete
+      summary: Delete knowledge base file
+      tags: ["Knowledge Base"]
+      parameters:
+        - name: assistantId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: File deleted successfully
+        '404':
+          description: File not found
+
+  # Sandbox Management Endpoints
+  /sandbox:
+    post:
+      operationId: sandbox_create_post
+      summary: Create sandbox assistant for testing
+      tags: ["Sandbox Testing"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSandboxRequest'
+      responses:
+        '201':
+          description: Sandbox assistant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxResponse'
+    get:
+      operationId: sandbox_list_get
+      summary: List user's sandbox assistants
+      tags: ["Sandbox Testing"]
+      responses:
+        '200':
+          description: List of sandbox assistants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxListResponse'
+
+  /sandbox/{sandboxId}:
+    get:
+      operationId: sandbox_get
+      summary: Get sandbox assistant details
+      tags: ["Sandbox Testing"]
+      parameters:
+        - name: sandboxId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sandbox assistant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxResponse'
+        '404':
+          description: Sandbox not found or expired
+    delete:
+      operationId: sandbox_delete
+      summary: Delete sandbox assistant
+      tags: ["Sandbox Testing"]
+      parameters:
+        - name: sandboxId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Sandbox deleted successfully
+
+  /sandbox/{sandboxId}/promote:
+    post:
+      operationId: sandbox_promote_post
+      summary: Promote sandbox to live assistant
+      tags: ["Sandbox Testing"]
+      parameters:
+        - name: sandboxId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoteSandboxRequest'
+      responses:
+        '200':
+          description: Sandbox promoted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '404':
+          description: Sandbox not found or expired
+        '409':
+          description: Target animal already has assistant
+
+  # Conversation Testing Endpoint
+  /sandbox/{sandboxId}/chat:
+    post:
+      operationId: sandbox_chat_post
+      summary: Test conversation with sandbox assistant
+      tags: ["Sandbox Testing"]
+      parameters:
+        - name: sandboxId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Chat response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '404':
+          description: Sandbox not found or expired
+
+components:
+  schemas:
+    # Assistant Schemas
+    CreateAssistantRequest:
+      type: object
+      required: [animalId, personalityId, guardrailId]
+      properties:
+        animalId:
+          type: string
+          description: ID of the animal for this assistant
+        personalityId:
+          type: string
+          description: ID of the personality configuration
+        guardrailId:
+          type: string
+          description: ID of the guardrail configuration
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+          description: Optional array of knowledge base file IDs
+
+    UpdateAssistantRequest:
+      type: object
+      properties:
+        personalityId:
+          type: string
+          description: ID of the personality configuration
+        guardrailId:
+          type: string
+          description: ID of the guardrail configuration
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+          description: Array of knowledge base file IDs
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+          description: Assistant status
+
+    AssistantResponse:
+      type: object
+      properties:
+        assistantId:
+          type: string
+        animalId:
+          type: string
+        personalityId:
+          type: string
+        guardrailId:
+          type: string
+        mergedPrompt:
+          type: string
+          description: Combined personality and guardrail prompt
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, ERROR]
+        lastPromptMerge:
+          type: object
+          properties:
+            at:
+              type: string
+              format: date-time
+        responseTimeP95:
+          type: number
+          description: 95th percentile response time in milliseconds
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+
+    AssistantListResponse:
+      type: object
+      properties:
+        assistants:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssistantResponse'
+        total:
+          type: integer
+          description: Total number of assistants
+
+    # Personality Schemas
+    CreatePersonalityRequest:
+      type: object
+      required: [name, personalityText]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Human-readable personality name
+        description:
+          type: string
+          maxLength: 500
+          description: Purpose and usage description
+        personalityText:
+          type: string
+          minLength: 100
+          maxLength: 5000
+          description: Core personality prompt text
+        animalType:
+          type: string
+          enum: [MAMMAL, BIRD, REPTILE, AMPHIBIAN, FISH, INVERTEBRATE]
+          description: Suggested animal category
+        tone:
+          type: string
+          enum: [PLAYFUL, EDUCATIONAL, CALM, ENERGETIC, WISE, FUNNY]
+          description: Communication style
+        ageTarget:
+          type: string
+          enum: [PRESCHOOL, ELEMENTARY, FAMILY, ALL_AGES]
+          description: Target age group
+        isTemplate:
+          type: boolean
+          description: Whether this is a starter template
+
+    UpdatePersonalityRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        personalityText:
+          type: string
+          minLength: 100
+          maxLength: 5000
+        animalType:
+          type: string
+          enum: [MAMMAL, BIRD, REPTILE, AMPHIBIAN, FISH, INVERTEBRATE]
+        tone:
+          type: string
+          enum: [PLAYFUL, EDUCATIONAL, CALM, ENERGETIC, WISE, FUNNY]
+        ageTarget:
+          type: string
+          enum: [PRESCHOOL, ELEMENTARY, FAMILY, ALL_AGES]
+
+    PersonalityResponse:
+      type: object
+      properties:
+        personalityId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        personalityText:
+          type: string
+        animalType:
+          type: string
+        tone:
+          type: string
+        ageTarget:
+          type: string
+        usageCount:
+          type: integer
+          description: Number of assistants using this personality
+        isTemplate:
+          type: boolean
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+
+    PersonalityListResponse:
+      type: object
+      properties:
+        personalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonalityResponse'
+        total:
+          type: integer
+
+    # Guardrail Schemas
+    CreateGuardrailRequest:
+      type: object
+      required: [name, guardrailText, category]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Human-readable guardrail name
+        description:
+          type: string
+          maxLength: 500
+          description: Purpose and scope description
+        guardrailText:
+          type: string
+          minLength: 50
+          maxLength: 2000
+          description: Safety rules as text prompts
+        category:
+          type: string
+          enum: [SAFETY, EDUCATION, TONE, CONTENT]
+          description: Guardrail category
+        severity:
+          type: string
+          enum: [STRICT, MODERATE, GUIDANCE]
+          description: Enforcement level
+        ageAppropriate:
+          type: array
+          items:
+            type: string
+            enum: [PRESCHOOL, ELEMENTARY, FAMILY, ALL_AGES]
+          description: Target age groups
+        isDefault:
+          type: boolean
+          description: Whether this is default for category
+
+    UpdateGuardrailRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        guardrailText:
+          type: string
+          minLength: 50
+          maxLength: 2000
+        category:
+          type: string
+          enum: [SAFETY, EDUCATION, TONE, CONTENT]
+        severity:
+          type: string
+          enum: [STRICT, MODERATE, GUIDANCE]
+        ageAppropriate:
+          type: array
+          items:
+            type: string
+            enum: [PRESCHOOL, ELEMENTARY, FAMILY, ALL_AGES]
+        isDefault:
+          type: boolean
+
+    GuardrailResponse:
+      type: object
+      properties:
+        guardrailId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        guardrailText:
+          type: string
+        category:
+          type: string
+        severity:
+          type: string
+        ageAppropriate:
+          type: array
+          items:
+            type: string
+        usageCount:
+          type: integer
+          description: Number of assistants using this guardrail
+        isDefault:
+          type: boolean
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+
+    GuardrailListResponse:
+      type: object
+      properties:
+        guardrails:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardrailResponse'
+        total:
+          type: integer
+
+    # Knowledge Base Schemas
+    KnowledgeFileResponse:
+      type: object
+      properties:
+        fileId:
+          type: string
+        assistantId:
+          type: string
+        originalName:
+          type: string
+        fileSize:
+          type: integer
+          description: File size in bytes
+        mimeType:
+          type: string
+        processingStatus:
+          type: string
+          enum: [UPLOADED, PROCESSING, COMPLETED, FAILED]
+        processingError:
+          type: string
+          nullable: true
+          description: Error message if processing failed
+        extractedTextLength:
+          type: integer
+          description: Length of extracted text in characters
+        contentValidation:
+          type: object
+          properties:
+            safe:
+              type: boolean
+            educational:
+              type: boolean
+            ageAppropriate:
+              type: boolean
+        processingStarted:
+          type: string
+          format: date-time
+          nullable: true
+        processingCompleted:
+          type: string
+          format: date-time
+          nullable: true
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+
+    KnowledgeFileListResponse:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/KnowledgeFileResponse'
+        total:
+          type: integer
+        totalSize:
+          type: integer
+          description: Total size of all files in bytes
+
+    # Sandbox Schemas
+    CreateSandboxRequest:
+      type: object
+      required: [personalityId, guardrailId]
+      properties:
+        animalId:
+          type: string
+          description: Optional animal ID for context
+        personalityId:
+          type: string
+          description: ID of personality to test
+        guardrailId:
+          type: string
+          description: ID of guardrail to test
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+          description: Limited knowledge base files for testing
+
+    PromoteSandboxRequest:
+      type: object
+      required: [animalId]
+      properties:
+        animalId:
+          type: string
+          description: Animal ID to create/update assistant for
+
+    SandboxResponse:
+      type: object
+      properties:
+        sandboxId:
+          type: string
+        createdBy:
+          type: string
+        animalId:
+          type: string
+          nullable: true
+        personalityId:
+          type: string
+        guardrailId:
+          type: string
+        mergedPrompt:
+          type: string
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+        expiresAt:
+          type: string
+          format: date-time
+          description: Expiration time (30 minutes from creation)
+        conversationCount:
+          type: integer
+          description: Number of test conversations
+        lastConversationAt:
+          type: string
+          format: date-time
+          nullable: true
+        isPromoted:
+          type: boolean
+        promotedAt:
+          type: string
+          format: date-time
+          nullable: true
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+
+    SandboxListResponse:
+      type: object
+      properties:
+        sandboxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SandboxResponse'
+        total:
+          type: integer
+
+    # Chat Schemas
+    ChatRequest:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: User's chat message
+        conversationId:
+          type: string
+          description: Optional conversation ID for context
+
+    ChatResponse:
+      type: object
+      properties:
+        response:
+          type: string
+          description: Assistant's response
+        conversationId:
+          type: string
+          description: Conversation ID for follow-up messages
+        responseTime:
+          type: number
+          description: Response time in milliseconds
+        promptTokens:
+          type: integer
+          description: Tokens used in prompt
+        completionTokens:
+          type: integer
+          description: Tokens used in completion
+
+    # Common Schemas
+    AuditInfo:
+      type: object
+      properties:
+        at:
+          type: string
+          format: date-time
+        by:
+          type: string
+          description: User ID who performed the action
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Assistant Management
+    description: Operations for managing animal assistants
+  - name: Personality Management
+    description: Operations for managing personality configurations
+  - name: Guardrail Management
+    description: Operations for managing guardrail configurations
+  - name: Knowledge Base
+    description: Operations for managing knowledge base files
+  - name: Sandbox Testing
+    description: Operations for testing assistant configurations

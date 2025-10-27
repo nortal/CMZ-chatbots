@@ -258,6 +258,7 @@ class AnimalService:
             "animalConfigId": f"config-{animal_id}",
             "voice": animal.configuration.get("voice", "alloy") if animal.configuration else "alloy",
             "personality": animal.personality.get("description", "") if isinstance(animal.personality, dict) else str(animal.personality or ""),
+            "systemPrompt": animal.configuration.get("systemPrompt", "") if animal.configuration else "",
             "aiModel": animal.configuration.get("aiModel", "gpt-4o-mini") if animal.configuration else "gpt-4o-mini",
             "temperature": round(float(animal.configuration.get("temperature", 0.7) or 0.7) * 10) / 10 if animal.configuration else 0.7,
             "topP": round(float(animal.configuration.get("topP", 1.0) or 1.0) * 100) / 100 if animal.configuration else 1.0,
@@ -289,6 +290,11 @@ class AnimalService:
             NotFoundError: If animal not found
             ValidationError: If configuration is invalid
         """
+        # DEBUG: Log the incoming config_data
+        print(f"DEBUG update_animal_configuration: animal_id={animal_id}")
+        print(f"DEBUG update_animal_configuration: config_data keys={list(config_data.keys())}")
+        print(f"DEBUG update_animal_configuration: systemPrompt={config_data.get('systemPrompt', 'NOT_FOUND')}")
+
         animal = self.get_animal(animal_id)
 
         # Prepare update data for the animal entity

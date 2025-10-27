@@ -95,8 +95,11 @@ const AnimalConfig: React.FC = () => {
   // Handle configuration save with secure error handling
   const handleSaveConfig = async (configData: any) => {
     try {
+      console.log('🟠 DEBUG: handleSaveConfig called with:', configData);
+
       // Separate Animal fields from AnimalConfig fields
       const { name, species, status, ...configFields } = configData;
+      console.log('🟠 DEBUG: configFields after separation:', configFields);
 
       // Update Animal fields (name, species, status) if they have changed
       const animalUpdates: any = {};
@@ -104,15 +107,19 @@ const AnimalConfig: React.FC = () => {
       if (species !== selectedAnimal?.species) animalUpdates.species = species;
       if (status !== undefined && status !== selectedAnimal?.status) animalUpdates.status = status;
 
+      console.log('🟠 DEBUG: animalUpdates:', animalUpdates);
+
       // Update both entities in parallel
       const promises = [];
 
       // Only update Animal if there are changes
       if (Object.keys(animalUpdates).length > 0) {
+        console.log('🟠 DEBUG: Adding animal updates to promises');
         promises.push(updateAnimal(animalUpdates));
       }
 
       // Update AnimalConfig with remaining fields
+      console.log('🟠 DEBUG: Adding config updates to promises');
       promises.push(updateConfig(configFields));
 
       // Wait for both updates to complete
@@ -804,11 +811,18 @@ const AnimalConfig: React.FC = () => {
                 Test Chatbot
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   try {
+                    console.log('🔴 DEBUG: Save button clicked');
+                    console.log('🔴 DEBUG: formData:', formData);
+                    console.log('🔴 DEBUG: selectedAnimalId:', selectedAnimalId);
+
                     // Use our managed form data instead of DOM extraction
-                    submitForm(formData);
+                    console.log('🔴 DEBUG: About to call submitForm');
+                    const result = await submitForm(formData);
+                    console.log('🔴 DEBUG: submitForm result:', result);
                   } catch (error) {
+                    console.error('🔴 DEBUG: Save button error:', error);
                     if (error instanceof ValidationError) {
                       console.debug('Form validation error:', error.message);
                     }

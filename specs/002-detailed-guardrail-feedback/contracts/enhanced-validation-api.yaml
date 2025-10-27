@@ -1,0 +1,847 @@
+openapi: 3.0.3
+info:
+  title: CMZ Chatbots - Enhanced Guardrails Validation API
+  description: |
+    Enhanced content validation API with detailed rule-level feedback for the CMZ Chatbots safety system.
+
+    This API extends the existing validation endpoint to provide comprehensive information about
+    triggered guardrail rules, OpenAI moderation results, and rule effectiveness analytics.
+
+    **Key Features:**
+    - Backward-compatible response schema
+    - Detailed rule violation information
+    - Separated OpenAI vs custom guardrails
+    - Rule effectiveness analytics
+    - Severity-based ranking
+  version: 2.1.0
+  contact:
+    name: CMZ Chatbots Development Team
+    url: https://github.com/keithstegbauer/CMZ-chatbots
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.cmz-chatbots.com/v1
+    description: Production server
+
+paths:
+  /guardrails/validate:
+    post:
+      operationId: validateContentDetailed
+      summary: Validate content with detailed rule feedback
+      description: |
+        Validates content against safety guidelines and returns detailed information about
+        triggered rules, confidence scores, and recommended actions.
+
+        **Enhanced Features:**
+        - Detailed rule violation information
+        - OpenAI moderation results
+        - Rule effectiveness context
+        - Severity-based ranking
+        - Backward-compatible response
+      tags:
+        - Content Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentValidationRequest'
+            examples:
+              basic_validation:
+                summary: Basic content validation
+                value:
+                  content: "I love watching lions at the zoo!"
+                  context:
+                    userId: "user_123"
+                    conversationId: "conv_456"
+                    animalId: "lion_ambassador"
+              educational_content:
+                summary: Educational content validation
+                value:
+                  content: "How do animals hunt for food in the wild?"
+                  context:
+                    userId: "educator_789"
+                    conversationId: "lesson_012"
+                    animalId: "tiger_ambassador"
+              potentially_problematic:
+                summary: Content that may trigger rules
+                value:
+                  content: "What happens when animals fight each other?"
+                  context:
+                    userId: "student_345"
+                    conversationId: "question_678"
+      responses:
+        '200':
+          description: Content validation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedValidationResponse'
+              examples:
+                safe_content:
+                  summary: Safe content with no violations
+                  value:
+                    valid: true
+                    result: "approved"
+                    riskScore: 5.2
+                    requiresEscalation: false
+                    validationId: "val_abc123_20250114"
+                    timestamp: "2025-01-14T14:30:00.000Z"
+                    processingTimeMs: 234
+                    triggeredRules:
+                      totalTriggered: 0
+                      highestSeverity: "none"
+                      openaiModeration:
+                        flagged: false
+                        model: "text-moderation-latest"
+                        categories: []
+                      customGuardrails: []
+                    summary:
+                      requiresEscalation: false
+                      blockingViolations: 0
+                      warningViolations: 0
+                      ageGroupApproved: "elementary"
+
+                rule_violations:
+                  summary: Content with custom guardrail violations
+                  value:
+                    valid: false
+                    result: "flagged"
+                    riskScore: 72.5
+                    requiresEscalation: false
+                    userMessage: "Let's talk about how we care for animals instead!"
+                    validationId: "val_xyz789_20250114"
+                    timestamp: "2025-01-14T14:35:00.000Z"
+                    processingTimeMs: 456
+                    triggeredRules:
+                      totalTriggered: 2
+                      highestSeverity: "high"
+                      openaiModeration:
+                        flagged: false
+                        model: "text-moderation-latest"
+                        categories: []
+                      customGuardrails:
+                        - ruleId: "rule_violence_001"
+                          ruleText: "Never discuss violence or harm to animals"
+                          ruleType: "NEVER"
+                          category: "safety"
+                          severity: "high"
+                          confidenceScore: 89.3
+                          triggerContext: "Matched keywords: fight, harm"
+                          userMessage: "We don't discuss animals being hurt. Let's learn about how we keep animals safe!"
+                          detectedAt: "2025-01-14T14:35:00.123Z"
+                          priority: 90
+                        - ruleId: "rule_age_appropriate_002"
+                          ruleText: "Keep discussions age-appropriate for elementary students"
+                          ruleType: "ALWAYS"
+                          category: "age-appropriate"
+                          severity: "medium"
+                          confidenceScore: 67.8
+                          triggerContext: "Complex predator behavior topic"
+                          userMessage: "This topic is better for older students. Let's talk about what animals eat!"
+                          detectedAt: "2025-01-14T14:35:00.145Z"
+                          priority: 70
+                    summary:
+                      requiresEscalation: false
+                      blockingViolations: 1
+                      warningViolations: 1
+                      ageGroupApproved: "middle"
+
+                openai_moderation:
+                  summary: Content flagged by OpenAI moderation
+                  value:
+                    valid: false
+                    result: "blocked"
+                    riskScore: 95.8
+                    requiresEscalation: true
+                    validationId: "val_critical_456"
+                    timestamp: "2025-01-14T14:40:00.000Z"
+                    processingTimeMs: 389
+                    triggeredRules:
+                      totalTriggered: 3
+                      highestSeverity: "critical"
+                      openaiModeration:
+                        flagged: true
+                        model: "text-moderation-latest"
+                        categories:
+                          - category: "self-harm/intent"
+                            severity: "critical"
+                            confidenceScore: 94.2
+                            rawScore: 0.942
+                            detectedAt: "2025-01-14T14:40:00.089Z"
+                          - category: "violence"
+                            severity: "high"
+                            confidenceScore: 78.5
+                            rawScore: 0.785
+                            detectedAt: "2025-01-14T14:40:00.089Z"
+                      customGuardrails:
+                        - ruleId: "rule_crisis_detection_001"
+                          ruleText: "Detect and escalate potential crisis situations"
+                          ruleType: "NEVER"
+                          category: "safety"
+                          severity: "critical"
+                          confidenceScore: 96.7
+                          triggerContext: "[CONTENT REDACTED FOR SAFETY]"
+                          userMessage: "I'm here to help, but this sounds serious. Please talk to a trusted adult."
+                          detectedAt: "2025-01-14T14:40:00.234Z"
+                          priority: 100
+                    summary:
+                      requiresEscalation: true
+                      blockingViolations: 3
+                      warningViolations: 0
+                      ageGroupApproved: "none"
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_content:
+                  summary: Missing required content field
+                  value:
+                    error: "Validation failed"
+                    message: "Missing required field: content"
+                    code: "MISSING_FIELD"
+                    details:
+                      field: "content"
+                      requirement: "Content string is required for validation"
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /guardrails/rules/{ruleId}/analytics:
+    get:
+      operationId: getRuleAnalytics
+      summary: Get rule effectiveness analytics
+      description: |
+        Retrieves analytics data for a specific guardrail rule including trigger frequency,
+        confidence distribution, and effectiveness metrics over a 24-hour window.
+      tags:
+        - Rule Analytics
+      parameters:
+        - name: ruleId
+          in: path
+          required: true
+          description: Unique identifier for the guardrail rule
+          schema:
+            type: string
+            pattern: '^rule_[a-z]+_[0-9]+$'
+            example: "rule_violence_001"
+        - name: timeWindow
+          in: query
+          required: false
+          description: Time window for analytics data
+          schema:
+            type: string
+            enum: ["1h", "24h"]
+            default: "24h"
+        - name: includeDetails
+          in: query
+          required: false
+          description: Whether to include detailed hourly breakdown
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Rule analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleAnalyticsResponse'
+              examples:
+                effective_rule:
+                  summary: Well-performing safety rule
+                  value:
+                    ruleId: "rule_violence_001"
+                    timeWindow: "24h"
+                    totalTriggers: 156
+                    averageConfidence: 87.3
+                    effectivenessScore: 0.89
+                    triggerTrend: "stable"
+                    severityBreakdown:
+                      critical: 45
+                      high: 78
+                      medium: 28
+                      low: 5
+                    hourlyData:
+                      - hour: "2025-01-14T00:00:00Z"
+                        triggers: 8
+                        avgConfidence: 85.2
+                      - hour: "2025-01-14T01:00:00Z"
+                        triggers: 6
+                        avgConfidence: 89.1
+                ineffective_rule:
+                  summary: Rule that may need adjustment
+                  value:
+                    ruleId: "rule_outdated_003"
+                    timeWindow: "24h"
+                    totalTriggers: 2
+                    averageConfidence: 52.1
+                    effectivenessScore: 0.23
+                    triggerTrend: "declining"
+                    flaggedForReview: true
+                    reviewReason: "Low trigger frequency and confidence"
+        '404':
+          description: Rule not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /guardrails/analytics/overview:
+    get:
+      operationId: getAnalyticsOverview
+      summary: Get guardrails system analytics overview
+      description: |
+        Retrieves overall analytics for the guardrails system including top triggered rules,
+        effectiveness trends, and system performance metrics.
+      tags:
+        - Rule Analytics
+      parameters:
+        - name: timeWindow
+          in: query
+          required: false
+          description: Time window for analytics data
+          schema:
+            type: string
+            enum: ["1h", "24h", "7d"]
+            default: "24h"
+      responses:
+        '200':
+          description: Analytics overview retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsOverviewResponse'
+
+components:
+  schemas:
+    ContentValidationRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          description: Content to validate against safety guidelines
+          example: "I love watching lions at the zoo!"
+        context:
+          type: object
+          description: Additional context for validation
+          properties:
+            userId:
+              type: string
+              description: Unique identifier for the user
+              example: "user_123"
+            conversationId:
+              type: string
+              description: Conversation identifier for context
+              example: "conv_456"
+            animalId:
+              type: string
+              description: Animal ambassador identifier
+              example: "lion_ambassador"
+            sensitivityLevel:
+              type: string
+              enum: ["standard", "strict", "educational"]
+              default: "standard"
+              description: Validation sensitivity level
+
+    DetailedValidationResponse:
+      type: object
+      required:
+        - valid
+        - result
+        - riskScore
+        - requiresEscalation
+        - validationId
+        - timestamp
+        - processingTimeMs
+        - triggeredRules
+        - summary
+      properties:
+        # === Existing Fields (Backward Compatibility) ===
+        valid:
+          type: boolean
+          description: Whether content passes safety validation
+          example: true
+        result:
+          type: string
+          enum: ["approved", "flagged", "blocked", "escalated"]
+          description: Validation outcome
+          example: "approved"
+        riskScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Calculated risk score (0=safe, 100=high risk)
+          example: 15.3
+        requiresEscalation:
+          type: boolean
+          description: Whether validation requires human review
+          example: false
+        userMessage:
+          type: string
+          maxLength: 200
+          description: User-facing message about validation result
+          example: "Content looks great! Keep exploring and learning."
+        safeAlternative:
+          type: string
+          maxLength: 1000
+          description: Safe alternative content if available
+          example: "Let's talk about how animals play and have fun instead!"
+
+        # === New Enhanced Fields ===
+        validationId:
+          type: string
+          format: uuid
+          description: Unique identifier for this validation event
+          example: "val_abc123_20250114"
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp when validation occurred
+          example: "2025-01-14T14:30:00.000Z"
+        processingTimeMs:
+          type: integer
+          minimum: 0
+          maximum: 60000
+          description: Processing time in milliseconds
+          example: 234
+        triggeredRules:
+          $ref: '#/components/schemas/TriggeredRulesSummary'
+        summary:
+          $ref: '#/components/schemas/ValidationSummary'
+
+    TriggeredRulesSummary:
+      type: object
+      required:
+        - totalTriggered
+        - highestSeverity
+        - openaiModeration
+        - customGuardrails
+      properties:
+        totalTriggered:
+          type: integer
+          minimum: 0
+          description: Total number of rules triggered
+          example: 2
+        highestSeverity:
+          type: string
+          enum: ["none", "low", "medium", "high", "critical"]
+          description: Highest severity level among triggered rules
+          example: "high"
+        openaiModeration:
+          $ref: '#/components/schemas/OpenAIModerationResult'
+        customGuardrails:
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggeredRule'
+          description: Custom CMZ guardrails rules that were triggered
+          maxItems: 100
+
+    TriggeredRule:
+      type: object
+      required:
+        - ruleId
+        - ruleText
+        - ruleType
+        - category
+        - severity
+        - confidenceScore
+        - detectedAt
+      properties:
+        ruleId:
+          type: string
+          pattern: '^rule_[a-z_]+_[0-9]+$'
+          maxLength: 50
+          description: Unique identifier for the guardrail rule
+          example: "rule_violence_001"
+        ruleText:
+          type: string
+          maxLength: 500
+          description: Full text of the guardrail rule
+          example: "Never discuss violence or harm to animals"
+        ruleType:
+          type: string
+          enum: ["ALWAYS", "NEVER", "ENCOURAGE", "DISCOURAGE"]
+          description: Type of guardrail rule
+          example: "NEVER"
+        category:
+          type: string
+          enum: ["safety", "educational", "age-appropriate", "behavioral", "content-quality", "privacy"]
+          description: Category classification for the rule
+          example: "safety"
+        severity:
+          type: string
+          enum: ["low", "medium", "high", "critical"]
+          description: Severity level of rule violation
+          example: "high"
+        confidenceScore:
+          type: number
+          format: float
+          minimum: 50.0
+          maximum: 100.0
+          description: Confidence score (50-100) that rule was violated
+          example: 89.3
+        triggerContext:
+          type: string
+          maxLength: 500
+          description: Specific content excerpt that triggered the rule
+          example: "Matched keywords: violence, harm, fight"
+        userMessage:
+          type: string
+          maxLength: 200
+          description: User-friendly message explaining why content was flagged
+          example: "We don't discuss animals being hurt. Let's learn about how we keep animals safe!"
+        detectedAt:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp when rule was triggered
+          example: "2025-01-14T14:35:00.123Z"
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Rule priority (0-100, higher = more important)
+          example: 90
+
+    OpenAIModerationResult:
+      type: object
+      required:
+        - flagged
+        - model
+        - categories
+      properties:
+        flagged:
+          type: boolean
+          description: Whether OpenAI flagged the content
+          example: false
+        model:
+          type: string
+          description: OpenAI moderation model used
+          example: "text-moderation-latest"
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenAIModerationCategory'
+          description: Triggered OpenAI moderation categories
+          maxItems: 20
+
+    OpenAIModerationCategory:
+      type: object
+      required:
+        - category
+        - severity
+        - confidenceScore
+        - rawScore
+        - detectedAt
+      properties:
+        category:
+          type: string
+          enum: [
+            "hate", "hate/threatening",
+            "harassment", "harassment/threatening",
+            "self-harm", "self-harm/intent", "self-harm/instructions",
+            "sexual", "sexual/minors",
+            "violence", "violence/graphic"
+          ]
+          description: OpenAI moderation category
+          example: "violence"
+        severity:
+          type: string
+          enum: ["low", "medium", "high", "critical"]
+          description: Severity classification for this category
+          example: "high"
+        confidenceScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Confidence score (0-100) for this detection
+          example: 78.5
+        rawScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Raw OpenAI confidence score (0.0-1.0)
+          example: 0.785
+        detectedAt:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp when category was detected
+          example: "2025-01-14T14:40:00.089Z"
+
+    ValidationSummary:
+      type: object
+      required:
+        - requiresEscalation
+        - blockingViolations
+        - warningViolations
+        - ageGroupApproved
+      properties:
+        requiresEscalation:
+          type: boolean
+          description: Whether this validation requires human review
+          example: false
+        blockingViolations:
+          type: integer
+          minimum: 0
+          description: Number of violations that block content
+          example: 1
+        warningViolations:
+          type: integer
+          minimum: 0
+          description: Number of violations that generate warnings
+          example: 1
+        ageGroupApproved:
+          type: string
+          enum: ["elementary", "middle", "high", "adult", "none"]
+          description: Minimum age group for which content is appropriate
+          example: "middle"
+
+    RuleAnalyticsResponse:
+      type: object
+      required:
+        - ruleId
+        - timeWindow
+        - totalTriggers
+        - averageConfidence
+        - effectivenessScore
+        - triggerTrend
+        - severityBreakdown
+      properties:
+        ruleId:
+          type: string
+          description: Unique identifier for the guardrail rule
+          example: "rule_violence_001"
+        timeWindow:
+          type: string
+          description: Time window for the analytics data
+          example: "24h"
+        totalTriggers:
+          type: integer
+          minimum: 0
+          description: Total number of times rule was triggered
+          example: 156
+        averageConfidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Average confidence score for all triggers
+          example: 87.3
+        effectivenessScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Calculated effectiveness score (0.0-1.0)
+          example: 0.89
+        triggerTrend:
+          type: string
+          enum: ["increasing", "stable", "declining"]
+          description: Trend analysis for trigger frequency
+          example: "stable"
+        flaggedForReview:
+          type: boolean
+          description: Whether rule is flagged for review due to poor performance
+          example: false
+        reviewReason:
+          type: string
+          description: Reason why rule is flagged for review
+          example: "Low trigger frequency and confidence"
+        severityBreakdown:
+          type: object
+          required:
+            - critical
+            - high
+            - medium
+            - low
+          properties:
+            critical:
+              type: integer
+              description: Number of critical severity triggers
+              example: 45
+            high:
+              type: integer
+              description: Number of high severity triggers
+              example: 78
+            medium:
+              type: integer
+              description: Number of medium severity triggers
+              example: 28
+            low:
+              type: integer
+              description: Number of low severity triggers
+              example: 5
+        hourlyData:
+          type: array
+          items:
+            type: object
+            required:
+              - hour
+              - triggers
+              - avgConfidence
+            properties:
+              hour:
+                type: string
+                format: date-time
+                description: Hour timestamp (ISO8601)
+                example: "2025-01-14T15:00:00Z"
+              triggers:
+                type: integer
+                minimum: 0
+                description: Number of triggers in this hour
+                example: 8
+              avgConfidence:
+                type: number
+                format: float
+                description: Average confidence for this hour
+                example: 85.2
+          maxItems: 24
+          description: Hourly breakdown of triggers (if includeDetails=true)
+
+    AnalyticsOverviewResponse:
+      type: object
+      required:
+        - timeWindow
+        - totalValidations
+        - totalRulesTriggers
+        - topTriggeredRules
+        - systemEffectiveness
+        - trends
+      properties:
+        timeWindow:
+          type: string
+          description: Time window for analytics
+          example: "24h"
+        totalValidations:
+          type: integer
+          description: Total number of content validations
+          example: 2847
+        totalRulesTriggers:
+          type: integer
+          description: Total number of rule triggers
+          example: 421
+        averageProcessingTime:
+          type: number
+          format: float
+          description: Average processing time in milliseconds
+          example: 234.5
+        topTriggeredRules:
+          type: array
+          items:
+            type: object
+            properties:
+              ruleId:
+                type: string
+                example: "rule_violence_001"
+              triggerCount:
+                type: integer
+                example: 156
+              effectivenessScore:
+                type: number
+                format: float
+                example: 0.89
+          maxItems: 10
+          description: Top 10 most triggered rules
+        systemEffectiveness:
+          type: object
+          properties:
+            overallScore:
+              type: number
+              format: float
+              description: Overall system effectiveness (0.0-1.0)
+              example: 0.82
+            highPerformingRules:
+              type: integer
+              description: Number of rules with >0.8 effectiveness
+              example: 34
+            flaggedRules:
+              type: integer
+              description: Number of rules flagged for review
+              example: 3
+        trends:
+          type: object
+          properties:
+            validationVolume:
+              type: string
+              enum: ["increasing", "stable", "declining"]
+              example: "stable"
+            ruleEffectiveness:
+              type: string
+              enum: ["improving", "stable", "declining"]
+              example: "improving"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type identifier
+          example: "VALIDATION_FAILED"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Content validation failed due to missing required fields"
+        code:
+          type: string
+          description: Specific error code for programmatic handling
+          example: "MISSING_FIELD"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred
+          example: "2025-01-14T14:30:00.000Z"
+        validationId:
+          type: string
+          description: Validation ID if applicable
+          example: "val_error_123"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authenticated users
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+
+tags:
+  - name: Content Validation
+    description: Content safety validation with detailed rule feedback
+  - name: Rule Analytics
+    description: Guardrail rule effectiveness analytics and monitoring

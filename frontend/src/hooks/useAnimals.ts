@@ -83,15 +83,24 @@ export function useAnimalConfig(animalId: string | null): UseAnimalConfigResult 
   }, []);
 
   const updateConfig = useCallback(async (updates: Partial<AnimalConfig>) => {
+    console.log('🟡 DEBUG: updateConfig called with:', updates);
+    console.log('🟡 DEBUG: animalId:', animalId);
+
     if (!animalId) {
+      console.log('🟡 DEBUG: No animal ID provided - aborting');
       setSaveError('No animal ID provided');
       return;
     }
 
     try {
+      console.log('🟡 DEBUG: Setting saving state to true');
       setSaving(true);
       setSaveError(null);
+
+      console.log('🟡 DEBUG: About to call animalApi.updateAnimalConfig');
       const updatedConfig = await animalApi.updateAnimalConfig(animalId, updates);
+      console.log('🟡 DEBUG: animalApi.updateAnimalConfig returned:', updatedConfig);
+
       setConfig(updatedConfig);
       console.log('Animal configuration updated successfully');
     } catch (err) {

@@ -62,7 +62,7 @@ class ConvoTurnPost200Response(Model):
 
         :param dikt: A dict.
         :type: dict
-        :return: The _convo_turn_post_200_response of this ConvoTurnPost200Response.  # noqa: E501
+        :return: The convo_turn_post_200_response of this ConvoTurnPost200Response.  # noqa: E501
         :rtype: ConvoTurnPost200Response
         """
         return util.deserialize_model(dikt, cls)

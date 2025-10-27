@@ -10,12 +10,12 @@ def main():
     app = connexion.App(__name__, specification_dir='./openapi/')
     app.app.json_encoder = encoder.JSONEncoder
 
-    # Enable CORS for frontend access
+    # Enable CORS for all routes to allow frontend access
     CORS(app.app, resources={
         r"/*": {
-            "origins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"],
-            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization", "X-User-Id"],
+            "origins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3005"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
             "supports_credentials": True
         }
     })

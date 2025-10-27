@@ -71,7 +71,7 @@ class AssistantManager:
         try:
             # Step 1: Create Vector Store for this animal's knowledge base
             logger.info(f"Creating Vector Store for animal: {animal_id}")
-            vector_store = self.client.beta.vector_stores.create(
+            vector_store = self.client.vector_stores.create(
                 name=f"{name} Knowledge Base",
                 metadata={
                     'animal_id': animal_id,
@@ -216,7 +216,7 @@ class AssistantManager:
             # Delete vector store if provided
             if vector_store_id:
                 logger.info(f"Deleting Vector Store: {vector_store_id}")
-                self.client.beta.vector_stores.delete(vector_store_id=vector_store_id)
+                self.client.vector_stores.delete(vector_store_id=vector_store_id)
 
             return {
                 'success': True,
@@ -367,7 +367,7 @@ well-cited information while maintaining your engaging personality.
 
             # Step 2: Add file to Vector Store
             logger.info(f"Adding file {file_id} to Vector Store: {vector_store_id}")
-            vector_store_file = self.client.beta.vector_stores.files.create(
+            vector_store_file = self.client.vector_stores.files.create(
                 vector_store_id=vector_store_id,
                 file_id=file_id
             )
@@ -376,7 +376,7 @@ well-cited information while maintaining your engaging personality.
             max_attempts = 60  # 60 seconds max wait
             attempt = 0
             while attempt < max_attempts:
-                file_status = self.client.beta.vector_stores.files.retrieve(
+                file_status = self.client.vector_stores.files.retrieve(
                     vector_store_id=vector_store_id,
                     file_id=file_id
                 )
@@ -433,7 +433,7 @@ well-cited information while maintaining your engaging personality.
             return []
 
         try:
-            files = self.client.beta.vector_stores.files.list(
+            files = self.client.vector_stores.files.list(
                 vector_store_id=vector_store_id
             )
 
@@ -473,7 +473,7 @@ well-cited information while maintaining your engaging personality.
 
         try:
             # Remove from vector store
-            self.client.beta.vector_stores.files.delete(
+            self.client.vector_stores.files.delete(
                 vector_store_id=vector_store_id,
                 file_id=file_id
             )

@@ -79,7 +79,7 @@ class ConvoTurnPostRequest(Model):
 
         :param dikt: A dict.
         :type: dict
-        :return: The _convo_turn_post_request of this ConvoTurnPostRequest.  # noqa: E501
+        :return: The convo_turn_post_request of this ConvoTurnPostRequest.  # noqa: E501
         :rtype: ConvoTurnPostRequest
         """
         return util.deserialize_model(dikt, cls)

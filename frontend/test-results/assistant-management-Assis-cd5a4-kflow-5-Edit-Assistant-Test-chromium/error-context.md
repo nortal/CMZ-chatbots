@@ -1,0 +1,96 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - img "CMZ" [ref=e8]
+        - generic [ref=e9]: CMZ Dashboard
+      - generic [ref=e10]: Welcome back, Test (Administrator)
+      - generic [ref=e11]: Admin
+    - navigation [ref=e12]:
+      - button "Dashboard" [ref=e14] [cursor=pointer]:
+        - img [ref=e15]
+        - generic [ref=e18]: Dashboard
+      - button "Animal Management" [ref=e20] [cursor=pointer]:
+        - img [ref=e21]
+        - generic [ref=e23]: Animal Management
+        - img [ref=e24]
+      - button "Assistant Management" [ref=e27] [cursor=pointer]:
+        - generic [ref=e28]: Assistant Management
+        - img [ref=e29]
+      - button "Family Groups" [ref=e32] [cursor=pointer]:
+        - img [ref=e33]
+        - generic [ref=e38]: Family Groups
+        - img [ref=e39]
+      - button "Conversations" [ref=e42] [cursor=pointer]:
+        - img [ref=e43]
+        - generic [ref=e45]: Conversations
+        - img [ref=e46]
+      - button "User Management" [ref=e49] [cursor=pointer]:
+        - img [ref=e50]
+        - generic [ref=e62]: User Management
+        - img [ref=e63]
+      - button "System" [ref=e66] [cursor=pointer]:
+        - img [ref=e67]
+        - generic [ref=e70]: System
+        - img [ref=e71]
+    - button "Sign Out" [ref=e74] [cursor=pointer]:
+      - img [ref=e75]
+      - generic [ref=e78]: Sign Out
+  - generic [ref=e79]:
+    - generic [ref=e80]:
+      - heading "Assistant Management" [level=1] [ref=e83]
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - img [ref=e86]
+          - textbox "Search..." [ref=e89]
+        - button [ref=e90] [cursor=pointer]:
+          - img [ref=e91]
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]: Test (Administrator)
+            - generic [ref=e98]: admin
+          - generic [ref=e100]: T
+    - main [ref=e101]:
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - generic [ref=e104]:
+            - heading "Assistant Management" [level=1] [ref=e105]
+            - paragraph [ref=e106]: Manage digital animal ambassadors with personality and safety configurations
+          - button "Create New Assistant" [ref=e107] [cursor=pointer]
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - generic [ref=e111]: Total Assistants
+            - generic [ref=e113]: "0"
+          - generic [ref=e114]:
+            - generic [ref=e116]: Active
+            - generic [ref=e118]: "0"
+          - generic [ref=e119]:
+            - generic [ref=e121]: Inactive
+            - generic [ref=e123]: "0"
+          - generic [ref=e124]:
+            - generic [ref=e126]: Errors
+            - generic [ref=e128]: "0"
+        - generic [ref=e129]:
+          - generic [ref=e130]:
+            - generic [ref=e131]: Assistant Directory
+            - generic [ref=e132]: Search and manage your animal assistants
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - textbox "Search by animal name, species, or personality..." [ref=e135]
+              - button "Refresh" [ref=e136] [cursor=pointer]
+            - paragraph [ref=e138]:
+              - strong [ref=e139]: "assistants:"
+              - text: Failed to fetch
+            - paragraph [ref=e141]:
+              - strong [ref=e142]: "personalities:"
+              - text: Failed to fetch
+            - paragraph [ref=e144]:
+              - strong [ref=e145]: "guardrails:"
+              - text: Handler for list_guardrails not implemented
+            - generic [ref=e146]:
+              - paragraph [ref=e147]: No assistants configured yet
+              - button "Create Your First Assistant" [ref=e148] [cursor=pointer]
+```

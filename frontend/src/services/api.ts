@@ -196,16 +196,24 @@ export const animalApi = {
    * Update animal configuration
    */
   async updateAnimalConfig(animalId: string, config: Partial<AnimalConfig>): Promise<AnimalConfig> {
+    console.log('🟢 DEBUG: updateAnimalConfig called with:', { animalId, config });
+
     if (!animalId?.trim()) {
+      console.log('🟢 DEBUG: Animal ID validation failed');
       throw new Error('Animal ID is required');
     }
     if (!config || Object.keys(config).length === 0) {
+      console.log('🟢 DEBUG: Config validation failed');
       throw new Error('Configuration updates are required');
     }
-    return apiRequest<AnimalConfig>(`/animal_config?animalId=${encodeURIComponent(animalId)}`, {
+
+    console.log('🟢 DEBUG: About to make PATCH request to /animal_config');
+    const result = await apiRequest<AnimalConfig>(`/animal_config?animalId=${encodeURIComponent(animalId)}`, {
       method: 'PATCH',
       body: JSON.stringify(config),
     });
+    console.log('🟢 DEBUG: PATCH request completed, result:', result);
+    return result;
   },
 };
 

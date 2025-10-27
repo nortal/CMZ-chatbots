@@ -39,6 +39,53 @@ export const navigationConfig: NavigationItem[] = [
     ]
   },
 
+  // Animal Assistant Management - New feature from Phase 2
+  {
+    id: 'assistants',
+    label: 'Assistant Management',
+    path: '/assistants',
+    icon: 'Bot', // Represents AI assistants
+    roles: ['admin', 'zookeeper'],
+    children: [
+      {
+        id: 'assistant-overview',
+        label: 'Active Assistants',
+        path: '/assistants/overview',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'assistant-create',
+        label: 'Create Assistant',
+        path: '/assistants/create',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'personality-templates',
+        label: 'Personality Templates',
+        path: '/assistants/personalities',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'guardrail-templates',
+        label: 'Guardrail Templates',
+        path: '/assistants/guardrails',
+        roles: ['admin']
+      },
+      {
+        id: 'sandbox-testing',
+        label: 'Test Configurations',
+        path: '/sandbox-testing',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'knowledge-base',
+        label: 'Knowledge Base',
+        path: '/assistants/knowledge',
+        roles: ['admin', 'zookeeper']
+      }
+    ]
+  },
+
   // Family Management - Simplified (removed billing and programs)
   {
     id: 'families',
@@ -108,7 +155,7 @@ export const navigationConfig: NavigationItem[] = [
     ]
   },
 
-  // System - AI Provider Settings
+  // System - AI Provider Settings and Safety Management
   {
     id: 'system',
     label: 'System',
@@ -120,6 +167,12 @@ export const navigationConfig: NavigationItem[] = [
         id: 'ai-provider',
         label: 'AI Provider Settings',
         path: '/system/ai-provider',
+        roles: ['admin']
+      },
+      {
+        id: 'safety-management',
+        label: 'Safety Management',
+        path: '/system/safety',
         roles: ['admin']
       }
     ]

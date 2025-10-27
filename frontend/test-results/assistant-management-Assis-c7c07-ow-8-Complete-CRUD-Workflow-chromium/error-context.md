@@ -1,0 +1,161 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - img
+              - generic: CMZ Dashboard
+            - generic: Welcome back, Test (Administrator)
+            - generic: Admin
+          - navigation:
+            - generic:
+              - button:
+                - img
+                - generic: Dashboard
+            - generic:
+              - button:
+                - img
+                - generic: Animal Management
+                - img
+            - generic:
+              - button:
+                - generic: Assistant Management
+                - img
+            - generic:
+              - button:
+                - img
+                - generic: Family Groups
+                - img
+            - generic:
+              - button:
+                - img
+                - generic: Conversations
+                - img
+            - generic:
+              - button:
+                - img
+                - generic: User Management
+                - img
+            - generic:
+              - button:
+                - img
+                - generic: System
+                - img
+          - generic:
+            - button:
+              - img
+              - generic: Sign Out
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=1]: Assistant Management
+          - generic:
+            - generic:
+              - img
+              - textbox:
+                - /placeholder: Search...
+            - button:
+              - img
+            - generic:
+              - generic:
+                - generic: Test (Administrator)
+                - generic: admin
+              - generic:
+                - generic: T
+        - main:
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=1]: Assistant Management
+                - paragraph: Manage digital animal ambassadors with personality and safety configurations
+              - button: Create New Assistant
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Total Assistants
+                - generic:
+                  - generic: "0"
+              - generic:
+                - generic:
+                  - generic: Active
+                - generic:
+                  - generic: "0"
+              - generic:
+                - generic:
+                  - generic: Inactive
+                - generic:
+                  - generic: "0"
+              - generic:
+                - generic:
+                  - generic: Errors
+                - generic:
+                  - generic: "0"
+            - generic:
+              - generic:
+                - generic: Assistant Directory
+                - generic: Search and manage your animal assistants
+              - generic:
+                - generic:
+                  - textbox:
+                    - /placeholder: Search by animal name, species, or personality...
+                  - button: Refresh
+                - generic:
+                  - paragraph:
+                    - strong: "assistants:"
+                    - text: Failed to fetch
+                - generic:
+                  - paragraph:
+                    - strong: "personalities:"
+                    - text: Failed to fetch
+                - generic:
+                  - paragraph:
+                    - strong: "guardrails:"
+                    - text: Handler for list_guardrails not implemented
+                - generic:
+                  - paragraph: No assistants configured yet
+                  - button: Create Your First Assistant
+  - dialog "Create New Assistant" [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Create New Assistant" [level=2] [ref=e4]
+      - paragraph [ref=e5]: Configure a new digital ambassador for an animal
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: Create New Assistant
+        - generic [ref=e10]: Create a new digital ambassador for an animal with personality and safety guardrails
+      - generic [ref=e12]:
+        - generic [ref=e14]:
+          - generic [ref=e15]: Animal *
+          - combobox [active] [ref=e16] [cursor=pointer]:
+            - generic: Select an animal
+            - img [ref=e17]
+          - combobox [ref=e19]
+        - generic [ref=e20]:
+          - generic [ref=e21]: Personality Configuration *
+          - combobox [ref=e22] [cursor=pointer]:
+            - generic: Select a personality configuration
+            - img [ref=e23]
+          - combobox [ref=e25]
+        - generic [ref=e26]:
+          - generic [ref=e27]: Safety Guardrails *
+          - combobox [ref=e28] [cursor=pointer]:
+            - generic: Select safety guardrails
+            - img [ref=e29]
+          - combobox [ref=e31]
+        - generic [ref=e32]:
+          - generic [ref=e33]: Knowledge Base Files
+          - generic [ref=e34]:
+            - paragraph [ref=e35]: Knowledge base file management will be available in Phase 5
+            - paragraph [ref=e36]: "Current files: 0"
+        - generic [ref=e37]:
+          - button "Cancel" [ref=e38] [cursor=pointer]
+          - button "Create Assistant" [ref=e39] [cursor=pointer]
+    - button "Close" [ref=e40] [cursor=pointer]:
+      - img [ref=e41]
+      - generic [ref=e44]: Close
+```

@@ -17,5 +17,10 @@ flask-cors >= 3.0.10
 boto3 >= 1.26.0
 pynamodb >= 5.5.0
 
-# OpenAI for ChatGPT integration
-openai >= 1.0.0
+# OpenAI for ChatGPT integration, content moderation, and Assistants API with Vector Stores
+openai >= 1.3.0
+
+# Additional dependencies for safety and personalization features
+tiktoken >= 0.5.0  # Token counting for context optimization
+redis >= 4.5.0     # Caching for context and guardrails
+tenacity >= 8.2.0  # Retry logic for OpenAI API calls

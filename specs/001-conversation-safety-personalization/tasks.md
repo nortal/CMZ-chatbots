@@ -14,10 +14,10 @@
 
 **Purpose**: Project initialization and enhanced structure for safety and personalization features
 
-- [ ] T001 Create feature branch 001-conversation-safety-personalization from main
-- [ ] T002 Add OpenAI dependencies to backend/api/src/main/python/requirements.txt
-- [ ] T003 [P] Update environment variables in .env.local for OpenAI API and guardrails configuration
-- [ ] T004 [P] Configure backend/api/src/main/python/openapi_server/impl/ directory structure for new modules
+- [x] T001 Create feature branch 001-conversation-safety-personalization from main
+- [x] T002 Add OpenAI dependencies to backend/api/src/main/python/requirements.txt
+- [x] T003 [P] Update environment variables in .env.local for OpenAI API and guardrails configuration
+- [x] T004 [P] Configure backend/api/src/main/python/openapi_server/impl/ directory structure for new modules
 
 ---
 
@@ -27,12 +27,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Update backend/api/openapi_spec.yaml with new guardrails, context, and privacy endpoints from contracts/
-- [ ] T006 Execute make generate-api to create new controllers and models for safety features
-- [ ] T007 [P] Create DynamoDB table schema script for 5 new tables in backend/api/scripts/create_safety_tables.py
-- [ ] T008 [P] Implement OpenAI integration utility in backend/api/src/main/python/openapi_server/impl/utils/openai_integration.py
-- [ ] T009 [P] Create base DynamoDB utilities for new tables in backend/api/src/main/python/openapi_server/impl/utils/safety_dynamo.py
-- [ ] T010 [P] Implement error handling patterns for safety violations in backend/api/src/main/python/openapi_server/impl/utils/safety_errors.py
+- [x] T005 Update backend/api/openapi_spec.yaml with new guardrails, context, and privacy endpoints from contracts/
+- [x] T006 Execute make generate-api to create new controllers and models for safety features
+- [x] T007 [P] Create DynamoDB table schema script for 5 new tables in backend/api/scripts/create_safety_tables.py
+- [x] T008 [P] Implement OpenAI integration utility in backend/api/src/main/python/openapi_server/impl/utils/openai_integration.py
+- [x] T009 [P] Create base DynamoDB utilities for new tables in backend/api/src/main/python/openapi_server/impl/utils/safety_dynamo.py
+- [x] T010 [P] Implement error handling patterns for safety violations in backend/api/src/main/python/openapi_server/impl/utils/safety_errors.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

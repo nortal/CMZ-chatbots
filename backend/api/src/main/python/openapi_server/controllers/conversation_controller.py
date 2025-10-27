@@ -438,7 +438,7 @@ def convo_turn_stream_get(message, animalId, sessionId, token):  # noqa: E501
 
     Real-time streaming chat response using OpenAI Assistants API # noqa: E501
 
-    :param message: User's chat message
+    :param message: User&#39;s chat message
     :type message: str
     :param animal_id: Animal identifier
     :type animal_id: str
@@ -447,64 +447,71 @@ def convo_turn_stream_get(message, animalId, sessionId, token):  # noqa: E501
     :param token: JWT authentication token
     :type token: str
 
-    :rtype: str (text/event-stream)
+    :rtype: Union[str, Tuple[str, int], Tuple[str, int, Dict[str, str]]
     """
-    # Import SSE streaming support
-    from flask import Response, stream_with_context
-    import asyncio
+    # Auto-generated parameter handling
 
     # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
     try:
-        from openapi_server.impl import conversation
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "conversation_controller".replace("_controller", "")
+        impl_function_name = "handle_"
 
-        # Create async generator wrapper for Flask streaming
-        def generate():
-            # Create new event loop for this request
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-            try:
-                # Run the async generator
-                async_gen = conversation.handle_convo_turn_stream_get(
-                    message=message,
-                    animalId=animalId,
-                    sessionId=sessionId,
-                    token=token
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
                 )
 
-                # Convert async generator to sync for Flask
-                while True:
-                    try:
-                        chunk = loop.run_until_complete(async_gen.__anext__())
-                        yield chunk
-                    except StopAsyncIteration:
-                        break
-            finally:
-                loop.close()
+        # Call implementation function with processed parameters
+        result = impl_function(message, animal_id, session_id, token)
 
-        # Return SSE response
-        return Response(
-            stream_with_context(generate()),
-            mimetype='text/event-stream',
-            headers={
-                'Cache-Control': 'no-cache',
-                'X-Accel-Buffering': 'no'
-            }
-        )
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
 
-    except Exception as e:
-        # Fallback error response
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
         from openapi_server.models.error import Error
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Error in convo_turn_stream_get: {str(e)}")
-
         error_obj = Error(
-            code="internal_error",
-            message=f"Internal server error in convo_turn_stream_get: {str(e)}",
+            code="not_implemented",
+            message=f"Controller convo_turn_stream_get implementation not found: {str(e)}",
             details={"controller": "ConversationController", "operation": "convo_turn_stream_get"}
         )
-        return error_obj, 500
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in convo_turn_stream_get: {str(e)}",
+                details={"controller": "ConversationController", "operation": "convo_turn_stream_get"}
+            )
+            return error_obj, 500
 
 
 def summarize_convo_post(body):  # noqa: E501

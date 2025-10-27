@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -17,7 +17,18 @@ import ConversationViewer from './pages/ConversationViewer';
 import PublicAnimalList from './pages/PublicAnimalList';
 import ParentDashboard from './pages/ParentDashboard';
 import AIProviderSettings from './pages/AIProviderSettings';
+import SafetyManagement from './pages/SafetyManagement';
+import AssistantManagement from './pages/AssistantManagement';
+import SandboxTesting from './pages/SandboxTesting';
 import './index.css';
+
+// ChatWrapper component to extract animalId from URL params and pass to Chat
+const ChatWrapper: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const animalId = searchParams.get('animalId') || 'default';
+
+  return <Chat animalId={animalId} />;
+};
 
 const AppRoutes: React.FC = () => {
   const navigate = useNavigate();
@@ -39,6 +50,14 @@ const AppRoutes: React.FC = () => {
       case '/animals': return 'Animal Ambassadors';
       case '/animals/config': return 'Animal Configuration';
       case '/animals/details': return 'Animal Details';
+      case '/assistants': return 'Assistant Management';
+      case '/assistants/overview': return 'Active Assistants';
+      case '/assistants/create': return 'Create Assistant';
+      case '/assistants/personalities': return 'Personality Templates';
+      case '/assistants/guardrails': return 'Guardrail Templates';
+      case '/assistants/sandbox': return 'Test Configurations';
+      case '/sandbox-testing': return 'Sandbox Testing';
+      case '/assistants/knowledge': return 'Knowledge Base';
       case '/families/manage': return 'Family Management';
       case '/parent/dashboard': return 'Parent Dashboard';
       case '/chat': return 'Chat with Animals';
@@ -48,6 +67,7 @@ const AppRoutes: React.FC = () => {
       case '/analytics/usage': return 'Usage Analytics';
       case '/system/health': return 'System Health';
       case '/system/ai-provider': return 'AI Provider Settings';
+      case '/system/safety': return 'Safety Management';
       default: return 'CMZ Dashboard';
     }
   };
@@ -126,6 +146,64 @@ const AppRoutes: React.FC = () => {
         </ProtectedRoute>
       } />
 
+      {/* Assistant Management Routes */}
+      <Route path="/assistants" element={
+        <ProtectedRoute requiredRoles={['admin', 'zookeeper']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <AssistantManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/assistants/overview" element={
+        <ProtectedRoute requiredRoles={['admin', 'zookeeper']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <AssistantManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Sandbox Testing Routes */}
+      <Route path="/sandbox-testing" element={
+        <ProtectedRoute requiredRoles={['admin', 'zookeeper']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <SandboxTesting />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/sandbox-testing/:sandboxId" element={
+        <ProtectedRoute requiredRoles={['admin', 'zookeeper']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <SandboxTesting />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/chat" element={
         <ProtectedRoute>
           <DashboardLayout
@@ -135,7 +213,7 @@ const AppRoutes: React.FC = () => {
             onNavigate={handleNavigate}
             onLogout={handleLogout}
           >
-            <Chat />
+            <ChatWrapper />
           </DashboardLayout>
         </ProtectedRoute>
       } />
@@ -252,6 +330,20 @@ const AppRoutes: React.FC = () => {
             onLogout={handleLogout}
           >
             <AIProviderSettings />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/system/safety" element={
+        <ProtectedRoute requiredRoles={['admin']}>
+          <DashboardLayout
+            user={user!}
+            currentPath={location.pathname}
+            currentPageTitle={getPageTitle(location.pathname)}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            <SafetyManagement />
           </DashboardLayout>
         </ProtectedRoute>
       } />

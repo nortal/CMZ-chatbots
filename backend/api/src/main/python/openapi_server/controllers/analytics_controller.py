@@ -6,6 +6,7 @@ from typing import Union
 from openapi_server.models.billing_summary import BillingSummary  # noqa: E501
 from openapi_server.models.paged_logs import PagedLogs  # noqa: E501
 from openapi_server.models.performance_metrics import PerformanceMetrics  # noqa: E501
+from openapi_server.models.safety_metrics_get200_response import SafetyMetricsGet200Response  # noqa: E501
 # from openapi_server import util  # Not used
 
 
@@ -244,5 +245,82 @@ def performance_metrics_get(start, end):  # noqa: E501
                 code="internal_error",
                 message=f"Internal server error in performance_metrics_get: {str(e)}",
                 details={"controller": "AnalyticsController", "operation": "performance_metrics_get"}
+            )
+            return error_obj, 500
+
+
+def safety_metrics_get(time_range=None, animal_id=None):  # noqa: E501
+    """Safety analytics metrics
+
+     # noqa: E501
+
+    :param time_range: Time range for metrics
+    :type time_range: str
+    :param animal_id: Filter by specific animal ID
+    :type animal_id: str
+
+    :rtype: Union[SafetyMetricsGet200Response, Tuple[SafetyMetricsGet200Response, int], Tuple[SafetyMetricsGet200Response, int, Dict[str, str]]
+    """
+    # Auto-generated parameter handling
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "analytics_controller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
+
+        # Call implementation function with processed parameters
+        result = impl_function(time_range, animal_id)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller safety_metrics_get implementation not found: {str(e)}",
+            details={"controller": "AnalyticsController", "operation": "safety_metrics_get"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in safety_metrics_get: {str(e)}",
+                details={"controller": "AnalyticsController", "operation": "safety_metrics_get"}
             )
             return error_obj, 500
