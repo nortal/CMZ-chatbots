@@ -70,7 +70,7 @@ jobs:
           || echo "⚠️ Some regression tests skipped (require AWS)"
 
     - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         file: backend/api/src/main/python/coverage.xml
         flags: unittests
