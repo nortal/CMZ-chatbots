@@ -160,21 +160,21 @@ jobs:
           fi
 
       - name: Upload Checkov SARIF results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: checkov-docker.sarif
         continue-on-error: true
 
       - name: Upload GitHub Actions SARIF results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: checkov-gha.sarif
         continue-on-error: true
 
       - name: Upload Terraform SARIF results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: checkov-terraform.sarif
@@ -260,7 +260,7 @@ jobs:
           output-file: hadolint.sarif
 
       - name: Upload Hadolint SARIF results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always() && hashFiles('hadolint.sarif') != ''
         with:
           sarif_file: hadolint.sarif
