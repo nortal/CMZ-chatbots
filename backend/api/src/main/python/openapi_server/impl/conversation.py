@@ -31,7 +31,7 @@ from .utils.content_moderator import (
 )
 from .guardrails import get_guardrails_manager
 from .utils.safety_dynamo import get_safety_dynamo_client
-from .utils.safety_errors import get_safety_error_handler
+from .utils.safety_errors import get_safety_error_handler, log_safety_event
 
 # Configure logging
 logger = logging.getLogger(__name__)

@@ -27,7 +27,7 @@ from .utils.dynamo import (
     error_response, not_found
 )
 from .utils.safety_dynamo import get_safety_dynamo_client
-from .utils.safety_errors import get_safety_error_handler
+from .utils.safety_errors import get_safety_error_handler, log_safety_event
 from .models.guardrails_config import (
     get_guardrails_config_mapper, map_to_dynamodb, map_from_dynamodb,
     validate_guardrails_config

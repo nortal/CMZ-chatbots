@@ -29,7 +29,7 @@ from .safety_errors import (
 from ...models.open_ai_moderation_result import OpenAIModerationResult
 from ...models.open_ai_moderation_category import OpenAIModerationCategory
 from .safety_dynamo import get_safety_dynamo_client
-from .safety_errors import get_safety_error_handler
+from .safety_errors import get_safety_error_handler, log_safety_event
 from .safety_analytics import get_safety_analytics, SafetyEventType
 from ..models.content_validation import (
     get_content_validation_mapper, ValidationResult

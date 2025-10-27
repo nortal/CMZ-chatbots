@@ -638,6 +638,7 @@ def handle_family_details_post(body: Any) -> Tuple[Any, int]:
     return family_details_post(body_dict)
 
 
+def handle_family_list_get_orphaned(user_id=None) -> Tuple[Any, int]:
     """Get list of families for the current user"""
     from .family_bidirectional import list_families_for_user
     from flask import request

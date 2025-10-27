@@ -9,11 +9,14 @@ This is a basic implementation to support the TDD workflow for assistants.
 
 import os
 import uuid
+import logging
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from botocore.exceptions import ClientError
 
 from .utils.dynamo import table, to_ddb, from_ddb, now_iso, error_response, not_found
+
+logger = logging.getLogger(__name__)
 
 
 # DynamoDB table configuration
