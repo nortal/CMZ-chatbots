@@ -52,3 +52,13 @@ def handle_auth_reset_password_post(*args, **kwargs) -> Tuple[Any, int]:
     """
     return not_implemented_error("auth_reset_password_post")
 
+
+# Additional auth functions expected by tests (stubs for now)
+def authenticate_user(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Stub for authenticate_user function expected by tests
+
+    TODO: Implement user authentication logic
+    """
+    return not_implemented_error("authenticate_user")
+

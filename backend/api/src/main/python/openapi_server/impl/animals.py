@@ -117,3 +117,33 @@ def handle_animal_put(*args, **kwargs) -> Tuple[Any, int]:
     from .handlers import handle_animal_put as real_handler
     return real_handler(*args, **kwargs)
 
+
+# Additional functions expected by tests (stubs for now)
+def handle_create_animal(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_create_animal expected by tests"""
+    return not_implemented_error("handle_create_animal")
+
+def handle_get_animal(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_get_animal expected by tests"""
+    return not_implemented_error("handle_get_animal")
+
+def handle_list_animals(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_list_animals expected by tests"""
+    return not_implemented_error("handle_list_animals")
+
+def handle_update_animal(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_update_animal expected by tests"""
+    return not_implemented_error("handle_update_animal")
+
+def handle_delete_animal(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_delete_animal expected by tests"""
+    return not_implemented_error("handle_delete_animal")
+
+def handle_get_animal_config(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_get_animal_config expected by tests"""
+    return not_implemented_error("handle_get_animal_config")
+
+def handle_update_animal_config(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_update_animal_config expected by tests"""
+    return not_implemented_error("handle_update_animal_config")
+

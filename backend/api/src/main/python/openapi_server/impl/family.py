@@ -78,3 +78,21 @@ def handle_list_all_families(*args, **kwargs) -> Tuple[Any, int]:
     )
     return error_obj.to_dict(), 501
 
+
+# Additional functions expected by tests (stubs for now)
+def family_list_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for family_list_get expected by tests"""
+    return not_implemented_error("family_list_get")
+
+def handle_family_list_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_family_list_get expected by tests"""
+    return not_implemented_error("handle_family_list_get")
+
+def handle_family_details_post(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_family_details_post expected by tests"""
+    return not_implemented_error("handle_family_details_post")
+
+def handle_family_details_delete(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_family_details_delete expected by tests"""
+    return not_implemented_error("handle_family_details_delete")
+

@@ -3952,6 +3952,7 @@ components:
           type: boolean
           description: If true, create account if not found
       required:
+      - username
       - password
     AuthResponse:
       type: object
