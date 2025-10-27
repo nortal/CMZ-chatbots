@@ -1,0 +1,131 @@
+{
+    "Item": {
+        "animalId": {
+            "S": "animal_001"
+        },
+        "configuration": {
+            "M": {
+                "voice": {
+                    "S": "shimmer"
+                },
+                "tone": {
+                    "S": "playful"
+                },
+                "temperature": {
+                    "N": "0.4"
+                },
+                "toolsEnabled": {
+                    "L": [
+                        {
+                            "S": "facts"
+                        },
+                        {
+                            "S": "media_lookup"
+                        }
+                    ]
+                },
+                "guardrails": {
+                    "M": {
+                        "response_length_limit": {
+                            "N": "500"
+                        },
+                        "safe_mode": {
+                            "BOOL": false
+                        },
+                        "content_filter": {
+                            "BOOL": false
+                        }
+                    }
+                },
+                "aiModel": {
+                    "S": "gpt-4o-mini"
+                },
+                "topP": {
+                    "N": "1"
+                },
+                "status": {
+                    "S": "active"
+                }
+            }
+        },
+        "created": {
+            "M": {
+                "at": {
+                    "S": "2025-09-14T20:25:00Z"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "deleted": {
+            "M": {
+                "at": {
+                    "S": "2025-09-15T23:57:30.749027+00:00"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "modified": {
+            "M": {
+                "at": {
+                    "S": "2025-09-19T15:40:43.472677+00:00"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "name": {
+            "S": "Bella the Bear"
+        },
+        "personality": {
+            "M": {
+                "description": {
+                    "S": "She loves honey and enjoys teaching young visitors about forest ecosystems. Very gentle and patient."
+                }
+            }
+        },
+        "softDelete": {
+            "BOOL": false
+        },
+        "species": {
+            "S": "Ursus americanus"
+        },
+        "status": {
+            "S": "active"
+        }
+    }
+}

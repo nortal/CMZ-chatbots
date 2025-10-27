@@ -1,0 +1,2529 @@
+{
+  "total_functions": 608,
+  "threshold": 0.85,
+  "duplicates_found": 194,
+  "duplicates": [
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "handle_convo_history_delete",
+        "line": 20
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "handle_convo_history_delete",
+        "line": 20
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "handle_convo_history_get",
+        "line": 29
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "handle_convo_history_get",
+        "line": 29
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "decorator",
+        "line": 246
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "decorator",
+        "line": 234
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "decorator",
+        "line": 290
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "decorator",
+        "line": 234
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "authenticate",
+        "line": 21
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "authenticate",
+        "line": 20
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "authorize_with_permission",
+        "line": 336
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "authorize_with_permission",
+        "line": 356
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "authorizer",
+        "line": 346
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "authorizer",
+        "line": 366
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "_extract_token_from_authorizer_event",
+        "line": 420
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "_extract_token_from_authorizer_event",
+        "line": 398
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "_generate_policy",
+        "line": 430
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "_generate_policy",
+        "line": 408
+      },
+      "similarity": 1.0
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.998
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.997
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.997
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "extract_user_from_lambda_context",
+        "line": 463
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "extract_user_from_lambda_context",
+        "line": 442
+      },
+      "similarity": 0.997
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.996
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.996
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "refresh_token",
+        "line": 74
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "refresh_token",
+        "line": 73
+      },
+      "similarity": 0.996
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.995
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.995
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.995
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "logout",
+        "line": 129
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "logout",
+        "line": 127
+      },
+      "similarity": 0.994
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.993
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.993
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.993
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.993
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.993
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.993
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.993
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.992
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.991
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.991
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.991
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "initiate_password_reset",
+        "line": 178
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "initiate_password_reset",
+        "line": 193
+      },
+      "similarity": 0.991
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.99
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.989
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.989
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.989
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.989
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.989
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.988
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.988
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.988
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "authorizer",
+        "line": 388
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "authorizer",
+        "line": 366
+      },
+      "similarity": 0.988
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.987
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.987
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.987
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.987
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "require_permission",
+        "line": 233
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "require_permission",
+        "line": 222
+      },
+      "similarity": 0.987
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.986
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.986
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.986
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.985
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.985
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "require_authentication",
+        "line": 195
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "require_authentication",
+        "line": 183
+      },
+      "similarity": 0.985
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.984
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.984
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.984
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.984
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.984
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.984
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.983
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/system.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.982
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "handle_summarize_convo_post",
+        "line": 47
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "handle_summarize_convo_post",
+        "line": 38
+      },
+      "similarity": 0.982
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.982
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/store.py",
+        "name": "soft_delete",
+        "line": 158
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/file_store.py",
+        "name": "soft_delete",
+        "line": 193
+      },
+      "similarity": 0.982
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/auth.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.981
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/store.py",
+        "name": "recover_soft_deleted",
+        "line": 174
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/file_store.py",
+        "name": "recover_soft_deleted",
+        "line": 215
+      },
+      "similarity": 0.981
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/family.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.98
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ui.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.979
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/admin.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.979
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/users.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.978
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/knowledge.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.978
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.977
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/media.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.976
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/security.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.975
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/animals.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/analytics.py",
+        "name": "not_implemented_error",
+        "line": 10
+      },
+      "similarity": 0.975
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 84
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 118
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 153
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 61
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 84
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 61
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 118
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 61
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 153
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 85
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 84
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 85
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 118
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 85
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 153
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 109
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 84
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 109
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 118
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 109
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 153
+      },
+      "similarity": 0.974
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "decorated_function",
+        "line": 207
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "decorated_function",
+        "line": 194
+      },
+      "similarity": 0.966
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 66
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 139
+      },
+      "similarity": 0.963
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_openapi",
+        "line": 51
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_openapi",
+        "line": 69
+      },
+      "similarity": 0.96
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_openapi",
+        "line": 27
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_openapi",
+        "line": 29
+      },
+      "similarity": 0.959
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_openapi",
+        "line": 99
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_openapi",
+        "line": 139
+      },
+      "similarity": 0.957
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/auth_service.py",
+        "name": "authorize_user",
+        "line": 324
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/cognito_auth_service.py",
+        "name": "authorize_user",
+        "line": 367
+      },
+      "similarity": 0.957
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/audit_service.py",
+        "name": "create_modification_audit",
+        "line": 47
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/audit.py",
+        "name": "create_modification_audit",
+        "line": 16
+      },
+      "similarity": 0.956
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_openapi",
+        "line": 75
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_openapi",
+        "line": 105
+      },
+      "similarity": 0.955
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/audit_service.py",
+        "name": "create_deletion_audit",
+        "line": 55
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/audit.py",
+        "name": "create_deletion_audit",
+        "line": 21
+      },
+      "similarity": 0.954
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 44
+      },
+      "similarity": 0.954
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 61
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 44
+      },
+      "similarity": 0.954
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 85
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 44
+      },
+      "similarity": 0.954
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 109
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 44
+      },
+      "similarity": 0.954
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 84
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.951
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 118
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.951
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 153
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.951
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/audit_service.py",
+        "name": "create_creation_audit",
+        "line": 38
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/audit.py",
+        "name": "create_creation_audit",
+        "line": 11
+      },
+      "similarity": 0.949
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/auth_service.py",
+        "name": "_validate_credentials",
+        "line": 351
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/cognito_auth_service.py",
+        "name": "_validate_credentials",
+        "line": 446
+      },
+      "similarity": 0.948
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_external",
+        "line": 13
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 96
+      },
+      "similarity": 0.947
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_external",
+        "line": 13
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 130
+      },
+      "similarity": 0.947
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/store.py",
+        "name": "list",
+        "line": 37
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/file_store.py",
+        "name": "list",
+        "line": 111
+      },
+      "similarity": 0.947
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "authorize",
+        "line": 300
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "authorize",
+        "line": 320
+      },
+      "similarity": 0.946
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 42
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 69
+      },
+      "similarity": 0.941
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 44
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.941
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 88
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 139
+      },
+      "similarity": 0.941
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_openapi",
+        "line": 56
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_openapi",
+        "line": 79
+      },
+      "similarity": 0.937
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.934
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 61
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.934
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 85
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.934
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 109
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 117
+      },
+      "similarity": 0.934
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/error_handler.py",
+        "name": "create_error_response",
+        "line": 17
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/error_handler.py",
+        "name": "create_error_response",
+        "line": 78
+      },
+      "similarity": 0.931
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/audit_service.py",
+        "name": "extract_actor_data",
+        "line": 63
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/audit.py",
+        "name": "extract_actor_data",
+        "line": 26
+      },
+      "similarity": 0.928
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_openapi",
+        "line": 32
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_openapi",
+        "line": 39
+      },
+      "similarity": 0.928
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_openapi",
+        "line": 104
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_openapi",
+        "line": 148
+      },
+      "similarity": 0.928
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 66
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 88
+      },
+      "similarity": 0.927
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 84
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.927
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 118
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.927
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 153
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.927
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 90
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 122
+      },
+      "similarity": 0.926
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/validation.py",
+        "name": "validate_required_fields",
+        "line": 264
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/common/validators.py",
+        "name": "validate_required_fields",
+        "line": 31
+      },
+      "similarity": 0.921
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.921
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 61
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.921
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 85
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.921
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_lambda_event",
+        "line": 109
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.921
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "decorated_function",
+        "line": 248
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "decorated_function",
+        "line": 194
+      },
+      "similarity": 0.921
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "decorated_function",
+        "line": 292
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "decorated_function",
+        "line": 194
+      },
+      "similarity": 0.919
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_lambda_event",
+        "line": 44
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_lambda_event",
+        "line": 37
+      },
+      "similarity": 0.917
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_openapi",
+        "line": 99
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_openapi",
+        "line": 165
+      },
+      "similarity": 0.913
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 50
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 69
+      },
+      "similarity": 0.911
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "authenticate",
+        "line": 22
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "authenticate",
+        "line": 22
+      },
+      "similarity": 0.909
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "refresh_token",
+        "line": 54
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "refresh_token",
+        "line": 56
+      },
+      "similarity": 0.907
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/family_bidirectional.py",
+        "name": "remove_parent",
+        "line": 92
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/user_bidirectional.py",
+        "name": "remove_family",
+        "line": 98
+      },
+      "similarity": 0.905
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 42
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 50
+      },
+      "similarity": 0.902
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "decorated_function",
+        "line": 248
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "decorated_function",
+        "line": 236
+      },
+      "similarity": 0.899
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/family_bidirectional.py",
+        "name": "add_parent",
+        "line": 86
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/user_bidirectional.py",
+        "name": "add_family",
+        "line": 92
+      },
+      "similarity": 0.895
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/auth_service.py",
+        "name": "_validate_email",
+        "line": 362
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/common/validators.py",
+        "name": "validate_email",
+        "line": 7
+      },
+      "similarity": 0.892
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_openapi",
+        "line": 51
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_openapi",
+        "line": 29
+      },
+      "similarity": 0.886
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 42
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 139
+      },
+      "similarity": 0.884
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "decorated_function",
+        "line": 292
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "decorated_function",
+        "line": 236
+      },
+      "similarity": 0.884
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "_extract_token_from_authorizer_event",
+        "line": 420
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "_extract_token_from_event",
+        "line": 297
+      },
+      "similarity": 0.883
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "handle_convo_history_delete",
+        "line": 20
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "handle_convo_history_get",
+        "line": 29
+      },
+      "similarity": 0.881
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/conversation.py",
+        "name": "handle_convo_history_get",
+        "line": 29
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/later.py",
+        "name": "handle_convo_history_delete",
+        "line": 20
+      },
+      "similarity": 0.881
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 90
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 192
+      },
+      "similarity": 0.88
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/cognito_auth_handlers.py",
+        "name": "initiate_password_reset",
+        "line": 116
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/auth_handlers.py",
+        "name": "initiate_password_reset",
+        "line": 114
+      },
+      "similarity": 0.88
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_openapi",
+        "line": 80
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_openapi",
+        "line": 114
+      },
+      "similarity": 0.878
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/audit_service.py",
+        "name": "create_modification_audit",
+        "line": 47
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/common/audit.py",
+        "name": "create_modification_audit",
+        "line": 41
+      },
+      "similarity": 0.875
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/store.py",
+        "name": "exists_on_gsi",
+        "line": 190
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/file_store.py",
+        "name": "exists_on_gsi",
+        "line": 237
+      },
+      "similarity": 0.875
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/cognito_auth_handlers.py",
+        "name": "_extract_token_from_event",
+        "line": 277
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/lambda/auth_handlers.py",
+        "name": "_extract_token_from_event",
+        "line": 297
+      },
+      "similarity": 0.874
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/family_bidirectional.py",
+        "name": "remove_student",
+        "line": 103
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/user_bidirectional.py",
+        "name": "remove_family",
+        "line": 98
+      },
+      "similarity": 0.873
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 96
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_external",
+        "line": 15
+      },
+      "similarity": 0.868
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 96
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_external",
+        "line": 95
+      },
+      "similarity": 0.868
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 130
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_external",
+        "line": 15
+      },
+      "similarity": 0.868
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 130
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "from_external",
+        "line": 95
+      },
+      "similarity": 0.868
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "to_lambda_response",
+        "line": 114
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 157
+      },
+      "similarity": 0.867
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/audit.py",
+        "name": "create_modification_audit",
+        "line": 16
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/common/audit.py",
+        "name": "create_modification_audit",
+        "line": 41
+      },
+      "similarity": 0.865
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 122
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 192
+      },
+      "similarity": 0.865
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/audit_service.py",
+        "name": "create_deletion_audit",
+        "line": 55
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/audit.py",
+        "name": "create_creation_audit",
+        "line": 11
+      },
+      "similarity": 0.864
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/family_bidirectional.py",
+        "name": "add_student",
+        "line": 97
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/orm/models/user_bidirectional.py",
+        "name": "add_family",
+        "line": 92
+      },
+      "similarity": 0.862
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_external",
+        "line": 13
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 20
+      },
+      "similarity": 0.861
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_external",
+        "line": 13
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_external",
+        "line": 60
+      },
+      "similarity": 0.861
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/serialization.py",
+        "name": "from_openapi",
+        "line": 27
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "from_openapi",
+        "line": 69
+      },
+      "similarity": 0.861
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/handlers.py",
+        "name": "handle_chatgpt_health_get",
+        "line": 971
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/chatgpt_integration.py",
+        "name": "handle_health_check",
+        "line": 429
+      },
+      "similarity": 0.86
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/utils/dynamo.py",
+        "name": "now_iso",
+        "line": 62
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/domain/common/audit.py",
+        "name": "now_iso",
+        "line": 7
+      },
+      "similarity": 0.857
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/flask/serializers.py",
+        "name": "to_lambda_response",
+        "line": 157
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/aws_lambda/serializers.py",
+        "name": "to_lambda_response",
+        "line": 249
+      },
+      "similarity": 0.856
+    },
+    {
+      "function1": {
+        "file": "backend/api/src/main/python/openapi_server/impl/adapters/audit_service.py",
+        "name": "create_creation_audit",
+        "line": 38
+      },
+      "function2": {
+        "file": "backend/api/src/main/python/openapi_server/impl/ports/audit.py",
+        "name": "create_modification_audit",
+        "line": 16
+      },
+      "similarity": 0.854
+    }
+  ]
+}

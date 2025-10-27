@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Library/Developer/CoreSimulator/Profiles/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

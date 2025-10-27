@@ -1,0 +1,839 @@
+# Privacy Controls API Contract
+# Conversation Safety and Personalization System
+
+openapi: 3.0.3
+info:
+  title: CMZ Privacy Controls API
+  description: Parent privacy dashboard and COPPA compliance management
+  version: 1.0.0
+
+paths:
+  /api/v1/privacy/children/{parentId}:
+    get:
+      summary: Get children under parent's supervision
+      description: |
+        Retrieves list of children/students under a parent's supervision.
+        Includes basic information and privacy control permissions.
+      operationId: getParentChildren
+      parameters:
+        - name: parentId
+          in: path
+          required: true
+          description: Parent user identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Children list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  children:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChildSummary'
+                  totalCount:
+                    type: number
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/privacy/conversations/{childId}:
+    get:
+      summary: Get child's conversation history
+      description: |
+        Retrieves complete conversation history for a specific child.
+        Includes metadata, safety analytics, and personalization data.
+      operationId: getChildConversations
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          description: Child user identifier
+          schema:
+            type: string
+        - name: parentId
+          in: query
+          required: true
+          description: Parent user identifier for authorization
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Start date for conversation history (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for conversation history (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: animalId
+          in: query
+          description: Filter by specific animal
+          schema:
+            type: string
+        - name: includeContent
+          in: query
+          description: Include full conversation content
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Conversation history retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationHistory'
+        '403':
+          description: Parent not authorized for this child
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete specific conversations
+      description: |
+        Permanently deletes selected conversations for a child.
+        Creates audit trail and updates child's context accordingly.
+      operationId: deleteChildConversations
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          description: Child user identifier
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationDeletionRequest'
+      responses:
+        '200':
+          description: Conversations deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionResult'
+        '403':
+          description: Parent not authorized for this child
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/privacy/context/{childId}:
+    get:
+      summary: Get child's personal context and preferences
+      description: |
+        Retrieves child's stored personal context, preferences, and summarized data.
+        Allows parents to review what information is being used for personalization.
+      operationId: getChildContext
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          description: Child user identifier
+          schema:
+            type: string
+        - name: parentId
+          in: query
+          required: true
+          description: Parent user identifier for authorization
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Child context retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildContextView'
+        '403':
+          description: Parent not authorized for this child
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      summary: Update child's context and preferences
+      description: |
+        Allows parents to modify or remove specific context items and preferences.
+        Creates audit trail for all modifications.
+      operationId: updateChildContext
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          description: Child user identifier
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContextUpdateRequest'
+      responses:
+        '200':
+          description: Context updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildContextView'
+        '403':
+          description: Parent not authorized for this child
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/privacy/audit/{parentId}:
+    get:
+      summary: Get privacy audit log for parent's children
+      description: |
+        Retrieves complete audit trail of all privacy-related operations
+        performed on children under parent's supervision.
+      operationId: getPrivacyAuditLog
+      parameters:
+        - name: parentId
+          in: path
+          required: true
+          description: Parent user identifier
+          schema:
+            type: string
+        - name: childId
+          in: query
+          description: Filter by specific child
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Start date for audit period (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for audit period (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: action
+          in: query
+          description: Filter by specific action type
+          schema:
+            type: string
+            enum: [view, delete, export, modify]
+        - name: limit
+          in: query
+          description: Maximum number of audit entries to return
+          schema:
+            type: number
+            default: 100
+            maximum: 1000
+      responses:
+        '200':
+          description: Audit log retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyAuditLog'
+
+  /api/v1/privacy/export/{childId}:
+    post:
+      summary: Export child's complete data
+      description: |
+        Generates complete export of child's data for portability.
+        Includes conversations, context, preferences, and analytics.
+      operationId: exportChildData
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          description: Child user identifier
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataExportRequest'
+      responses:
+        '200':
+          description: Data export completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExportResult'
+        '202':
+          description: Export started asynchronously
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  jobId:
+                    type: string
+                  estimatedCompletion:
+                    type: string
+                    format: date-time
+                  downloadUrl:
+                    type: string
+                    description: URL to check export status
+
+  /api/v1/privacy/consent/{childId}:
+    get:
+      summary: Get current privacy consent status
+      description: Retrieves current privacy consent settings and permissions
+      operationId: getPrivacyConsent
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          description: Child user identifier
+          schema:
+            type: string
+        - name: parentId
+          in: query
+          required: true
+          description: Parent user identifier for authorization
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Consent status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyConsent'
+
+    put:
+      summary: Update privacy consent settings
+      description: |
+        Updates privacy consent settings for a child.
+        Records consent changes in audit log for compliance.
+      operationId: updatePrivacyConsent
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          description: Child user identifier
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentUpdateRequest'
+      responses:
+        '200':
+          description: Consent updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyConsent'
+
+components:
+  schemas:
+    ChildSummary:
+      type: object
+      properties:
+        childId:
+          type: string
+        name:
+          type: string
+        relationship:
+          type: string
+          enum: [child, student]
+        ageGroup:
+          type: string
+          enum: [elementary, middle, high]
+        lastActivity:
+          type: string
+          format: date-time
+        conversationCount:
+          type: number
+        privacyStatus:
+          type: object
+          properties:
+            hasActiveConsent:
+              type: boolean
+            dataRetentionDays:
+              type: number
+            lastConsentUpdate:
+              type: string
+              format: date-time
+
+    ConversationHistory:
+      type: object
+      properties:
+        childId:
+          type: string
+        conversations:
+          type: array
+          items:
+            type: object
+            properties:
+              conversationId:
+                type: string
+              animalId:
+                type: string
+              animalName:
+                type: string
+              startTime:
+                type: string
+                format: date-time
+              endTime:
+                type: string
+                format: date-time
+              duration:
+                type: number
+                description: Duration in minutes
+              messageCount:
+                type: number
+              content:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    timestamp:
+                      type: string
+                      format: date-time
+                    speaker:
+                      type: string
+                      enum: [child, animal]
+                    message:
+                      type: string
+                    metadata:
+                      type: object
+                      properties:
+                        guardrailsTriggered:
+                          type: array
+                          items:
+                            type: string
+                        personalizationUsed:
+                          type: boolean
+              safety:
+                type: object
+                properties:
+                  interventions:
+                    type: number
+                  riskScore:
+                    type: number
+                  flaggedContent:
+                    type: boolean
+              personalization:
+                type: object
+                properties:
+                  contextApplied:
+                    type: boolean
+                  preferencesUsed:
+                    type: array
+                    items:
+                      type: string
+                  newPreferencesLearned:
+                    type: array
+                    items:
+                      type: string
+        summary:
+          type: object
+          properties:
+            totalConversations:
+              type: number
+            totalDuration:
+              type: number
+            averageEngagement:
+              type: number
+            safetyScore:
+              type: number
+            learningProgress:
+              type: array
+              items:
+                type: string
+
+    ChildContextView:
+      type: object
+      properties:
+        childId:
+          type: string
+        preferences:
+          type: object
+          properties:
+            interests:
+              type: array
+              items:
+                type: object
+                properties:
+                  interest:
+                    type: string
+                  confidence:
+                    type: number
+                  firstMentioned:
+                    type: string
+                    format: date-time
+                  lastMentioned:
+                    type: string
+                    format: date-time
+            favoriteAnimals:
+              type: array
+              items:
+                type: object
+                properties:
+                  animal:
+                    type: string
+                  strength:
+                    type: number
+                  conversationReferences:
+                    type: number
+            learningGoals:
+              type: array
+              items:
+                type: object
+                properties:
+                  goal:
+                    type: string
+                  progress:
+                    type: number
+                  targetDate:
+                    type: string
+                    format: date
+        contextSummary:
+          type: object
+          properties:
+            recentSummary:
+              type: string
+            historicalSummary:
+              type: string
+            keyQuotes:
+              type: array
+              items:
+                type: object
+                properties:
+                  quote:
+                    type: string
+                  context:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+        analytics:
+          type: object
+          properties:
+            engagementTrends:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  score:
+                    type: number
+            learningProgress:
+              type: array
+              items:
+                type: object
+                properties:
+                  topic:
+                    type: string
+                  progress:
+                    type: number
+                  lastImprovement:
+                    type: string
+                    format: date-time
+
+    ConversationDeletionRequest:
+      type: object
+      required:
+        - parentId
+        - conversationIds
+        - reason
+      properties:
+        parentId:
+          type: string
+          description: Parent authorizing deletion
+        conversationIds:
+          type: array
+          items:
+            type: string
+          description: Conversation IDs to delete
+        reason:
+          type: string
+          description: Reason for deletion
+        deleteRelatedContext:
+          type: boolean
+          default: false
+          description: Whether to also remove context learned from these conversations
+        parentConsent:
+          type: boolean
+          description: Explicit parental consent confirmation
+
+    ContextUpdateRequest:
+      type: object
+      required:
+        - parentId
+        - updates
+      properties:
+        parentId:
+          type: string
+          description: Parent authorizing updates
+        updates:
+          type: object
+          properties:
+            removeInterests:
+              type: array
+              items:
+                type: string
+            removeFavoriteAnimals:
+              type: array
+              items:
+                type: string
+            removeQuotes:
+              type: array
+              items:
+                type: string
+            modifyPreferences:
+              type: object
+              additionalProperties:
+                type: string
+        reason:
+          type: string
+          description: Reason for modifications
+        parentConsent:
+          type: boolean
+          description: Explicit parental consent confirmation
+
+    DataExportRequest:
+      type: object
+      required:
+        - parentId
+        - format
+      properties:
+        parentId:
+          type: string
+          description: Parent requesting export
+        format:
+          type: string
+          enum: [json, csv, pdf]
+          description: Export format
+        includeConversations:
+          type: boolean
+          default: true
+        includeContext:
+          type: boolean
+          default: true
+        includeAnalytics:
+          type: boolean
+          default: false
+        dateRange:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date-time
+            endDate:
+              type: string
+              format: date-time
+
+    DataExportResult:
+      type: object
+      properties:
+        exportId:
+          type: string
+        downloadUrl:
+          type: string
+        fileSize:
+          type: number
+        format:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        includedData:
+          type: object
+          properties:
+            conversationCount:
+              type: number
+            contextItems:
+              type: number
+            totalSizeBytes:
+              type: number
+
+    PrivacyConsent:
+      type: object
+      properties:
+        childId:
+          type: string
+        consentGiven:
+          type: boolean
+        consentDate:
+          type: string
+          format: date-time
+        consentVersion:
+          type: string
+        permissions:
+          type: object
+          properties:
+            allowDataCollection:
+              type: boolean
+            allowPersonalization:
+              type: boolean
+            allowAnalytics:
+              type: boolean
+            dataRetentionDays:
+              type: number
+        parentSignature:
+          type: object
+          properties:
+            parentId:
+              type: string
+            signatureDate:
+              type: string
+              format: date-time
+            ipAddress:
+              type: string
+            verificationMethod:
+              type: string
+
+    ConsentUpdateRequest:
+      type: object
+      required:
+        - parentId
+        - permissions
+      properties:
+        parentId:
+          type: string
+        permissions:
+          type: object
+          properties:
+            allowDataCollection:
+              type: boolean
+            allowPersonalization:
+              type: boolean
+            allowAnalytics:
+              type: boolean
+            dataRetentionDays:
+              type: number
+        reason:
+          type: string
+        parentSignature:
+          type: object
+          required:
+            - signatureDate
+            - verificationMethod
+          properties:
+            signatureDate:
+              type: string
+              format: date-time
+            ipAddress:
+              type: string
+            verificationMethod:
+              type: string
+              enum: [email_verification, phone_verification, identity_verification]
+
+    PrivacyAuditLog:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            type: object
+            properties:
+              auditId:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+              parentId:
+                type: string
+              childId:
+                type: string
+              action:
+                type: string
+                enum: [view, delete, export, modify, consent_update]
+              dataType:
+                type: string
+              details:
+                type: object
+                properties:
+                  resourceId:
+                    type: string
+                  fieldNames:
+                    type: array
+                    items:
+                      type: string
+                  reason:
+                    type: string
+              compliance:
+                type: object
+                properties:
+                  legalBasis:
+                    type: string
+                  dataMinimization:
+                    type: boolean
+        pagination:
+          type: object
+          properties:
+            totalEntries:
+              type: number
+            currentPage:
+              type: number
+            totalPages:
+              type: number
+            hasMore:
+              type: boolean
+
+    DeletionResult:
+      type: object
+      properties:
+        deletedConversations:
+          type: number
+        deletedContextItems:
+          type: number
+        auditLogId:
+          type: string
+        completedAt:
+          type: string
+          format: date-time
+        warnings:
+          type: array
+          items:
+            type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+        requestId:
+          type: string

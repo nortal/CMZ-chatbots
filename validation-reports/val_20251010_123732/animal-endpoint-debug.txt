@@ -1,0 +1,20 @@
+* Host localhost:8080 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:8080...
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* connect to ::1 port 8080 from ::1 port 61290 failed: Connection refused
+*   Trying 127.0.0.1:8080...
+* Connected to localhost (127.0.0.1) port 8080
+> GET /animal HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/8.7.1
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 405 METHOD NOT ALLOWED
+< Server: Werkzeug/2.2.3 Python/3.11.9
+< Date: Fri, 10 Oct 2025 19:39:51 GMT
+< Content-Type: application/problem+json
+< Allow: POST, OPTIONS

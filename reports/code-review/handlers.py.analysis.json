@@ -1,0 +1,56 @@
+{
+  "file": "backend/api/src/main/python/openapi_server/impl/handlers.py",
+  "language": "python",
+  "summary": "The code file contains a mix of handler functions for various endpoints. It lacks consistency in naming conventions, has security vulnerabilities like missing input validation and hardcoded secrets, and could benefit from refactoring to reduce code duplication.",
+  "issues": [
+    {
+      "severity": "HIGH",
+      "category": "security",
+      "line": 70,
+      "description": "Missing input validation for 'animal_id'",
+      "recommendation": "Validate 'animal_id' parameter to prevent unexpected input",
+      "example": "if not animal_id or not isinstance(animal_id, str): raise ValueError('Invalid animal_id')"
+    },
+    {
+      "severity": "HIGH",
+      "category": "security",
+      "line": 154,
+      "description": "Hardcoded authentication token expiration time",
+      "recommendation": "Use configurable settings for token expiration time",
+      "example": "TOKEN_EXPIRATION = 86400  # 24 hours in seconds"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "style",
+      "line": 76,
+      "description": "Inconsistent naming convention for function parameters ('id', 'id_', 'animal_id')",
+      "recommendation": "Use consistent naming convention for function parameters",
+      "example": "Use 'animal_id' consistently for all functions"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "dry",
+      "line": 204,
+      "description": "Repeated code for converting model objects to dictionaries",
+      "recommendation": "Create a reusable function for converting model objects to dictionaries",
+      "example": "Create a 'model_to_dict' function and use it across handlers"
+    },
+    {
+      "severity": "LOW",
+      "category": "solid",
+      "line": 70,
+      "description": "Single Responsibility Principle violation in 'handle_animal_config_get'",
+      "recommendation": "Separate authentication logic into a dedicated function",
+      "example": "Create a function 'validate_auth_header' for authentication checks"
+    }
+  ],
+  "strengths": [
+    "Structured code organization",
+    "Usage of docstrings for function descriptions"
+  ],
+  "metrics": {
+    "lines_of_code": 248,
+    "complexity_estimate": "medium",
+    "test_coverage": "unknown"
+  }
+}

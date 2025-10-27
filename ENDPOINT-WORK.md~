@@ -1,0 +1,139 @@
+# ENDPOINT-WORK.md
+
+**⚠️ CRITICAL RULES:**
+1. **NEVER** move items from "IMPLEMENTED" to other sections
+2. **NEVER** re-implement anything in "IMPLEMENTED" section
+3. **ALWAYS** check this file before implementing any endpoint
+4. **ALWAYS** test endpoints before assuming they don't work
+5. **NEVER** trust "not_implemented" errors without investigation
+
+**Last Updated**: 2025-10-02
+
+---
+
+## ✅ IMPLEMENTED (DO NOT TOUCH)
+These endpoints are fully working. DO NOT modify their core implementation without explicit user request.
+
+### Authentication
+- **POST /auth** - Login with mock users → `auth_mock.py` [JWT tokens]
+- **POST /auth/logout** - Logout → `auth_mock.py` [Clears session]
+- **POST /auth/refresh** - Refresh token → `auth_mock.py` [New JWT]
+
+### UI Endpoints
+- **GET /** - Homepage → `ui.py:homepage_get()` [Static response]
+- **GET /admin** - Admin dashboard → `ui.py:admin_dashboard_get()` [Static response]
+
+### Family Management (DynamoDB)
+- **GET /family/list** → `family.py:family_list_get()` [DynamoDB: quest-dev-family]
+- **POST /family** → `family.py:family_details_post()` [DynamoDB: quest-dev-family]
+- **GET /family/details/{id}** → `family.py:family_details_get()` [DynamoDB: quest-dev-family]
+- **PATCH /family/details/{id}** → `family.py:family_details_patch()` [DynamoDB: quest-dev-family]
+- **DELETE /family/details/{id}** → `family.py:family_details_delete()` [DynamoDB: soft delete]
+
+### Animal Management (Hexagonal + DynamoDB)
+- **GET /animal/config/{id}** → `adapters/flask/animal_handlers.py` [DynamoDB via hexagonal]
+- **POST /animal/config** → `adapters/flask/animal_handlers.py` [DynamoDB via hexagonal]
+- **GET /animal/{id}** → `adapters/flask/animal_handlers.py` [DynamoDB via hexagonal]
+- **PUT /animal/{id}** → `adapters/flask/animal_handlers.py` [DynamoDB via hexagonal]
+- **DELETE /animal/{id}** → `adapters/flask/animal_handlers.py` [DynamoDB via hexagonal]
+- **GET /animal/list** → `adapters/flask/animal_handlers.py` [DynamoDB via hexagonal]
+- **POST /animal** → `adapters/flask/animal_handlers.py` [DynamoDB via hexagonal]
+
+---
+
+## 🔧 IMPLEMENTED BUT FAILING
+These have implementations but are broken due to routing, imports, or configuration issues.
+
+### Issues to Fix (DO NOT RE-IMPLEMENT):
+
+#### User Management - Has DynamoDB models but routing broken
+- **GET /user/list** - 404 error → Exists in `user_bidirectional.py`
+- **GET /user/details/{id}** - 404 error → Hexagonal implementation exists
+- **POST /user** - Returns 501 but implementation exists
+- **PUT /user/{id}** - 405 error → Implementation exists
+- **DELETE /user/{id}** - 404 error → Implementation exists
+
+**Fix needed**: Route mapping in OpenAPI spec
+
+#### System Endpoints - Implementations exist but not mapped
+- **GET /system/health** - 404 → `system.py:health_get()` exists
+- **GET /system/status** - 404 → Handler stub exists
+
+**Fix needed**: Add to handler_map in handlers.py
+
+#### Auth Endpoint
+- **POST /auth/reset-password** - 404 → `auth_mock.py:handle_auth_reset_password_post()` exists
+
+**Fix needed**: Route definition in OpenAPI spec
+
+---
+
+## ❌ NOT IMPLEMENTED
+These endpoints truly have no implementation and need to be created.
+
+### Conversation Management
+- **POST /conversation** - Start new conversation
+- **GET /conversation/list** - List all conversations
+- **GET /conversation/history/{id}** - Get conversation history
+- **POST /conversation/chat** - Send chat message
+- **GET /conversation/{id}** - Get conversation details
+- **DELETE /conversation/{id}** - Delete conversation
+
+### Analytics
+- **GET /analytics/usage** - Usage statistics
+- **GET /analytics/metrics** - Performance metrics
+
+### Knowledge Base
+- **GET /knowledge/articles** - List articles
+- **POST /knowledge/article** - Create article
+- **GET /knowledge/article/{id}** - Get article
+- **DELETE /knowledge/article/{id}** - Delete article
+
+### Media Management
+- **POST /media/upload** - Upload media
+- **GET /media/{id}** - Get media
+- **DELETE /media/{id}** - Delete media
+
+---
+
+## 📝 NOTES FOR DEVELOPERS
+
+### Before Implementing ANY Endpoint:
+1. **CHECK THIS FILE FIRST** - Is it already implemented?
+2. **Run discovery tool**: `./scripts/check_implementation.sh [operation_name]`
+3. **Test the endpoint**: `curl -X [METHOD] http://localhost:8080/[path]`
+4. **Check handlers.py**: Look for existing handler mappings
+5. **Check impl/ directory**: Look for existing implementations
+6. **Check DynamoDB models**: `ls impl/utils/orm/models/`
+
+### Common False "Not Implemented" Causes:
+- Missing handler_map entry in handlers.py
+- Import errors (especially Error class)
+- Parameter name mismatches (id vs id_ vs animalId)
+- Route not defined in OpenAPI spec
+- Controller not finding implementation
+
+### If You See "not_implemented":
+1. **DO NOT** immediately create new implementation
+2. **DO** check if implementation exists using discovery tools
+3. **DO** check handler_map in handlers.py
+4. **DO** check for import errors in logs
+5. **DO** verify route exists in OpenAPI spec
+
+---
+
+## 🚨 DANGER ZONE
+
+**NEVER DO THIS:**
+- Move working endpoints to "not implemented"
+- Create mock data when DynamoDB exists
+- Ignore existing hexagonal architecture
+- Trust 501 errors without investigation
+- Assume 404 means not implemented
+
+**ALWAYS DO THIS:**
+- Preserve working implementations
+- Check for existing code first
+- Maintain backward compatibility
+- Test before assuming broken
+- Update this file when status changes

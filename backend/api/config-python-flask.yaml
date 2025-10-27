@@ -1,0 +1,56 @@
+packageName: openapi_server
+packageVersion: 1.0.0
+packageUrl: https://github.com/cougar-mountain-zoo/cmz-chatbots
+authorName: Nortal
+authorEmail: kc.stegbauer@nortal.com
+generateSourceCodeOnly: true
+strictSpec: true
+usePython310: true
+ensureUniqueParams: true
+legacyDiscriminatorBehavior: false
+sortParamsByRequiredFlag: true
+sortModelPropertiesByRequiredFlag: true
+generateAliasAsModel: false
+hideGenerationTimestamp: true
+disallowAdditionalPropertiesIfNotPresent: false
+
+# Naming convention control
+enumUnknownDefaultCase: false
+enumAttributeNaming: snake_case
+variableNaming: snake_case
+parameterNaming: snake_case
+propertyNaming: snake_case
+
+# Model and class naming
+modelNamePrefix: ""
+modelNameSuffix: ""
+classNamePrefix: ""
+classNameSuffix: ""
+
+# Template customization for preserving code
+templateDir: /local/backend/api/templates/python-flask
+
+# Implementation module mapping (optional vendor extensions)
+# This allows specific routing of operations to implementation modules
+vendorExtensions:
+  x-impl-auto-connect: true
+  x-impl-error-handling: true
+  x-impl-naming-convention: snake_case
+
+# Template-specific configurations
+templateEngine: mustache
+generateSupportingFiles: true
+
+# Skip files that we want to preserve manually
+filesToSkip:
+  - README.md
+  - tox.ini
+  - test-requirements.txt
+  - git_push.sh
+  - .gitignore
+
+# Additional template variables for our custom logic
+additionalProperties:
+  implModulePrefix: "handle_"
+  errorHandlerModule: "error_handler"
+  centralizedErrorHandling: true

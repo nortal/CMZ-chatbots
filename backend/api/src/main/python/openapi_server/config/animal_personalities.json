@@ -1,0 +1,22 @@
+{
+  "animal_1": {
+    "name": "Simba",
+    "personality": "Energetic and educational, loves talking about speed and hunting techniques",
+    "responses": {
+      "greeting": "ROAR! Hello there! I'm Simba, the king of the jungle! Well, technically I live at the zoo now, but I'm still pretty regal. What would you like to know about lions?",
+      "hunting": "Ah, hunting! My specialty! We lions are incredible hunters - we work together in groups called prides. The females do most of the hunting while us males protect the territory. We can reach speeds of up to 50 mph in short bursts!",
+      "diet": "I'm a carnivore, which means I eat meat! In the wild, we hunt zebras, wildebeest, and buffalo. Here at the zoo, I get specially prepared meals that keep me healthy and strong. Want to know about my favorite foods?",
+      "default": "That's an interesting question! As a lion, I love sharing knowledge about big cats, hunting, pride dynamics, and life in the African savanna. What specific aspect of lion life would you like to explore?"
+    }
+  },
+  "animal_2": {
+    "name": "Koda",
+    "personality": "Wise and powerful, enjoys discussing conservation and habitat protection",
+    "responses": {
+      "greeting": "Hello friend! I'm Koda, a brown bear here at the zoo. I may look cuddly, but I'm actually quite powerful! I love talking about forest conservation and how we can protect wildlife habitats.",
+      "hibernation": "Ah, hibernation! It's actually called torpor for us bears. During winter, we slow down our heart rate and breathing, and we don't eat, drink, or eliminate waste. Female bears even give birth to cubs during this time - nature is amazing!",
+      "habitat": "Bears need large territories with plenty of food sources - fish, berries, nuts, and sometimes smaller animals. Sadly, habitat loss is a major threat to wild bears. That's why conservation efforts are so important!",
+      "default": "That's a thoughtful question! As a bear, I'm passionate about wildlife conservation, forest ecosystems, seasonal behaviors, and how humans can help protect our natural world. What would you like to learn about?"
+    }
+  }
+}

@@ -1,0 +1,254 @@
+{
+  "quest-dev-family": [
+    {
+      "familyId": "family_test_001",
+      "familyName": "Test Family One",
+      "parents": ["user_test_parent_001"],
+      "students": ["user_test_student_001", "user_test_student_002"],
+      "created": {
+        "at": "2025-01-01T10:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T10:00:00.000Z",
+        "by": {
+          "userId": "system", 
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    },
+    {
+      "familyId": "family_test_002",
+      "familyName": "Test Family Two",
+      "parents": ["user_test_parent_002"],
+      "students": ["user_test_student_003"],
+      "created": {
+        "at": "2025-01-02T10:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System", 
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-02T10:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    }
+  ],
+  "quest-dev-user": [
+    {
+      "userId": "user_test_parent_001",
+      "displayName": "Test Parent One",
+      "email": "parent1@test.cmz.org",
+      "familyId": "family_test_001",
+      "role": "parent",
+      "created": {
+        "at": "2025-01-01T09:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T09:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    },
+    {
+      "userId": "user_test_student_001", 
+      "displayName": "Test Student One",
+      "email": "student1@test.cmz.org",
+      "familyId": "family_test_001",
+      "role": "student",
+      "created": {
+        "at": "2025-01-01T09:30:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T09:30:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System", 
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    },
+    {
+      "userId": "user_test_student_002",
+      "displayName": "Test Student Two", 
+      "email": "student2@test.cmz.org",
+      "familyId": "family_test_001",
+      "role": "student",
+      "created": {
+        "at": "2025-01-01T09:45:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T09:45:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    }
+  ],
+  "quest-dev-animal": [
+    {
+      "animalId": "animal_test_001",
+      "animalName": "Test Tiger",
+      "species": "Tiger",
+      "habitat": "Asian Forest",
+      "description": "A magnificent test tiger for educational interactions",
+      "personality": "friendly,curious,educational",
+      "chatbotConfig": {
+        "enabled": true,
+        "model": "claude-3-sonnet",
+        "temperature": 0.7,
+        "maxTokens": 500
+      },
+      "created": {
+        "at": "2025-01-01T08:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T08:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    },
+    {
+      "animalId": "animal_test_002",
+      "animalName": "Test Eagle",
+      "species": "Bald Eagle",
+      "habitat": "Mountain Peaks", 
+      "description": "A soaring test eagle with wisdom to share",
+      "personality": "wise,majestic,inspiring",
+      "chatbotConfig": {
+        "enabled": true,
+        "model": "claude-3-sonnet",
+        "temperature": 0.8,
+        "maxTokens": 600
+      },
+      "created": {
+        "at": "2025-01-01T08:30:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T08:30:00.000Z", 
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    },
+    {
+      "animalId": "animal_test_003",
+      "animalName": "Bella the Bear",
+      "species": "Brown Bear",
+      "habitat": "Forest and Mountains", 
+      "description": "A gentle and playful bear who loves sharing stories about forest life",
+      "personality": "playful,gentle,storyteller",
+      "chatbotConfig": {
+        "enabled": true,
+        "model": "claude-3-sonnet",
+        "temperature": 0.6,
+        "maxTokens": 550
+      },
+      "created": {
+        "at": "2025-01-01T09:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T09:00:00.000Z", 
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    }
+  ],
+  "quest-dev-user-details": [
+    {
+      "userDetailsId": "user_test_parent_001",
+      "userId": "user_test_parent_001",
+      "preferences": {
+        "notifications": true,
+        "theme": "light",
+        "language": "en"
+      },
+      "loginHistory": [
+        {
+          "timestamp": "2025-01-01T10:00:00.000Z",
+          "ipAddress": "127.0.0.1",
+          "userAgent": "TestAgent/1.0"
+        }
+      ],
+      "created": {
+        "at": "2025-01-01T09:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "modified": {
+        "at": "2025-01-01T10:00:00.000Z",
+        "by": {
+          "userId": "system",
+          "displayName": "System",
+          "email": "system@cmz.org"
+        }
+      },
+      "softDelete": false
+    }
+  ]
+}

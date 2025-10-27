@@ -1,0 +1,304 @@
+# Prompt for Creating Chat Functionality Epic with Abstract Provider Layer
+
+## Context
+You are creating a comprehensive epic for implementing a production-ready chat system for the CMZ chatbots platform. This system needs to support multiple AI providers through an abstraction layer, with ChatGPT as the first implementation.
+
+## Requirements to Include
+
+### Architecture Requirements
+1. **Abstract Chat Layer**: Create an abstract base class/interface that supports:
+   - Multiple AI provider implementations (ChatGPT, Claude, Gemini, etc.)
+   - Consistent interface regardless of provider
+   - Provider-specific configuration management
+   - Error handling and fallback mechanisms
+
+2. **Context Management**:
+   - Retrieve complete user chat history from DynamoDB
+   - Include animal personality in system role
+   - Apply animal-specific guardrails
+   - Maintain conversation context across sessions
+
+3. **Streaming Response**:
+   - Implement server-sent events (SSE) or WebSocket streaming
+   - Stream responses from AI provider to frontend in real-time
+   - Handle partial responses and error recovery
+   - Support both Lambda and Flask deployments
+
+4. **ChatGPT Integration** (First Provider):
+   - Individual GPT configuration per animal
+   - Knowledge base integration for each animal
+   - Custom instructions and behaviors
+   - API key management and rotation
+
+### Technical Implementation Details
+
+#### Backend Components
+- `impl/chat/abstract_chat_provider.py` - Abstract base class
+- `impl/chat/providers/chatgpt_provider.py` - ChatGPT implementation
+- `impl/chat/chat_manager.py` - Orchestration and provider selection
+- `impl/chat/context_builder.py` - Build context from history/personality
+- `impl/chat/streaming_handler.py` - SSE/WebSocket streaming logic
+- `impl/utils/guardrails.py` - Guardrail enforcement
+- `impl/utils/knowledge_base.py` - Knowledge base management
+
+#### Frontend Components
+- `components/chat/ChatStream.tsx` - Streaming message display
+- `components/chat/ChatProvider.tsx` - Provider selection UI
+- `hooks/useStreamingChat.ts` - WebSocket/SSE hook
+- `services/chatService.ts` - Chat API client with streaming
+
+#### Database Schema
+- Chat history retrieval optimization
+- Provider configuration storage
+- Knowledge base references
+- Guardrail configurations
+
+### Testing Requirements
+
+#### Unit Tests (TDD in ./test directory)
+- Abstract provider interface tests
+- ChatGPT provider implementation tests
+- Context building tests
+- Streaming handler tests
+- Guardrail enforcement tests
+
+#### Integration Tests
+- End-to-end streaming flow
+- Provider switching
+- History retrieval and context building
+- Error handling and recovery
+
+#### Playwright E2E Tests
+- Chat window streaming visualization
+- Provider selection UI
+- Message history display
+- Error message handling
+- Reconnection scenarios
+
+### Jira Ticket Structure
+
+Create the following ticket hierarchy:
+
+## Epic: PR003946-XXX - Implement Abstract Chat Provider System with Streaming
+
+### Feature Tickets
+
+#### 1. PR003946-XXX: Design and Implement Abstract Chat Provider Interface
+**Type**: Task
+**Description**: Create abstract base class for chat providers
+**Acceptance Criteria**:
+- Abstract class defines all required methods
+- Provider registration system implemented
+- Configuration management system in place
+- Error handling patterns defined
+- Unit tests achieve 90% coverage
+**Story Points**: 5 (Comment: Complex design requiring careful abstraction)
+**TDD Integration**: Create test suite in `test/test_abstract_chat_provider.py` before implementation
+
+#### 2. PR003946-XXX: Implement ChatGPT Provider
+**Type**: Task
+**Description**: Create ChatGPT implementation of abstract provider
+**Acceptance Criteria**:
+- Implements all abstract methods
+- Handles API key management
+- Supports GPT-4 and GPT-3.5 models
+- Implements retry logic and rate limiting
+- Individual GPT configuration per animal
+- Knowledge base integration working
+**Story Points**: 8 (Comment: Complex integration with external API)
+**TDD Integration**: Test suite in `test/test_chatgpt_provider.py`
+
+#### 3. PR003946-XXX: Build Context Management System
+**Type**: Task
+**Description**: Create system for building chat context from history/personality
+**Acceptance Criteria**:
+- Retrieves complete chat history from DynamoDB
+- Formats history for provider consumption
+- Injects animal personality into system role
+- Applies guardrails to context
+- Optimizes token usage
+- Handles large conversation histories
+**Story Points**: 5 (Comment: Complex data retrieval and formatting)
+**TDD Integration**: Test suite in `test/test_context_builder.py`
+
+#### 4. PR003946-XXX: Implement Streaming Response Handler
+**Type**: Task
+**Description**: Create SSE/WebSocket streaming for real-time responses
+**Acceptance Criteria**:
+- SSE implementation for Flask
+- WebSocket support for Lambda
+- Handles partial responses
+- Error recovery and reconnection
+- Backpressure handling
+- Works with both deployment models
+**Story Points**: 8 (Comment: Complex streaming implementation)
+**TDD Integration**: Test suite in `test/test_streaming_handler.py`
+
+#### 5. PR003946-XXX: Create Frontend Streaming Chat Components
+**Type**: Task
+**Description**: Build React components for streaming chat display
+**Acceptance Criteria**:
+- Real-time message display as tokens arrive
+- Smooth scrolling and animation
+- Error state handling
+- Reconnection UI
+- Provider selection interface
+- Typing indicators
+**Story Points**: 5 (Comment: Complex UI state management)
+**TDD Integration**: Jest tests and Playwright E2E tests
+
+#### 6. PR003946-XXX: Integrate Guardrails System
+**Type**: Task
+**Description**: Implement guardrail enforcement for chat responses
+**Acceptance Criteria**:
+- Pre-processing input guardrails
+- Post-processing output guardrails
+- Animal-specific guardrail configurations
+- Violation logging and metrics
+- Graceful degradation on violations
+**Story Points**: 3 (Comment: Moderate complexity, well-defined scope)
+**TDD Integration**: Test suite in `test/test_guardrails.py`
+
+#### 7. PR003946-XXX: Implement Knowledge Base Management
+**Type**: Task
+**Description**: Create system for managing animal-specific knowledge bases
+**Acceptance Criteria**:
+- Upload/update knowledge base documents
+- Version control for knowledge bases
+- Integration with ChatGPT custom instructions
+- Fallback to default knowledge
+- Admin UI for management
+**Story Points**: 5 (Comment: Includes UI and backend components)
+**TDD Integration**: Test suite in `test/test_knowledge_base.py`
+
+#### 8. PR003946-XXX: Create Provider Configuration Management
+**Type**: Task
+**Description**: Build configuration system for multiple providers
+**Acceptance Criteria**:
+- Store provider configurations in DynamoDB
+- Environment-based configuration
+- Secret management for API keys
+- Provider health checks
+- Automatic failover configuration
+**Story Points**: 3 (Comment: Standard configuration management)
+**TDD Integration**: Test suite in `test/test_provider_config.py`
+
+### Testing Tickets
+
+#### 9. PR003946-XXX: E2E Playwright Tests for Streaming Chat
+**Type**: Test
+**Description**: Comprehensive E2E tests for chat functionality
+**Acceptance Criteria**:
+- Test streaming message display
+- Test provider switching
+- Test error recovery
+- Test reconnection scenarios
+- Test guardrail violations
+- Cross-browser compatibility
+**Story Points**: 5 (Comment: Comprehensive test coverage needed)
+**TDD Integration**: Playwright test suite with visible browser validation
+
+#### 10. PR003946-XXX: Performance Testing for Streaming
+**Type**: Test
+**Description**: Load and performance testing for streaming infrastructure
+**Acceptance Criteria**:
+- Test with 100+ concurrent users
+- Measure latency for first token
+- Test long conversation handling
+- Memory leak detection
+- Connection pool testing
+**Story Points**: 3 (Comment: Focused performance validation)
+**TDD Integration**: Performance test suite in `test/performance/`
+
+### Documentation Tickets
+
+#### 11. PR003946-XXX: API Documentation for Chat System
+**Type**: Documentation
+**Description**: Complete API documentation for chat endpoints
+**Acceptance Criteria**:
+- OpenAPI spec updated
+- Provider integration guide
+- Streaming protocol documentation
+- Configuration examples
+- Troubleshooting guide
+**Story Points**: 2 (Comment: Documentation only)
+
+## Definition of Done for Epic
+- All unit tests passing with >85% coverage
+- All Playwright E2E tests passing
+- Performance benchmarks met (<500ms first token)
+- Documentation complete
+- Code review approved
+- Security review passed
+- Deployed to dev environment
+- UI validation completed with screenshots
+
+## Non-Functional Requirements
+- Response time: First token < 500ms
+- Throughput: Support 100+ concurrent chats
+- Availability: 99.9% uptime
+- Security: All API keys encrypted at rest
+- Compliance: COPPA compliant for student users
+
+## Dependencies
+- Existing DynamoDB tables for chat history
+- OpenAI API access and keys
+- AWS Lambda/API Gateway for streaming
+- Frontend WebSocket/SSE support
+
+## Validation Commands to Create
+Create these validation scripts in `scripts/`:
+- `validate_chat_streaming.sh` - Test streaming functionality
+- `validate_provider_switching.sh` - Test provider changes
+- `validate_chat_context.sh` - Test context building
+- `validate_guardrails.sh` - Test guardrail enforcement
+
+## UI Validation Requirements
+Using Playwright MCP with visible browser:
+1. Show streaming text appearing word by word
+2. Demonstrate provider switching UI
+3. Show chat history being loaded
+4. Display error states and recovery
+5. Show guardrail violation handling
+6. Validate mobile responsiveness
+
+## Risk Mitigation
+- API rate limiting strategy
+- Fallback provider configuration
+- Circuit breaker implementation
+- Cost monitoring and alerts
+- Token usage optimization
+
+## Success Metrics
+- Average response time < 1 second
+- 95% of chats complete successfully
+- Zero security incidents
+- User satisfaction score > 4.5/5
+
+---
+
+## Instructions for Using This Prompt
+
+1. Use the MCP Jira integration to create the epic and all tickets
+2. Link all tickets to the main epic
+3. Set appropriate priorities based on dependencies
+4. Add story point estimates as comments
+5. Create TDD test stubs before implementation
+6. Generate validation scripts for each component
+7. Document all design decisions in ADRs
+8. Create Playwright validation for each UI component
+
+When creating the tickets, ensure each one includes:
+- Clear acceptance criteria with measurable outcomes
+- Integration points with existing systems
+- TDD test file locations
+- Validation script references
+- UI validation requirements where applicable
+
+The implementation should follow the pattern:
+1. Create TDD tests first
+2. Implement minimal code to pass tests
+3. Refactor for production quality
+4. Add integration tests
+5. Perform UI validation
+6. Document in session history

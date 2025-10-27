@@ -1,0 +1,252 @@
+# GitLab CI Configuration for Playwright UI Tests
+# PR003946-96: Integrated playwright testing
+# 
+# Add this to your main .gitlab-ci.yml file
+
+variables:
+  # Playwright configuration
+  PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+  PERSISTENCE_MODE: file
+  BACKEND_URL: http://localhost:8080
+  FRONTEND_URL: http://localhost:3000
+
+stages:
+  - setup
+  - test
+  - ui-tests
+  - reports
+
+# UI Testing Job
+ui-tests:
+  stage: ui-tests
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  
+  variables:
+    PERSISTENCE_MODE: file
+    NODE_ENV: test
+    
+  services:
+    # Backend service in file persistence mode
+    - name: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA
+      alias: backend
+      variables:
+        PERSISTENCE_MODE: file
+        PORT: 8080
+        
+    # Frontend service (if separate)
+    - name: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
+      alias: frontend
+      variables:
+        BACKEND_URL: http://backend:8080
+        PORT: 3000
+  
+  before_script:
+    # Navigate to Playwright test directory
+    - cd backend/api/src/main/python/tests/playwright
+    
+    # Install Node.js dependencies
+    - npm ci
+    
+    # Install Playwright browsers
+    - npx playwright install
+    
+    # Verify services are ready
+    - |
+      echo "🔍 Waiting for backend service..."
+      timeout 120 sh -c 'until curl -f http://backend:8080/system_health > /dev/null 2>&1; do sleep 2; done'
+      echo "✅ Backend service is ready"
+    
+    - |
+      echo "🔍 Waiting for frontend service..."
+      timeout 120 sh -c 'until curl -f http://frontend:3000 > /dev/null 2>&1; do sleep 2; done'
+      echo "✅ Frontend service is ready"
+  
+  script:
+    # Run comprehensive UI tests
+    - echo "🎭 Running Playwright UI tests..."
+    - npx playwright test --config=config/playwright.config.js
+    
+    # Generate UI health report
+    - echo "📊 Generating UI health report..."
+    - node scripts/generate-ui-health-report.js
+    
+    # Display summary
+    - echo "📋 Test execution completed"
+    - ls -la reports/
+  
+  after_script:
+    # Upload test results to external systems if needed
+    - |
+      if [ -f "reports/ui-health-summary.json" ]; then
+        echo "📤 Test summary available for upload"
+        # curl -X POST -H "Content-Type: application/json" \
+        #      -d @reports/ui-health-summary.json \
+        #      $EXTERNAL_MONITORING_ENDPOINT
+      fi
+  
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit: backend/api/src/main/python/tests/playwright/reports/junit-results.xml
+    paths:
+      - backend/api/src/main/python/tests/playwright/reports/
+      - backend/api/src/main/python/tests/playwright/test-results/
+    
+  coverage: '/Pass Rate: (\d+)%/'
+  
+  rules:
+    # Run on merge requests
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    
+    # Run on main branch
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    
+    # Run on tagged releases
+    - if: '$CI_COMMIT_TAG'
+    
+    # Allow manual execution
+    - when: manual
+      allow_failure: true
+
+# Accessibility Testing (separate job for focused reporting)
+accessibility-tests:
+  extends: ui-tests
+  stage: ui-tests
+  
+  script:
+    - echo "♿ Running accessibility-focused tests..."
+    - npx playwright test specs/accessibility/ --config=config/playwright.config.js
+    
+    # Run axe-core accessibility audits
+    - |
+      if command -v axe-cli >/dev/null 2>&1; then
+        echo "🔍 Running axe accessibility audits..."
+        axe-cli $FRONTEND_URL --save reports/accessibility-audit.json
+      fi
+  
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - backend/api/src/main/python/tests/playwright/reports/accessibility-audit.json
+  
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "frontend/**/*"
+        - "**/*.html"
+        - "**/*.css"
+        - "**/*.js"
+        - "**/*.vue"
+        - "**/*.react"
+
+# Performance Testing (separate job with different thresholds)
+performance-tests:
+  extends: ui-tests
+  stage: ui-tests
+  
+  script:
+    - echo "⚡ Running performance-focused tests..."
+    - npx playwright test --grep="performance" --config=config/playwright.config.js
+    
+    # Run Lighthouse audits if available
+    - |
+      if command -v lighthouse >/dev/null 2>&1; then
+        echo "🔍 Running Lighthouse performance audits..."
+        lighthouse $FRONTEND_URL --output=json --output-path=reports/lighthouse-report.json
+      fi
+  
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - backend/api/src/main/python/tests/playwright/reports/lighthouse-report.json
+  
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "frontend/**/*"
+        - "backend/**/*"
+    - when: manual
+
+# Mobile Testing (separate job with mobile-specific configuration)
+mobile-tests:
+  extends: ui-tests
+  stage: ui-tests
+  
+  script:
+    - echo "📱 Running mobile-responsive tests..."
+    - npx playwright test --project="Mobile Chrome" --project="Mobile Safari" --config=config/playwright.config.js
+  
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "frontend/**/*"
+        - "**/*.css"
+        - "**/*.scss"
+    - when: manual
+
+# Slack Notification (optional)
+notify-results:
+  stage: reports
+  image: curlimages/curl:latest
+  
+  script:
+    - |
+      if [ -f "backend/api/src/main/python/tests/playwright/reports/ui-health-summary.json" ]; then
+        PASS_RATE=$(cat backend/api/src/main/python/tests/playwright/reports/ui-health-summary.json | grep -o '"pass_rate":[0-9]*' | cut -d: -f2)
+        QUALITY_GATE=$(cat backend/api/src/main/python/tests/playwright/reports/ui-health-summary.json | grep -o '"overall":[a-z]*' | cut -d: -f2)
+        
+        # Send Slack notification
+        curl -X POST -H 'Content-type: application/json' \
+             --data "{\"text\":\"🎭 UI Tests Complete\n📊 Pass Rate: ${PASS_RATE}%\n🎯 Quality Gate: ${QUALITY_GATE}\n🔗 Pipeline: $CI_PIPELINE_URL\"}" \
+             $SLACK_WEBHOOK_URL
+      fi
+  
+  dependencies:
+    - ui-tests
+  
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  
+  when: always
+  allow_failure: true
+
+# Example of using the Python test runner
+ui-tests-python:
+  stage: ui-tests
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  
+  before_script:
+    # Install Python dependencies
+    - apt-get update && apt-get install -y python3 python3-pip
+    - pip3 install requests
+    
+    # Navigate to test directory
+    - cd backend/api/src/main/python/tests/playwright
+    
+    # Install Node.js dependencies
+    - npm ci
+    - npx playwright install
+  
+  script:
+    # Use Python test runner
+    - python3 run_ui_tests.py --features authentication dashboard --browsers chromium firefox
+    
+    # Or run specific test suites
+    - python3 run_ui_tests.py --mobile
+    - python3 run_ui_tests.py --performance
+  
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit: backend/api/src/main/python/tests/playwright/reports/junit-results.xml
+    paths:
+      - backend/api/src/main/python/tests/playwright/reports/
+  
+  rules:
+    - when: manual
+      allow_failure: true

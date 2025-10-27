@@ -1,0 +1,388 @@
+# Guardrails API Contract
+# Conversation Safety and Personalization System
+
+openapi: 3.0.3
+info:
+  title: CMZ Guardrails API
+  description: Content safety and guardrails management for zoo animal conversations
+  version: 1.0.0
+
+paths:
+  /api/v1/guardrails/validate:
+    post:
+      summary: Validate content against safety guardrails
+      description: |
+        Validates user input and AI responses against configured safety rules.
+        Provides real-time content moderation and educational redirects.
+      operationId: validateContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentValidationRequest'
+      responses:
+        '200':
+          description: Content validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentValidationResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/guardrails/config:
+    get:
+      summary: Get active guardrails configuration
+      description: Retrieves current safety rules and content filtering policies
+      operationId: getGuardrailsConfig
+      parameters:
+        - name: ageGroup
+          in: query
+          description: Target age group for configuration
+          schema:
+            type: string
+            enum: [elementary, middle, high, adult]
+            default: elementary
+      responses:
+        '200':
+          description: Guardrails configuration retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailsConfig'
+        '404':
+          description: Configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/guardrails/analytics:
+    get:
+      summary: Get guardrails effectiveness analytics
+      description: Retrieves metrics on safety interventions and content filtering
+      operationId: getGuardrailsAnalytics
+      parameters:
+        - name: startDate
+          in: query
+          description: Start date for analytics period (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for analytics period (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: animalId
+          in: query
+          description: Filter by specific animal
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Analytics data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailsAnalytics'
+        '400':
+          description: Invalid date range or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ContentValidationRequest:
+      type: object
+      required:
+        - content
+        - context
+      properties:
+        content:
+          type: string
+          description: Text content to validate
+          maxLength: 10000
+        context:
+          type: object
+          required:
+            - userId
+            - conversationId
+            - animalId
+          properties:
+            userId:
+              type: string
+              description: User identifier
+            conversationId:
+              type: string
+              description: Conversation session identifier
+            animalId:
+              type: string
+              description: Animal character identifier
+            ageGroup:
+              type: string
+              enum: [elementary, middle, high, adult]
+              description: User age group for appropriate filtering
+        metadata:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            contentType:
+              type: string
+              enum: [user_input, ai_response]
+              description: Whether content is from user or AI
+
+    ContentValidationResponse:
+      type: object
+      required:
+        - isValid
+        - riskScore
+        - actions
+      properties:
+        isValid:
+          type: boolean
+          description: Whether content passes safety validation
+        riskScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Calculated risk score (0=safe, 100=high risk)
+        actions:
+          type: array
+          items:
+            type: string
+            enum: [allow, block, redirect, flag, moderate]
+          description: Recommended actions based on validation
+        moderationResults:
+          type: object
+          description: Detailed OpenAI moderation API results
+          properties:
+            categories:
+              type: object
+              additionalProperties:
+                type: boolean
+            categoryScores:
+              type: object
+              additionalProperties:
+                type: number
+        educationalRedirect:
+          type: object
+          description: Alternative educational response if content blocked
+          properties:
+            topic:
+              type: string
+              description: Educational topic to redirect to
+            response:
+              type: string
+              description: Suggested educational response
+            resources:
+              type: array
+              items:
+                type: string
+              description: Additional learning resources
+        analytics:
+          type: object
+          properties:
+            processingTime:
+              type: number
+              description: Validation processing time in milliseconds
+            guardrailsTriggered:
+              type: array
+              items:
+                type: string
+              description: Which guardrails were activated
+
+    GuardrailsConfig:
+      type: object
+      required:
+        - configId
+        - version
+        - ageGroup
+      properties:
+        configId:
+          type: string
+          description: Configuration identifier
+        version:
+          type: number
+          description: Configuration version
+        ageGroup:
+          type: string
+          enum: [elementary, middle, high, adult]
+          description: Target age group
+        contentFilters:
+          type: object
+          properties:
+            moderationThresholds:
+              type: object
+              additionalProperties:
+                type: number
+                minimum: 0
+                maximum: 1
+              description: OpenAI moderation category thresholds
+            blockedTopics:
+              type: array
+              items:
+                type: string
+              description: Topics to avoid or redirect
+            allowedTopics:
+              type: array
+              items:
+                type: string
+              description: Explicitly safe topics
+            educationalRedirects:
+              type: object
+              additionalProperties:
+                type: string
+              description: Topic to educational response mapping
+        responseGuidelines:
+          type: object
+          properties:
+            maxResponseLength:
+              type: number
+              description: Character limit for responses
+            educationalFocus:
+              type: boolean
+              description: Prioritize educational content
+            encourageQuestions:
+              type: boolean
+              description: Prompt follow-up questions
+            parentalNotification:
+              type: boolean
+              description: Flag concerning interactions
+        prompts:
+          type: object
+          properties:
+            systemPrompt:
+              type: string
+              description: Base system prompt with guidelines
+            safetyPrompt:
+              type: string
+              description: Additional safety instructions
+            educationalPrompt:
+              type: string
+              description: Educational context and mission
+        metadata:
+          type: object
+          properties:
+            created:
+              type: object
+              properties:
+                at:
+                  type: string
+                  format: date-time
+                by:
+                  type: string
+            modified:
+              type: object
+              properties:
+                at:
+                  type: string
+                  format: date-time
+                by:
+                  type: string
+            isActive:
+              type: boolean
+            description:
+              type: string
+
+    GuardrailsAnalytics:
+      type: object
+      properties:
+        summary:
+          type: object
+          properties:
+            totalValidations:
+              type: number
+              description: Total content validations performed
+            interventions:
+              type: number
+              description: Number of safety interventions
+            interventionRate:
+              type: number
+              description: Percentage of validations requiring intervention
+            averageRiskScore:
+              type: number
+              description: Average risk score across all validations
+        trends:
+          type: object
+          properties:
+            interventionsByDay:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  count:
+                    type: number
+            topBlockedTopics:
+              type: array
+              items:
+                type: object
+                properties:
+                  topic:
+                    type: string
+                  count:
+                    type: number
+            educationalRedirects:
+              type: array
+              items:
+                type: object
+                properties:
+                  fromTopic:
+                    type: string
+                  toTopic:
+                    type: string
+                  count:
+                    type: number
+        performance:
+          type: object
+          properties:
+            averageResponseTime:
+              type: number
+              description: Average validation time in milliseconds
+            p95ResponseTime:
+              type: number
+              description: 95th percentile response time
+            errorRate:
+              type: number
+              description: Percentage of failed validations
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+          description: Request identifier for debugging

@@ -1,0 +1,33 @@
+# Test-specific dependencies for CMZ API
+# Keep separate from main requirements to avoid test deps in production
+
+# Core testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.1
+pytest-asyncio>=0.21.0
+pytest-xdist>=3.3.1  # For parallel test execution
+pytest-html>=3.2.0   # HTML test reports
+
+# Flask testing
+flask-testing>=0.8.1
+
+# DynamoDB testing
+moto[dynamodb]>=4.2.0  # Mock AWS services including DynamoDB
+boto3-stubs[dynamodb]>=1.28.0  # Type hints for boto3
+
+# Test data and factories
+factory-boy>=3.3.0    # Test object factories
+faker>=19.3.0         # Generate fake test data
+
+# Validation testing
+jsonschema>=4.19.0    # JSON schema validation testing
+hypothesis>=6.82.0    # Property-based testing
+
+# Coverage and reporting
+coverage>=7.3.0
+pytest-benchmark>=4.0.0  # Performance benchmarking
+
+# Development utilities
+freezegun>=1.2.2      # Mock datetime
+responses>=0.23.1     # Mock HTTP requests

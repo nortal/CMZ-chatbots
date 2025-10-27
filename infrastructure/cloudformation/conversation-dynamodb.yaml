@@ -1,0 +1,133 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'DynamoDB table for CMZ Chat Conversations - PR003946-168'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Environment for the deployment
+
+Resources:
+  ConversationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'cmz-conversations-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: sessionIdTimestamp
+          AttributeType: S
+        - AttributeName: sessionId
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+        - AttributeName: animalId
+          AttributeType: S
+        - AttributeName: parentUserId
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: sessionIdTimestamp
+          KeyType: RANGE
+
+      GlobalSecondaryIndexes:
+        - IndexName: SessionIndex
+          KeySchema:
+            - AttributeName: sessionId
+              KeyType: HASH
+            - AttributeName: timestamp
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+        - IndexName: AnimalIndex
+          KeySchema:
+            - AttributeName: animalId
+              KeyType: HASH
+            - AttributeName: timestamp
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+        - IndexName: ParentUserIndex
+          KeySchema:
+            - AttributeName: parentUserId
+              KeyType: HASH
+            - AttributeName: timestamp
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+        KMSMasterKeyId: alias/aws/dynamodb
+
+      TimeToLiveSpecification:
+        Enabled: true
+        AttributeName: ttl
+
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: CMZ-Chatbots
+        - Key: Epic
+          Value: PR003946-170
+        - Key: Ticket
+          Value: PR003946-168
+        - Key: Purpose
+          Value: ConversationStorage
+        - Key: ManagedBy
+          Value: CloudFormation
+
+Outputs:
+  TableName:
+    Description: Name of the DynamoDB table
+    Value: !Ref ConversationsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-TableName'
+
+  TableArn:
+    Description: ARN of the DynamoDB table
+    Value: !GetAtt ConversationsTable.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-TableArn'
+
+  StreamArn:
+    Description: ARN of the DynamoDB stream
+    Value: !GetAtt ConversationsTable.StreamArn
+    Export:
+      Name: !Sub '${AWS::StackName}-StreamArn'
+
+  SessionIndexName:
+    Description: Name of the Session GSI
+    Value: SessionIndex
+    Export:
+      Name: !Sub '${AWS::StackName}-SessionIndex'
+
+  AnimalIndexName:
+    Description: Name of the Animal GSI
+    Value: AnimalIndex
+    Export:
+      Name: !Sub '${AWS::StackName}-AnimalIndex'
+
+  ParentUserIndexName:
+    Description: Name of the ParentUser GSI
+    Value: ParentUserIndex
+    Export:
+      Name: !Sub '${AWS::StackName}-ParentUserIndex'

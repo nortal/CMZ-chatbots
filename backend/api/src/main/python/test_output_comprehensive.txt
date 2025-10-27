@@ -1,0 +1,924 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.4, pytest-8.4.2, pluggy-1.6.0 -- /opt/miniconda3/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.12.4', 'Platform': 'macOS-15.6.1-arm64-arm-64bit', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.6.0'}, 'Plugins': {'html': '4.1.1', 'asyncio': '1.1.0', 'xdist': '3.8.0', 'mock': '3.15.0', 'metadata': '3.1.1', 'anyio': '4.10.0', 'hypothesis': '6.138.15', 'Faker': '37.6.0', 'benchmark': '5.1.0', 'cov': '7.0.0'}, 'AWS_REGION': 'us-west-2', 'JAVA_HOME': '/Library/Java/JavaVirtualMachines/jdk1.8.0_331.jdk/Contents/Home'}
+hypothesis profile 'default'
+benchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: /Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python
+configfile: pytest.ini
+plugins: html-4.1.1, asyncio-1.1.0, xdist-3.8.0, mock-3.15.0, metadata-3.1.1, anyio-4.10.0, hypothesis-6.138.15, Faker-37.6.0, benchmark-5.1.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 61 items
+
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_api_key_validation_on_init PASSED [  1%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_health_check_endpoint FAILED [  3%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_rate_limits_429 PASSED [  4%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_invalid_key_401 PASSED [  6%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_timeout_errors PASSED [  8%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_conversation_turn_returns_ai_response FAILED [  9%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_animal_config_fetched_from_dynamodb PASSED [ 11%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_token_usage_captured_and_persisted PASSED [ 13%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_blocks_inappropriate_input PASSED [ 14%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_filters_unsafe_output PASSED [ 16%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_enforces_educational_appropriateness PASSED [ 18%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_violations_logged_to_dynamodb PASSED [ 19%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_retry_with_exponential_backoff PASSED [ 21%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_circuit_breaker_activation PASSED [ 22%]
+tests/integration/test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_user_friendly_fallback_messages PASSED [ 24%]
+tests/integration/test_chatgpt_integration_epic.py::TestIntegrationE2E::test_complete_conversation_flow_with_chatgpt FAILED [ 26%]
+tests/integration/test_chatgpt_integration_epic.py::TestIntegrationE2E::test_concurrent_conversations_isolation FAILED [ 27%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_create_guardrail FAILED [ 29%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_list_guardrails FAILED [ 31%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_get_guardrail FAILED [ 32%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_update_guardrail FAILED [ 34%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_delete_guardrail FAILED [ 36%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailTemplates::test_get_guardrail_templates PASSED [ 37%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailTemplates::test_apply_template_to_animal FAILED [ 39%]
+tests/integration/test_guardrails_system_e2e.py::TestAnimalGuardrailsIntegration::test_update_animal_guardrails FAILED [ 40%]
+tests/integration/test_guardrails_system_e2e.py::TestAnimalGuardrailsIntegration::test_get_animal_with_guardrails FAILED [ 42%]
+tests/integration/test_guardrails_system_e2e.py::TestChatGPTGuardrailsIntegration::test_system_prompt_includes_guardrails FAILED [ 44%]
+tests/integration/test_guardrails_system_e2e.py::TestChatGPTGuardrailsIntegration::test_conversation_respects_guardrails FAILED [ 45%]
+tests/integration/test_guardrails_system_e2e.py::TestChatGPTGuardrailsIntegration::test_guardrail_violations_logged FAILED [ 47%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsPriority::test_priority_ordering FAILED [ 49%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsAdmin::test_admin_only_create FAILED [ 50%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsAdmin::test_audit_logging PASSED [ 52%]
+tests/integration/test_guardrails_system_e2e.py::TestGuardrailsPerformance::test_guardrails_dont_slow_conversation FAILED [ 54%]
+tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_66_soft_delete_flag_consistency FAILED [ 55%]
+tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_67_cascade_soft_delete FAILED [ 57%]
+tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_68_soft_delete_recovery FAILED [ 59%]
+tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_69_server_generated_ids FAILED [ 60%]
+tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_70_reject_client_provided_ids FAILED [ 62%]
+tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_71_token_validation FAILED [ 63%]
+tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_72_role_based_access FAILED [ 65%]
+tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_87_password_policy_enforcement FAILED [ 67%]
+tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_88_token_refresh_consistency FAILED [ 68%]
+tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_73_foreign_key_validation FAILED [ 70%]
+tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_74_data_consistency_checks PASSED [ 72%]
+tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_75_content_type_validation PASSED [ 73%]
+tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_79_family_membership_constraints FAILED [ 75%]
+tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_80_parent_student_relationship_validation FAILED [ 77%]
+tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_81_pagination_parameter_validation FAILED [ 78%]
+tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_82_filter_parameter_validation PASSED [ 80%]
+tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_83_time_window_validation PASSED [ 81%]
+tests/integration/test_api_validation_epic.py::TestAnalyticsValidation::test_pr003946_84_log_level_validation PASSED [ 83%]
+tests/integration/test_api_validation_epic.py::TestBillingValidation::test_pr003946_86_billing_period_format_validation FAILED [ 85%]
+tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_89_media_upload_constraints PASSED [ 86%]
+tests/integration/test_api_validation_epic.py::TestInputValidation::test_pr003946_91_conversation_turn_input_limits PASSED [ 88%]
+tests/integration/test_api_validation_epic.py::TestErrorHandlingValidation::test_pr003946_90_consistent_error_schema FAILED [ 90%]
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_get_endpoint ERROR [ 91%]
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_http_response ERROR [ 93%]
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_dynamodb_persistence ERROR [ 95%]
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_response_consistency ERROR [ 96%]
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_multiple_config_updates_persistence ERROR [ 98%]
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_invalid_animal_id_handling ERROR [100%]
+
+==================================== ERRORS ====================================
+_ ERROR at setup of TestAnimalConfigPersistence.test_animal_config_get_endpoint _
+tests/integration/test_animal_config_persistence.py:47: in setup_method
+    self.create_test_animal()
+tests/integration/test_animal_config_persistence.py:72: in create_test_animal
+    self.animal_table.put_item(Item=test_animal_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: in _make_api_call
+    raise error_class(parsed_response, operation_name)
+E   botocore.errorfactory.ResourceNotFoundException: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+---------------------------- Captured stdout setup -----------------------------
+Cleanup note: An error occurred (ResourceNotFoundException) when calling the DeleteItem operation: Requested resource not found
+Error creating test animal: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_ ERROR at setup of TestAnimalConfigPersistence.test_animal_config_patch_http_response _
+tests/integration/test_animal_config_persistence.py:47: in setup_method
+    self.create_test_animal()
+tests/integration/test_animal_config_persistence.py:72: in create_test_animal
+    self.animal_table.put_item(Item=test_animal_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: in _make_api_call
+    raise error_class(parsed_response, operation_name)
+E   botocore.errorfactory.ResourceNotFoundException: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+---------------------------- Captured stdout setup -----------------------------
+Cleanup note: An error occurred (ResourceNotFoundException) when calling the DeleteItem operation: Requested resource not found
+Error creating test animal: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_ ERROR at setup of TestAnimalConfigPersistence.test_animal_config_patch_dynamodb_persistence _
+tests/integration/test_animal_config_persistence.py:47: in setup_method
+    self.create_test_animal()
+tests/integration/test_animal_config_persistence.py:72: in create_test_animal
+    self.animal_table.put_item(Item=test_animal_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: in _make_api_call
+    raise error_class(parsed_response, operation_name)
+E   botocore.errorfactory.ResourceNotFoundException: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+---------------------------- Captured stdout setup -----------------------------
+Cleanup note: An error occurred (ResourceNotFoundException) when calling the DeleteItem operation: Requested resource not found
+Error creating test animal: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_ ERROR at setup of TestAnimalConfigPersistence.test_animal_config_patch_response_consistency _
+tests/integration/test_animal_config_persistence.py:47: in setup_method
+    self.create_test_animal()
+tests/integration/test_animal_config_persistence.py:72: in create_test_animal
+    self.animal_table.put_item(Item=test_animal_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: in _make_api_call
+    raise error_class(parsed_response, operation_name)
+E   botocore.errorfactory.ResourceNotFoundException: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+---------------------------- Captured stdout setup -----------------------------
+Cleanup note: An error occurred (ResourceNotFoundException) when calling the DeleteItem operation: Requested resource not found
+Error creating test animal: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_ ERROR at setup of TestAnimalConfigPersistence.test_multiple_config_updates_persistence _
+tests/integration/test_animal_config_persistence.py:47: in setup_method
+    self.create_test_animal()
+tests/integration/test_animal_config_persistence.py:72: in create_test_animal
+    self.animal_table.put_item(Item=test_animal_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: in _make_api_call
+    raise error_class(parsed_response, operation_name)
+E   botocore.errorfactory.ResourceNotFoundException: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+---------------------------- Captured stdout setup -----------------------------
+Cleanup note: An error occurred (ResourceNotFoundException) when calling the DeleteItem operation: Requested resource not found
+Error creating test animal: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_ ERROR at setup of TestAnimalConfigPersistence.test_invalid_animal_id_handling _
+tests/integration/test_animal_config_persistence.py:47: in setup_method
+    self.create_test_animal()
+tests/integration/test_animal_config_persistence.py:72: in create_test_animal
+    self.animal_table.put_item(Item=test_animal_data)
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/factory.py:581: in do_action
+    response = action(self, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/boto3/resources/action.py:88: in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:602: in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/context.py:123: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py:1078: in _make_api_call
+    raise error_class(parsed_response, operation_name)
+E   botocore.errorfactory.ResourceNotFoundException: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+---------------------------- Captured stdout setup -----------------------------
+Cleanup note: An error occurred (ResourceNotFoundException) when calling the DeleteItem operation: Requested resource not found
+Error creating test animal: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+=================================== FAILURES ===================================
+_______ TestPR003946_176_OpenAIAPIActivation.test_health_check_endpoint ________
+tests/integration/test_chatgpt_integration_epic.py:37: in test_health_check_endpoint
+    assert response.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500]>.status_code
+_ TestPR003946_177_ReplacesMockResponses.test_conversation_turn_returns_ai_response _
+tests/integration/test_chatgpt_integration_epic.py:106: in test_conversation_turn_returns_ai_response
+    assert turn_resp.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500]>.status_code
+_______ TestIntegrationE2E.test_complete_conversation_flow_with_chatgpt ________
+tests/integration/test_chatgpt_integration_epic.py:272: in test_complete_conversation_flow_with_chatgpt
+    assert turn_resp.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500]>.status_code
+__________ TestIntegrationE2E.test_concurrent_conversations_isolation __________
+tests/integration/test_chatgpt_integration_epic.py:310: in test_concurrent_conversations_isolation
+    assert turn1_resp.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500]>.status_code
+___________________ TestGuardrailsCRUD.test_create_guardrail ___________________
+tests/integration/test_guardrails_system_e2e.py:34: in test_create_guardrail
+    assert response.status_code == 201
+E   assert 200 == 201
+E    +  where 200 = <Response [200]>.status_code
+___________________ TestGuardrailsCRUD.test_list_guardrails ____________________
+tests/integration/test_guardrails_system_e2e.py:71: in test_list_guardrails
+    assert all(g['category'] == 'content_safety' for g in safety_guardrails)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/integration/test_guardrails_system_e2e.py:71: in <genexpr>
+    assert all(g['category'] == 'content_safety' for g in safety_guardrails)
+               ^^^^^^^^^^^^^
+E   TypeError: string indices must be integers, not 'str'
+____________________ TestGuardrailsCRUD.test_get_guardrail _____________________
+tests/integration/test_guardrails_system_e2e.py:89: in test_get_guardrail
+    assert create_resp.status_code == 201
+E   assert 200 == 201
+E    +  where 200 = <Response [200]>.status_code
+___________________ TestGuardrailsCRUD.test_update_guardrail ___________________
+tests/integration/test_guardrails_system_e2e.py:110: in test_update_guardrail
+    assert create_resp.status_code == 201
+E   assert 200 == 201
+E    +  where 200 = <Response [200]>.status_code
+___________________ TestGuardrailsCRUD.test_delete_guardrail ___________________
+tests/integration/test_guardrails_system_e2e.py:138: in test_delete_guardrail
+    assert create_resp.status_code == 201
+E   assert 200 == 201
+E    +  where 200 = <Response [200]>.status_code
+_____________ TestGuardrailTemplates.test_apply_template_to_animal _____________
+tests/integration/test_guardrails_system_e2e.py:191: in test_apply_template_to_animal
+    assert response.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500]>.status_code
+________ TestAnimalGuardrailsIntegration.test_update_animal_guardrails _________
+tests/integration/test_guardrails_system_e2e.py:229: in test_update_animal_guardrails
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = <Response [404]>.status_code
+_______ TestAnimalGuardrailsIntegration.test_get_animal_with_guardrails ________
+tests/integration/test_guardrails_system_e2e.py:239: in test_get_animal_with_guardrails
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = <Response [404]>.status_code
+___ TestChatGPTGuardrailsIntegration.test_system_prompt_includes_guardrails ____
+tests/integration/test_guardrails_system_e2e.py:261: in test_system_prompt_includes_guardrails
+    assert g_resp.status_code == 201
+E   assert 200 == 201
+E    +  where 200 = <Response [200]>.status_code
+____ TestChatGPTGuardrailsIntegration.test_conversation_respects_guardrails ____
+tests/integration/test_guardrails_system_e2e.py:308: in test_conversation_respects_guardrails
+    assert response.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500]>.status_code
+______ TestChatGPTGuardrailsIntegration.test_guardrail_violations_logged _______
+tests/integration/test_guardrails_system_e2e.py:338: in test_guardrail_violations_logged
+    assert response.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500]>.status_code
+________________ TestGuardrailsPriority.test_priority_ordering _________________
+tests/integration/test_guardrails_system_e2e.py:387: in test_priority_ordering
+    assert effective[0]['priority'] > effective[-1]['priority']
+           ^^^^^^^^^^^^
+E   IndexError: list index out of range
+__________________ TestGuardrailsAdmin.test_admin_only_create __________________
+tests/integration/test_guardrails_system_e2e.py:404: in test_admin_only_create
+    assert response.status_code in [401, 403]
+E   assert 200 in [401, 403]
+E    +  where 200 = <Response [200]>.status_code
+_______ TestGuardrailsPerformance.test_guardrails_dont_slow_conversation _______
+tests/integration/test_guardrails_system_e2e.py:448: in test_guardrails_dont_slow_conversation
+    assert guardrails_time < baseline_time * 1.2
+E   assert 0.006831169128417969 < (0.0035369396209716797 * 1.2)
+____ TestSoftDeleteSemantics.test_pr003946_66_soft_delete_flag_consistency _____
+tests/integration/test_api_validation_epic.py:24: in test_pr003946_66_soft_delete_flag_consistency
+    assert response.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 419, in animal_list_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 422, in animal_list_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 419, in animal_list_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 422, in animal_list_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+_________ TestSoftDeleteSemantics.test_pr003946_67_cascade_soft_delete _________
+tests/integration/test_api_validation_epic.py:43: in test_pr003946_67_cascade_soft_delete
+    assert response.status_code in [204, 501]  # 501 if not implemented yet
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   assert 500 in [204, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/family_controller.py", line 113, in delete_family
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.family' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/family_controller.py", line 116, in delete_family
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/family_controller.py", line 113, in delete_family
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.family' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/family_controller.py", line 116, in delete_family
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+________ TestSoftDeleteSemantics.test_pr003946_68_soft_delete_recovery _________
+tests/integration/test_api_validation_epic.py:56: in test_pr003946_68_soft_delete_recovery
+    assert response.status_code in [204, 404, 501]
+E   assert 500 in [204, 404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 194, in animal_delete
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 197, in animal_delete
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 194, in animal_delete
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 197, in animal_delete
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+____________ TestIDValidation.test_pr003946_69_server_generated_ids ____________
+tests/integration/test_api_validation_epic.py:85: in test_pr003946_69_server_generated_ids
+    assert response.status_code in [404, 501]
+E   assert 500 in [404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 496, in animal_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 499, in animal_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 496, in animal_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 499, in animal_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+_________ TestIDValidation.test_pr003946_70_reject_client_provided_ids _________
+tests/integration/test_api_validation_epic.py:109: in test_pr003946_70_reject_client_provided_ids
+    assert response.status_code in [201, 404, 501]
+E   assert 500 in [201, 404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 496, in animal_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 499, in animal_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 496, in animal_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.animals' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/animals_controller.py", line 499, in animal_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+________ TestAuthenticationValidation.test_pr003946_71_token_validation ________
+tests/integration/test_api_validation_epic.py:129: in test_pr003946_71_token_validation
+    assert response.status_code in [200, 404, 501]
+E   assert 500 in [200, 404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/users_controller.py", line 32, in me_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.users' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/users_controller.py", line 35, in me_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/users_controller.py", line 32, in me_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.users' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/users_controller.py", line 35, in me_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+_______ TestAuthenticationValidation.test_pr003946_72_role_based_access ________
+tests/integration/test_api_validation_epic.py:144: in test_pr003946_72_role_based_access
+    assert response.status_code in [200, 401, 404, 501]
+E   assert 500 in [200, 401, 404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 572, in list_users
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.admin' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 575, in list_users
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 572, in list_users
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.admin' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 575, in list_users
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+__ TestAuthenticationValidation.test_pr003946_87_password_policy_enforcement ___
+tests/integration/test_api_validation_epic.py:162: in test_pr003946_87_password_policy_enforcement
+    assert response.status_code in [200, 401, 404, 501]
+E   assert 500 in [200, 401, 404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 112, in auth_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.auth' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 115, in auth_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 112, in auth_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.auth' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 115, in auth_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+___ TestAuthenticationValidation.test_pr003946_88_token_refresh_consistency ____
+tests/integration/test_api_validation_epic.py:179: in test_pr003946_88_token_refresh_consistency
+    assert logout_response.status_code == 204, "Logout should always return 204"
+E   AssertionError: Logout should always return 204
+E   assert 500 == 204
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 185, in auth_refresh_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.auth' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 188, in auth_refresh_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 185, in auth_refresh_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.auth' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 188, in auth_refresh_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 35, in auth_logout_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.auth' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 38, in auth_logout_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 35, in auth_logout_post
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.auth' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/auth_controller.py", line 38, in auth_logout_post
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+_____ TestDataIntegrityValidation.test_pr003946_73_foreign_key_validation ______
+tests/integration/test_api_validation_epic.py:210: in test_pr003946_73_foreign_key_validation
+    assert response.status_code in [201, 404, 501]
+E   assert 500 in [201, 404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 41, in create_user
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.admin' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 44, in create_user
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 41, in create_user
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.admin' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/admin_controller.py", line 44, in create_user
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+_ TestFamilyManagementValidation.test_pr003946_79_family_membership_constraints _
+tests/integration/test_api_validation_epic.py:277: in test_pr003946_79_family_membership_constraints
+    assert data["details"]["entity_type"] == "family", "Should specify family entity type"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'entity_type'
+------------------------------ Captured log call -------------------------------
+ERROR    connexion.decorators.validation:validation.py:216 http://localhost/family validation error: 'familyName' is a required property
+_ TestFamilyManagementValidation.test_pr003946_80_parent_student_relationship_validation _
+tests/integration/test_api_validation_epic.py:299: in test_pr003946_80_parent_student_relationship_validation
+    assert data["details"]["entity_type"] == "family", "Should specify family entity type"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'entity_type'
+------------------------------ Captured log call -------------------------------
+ERROR    connexion.decorators.validation:validation.py:216 http://localhost/family validation error: 'familyName' is a required property
+__ TestPaginationValidation.test_pr003946_81_pagination_parameter_validation ___
+tests/integration/test_api_validation_epic.py:318: in test_pr003946_81_pagination_parameter_validation
+    validation_helper.assert_error_schema(data, "validation_error")
+tests/conftest.py:527: in assert_error_schema
+    assert "code" in response_data, "Error response missing 'code' field"
+E   AssertionError: Error response missing 'code' field
+E   assert 'code' in {'detail': 'Extra query parameter(s) pageSize not in spec', 'status': 400, 'title': None, 'type': 'about:blank'}
+___ TestBillingValidation.test_pr003946_86_billing_period_format_validation ____
+tests/integration/test_api_validation_epic.py:410: in test_pr003946_86_billing_period_format_validation
+    assert response.status_code in [200, 404, 501]
+E   assert 500 in [200, 404, 501]
+E    +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+------------------------------ Captured log call -------------------------------
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 36, in billing_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.analytics' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 39, in billing_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 36, in billing_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.analytics' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 39, in billing_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+ERROR    openapi_server.impl.error_handler:error_handler.py:270 Full traceback:
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 36, in billing_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.analytics' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 39, in billing_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+
+ERROR    openapi_server.impl.error_handler:error_handler.py:286 Unhandled exception in controller: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 36, in billing_get
+    impl_function = getattr(impl_module, impl_function_name)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'openapi_server.impl.analytics' has no attribute 'handle_'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/controllers/analytics_controller.py", line 39, in billing_get
+    from openapi_server.impl import handlers
+  File "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/handlers.py", line 19, in <module>
+    from .conversation import (
+ImportError: cannot import name 'handle_conversations_sessions_get' from 'openapi_server.impl.conversation' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/impl/conversation.py)
+_____ TestErrorHandlingValidation.test_pr003946_90_consistent_error_schema _____
+tests/integration/test_api_validation_epic.py:480: in test_pr003946_90_consistent_error_schema
+    validation_helper.assert_error_schema(data, "not_found")
+tests/conftest.py:527: in assert_error_schema
+    assert "code" in response_data, "Error response missing 'code' field"
+E   AssertionError: Error response missing 'code' field
+E   assert 'code' in {'detail': 'The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
+----------------------------- Captured stdout call -----------------------------
+
+============================================================
+TEST: PR003946-90: Consistent Error Schema Test
+============================================================
+CURL COMMAND:
+  curl -s -i -X GET -H 'Content-Type: application/json' -H 'Accept: application/json' http://localhost:8080/non_existent_endpoint
+
+RESPONSE STATUS: 404
+RESPONSE DATA:
+  {
+  "detail": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
+  "status": 404,
+  "title": "Not Found",
+  "type": "about:blank"
+}
+=============================== warnings summary ===============================
+../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:16
+../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:16
+  /opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:16: DeprecationWarning: Accessing jsonschema.draft4_format_checker is deprecated and will be removed in a future release. Instead, use the FORMAT_CHECKER attribute on the corresponding Validator.
+    from jsonschema import Draft4Validator, ValidationError, draft4_format_checker
+
+../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:16
+../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:16
+  /opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:16: DeprecationWarning: jsonschema.RefResolver is deprecated as of v4.18.0, in favor of the https://github.com/python-jsonschema/referencing library, which provides more compliant referencing behavior as well as more flexible APIs for customization. A future release will remove RefResolver. Please file a feature request (on referencing) if you are missing an API for the kind of customization you need.
+    from jsonschema import Draft4Validator, RefResolver
+
+../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:17
+  /opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:17: DeprecationWarning: jsonschema.exceptions.RefResolutionError is deprecated as of version 4.18.0. If you wish to catch potential reference resolution errors, directly catch referencing.exceptions.Unresolvable.
+    from jsonschema.exceptions import RefResolutionError, ValidationError  # noqa
+
+tests/integration/test_api_validation_epic.py: 133 warnings
+  /opt/miniconda3/lib/python3.12/site-packages/werkzeug/routing/rules.py:751: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    parts = parts or [ast.Str("")]
+
+tests/integration/test_api_validation_epic.py: 356 warnings
+  /opt/miniconda3/lib/python3.12/site-packages/werkzeug/routing/rules.py:748: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    _convert(elem) if is_dynamic else ast.Str(s=elem)
+
+tests/integration/test_api_validation_epic.py: 356 warnings
+  /opt/miniconda3/lib/python3.12/ast.py:587: DeprecationWarning: Attribute s is deprecated and will be removed in Python 3.14; use value instead
+    return Constant(*args, **kwargs)
+
+tests/integration/test_api_validation_epic.py: 488 warnings
+  /opt/miniconda3/lib/python3.12/site-packages/werkzeug/routing/rules.py:755: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    if isinstance(p, ast.Str) and isinstance(ret[-1], ast.Str):
+
+tests/integration/test_api_validation_epic.py: 440 warnings
+  /opt/miniconda3/lib/python3.12/site-packages/werkzeug/routing/rules.py:756: DeprecationWarning: Attribute s is deprecated and will be removed in Python 3.14; use value instead
+    ret[-1] = ast.Str(ret[-1].s + p.s)
+
+tests/integration/test_api_validation_epic.py: 220 warnings
+  /opt/miniconda3/lib/python3.12/site-packages/werkzeug/routing/rules.py:756: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    ret[-1] = ast.Str(ret[-1].s + p.s)
+
+tests/integration/test_api_validation_epic.py: 41 warnings
+  /opt/miniconda3/lib/python3.12/site-packages/connexion/spec.py:50: DeprecationWarning: Passing a schema to Validator.iter_errors is deprecated and will be removed in a future release. Call validator.evolve(schema=new_schema).iter_errors(...) instead.
+    for error in instance_validator.iter_errors(instance['default'], instance):
+
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_get_endpoint
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_http_response
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_dynamodb_persistence
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_response_consistency
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_multiple_config_updates_persistence
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_invalid_animal_id_handling
+  /Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/integration/test_animal_config_persistence.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'created': {'at': datetime.utcnow().isoformat() + 'Z'},
+
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_get_endpoint
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_http_response
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_dynamodb_persistence
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_response_consistency
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_multiple_config_updates_persistence
+tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_invalid_animal_id_handling
+  /Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/integration/test_animal_config_persistence.py:66: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'modified': {'at': datetime.utcnow().isoformat() + 'Z'},
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_health_check_endpoint
+FAILED tests/integration/test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_conversation_turn_returns_ai_response
+FAILED tests/integration/test_chatgpt_integration_epic.py::TestIntegrationE2E::test_complete_conversation_flow_with_chatgpt
+FAILED tests/integration/test_chatgpt_integration_epic.py::TestIntegrationE2E::test_concurrent_conversations_isolation
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_create_guardrail
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_list_guardrails
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_get_guardrail
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_update_guardrail
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsCRUD::test_delete_guardrail
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailTemplates::test_apply_template_to_animal
+FAILED tests/integration/test_guardrails_system_e2e.py::TestAnimalGuardrailsIntegration::test_update_animal_guardrails
+FAILED tests/integration/test_guardrails_system_e2e.py::TestAnimalGuardrailsIntegration::test_get_animal_with_guardrails
+FAILED tests/integration/test_guardrails_system_e2e.py::TestChatGPTGuardrailsIntegration::test_system_prompt_includes_guardrails
+FAILED tests/integration/test_guardrails_system_e2e.py::TestChatGPTGuardrailsIntegration::test_conversation_respects_guardrails
+FAILED tests/integration/test_guardrails_system_e2e.py::TestChatGPTGuardrailsIntegration::test_guardrail_violations_logged
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsPriority::test_priority_ordering
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsAdmin::test_admin_only_create
+FAILED tests/integration/test_guardrails_system_e2e.py::TestGuardrailsPerformance::test_guardrails_dont_slow_conversation
+FAILED tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_66_soft_delete_flag_consistency
+FAILED tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_67_cascade_soft_delete
+FAILED tests/integration/test_api_validation_epic.py::TestSoftDeleteSemantics::test_pr003946_68_soft_delete_recovery
+FAILED tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_69_server_generated_ids
+FAILED tests/integration/test_api_validation_epic.py::TestIDValidation::test_pr003946_70_reject_client_provided_ids
+FAILED tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_71_token_validation
+FAILED tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_72_role_based_access
+FAILED tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_87_password_policy_enforcement
+FAILED tests/integration/test_api_validation_epic.py::TestAuthenticationValidation::test_pr003946_88_token_refresh_consistency
+FAILED tests/integration/test_api_validation_epic.py::TestDataIntegrityValidation::test_pr003946_73_foreign_key_validation
+FAILED tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_79_family_membership_constraints
+FAILED tests/integration/test_api_validation_epic.py::TestFamilyManagementValidation::test_pr003946_80_parent_student_relationship_validation
+FAILED tests/integration/test_api_validation_epic.py::TestPaginationValidation::test_pr003946_81_pagination_parameter_validation
+FAILED tests/integration/test_api_validation_epic.py::TestBillingValidation::test_pr003946_86_billing_period_format_validation
+FAILED tests/integration/test_api_validation_epic.py::TestErrorHandlingValidation::test_pr003946_90_consistent_error_schema
+ERROR tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_get_endpoint
+ERROR tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_http_response
+ERROR tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_dynamodb_persistence
+ERROR tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_animal_config_patch_response_consistency
+ERROR tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_multiple_config_updates_persistence
+ERROR tests/integration/test_animal_config_persistence.py::TestAnimalConfigPersistence::test_invalid_animal_id_handling
+=========== 33 failed, 22 passed, 2051 warnings, 6 errors in 26.41s ============

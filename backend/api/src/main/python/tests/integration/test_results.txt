@@ -1,0 +1,109 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.4, pytest-8.4.2, pluggy-1.6.0 -- /opt/miniconda3/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.12.4', 'Platform': 'macOS-15.6.1-arm64-arm-64bit', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.6.0'}, 'Plugins': {'html': '4.1.1', 'asyncio': '1.1.0', 'xdist': '3.8.0', 'mock': '3.15.0', 'metadata': '3.1.1', 'anyio': '4.10.0', 'hypothesis': '6.138.15', 'Faker': '37.6.0', 'benchmark': '5.1.0', 'cov': '7.0.0'}, 'AWS_REGION': 'us-west-2', 'JAVA_HOME': '/Library/Java/JavaVirtualMachines/jdk1.8.0_331.jdk/Contents/Home'}
+hypothesis profile 'default'
+benchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: /Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python
+configfile: pytest.ini
+plugins: html-4.1.1, asyncio-1.1.0, xdist-3.8.0, mock-3.15.0, metadata-3.1.1, anyio-4.10.0, hypothesis-6.138.15, Faker-37.6.0, benchmark-5.1.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 17 items
+
+test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_api_key_validation_on_init PASSED [  5%]
+test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_health_check_endpoint PASSED [ 11%]
+test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_rate_limits_429 FAILED [ 17%]
+test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_invalid_key_401 PASSED [ 23%]
+test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_timeout_errors FAILED [ 29%]
+test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_conversation_turn_returns_ai_response FAILED [ 35%]
+test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_animal_config_fetched_from_dynamodb PASSED [ 41%]
+test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_token_usage_captured_and_persisted PASSED [ 47%]
+test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_blocks_inappropriate_input PASSED [ 52%]
+test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_filters_unsafe_output PASSED [ 58%]
+test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_enforces_educational_appropriateness PASSED [ 64%]
+test_chatgpt_integration_epic.py::TestPR003946_178_GuardrailsValidation::test_violations_logged_to_dynamodb PASSED [ 70%]
+test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_retry_with_exponential_backoff FAILED [ 76%]
+test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_circuit_breaker_activation FAILED [ 82%]
+test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_user_friendly_fallback_messages PASSED [ 88%]
+test_chatgpt_integration_epic.py::TestIntegrationE2E::test_complete_conversation_flow_with_chatgpt FAILED [ 94%]
+test_chatgpt_integration_epic.py::TestIntegrationE2E::test_concurrent_conversations_isolation FAILED [100%]
+
+=================================== FAILURES ===================================
+_______ TestPR003946_176_OpenAIAPIActivation.test_handle_rate_limits_429 _______
+test_chatgpt_integration_epic.py:57: in test_handle_rate_limits_429
+    assert result['model'] == 'mock'
+E   AssertionError: assert 'gpt-3.5-turbo' == 'mock'
+E     
+E     - mock
+E     + gpt-3.5-turbo
+------------------------------ Captured log call -------------------------------
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:192 Failed to fetch animal data from DynamoDB: An error occurred (ResourceNotFoundException) when calling the GetItem operation: Requested resource not found
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:416 Failed to log token usage: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_______ TestPR003946_176_OpenAIAPIActivation.test_handle_timeout_errors ________
+test_chatgpt_integration_epic.py:80: in test_handle_timeout_errors
+    assert result['model'] == 'mock'
+E   AssertionError: assert 'gpt-3.5-turbo' == 'mock'
+E     
+E     - mock
+E     + gpt-3.5-turbo
+------------------------------ Captured log call -------------------------------
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:192 Failed to fetch animal data from DynamoDB: An error occurred (ResourceNotFoundException) when calling the GetItem operation: Requested resource not found
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:416 Failed to log token usage: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_ TestPR003946_177_ReplacesMockResponses.test_conversation_turn_returns_ai_response _
+test_chatgpt_integration_epic.py:97: in test_conversation_turn_returns_ai_response
+    assert create_resp.status_code in [200, 201]
+E   assert 404 in [200, 201]
+E    +  where 404 = <Response [404]>.status_code
+_ TestPR003946_179_ErrorHandlingResilience.test_retry_with_exponential_backoff _
+test_chatgpt_integration_epic.py:200: in test_retry_with_exponential_backoff
+    assert elapsed >= 1.0  # At least 1 second for backoff
+    ^^^^^^^^^^^^^^^^^^^^^
+E   assert 0.9837450981140137 >= 1.0
+------------------------------ Captured log call -------------------------------
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:192 Failed to fetch animal data from DynamoDB: An error occurred (ResourceNotFoundException) when calling the GetItem operation: Requested resource not found
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:416 Failed to log token usage: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+___ TestPR003946_179_ErrorHandlingResilience.test_circuit_breaker_activation ___
+test_chatgpt_integration_epic.py:215: in test_circuit_breaker_activation
+    assert result['model'] == 'mock'
+E   AssertionError: assert 'gpt-3.5-turbo' == 'mock'
+E     
+E     - mock
+E     + gpt-3.5-turbo
+------------------------------ Captured log call -------------------------------
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:192 Failed to fetch animal data from DynamoDB: An error occurred (ResourceNotFoundException) when calling the GetItem operation: Requested resource not found
+WARNING  openapi_server.impl.chatgpt_integration:chatgpt_integration.py:416 Failed to log token usage: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+_______ TestIntegrationE2E.test_complete_conversation_flow_with_chatgpt ________
+test_chatgpt_integration_epic.py:258: in test_complete_conversation_flow_with_chatgpt
+    assert create_resp.status_code in [200, 201]
+E   assert 404 in [200, 201]
+E    +  where 404 = <Response [404]>.status_code
+__________ TestIntegrationE2E.test_concurrent_conversations_isolation __________
+test_chatgpt_integration_epic.py:316: in test_concurrent_conversations_isolation
+    assert turn1_resp.json()['reply'] != turn2_resp.json()['reply']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'reply'
+=============================== warnings summary ===============================
+../../../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:16
+../../../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:16
+  /opt/miniconda3/lib/python3.12/site-packages/connexion/decorators/validation.py:16: DeprecationWarning: Accessing jsonschema.draft4_format_checker is deprecated and will be removed in a future release. Instead, use the FORMAT_CHECKER attribute on the corresponding Validator.
+    from jsonschema import Draft4Validator, ValidationError, draft4_format_checker
+
+../../../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:16
+../../../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:16
+  /opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:16: DeprecationWarning: jsonschema.RefResolver is deprecated as of v4.18.0, in favor of the https://github.com/python-jsonschema/referencing library, which provides more compliant referencing behavior as well as more flexible APIs for customization. A future release will remove RefResolver. Please file a feature request (on referencing) if you are missing an API for the kind of customization you need.
+    from jsonschema import Draft4Validator, RefResolver
+
+../../../../../../../../../../../opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:17
+  /opt/miniconda3/lib/python3.12/site-packages/connexion/json_schema.py:17: DeprecationWarning: jsonschema.exceptions.RefResolutionError is deprecated as of version 4.18.0. If you wish to catch potential reference resolution errors, directly catch referencing.exceptions.Unresolvable.
+    from jsonschema.exceptions import RefResolutionError, ValidationError  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_rate_limits_429
+FAILED test_chatgpt_integration_epic.py::TestPR003946_176_OpenAIAPIActivation::test_handle_timeout_errors
+FAILED test_chatgpt_integration_epic.py::TestPR003946_177_ReplacesMockResponses::test_conversation_turn_returns_ai_response
+FAILED test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_retry_with_exponential_backoff
+FAILED test_chatgpt_integration_epic.py::TestPR003946_179_ErrorHandlingResilience::test_circuit_breaker_activation
+FAILED test_chatgpt_integration_epic.py::TestIntegrationE2E::test_complete_conversation_flow_with_chatgpt
+FAILED test_chatgpt_integration_epic.py::TestIntegrationE2E::test_concurrent_conversations_isolation
+================== 7 failed, 10 passed, 5 warnings in 10.42s ===================

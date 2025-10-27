@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.233" timestamp="2025-09-11T19:19:59.611779-07:00" hostname="macbookair.lan"><testcase classname="" name="tests.unit.test_openapi_endpoints" time="0.000"><error message="collection failure">ImportError while importing test module '/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/unit/test_openapi_endpoints.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/miniconda3/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_openapi_endpoints.py:22: in &lt;module&gt;
+    from openapi_server import create_app
+E   ImportError: cannot import name 'create_app' from 'openapi_server' (/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/openapi_server/__init__.py)</error></testcase></testsuite></testsuites>

@@ -1,0 +1,267 @@
+{
+  "config": {
+    "configFile": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/config/playwright.config.js",
+    "rootDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/fixtures/global-setup.js",
+    "globalTeardown": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/fixtures/global-teardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/junit-results.xml"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results.json"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Desktop High DPI",
+        "name": "Desktop High DPI",
+        "testDir": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "validate-charlie-routing-fix.spec.js",
+      "file": "validate-charlie-routing-fix.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "🐘 CRITICAL: Charlie Routing Fix Validation",
+          "file": "validate-charlie-routing-fix.spec.js",
+          "line": 22,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should extract animalId from URL and Charlie responds as elephant",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 12327,
+                      "error": {
+                        "message": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at /Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs/validate-charlie-routing-fix.spec.js:91:16",
+                        "location": {
+                          "file": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs/validate-charlie-routing-fix.spec.js",
+                          "column": 16,
+                          "line": 91
+                        },
+                        "snippet": "  89 |\n  90 |     // Wait for successful login (dashboard or animals page)\n> 91 |     await page.waitForURL(/\\/(dashboard|animals)/, { timeout: 10000 });\n     |                ^\n  92 |     console.log('✅ Login successful');\n  93 |\n  94 |     // Step 2: Navigate to Charlie's chat with animalId parameter"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs/validate-charlie-routing-fix.spec.js",
+                            "column": 16,
+                            "line": 91
+                          },
+                          "message": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n  89 |\n  90 |     // Wait for successful login (dashboard or animals page)\n> 91 |     await page.waitForURL(/\\/(dashboard|animals)/, { timeout: 10000 });\n     |                ^\n  92 |     console.log('✅ Login successful');\n  93 |\n  94 |     // Step 2: Navigate to Charlie's chat with animalId parameter\n    at /Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs/validate-charlie-routing-fix.spec.js:91:16"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n🔧 Setting up test environment...\n"
+                        },
+                        {
+                          "text": "\n🎯 TEST: Validate Charlie Routing Fix\n"
+                        },
+                        {
+                          "text": "📍 Testing URL: http://localhost:3001/chat?animalId=charlie_003\n"
+                        },
+                        {
+                          "text": "\n📝 Step 1: Login to application\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-26T12:00:52.539Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results/validate-charlie-routing-f-575b4-harlie-responds-as-elephant-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results/validate-charlie-routing-f-575b4-harlie-responds-as-elephant-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/reports/playwright/test-results/validate-charlie-routing-f-575b4-harlie-responds-as-elephant-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/keithstegbauer/repositories/CMZ-chatbots/backend/api/src/main/python/tests/playwright/specs/validate-charlie-routing-fix.spec.js",
+                        "column": 16,
+                        "line": 91
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "b7ae55640fe031d8cd3f-ad1da4b56da2504adb1b",
+              "file": "validate-charlie-routing-fix.spec.js",
+              "line": 77,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-26T12:00:51.822Z",
+    "duration": 14023.074,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

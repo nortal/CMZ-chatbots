@@ -1,0 +1,137 @@
+{
+    "Item": {
+        "active": {
+            "BOOL": true
+        },
+        "age_appropriate": {
+            "BOOL": true
+        },
+        "animalId": {
+            "S": "leo_001"
+        },
+        "configuration": {
+            "M": {
+                "voice": {
+                    "S": "nova"
+                },
+                "temperature": {
+                    "N": "0.8"
+                },
+                "toolsEnabled": {
+                    "L": [
+                        {
+                            "S": "facts"
+                        },
+                        {
+                            "S": "media_lookup"
+                        }
+                    ]
+                },
+                "guardrails": {
+                    "M": {
+                        "ageAppropriate": {
+                            "BOOL": true
+                        },
+                        "contentFiltering": {
+                            "BOOL": true
+                        },
+                        "maxResponseLength": {
+                            "N": "500"
+                        }
+                    }
+                },
+                "aiModel": {
+                    "S": "gpt-3.5-turbo"
+                },
+                "topP": {
+                    "N": "1"
+                },
+                "status": {
+                    "S": "active"
+                }
+            }
+        },
+        "created": {
+            "M": {
+                "at": {
+                    "S": "2025-09-13T02:15:22.104641Z"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "deleted": {
+            "M": {
+                "at": {
+                    "S": "2025-09-15T03:24:23.136460+00:00"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "educational_focus": {
+            "BOOL": true
+        },
+        "modified": {
+            "M": {
+                "at": {
+                    "S": "2025-09-15T04:18:03.030383+00:00"
+                },
+                "by": {
+                    "M": {
+                        "userId": {
+                            "S": "system"
+                        },
+                        "displayName": {
+                            "S": "System"
+                        },
+                        "email": {
+                            "S": "system@cmz.org"
+                        }
+                    }
+                }
+            }
+        },
+        "name": {
+            "S": "Leo the Lion"
+        },
+        "personality": {
+            "M": {
+                "description": {
+                    "S": "Majestic king of the savanna who loves sharing wisdom about wildlife conservation and leadership"
+                }
+            }
+        },
+        "softDelete": {
+            "BOOL": false
+        },
+        "species": {
+            "S": "Panthera leo"
+        },
+        "status": {
+            "S": "active"
+        }
+    }
+}

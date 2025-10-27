@@ -1,0 +1,63 @@
+{
+  "total_endpoints": 6,
+  "categories": {
+    "Authentication": {
+      "count": 4,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/auth",
+          "description": "Login with mock users",
+          "handler": "auth_mock.py",
+          "status": "JWT tokens",
+          "category": "Authentication"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "description": "Logout",
+          "handler": "auth_mock.py",
+          "status": "Clears session",
+          "category": "Authentication"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/refresh",
+          "description": "Refresh token",
+          "handler": "auth_mock.py",
+          "status": "New JWT",
+          "category": "Authentication"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/reset_password",
+          "description": "Password reset",
+          "handler": "auth_mock.py",
+          "status": "\u2705 FIXED 2025-10-02",
+          "category": "Authentication"
+        }
+      ]
+    },
+    "UI Endpoints": {
+      "count": 2,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/",
+          "description": "Homepage",
+          "handler": "ui.py:homepage_get()",
+          "status": "Static response",
+          "category": "UI Endpoints"
+        },
+        {
+          "method": "GET",
+          "path": "/admin",
+          "description": "Admin dashboard",
+          "handler": "ui.py:admin_dashboard_get()",
+          "status": "Static response",
+          "category": "UI Endpoints"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,255 @@
+# TDD Organization System Setup
+
+**Use this prompt to create a comprehensive test-driven development organization system with Jira integration and systematic tracking:**
+
+***CRITICAL**:  Before attempting to interact with Jira please read the NORTAL-JIRA-ADVICE.md file in the project root directory.
+
+```
+Create a comprehensive TDD organization system using sequential reasoning to establish systematic testing infrastructure for the CMZ chatbot project (PR003946).
+
+## Required System Architecture
+
+Use sequential reasoning to create this testing directory structure:
+
+```
+tests/
+├── TESTING-ADVICE.md                    # Overall testing guidance and methodology
+├── integration/                         # Integration test specifications
+│   ├── PR003946-XXX-ADVICE.md          # Feature description & acceptance criteria
+│   └── PR003946-XXX/                   # Individual ticket test directory
+│       ├── PR003946-XXX-howto-test.md  # Explicit test instructions
+│       ├── PR003946-XXX-YYYY-MM-DD-HHMMSS-results.md # Test execution reports
+│       └── PR003946-XXX-history.txt    # Pass/fail history tracking
+├── unit/                                # Unit test specifications (same structure)
+├── playwright/                          # End-to-end UI test specifications (same structure)
+└── security/                            # Security test specifications (same structure)
+```
+
+## Sequential Reasoning Implementation Process
+
+### Step 1: Infrastructure Setup and Planning
+Use sequential reasoning to predict project needs and systematically create the base structure:
+- Plan testing approach for CMZ project requirements
+- Assess current project state and testing gaps
+- Create base directory structure with proper permissions
+
+### Step 2: Jira Integration and Ticket Discovery
+Use sequential reasoning to systematically fetch and categorize testable tickets:
+- Connect to Nortal Jira project PR003946 using established authentication
+- Search for all testable tickets (Bug, Task, Story types with acceptance criteria)
+- Filter tickets that require testing validation (exclude documentation-only tickets)
+- Categorize tickets by appropriate test type (integration, unit, playwright, security)
+
+### Step 3: TESTING-ADVICE.md Creation
+Create comprehensive testing guidance document with:
+
+```markdown
+# CMZ Project Testing Framework
+
+## Overview
+Systematic test-driven development approach for CMZ AI-Based Animal Interaction Platform (PR003946).
+
+## Testing Philosophy
+- **Evidence-Based**: All test results must be reproducible and measurable
+- **Comprehensive Coverage**: Every testable Jira ticket gets systematic test specifications
+- **Historical Tracking**: Maintain complete test execution history for trend analysis
+- **Multi-Layer Testing**: Integration, Unit, Playwright (E2E), and Security test coverage
+
+## Test Execution Workflow
+1. **Pre-Test**: Review ticket ADVICE.md for acceptance criteria understanding
+2. **Test Execution**: Follow howto-test.md instructions exactly
+3. **Results Documentation**: Create timestamped results file with detailed findings
+4. **History Tracking**: Update history.txt with pass/fail status and timestamp
+5. **Sequential Analysis**: Use sequential reasoning to assess results and next steps
+
+## Test Types and Scope
+- **Integration Tests**: API endpoints, database integration, service communication
+- **Unit Tests**: Individual functions, business logic, data transformations
+- **Playwright Tests**: End-to-end user workflows, UI functionality, cross-browser compatibility
+- **Security Tests**: Authentication, authorization, input validation, vulnerability assessment
+
+## Quality Standards
+- All tests must have clear pass/fail criteria
+- Results must include reproduction steps and evidence
+- Failed tests require root cause analysis using sequential reasoning
+- Test history enables trend analysis and reliability metrics
+
+## Jira Integration
+- Periodic evaluation of all PR003946 tickets for testability
+- Automatic creation of test specifications for new testable tickets
+- Test results linked back to original Jira tickets for traceability
+```
+
+### Step 4: Systematic Ticket Processing
+For each testable ticket found in PR003946, use sequential reasoning to:
+
+#### 4a: Create ADVICE.md Files
+Generate ticket-specific ADVICE files in appropriate test directories:
+- Extract complete ticket information (summary, description, acceptance criteria)
+- Analyze technical requirements and dependencies
+- Identify specific test scenarios and edge cases
+- Document expected behaviors and success criteria
+
+#### 4b: Create Ticket Test Directories
+For each ticket, create structured test directories with:
+
+**howto-test.md Template**:
+```markdown
+# Test Instructions: [Ticket Summary]
+
+## Ticket Information
+- **Ticket**: [PR003946-XXX]
+- **Type**: [Bug/Task/Story]
+- **Priority**: [High/Medium/Low]
+- **Component**: [Frontend/Backend/Integration/Security]
+
+## Test Objective
+[Clear statement of what this test validates]
+
+## Prerequisites
+- [ ] Backend services running on localhost:8080
+- [ ] Frontend services running on localhost:3000
+- [ ] Test user accounts available and authenticated
+- [ ] Required test data present in system
+
+## Test Steps (Sequential Execution Required)
+1. **Setup Phase**:
+   - [Specific setup instructions]
+   - [Environment validation steps]
+
+2. **Execution Phase**:
+   - [Step-by-step test execution]
+   - [Expected results at each step]
+
+3. **Validation Phase**:
+   - [Success criteria verification]
+   - [Error condition testing if applicable]
+
+## Pass/Fail Criteria
+### ✅ PASS Conditions:
+- [ ] [Specific measurable condition 1]
+- [ ] [Specific measurable condition 2]
+- [ ] [Performance/quality requirements met]
+
+### ❌ FAIL Conditions:
+- [ ] [Any error conditions that indicate failure]
+- [ ] [Performance degradation beyond acceptable limits]
+- [ ] [Security vulnerabilities or data integrity issues]
+
+## Substeps and Multiple Test Scenarios
+[If ticket requires multiple test scenarios, list each with individual pass/fail criteria]
+
+### Substep 1: [Description]
+- **Test**: [Specific test action]
+- **Expected**: [Expected result]
+- **Pass Criteria**: [Specific success condition]
+
+### Substep 2: [Description]
+- **Test**: [Specific test action]
+- **Expected**: [Expected result]
+- **Pass Criteria**: [Specific success condition]
+
+## Evidence Collection
+- Screenshots for UI tests
+- Log files for backend tests
+- Performance metrics for integration tests
+- Security scan results for security tests
+
+## Sequential Reasoning Checkpoints
+- Predict expected outcomes before execution
+- Analyze actual vs expected results
+- Determine root cause for any failures
+- Assess broader system impact
+```
+
+### Step 5: Test Execution and Reporting System
+Establish systematic test execution workflow:
+
+#### 5a: Results File Format (YYYY-MM-DD-HHMMSS for proper sorting)
+```markdown
+# Test Results: [Ticket] - [Date/Time]
+
+## Test Execution Summary
+- **Ticket**: PR003946-XXX
+- **Test Type**: [Integration/Unit/Playwright/Security]
+- **Executed By**: [Tester name/system]
+- **Start Time**: YYYY-MM-DD HH:MM:SS
+- **End Time**: YYYY-MM-DD HH:MM:SS
+- **Overall Result**: PASS/FAIL
+
+## Sequential Reasoning Analysis
+**Pre-Test Predictions**: [What was expected to happen]
+**Actual Outcomes**: [What actually occurred]
+**Variance Analysis**: [Differences between expected and actual]
+**Root Cause Assessment**: [For failures, systematic analysis of causes]
+
+## Detailed Test Results
+[Step-by-step results matching howto-test.md structure]
+
+### Setup Phase Results
+- [Each setup step with actual results]
+
+### Execution Phase Results
+- [Each execution step with actual results]
+
+### Validation Phase Results
+- [Each validation step with actual results]
+
+## Pass/Fail Assessment
+**✅ PASSED Criteria**: [List of criteria that passed]
+**❌ FAILED Criteria**: [List of criteria that failed]
+**⚠️ WARNINGS**: [Any concerns or partial failures]
+
+## Evidence Attachments
+- [List of screenshots, logs, metrics collected]
+
+## Recommendations
+**If PASSED**: [Any improvements or optimizations identified]
+**If FAILED**: [Specific remediation steps required]
+
+## Next Steps
+[Sequential reasoning assessment of what should happen next]
+```
+
+#### 5b: History File Format (PR003946-XXX-history.txt)
+```
+YYYY-MM-DD	HH:MM:SS	PASS	[Brief result summary]
+YYYY-MM-DD	HH:MM:SS	FAIL	[Brief failure reason]
+YYYY-MM-DD	HH:MM:SS	PASS	[Brief result summary]
+```
+
+### Step 6: Periodic Jira Evaluation System
+Create systematic process for ongoing maintenance:
+- Weekly scan of PR003946 for new testable tickets
+- Automatic creation of test specifications for new tickets
+- Updates to existing test specifications when tickets are modified
+- Historical analysis of test trends and system reliability
+
+### Step 7: Integration with Existing Systems
+Connect TDD system with current project infrastructure:
+- Link to existing Playwright test suites in backend/api/src/main/python/tests/playwright
+- Integrate with current authentication test users and credentials
+- Connect to established DynamoDB test data and backend API endpoints
+- Align with current development workflow and CI/CD processes
+
+## Execution Instructions
+
+1. **Use sequential reasoning** to plan the complete implementation approach
+2. **Start with infrastructure**: Create base directory structure
+3. **Fetch Jira tickets**: Connect to PR003946 and identify testable tickets
+4. **Generate specifications**: Create ADVICE.md and howto-test.md for each ticket
+5. **Establish workflows**: Set up result reporting and history tracking systems
+6. **Validate system**: Test the complete workflow with one ticket from each test type
+
+## Success Criteria
+- ✅ Complete directory structure created with proper permissions
+- ✅ All testable PR003946 tickets have systematic test specifications
+- ✅ Test execution workflow validated with sample tickets
+- ✅ Historical tracking system functional and properly formatted
+- ✅ Integration with existing project infrastructure confirmed
+- ✅ Sequential reasoning integrated throughout all testing processes
+
+Execute this comprehensive TDD organization setup using systematic sequential reasoning to ensure complete coverage and proper integration with the CMZ project infrastructure.
+```
+
+This prompt will create a complete, systematic TDD organization system that integrates with your Jira tickets, maintains proper historical tracking, and uses sequential reasoning throughout the testing process.

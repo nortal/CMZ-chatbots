@@ -1,0 +1,366 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-09-12",
+  "description": "Comprehensive UI feature and control inventory for CMZ Chatbot platform testing",
+  
+  "features": {
+    "public_pages": {
+      "description": "Publicly accessible pages and controls",
+      "user_access": ["anonymous"],
+      "controls": [
+        {
+          "id": "homepage",
+          "type": "page",
+          "path": "/",
+          "required": true,
+          "elements": [
+            {"selector": "h1", "type": "heading", "description": "Main page title"},
+            {"selector": "[data-testid=welcome-message]", "type": "text", "description": "Welcome message"},
+            {"selector": "[data-testid=get-started-btn]", "type": "button", "action": "navigate", "description": "Get started button"}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "page_load_performance",
+        "mobile_responsive_layout",
+        "accessibility_compliance"
+      ]
+    },
+
+    "authentication": {
+      "description": "User authentication and session management",
+      "user_access": ["anonymous", "authenticated"],
+      "controls": [
+        {
+          "id": "login-page",
+          "type": "page", 
+          "path": "/login",
+          "required": true,
+          "elements": [
+            {"selector": "[data-testid=email-input]", "type": "input", "validation": "email", "required": true},
+            {"selector": "[data-testid=password-input]", "type": "input", "validation": "password", "required": true},
+            {"selector": "[data-testid=login-button]", "type": "button", "action": "submit", "required": true},
+            {"selector": "[data-testid=forgot-password-link]", "type": "link", "action": "navigate"},
+            {"selector": "[data-testid=register-link]", "type": "link", "action": "navigate"}
+          ]
+        },
+        {
+          "id": "logout-functionality",
+          "type": "feature",
+          "user_access": ["authenticated"],
+          "elements": [
+            {"selector": "[data-testid=user-menu]", "type": "dropdown", "required": true},
+            {"selector": "[data-testid=logout-button]", "type": "button", "action": "logout", "required": true}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "empty_credentials",
+        "invalid_email_format",
+        "password_too_short", 
+        "special_characters_in_password",
+        "sql_injection_attempts",
+        "xss_attempts",
+        "long_email_addresses",
+        "unicode_characters",
+        "session_timeout_handling"
+      ],
+      "integration_tests": [
+        "successful_login_creates_session",
+        "failed_login_returns_error",
+        "logout_clears_session",
+        "session_persistence_across_pages"
+      ]
+    },
+
+    "dashboard": {
+      "description": "Main user dashboard and navigation",
+      "user_access": ["member", "student", "admin"],
+      "controls": [
+        {
+          "id": "main-dashboard",
+          "type": "page",
+          "path": "/dashboard", 
+          "required": true,
+          "elements": [
+            {"selector": "[data-testid=user-profile]", "type": "component", "description": "User profile widget"},
+            {"selector": "[data-testid=start-chat-button]", "type": "button", "action": "navigate", "required": true},
+            {"selector": "[data-testid=recent-chats]", "type": "list", "description": "Recent chat history"},
+            {"selector": "[data-testid=available-animals]", "type": "grid", "description": "Available animal personalities"}
+          ]
+        },
+        {
+          "id": "navigation-menu",
+          "type": "component",
+          "elements": [
+            {"selector": "[data-testid=nav-dashboard]", "type": "link", "action": "navigate", "required": true},
+            {"selector": "[data-testid=nav-chat]", "type": "link", "action": "navigate", "required": true},
+            {"selector": "[data-testid=nav-profile]", "type": "link", "action": "navigate"},
+            {"selector": "[data-testid=nav-settings]", "type": "link", "action": "navigate", "user_access": ["member", "admin"]}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "empty_chat_history",
+        "large_number_of_chats",
+        "network_connectivity_issues",
+        "concurrent_user_sessions"
+      ]
+    },
+
+    "chat_interface": {
+      "description": "Interactive chat functionality with animal personalities",
+      "user_access": ["member", "student", "admin"],
+      "controls": [
+        {
+          "id": "chat-page",
+          "type": "page",
+          "path": "/chat/:animalId",
+          "required": true,
+          "elements": [
+            {"selector": "[data-testid=animal-avatar]", "type": "image", "description": "Animal personality avatar"},
+            {"selector": "[data-testid=chat-messages]", "type": "container", "description": "Message history container"},
+            {"selector": "[data-testid=message-input]", "type": "textarea", "required": true, "description": "User message input"},
+            {"selector": "[data-testid=send-button]", "type": "button", "action": "send", "required": true},
+            {"selector": "[data-testid=clear-chat-button]", "type": "button", "action": "clear"},
+            {"selector": "[data-testid=save-chat-button]", "type": "button", "action": "save"}
+          ]
+        },
+        {
+          "id": "message-features",
+          "type": "component",
+          "elements": [
+            {"selector": "[data-testid=message-timestamp]", "type": "text", "description": "Message timestamps"},
+            {"selector": "[data-testid=message-status]", "type": "indicator", "description": "Message delivery status"},
+            {"selector": "[data-testid=typing-indicator]", "type": "animation", "description": "Typing indicator"}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "empty_message_submission",
+        "very_long_messages",
+        "special_characters_emojis", 
+        "rapid_message_sending",
+        "network_interruption_during_chat",
+        "concurrent_chat_sessions",
+        "message_character_limits",
+        "html_xss_in_messages"
+      ],
+      "integration_tests": [
+        "messages_persist_to_backend",
+        "chat_history_retrieval",
+        "animal_personality_responses",
+        "session_continuity"
+      ]
+    },
+
+    "user_management": {
+      "description": "User profile and account management",
+      "user_access": ["member", "student", "admin"],
+      "controls": [
+        {
+          "id": "profile-page",
+          "type": "page",
+          "path": "/profile",
+          "elements": [
+            {"selector": "[data-testid=display-name-input]", "type": "input", "validation": "text", "required": true},
+            {"selector": "[data-testid=email-display]", "type": "text", "readonly": true},
+            {"selector": "[data-testid=role-display]", "type": "badge", "readonly": true},
+            {"selector": "[data-testid=save-profile-button]", "type": "button", "action": "save"},
+            {"selector": "[data-testid=change-password-button]", "type": "button", "action": "modal"}
+          ]
+        },
+        {
+          "id": "family-management",
+          "type": "component",
+          "user_access": ["member"],
+          "elements": [
+            {"selector": "[data-testid=family-members-list]", "type": "list", "description": "Family member list"},
+            {"selector": "[data-testid=add-family-member-button]", "type": "button", "action": "modal"},
+            {"selector": "[data-testid=family-settings]", "type": "link", "action": "navigate"}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "display_name_validation",
+        "special_characters_in_names",
+        "unicode_character_support",
+        "profile_image_upload",
+        "concurrent_profile_updates"
+      ]
+    },
+
+    "admin_controls": {
+      "description": "Administrative functionality and system management",
+      "user_access": ["admin"],
+      "controls": [
+        {
+          "id": "admin-dashboard",
+          "type": "page",
+          "path": "/admin",
+          "required": true,
+          "elements": [
+            {"selector": "[data-testid=system-health-widget]", "type": "widget", "description": "System health indicators"},
+            {"selector": "[data-testid=user-count-metric]", "type": "metric", "description": "Total user count"},
+            {"selector": "[data-testid=active-chats-metric]", "type": "metric", "description": "Active chat sessions"},
+            {"selector": "[data-testid=recent-activity-log]", "type": "list", "description": "Recent system activity"}
+          ]
+        },
+        {
+          "id": "user-administration",
+          "type": "component",
+          "elements": [
+            {"selector": "[data-testid=users-table]", "type": "table", "description": "User management table"},
+            {"selector": "[data-testid=add-user-button]", "type": "button", "action": "modal"},
+            {"selector": "[data-testid=user-search-input]", "type": "input", "validation": "search"},
+            {"selector": "[data-testid=user-filter-dropdown]", "type": "dropdown", "description": "User role filter"}
+          ]
+        },
+        {
+          "id": "system-configuration",
+          "type": "component",
+          "elements": [
+            {"selector": "[data-testid=feature-flags-panel]", "type": "panel", "description": "Feature flag management"},
+            {"selector": "[data-testid=animal-config-panel]", "type": "panel", "description": "Animal personality configuration"},
+            {"selector": "[data-testid=system-logs-link]", "type": "link", "action": "navigate"}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "large_user_datasets",
+        "complex_search_queries", 
+        "concurrent_admin_operations",
+        "system_performance_under_load"
+      ],
+      "hidden_from": ["member", "student"],
+      "integration_tests": [
+        "admin_only_access_enforcement",
+        "user_creation_persistence",
+        "system_configuration_updates",
+        "audit_log_generation"
+      ]
+    },
+
+    "mobile_responsive": {
+      "description": "Mobile and responsive design features",
+      "user_access": ["all"],
+      "controls": [
+        {
+          "id": "mobile-navigation",
+          "type": "component",
+          "viewports": ["mobile", "tablet"],
+          "elements": [
+            {"selector": "[data-testid=mobile-menu-button]", "type": "button", "description": "Mobile hamburger menu"},
+            {"selector": "[data-testid=mobile-nav-drawer]", "type": "drawer", "description": "Mobile navigation drawer"},
+            {"selector": "[data-testid=mobile-nav-overlay]", "type": "overlay", "description": "Mobile navigation overlay"}
+          ]
+        },
+        {
+          "id": "responsive-chat",
+          "type": "component", 
+          "viewports": ["mobile", "tablet"],
+          "elements": [
+            {"selector": "[data-testid=mobile-chat-input]", "type": "textarea", "description": "Mobile-optimized chat input"},
+            {"selector": "[data-testid=mobile-send-button]", "type": "button", "description": "Mobile send button"},
+            {"selector": "[data-testid=mobile-message-list]", "type": "container", "description": "Mobile message container"}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "screen_rotation_handling",
+        "touch_interaction_accuracy",
+        "keyboard_overlap_management",
+        "gesture_recognition"
+      ]
+    },
+
+    "accessibility": {
+      "description": "Accessibility and WCAG compliance features", 
+      "user_access": ["all"],
+      "controls": [
+        {
+          "id": "keyboard-navigation",
+          "type": "feature",
+          "elements": [
+            {"selector": "[data-testid=skip-to-content]", "type": "link", "description": "Skip to main content link"},
+            {"selector": "[role=main]", "type": "landmark", "description": "Main content landmark"},
+            {"selector": "[role=navigation]", "type": "landmark", "description": "Navigation landmark"}
+          ]
+        },
+        {
+          "id": "screen-reader-support",
+          "type": "feature",
+          "elements": [
+            {"selector": "[aria-label]", "type": "attribute", "description": "ARIA labels"},
+            {"selector": "[aria-describedby]", "type": "attribute", "description": "ARIA descriptions"},
+            {"selector": "[role]", "type": "attribute", "description": "ARIA roles"}
+          ]
+        }
+      ],
+      "boundary_conditions": [
+        "keyboard_only_navigation",
+        "screen_reader_compatibility",
+        "high_contrast_mode",
+        "focus_management",
+        "color_contrast_compliance"
+      ],
+      "wcag_compliance": ["2.1-AA"]
+    }
+  },
+
+  "test_scenarios": {
+    "user_journeys": [
+      {
+        "name": "New user registration and first chat",
+        "steps": ["register", "verify_email", "login", "setup_profile", "start_first_chat"],
+        "user_type": "student"
+      },
+      {
+        "name": "Family member management workflow", 
+        "steps": ["login_parent", "add_child", "configure_permissions", "monitor_activity"],
+        "user_type": "member"
+      },
+      {
+        "name": "Admin user and system management",
+        "steps": ["admin_login", "review_metrics", "manage_users", "configure_system"],
+        "user_type": "admin"
+      }
+    ],
+    "error_scenarios": [
+      {
+        "name": "Network connectivity issues",
+        "description": "Test behavior during network interruptions"
+      },
+      {
+        "name": "Backend service unavailable", 
+        "description": "Test graceful degradation when API is down"
+      },
+      {
+        "name": "Invalid session handling",
+        "description": "Test expired session management"
+      }
+    ]
+  },
+
+  "quality_gates": {
+    "pass_thresholds": {
+      "critical_features": 100,
+      "standard_features": 90,
+      "boundary_conditions": 80,
+      "accessibility_compliance": 95,
+      "mobile_responsive": 85
+    },
+    "performance_requirements": {
+      "page_load_time": 3000,
+      "interaction_response_time": 500,
+      "chat_message_latency": 1000
+    },
+    "browser_support": [
+      "chromium >= 90",
+      "firefox >= 88", 
+      "webkit >= 14",
+      "mobile_chrome >= 90",
+      "mobile_safari >= 14"
+    ]
+  }
+}
