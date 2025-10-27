@@ -9,10 +9,15 @@ Usage:
 
 import os
 import sys
-import requests
 import json
 from datetime import datetime
 from pathlib import Path
+
+try:
+    import requests
+except ImportError:
+    print("⚠️ requests module not available - Teams notification will be skipped")
+    requests = None
 
 
 def send_contract_validation_to_teams(
@@ -199,6 +204,10 @@ def send_contract_validation_to_teams(
 
 
 def main():
+    if requests is None:
+        print("⚠️ Skipping Teams notification - requests module not available")
+        return 0  # Don't fail the workflow
+
     if len(sys.argv) < 2:
         print("Usage: send_contract_validation_to_teams.py <teams_notification_data.json>")
         return 1
