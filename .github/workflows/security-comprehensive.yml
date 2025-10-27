@@ -119,21 +119,21 @@ jobs:
 
       - name: Initialize CodeQL
         if: matrix.scanner == 'codeql'
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript,python
           queries: security-and-quality
 
       - name: Autobuild CodeQL
         if: matrix.scanner == 'codeql'
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
         if: matrix.scanner == 'codeql'
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
 
       - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always() && matrix.scanner == 'semgrep' && hashFiles('semgrep.sarif') != ''
         with:
           sarif_file: semgrep.sarif
@@ -208,7 +208,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload container scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -252,7 +252,7 @@ jobs:
             --output sarif --sarif-file-name checkov-terraform.sarif || true
 
       - name: Upload IaC scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: checkov-dockerfile.sarif
@@ -260,7 +260,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload GHA scan results
-        uses: github/codeql-action/upload-sarif@v3  
+        uses: github/codeql-action/upload-sarif@v4  
         if: always()
         with:
           sarif_file: checkov-gha.sarif
