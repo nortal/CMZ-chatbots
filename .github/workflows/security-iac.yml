@@ -233,7 +233,7 @@ jobs:
             }
 
       - name: Upload IaC scan artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: iac-security-results-${{ github.sha }}
@@ -279,7 +279,7 @@ jobs:
           files: .github/workflows/*.yml
 
       - name: Upload actionlint results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: actionlint-results
