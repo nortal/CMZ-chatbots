@@ -12,7 +12,6 @@ from flask import Flask
 from connexion import FlaskApp
 
 # Import the test client setup
-from openapi_server import create_app
 from openapi_server.test import BaseTestCase
 
 

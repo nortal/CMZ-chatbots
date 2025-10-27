@@ -732,3 +732,53 @@ def handle_convo_turn_stream_get(*args, **kwargs) -> Tuple[Any, int]:
     )
     return error_obj.to_dict(), 501
 
+
+def generate_openai_response(user_message: str, conversation_context: Dict[str, Any], user_context: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Generate OpenAI response for sandbox testing.
+
+    This function provides a simplified interface to the conversation manager
+    for use by sandbox testing functionality.
+
+    Args:
+        user_message: The user's input message
+        conversation_context: Context about the conversation
+        user_context: Context about the user
+
+    Returns:
+        Dict containing the AI response and metadata
+    """
+    try:
+        manager = get_conversation_manager()
+
+        # Create a simplified request structure for the conversation manager
+        request_body = {
+            'message': user_message,
+            'conversationId': conversation_context.get('conversationId', 'sandbox-test'),
+            'animalId': conversation_context.get('animalId', 'default'),
+            'userId': user_context.get('userId', 'sandbox-user')
+        }
+
+        # Use the conversation manager to process the turn
+        result = asyncio.run(manager.process_conversation_turn(
+            user_message=user_message,
+            conversation_id=conversation_context.get('conversationId', 'sandbox-test'),
+            animal_id=conversation_context.get('animalId', 'default'),
+            user_id=user_context.get('userId', 'sandbox-user'),
+            context=user_context
+        ))
+
+        return {
+            'response': result.get('response', 'Sorry, I had trouble generating a response.'),
+            'success': True,
+            'metadata': result.get('metadata', {})
+        }
+
+    except Exception as e:
+        logger.error(f"Error generating OpenAI response for sandbox: {e}")
+        return {
+            'response': 'I apologize, but I encountered an error while processing your message.',
+            'success': False,
+            'error': str(e)
+        }
+
