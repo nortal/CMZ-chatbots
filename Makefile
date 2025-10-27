@@ -180,6 +180,7 @@ run-api:
 			-e AWS_PROFILE=cmz \
 			-e AWS_ACCESS_KEY_ID=$$AWS_ACCESS_KEY_ID \
 			-e AWS_SECRET_ACCESS_KEY=$$AWS_SECRET_ACCESS_KEY \
+			-e OPENAI_API_KEY=$$OPENAI_API_KEY \
 			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
 			-e ANIMAL_DYNAMO_PK_NAME=animalId \
 			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
@@ -198,6 +199,7 @@ run-api:
 			-e AWS_PROFILE=cmz \
 			-e AWS_ACCESS_KEY_ID=$$AWS_ACCESS_KEY_ID \
 			-e AWS_SECRET_ACCESS_KEY=$$AWS_SECRET_ACCESS_KEY \
+			-e OPENAI_API_KEY=$$OPENAI_API_KEY \
 			-e ANIMAL_DYNAMO_TABLE_NAME=quest-dev-animal \
 			-e ANIMAL_DYNAMO_PK_NAME=animalId \
 			-e USER_DYNAMO_TABLE_NAME=quest-dev-user \
@@ -295,7 +297,7 @@ stop-dev: ## Stop complete development environment
 
 health-check: ## Check system health
 	@echo "🔍 System Health Check"
-	@curl -f http://localhost:8080/health && echo "✅ Backend: OK" || echo "❌ Backend: FAIL"
+	@curl -f http://localhost:8080/system_health && echo "✅ Backend: OK" || echo "❌ Backend: FAIL"
 	@curl -f http://localhost:3000 >/dev/null 2>&1 && echo "✅ Frontend (3000): OK" || echo "❌ Frontend (3000): FAIL"
 	@curl -f http://localhost:3001 >/dev/null 2>&1 && echo "✅ Frontend (3001): OK" || echo "❌ Frontend (3001): FAIL"
 	@aws dynamodb list-tables --region us-west-2 --profile cmz >/dev/null 2>&1 && echo "✅ DynamoDB: OK" || echo "❌ DynamoDB: FAIL"
@@ -314,6 +316,8 @@ validate-api: ## Validate API generation and frontend-backend contract
 	@python3 scripts/fix_recurring_issues.py $(SRC_APP_DIR)
 	@echo "🔧 Fixing controller signatures if needed..."
 	@python3 scripts/fix_controller_signatures.py
+	@echo "🔗 Fixing controller-implementation connections..."
+	@cd $(SRC_APP_DIR) && python scripts/fix_controller_connections.py || echo "⚠️ Connection fixer not found or failed"
 	@echo "🏠 Applying Family Management fixes..."
 	@scripts/post_generate_family_fixes.sh || echo "⚠️ Family fixes script not found or failed"
 	@echo "📝 Testing frontend-backend contract..."
@@ -329,7 +333,7 @@ status: ## Show complete system status
 	@echo "🏗️  CMZ Infrastructure Status"
 	@echo "================================"
 	@echo "Services:"
-	@curl -f http://localhost:8080/health >/dev/null 2>&1 && echo "  ✅ Backend API (8080)" || echo "  ❌ Backend API (8080)"
+	@curl -f http://localhost:8080/system_health >/dev/null 2>&1 && echo "  ✅ Backend API (8080)" || echo "  ❌ Backend API (8080)"
 	@curl -f http://localhost:3000 >/dev/null 2>&1 && echo "  ✅ Frontend (3000)" || echo "  ❌ Frontend (3000)"
 	@curl -f http://localhost:3001 >/dev/null 2>&1 && echo "  ✅ Frontend (3001)" || echo "  ❌ Frontend (3001)"
 	@aws dynamodb list-tables --region us-west-2 --profile cmz >/dev/null 2>&1 && echo "  ✅ DynamoDB" || echo "  ❌ DynamoDB"

@@ -20,12 +20,41 @@ from .conversation import (
     handle_convo_turn_post,
     handle_convo_history_get,
     handle_convo_history_delete,
-    handle_summarize_convo_post,
-    handle_conversations_sessions_get,
-    handle_conversations_sessions_session_id_get
+    handle_summarize_convo_post
+)
+from .guardrails import (
+    handle_create_guardrails_config,
+    handle_get_guardrails_config,
+    handle_get_effective_guardrails,
+    handle_validate_content
+)
+from .utils.safety_analytics import (
+    handle_get_safety_metrics,
+    handle_get_safety_trends,
+    handle_get_rule_effectiveness
 )
 from .error_handler import create_error_response, handle_exception_for_controllers
+from .test import handle_test_stress_body
+from .knowledge import handle_knowledge_article_post, handle_knowledge_article_get, handle_knowledge_article_delete
+from .media import handle_media_get, handle_media_delete
+from .auth import handle_auth_reset_password_post, handle_auth_refresh_post, handle_auth_post, handle_auth_logout_post
+from .system import handle_system_health_get
 from .utils.jwt_utils import verify_jwt_token
+from .assistants import (
+    create_assistant,
+    get_assistant,
+    update_assistant,
+    delete_assistant,
+    list_assistants,
+    get_assistant_by_animal
+)
+from .guardrail_management import (
+    handle_guardrail_create_post,
+    handle_guardrail_delete,
+    handle_guardrail_get,
+    handle_guardrail_list_get,
+    handle_guardrail_update_put
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +69,8 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
     try:
         caller_frame = frame.f_back
         caller_name = caller_frame.f_code.co_name
+
+        print(f"🔥 DEBUG handle_(): caller_name={caller_name}, args={args}, kwargs={kwargs}")
 
         # Map controller function names to handler functions
         handler_map = {
@@ -87,6 +118,13 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'summarize_convo_post': handle_summarize_convo_post,
             'conversations_sessions_get': handle_conversations_sessions_get,
             'conversations_sessions_session_id_get': handle_conversations_sessions_session_id_get,
+            # Guardrails handlers
+            'validate_content': handle_validate_content,
+            'get_animal_effective_guardrails': handle_get_effective_guardrails,
+            # Safety analytics handlers
+            'get_safety_metrics': handle_get_safety_metrics,
+            'get_safety_trends': handle_get_safety_trends,
+            'get_rule_effectiveness': handle_get_rule_effectiveness,
             'admin_get': handle_admin_dashboard_get,
             'billing_get': handle_billing_get,
             'create_user': handle_create_user,
@@ -111,11 +149,30 @@ def handle_(*args, **kwargs) -> Tuple[Any, int]:
             'performance_metrics_get': handle_performance_metrics_get,
             'root_get': handle_homepage_get,
             'system_health_get': handle_system_health_get,
+            'chatgpt_health_get': handle_chatgpt_health_get,
             'test_stress_body': handle_test_stress_body,
             'update_family': handle_update_family,
             'update_user': handle_update_user,
             'update_user_details': handle_update_user_details,
-            'upload_media_post': handle_upload_media_post,}
+            'upload_media_post': handle_upload_media_post,
+            # Assistant management handlers
+            'assistant_create_post': create_assistant,
+            'assistant_list_get': list_assistants,
+            'assistant_get': get_assistant,
+            'assistant_update_put': update_assistant,
+            'assistant_delete': delete_assistant,
+            # Guardrail management handlers
+            'guardrail_create_post': handle_guardrail_create_post,
+            'guardrail_delete': handle_guardrail_delete,
+            'guardrail_get': handle_guardrail_get,
+            'guardrail_list_get': handle_guardrail_list_get,
+            'guardrail_update_put': handle_guardrail_update_put,
+            # Concurrent editing handlers
+            'animal_editing_start_post': handle_animal_editing_start_post,
+            'animal_editing_end_post': handle_animal_editing_end_post,
+            'animal_editing_active_get': handle_animal_editing_active_get,
+
+        }
 
         handler_func = handler_map.get(caller_name)
         if handler_func:
@@ -242,7 +299,31 @@ def handle_animal_config_patch(animal_id: str, body: Any) -> Tuple[Any, int]:
             )
             return error.to_dict(), 403
 
-        # Execute the actual handler
+        # Extract concurrent editing session information from request
+        session_id = body.get('sessionId')
+        expected_version = body.get('version')
+        user_id = payload.get('user_id') or payload.get('userId') or payload.get('email', 'unknown')
+
+        # If concurrent editing fields are provided, use conflict resolution
+        if session_id and expected_version is not None:
+            from .utils.concurrent_editing import save_animal_config_changes
+
+            # Remove session metadata from update data
+            update_data = {k: v for k, v in body.items() if k not in ['sessionId', 'version']}
+
+            # Attempt save with conflict detection
+            success, result = save_animal_config_changes(
+                animal_id, session_id, expected_version, update_data, user_id
+            )
+
+            if success:
+                return result, 200
+            else:
+                # Return conflict or error information
+                status_code = 409 if result.get('error') == 'version_conflict' else 500
+                return result, status_code
+
+        # Fallback to standard update without concurrent editing
         animal_handler = create_flask_animal_handler()
         return animal_handler.update_animal_config(animal_id, body)
     except Exception as e:
@@ -511,15 +592,101 @@ def handle_user_details_delete(user_id: str) -> Tuple[Any, int]:
 
 
 # Stub handlers for other endpoints that need implementation
-def handle_family_list_get() -> Tuple[Any, int]:
-    """Get list of families"""
-    from .family import family_list_get
-    return family_list_get()
+def handle_family_list_get(user_id=None, **kwargs) -> Tuple[Any, int]:
+    """Get list of families for the current user"""
+    from .family_bidirectional import list_families_for_user
+    from flask import request
+
+    # Extract user_id from JWT token if not provided
+    if not user_id:
+        auth_header = request.headers.get('Authorization')
+        user_id = 'anonymous'
+
+        if auth_header and auth_header.startswith('Bearer '):
+            is_valid, payload = verify_jwt_token(auth_header)
+            if is_valid and payload:
+                user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+    # Get families for this user
+    return list_families_for_user(user_id)
 
 
 def handle_family_details_post(body: Any) -> Tuple[Any, int]:
     """Create new family with proper model handling"""
     from .family import family_details_post
+
+    # Convert FamilyInput model object to dict if needed
+    if hasattr(body, 'to_dict'):
+        body_dict = body.to_dict()
+        # The to_dict() method converts to snake_case, but we need camelCase for the family creation
+        # Convert family_name back to familyName
+        if 'family_name' in body_dict:
+            body_dict['familyName'] = body_dict.pop('family_name')
+        if 'preferred_programs' in body_dict:
+            body_dict['preferredPrograms'] = body_dict.pop('preferred_programs')
+    else:
+        body_dict = body
+
+    # Ensure all fields are present in the dictionary
+    # The model might not include all fields if not regenerated
+    if isinstance(body_dict, dict):
+        # Log what we received for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Creating family with data: {body_dict}")
+
+    return family_details_post(body_dict)
+
+
+def handle_family_list_get_orphaned(user_id=None) -> Tuple[Any, int]:
+    """Get list of families for the current user"""
+    from .family_bidirectional import list_families_for_user
+    from flask import request
+
+    # Extract user_id from JWT token if not provided
+    if not user_id:
+        auth_header = request.headers.get('Authorization')
+        user_id = 'anonymous'
+
+        if auth_header and auth_header.startswith('Bearer '):
+            is_valid, payload = verify_jwt_token(auth_header)
+            if is_valid and payload:
+                user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+    # Get families for this user
+    return list_families_for_user(user_id)
+
+
+def handle_family_details_post(body: Any) -> Tuple[Any, int]:
+    """Create new family with proper model handling"""
+    from .family import family_details_post
+
+    # Convert FamilyInput model object to dict if needed
+    if hasattr(body, 'to_dict'):
+        body_dict = body.to_dict()
+        # The to_dict() method converts to snake_case, but we need camelCase for the family creation
+        # Convert family_name back to familyName
+        if 'family_name' in body_dict:
+            body_dict['familyName'] = body_dict.pop('family_name')
+        if 'preferred_programs' in body_dict:
+            body_dict['preferredPrograms'] = body_dict.pop('preferred_programs')
+    else:
+        body_dict = body
+
+    # Ensure all fields are present in the dictionary
+    # The model might not include all fields if not regenerated
+    if isinstance(body_dict, dict):
+        # Log what we received for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Creating family with data: {body_dict}")
+
+    return family_details_post(body_dict)
+
+
+def handle_family_details_post(body: Any) -> Tuple[Any, int]:
+    """Create new family with proper model handling"""
+    from .family_bidirectional import create_family_bidirectional
 
     # Convert FamilyInput model object to dict if needed
     if hasattr(body, 'to_dict'):
@@ -538,13 +705,19 @@ def handle_family_details_post(body: Any) -> Tuple[Any, int]:
         body_dict = body
 
     # Ensure all fields are present in the dictionary
-    # The model might not include all fields if not regenerated
     if isinstance(body_dict, dict):
         # Log what we received for debugging
-        logger = logging.getLogger(__name__)
         logger.info(f"Creating family with data: {body_dict}")
 
-    return family_details_post(body_dict)
+    # Get requesting user ID from JWT token or use anonymous for testing
+    requesting_user_id = 'anonymous'
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        is_valid, payload = verify_jwt_token(auth_header)
+        if is_valid and payload:
+            requesting_user_id = payload.get('user_id') or payload.get('userId', 'anonymous')
+
+    return create_family_bidirectional(body_dict, requesting_user_id)
 
 
 def handle_family_details_get(family_id: str) -> Tuple[Any, int]:
@@ -581,7 +754,7 @@ def handle_login_post(body: Dict[str, Any]) -> Tuple[Any, int]:
 
         # Extract email and password from body
         # Frontend sends 'username' field, but we use email
-        email = body.get('username', body.get('email', ''))
+        email = body.get('username') or body.get('email', '')
         password = body.get('password', '')
 
         # Debug logging (password completely omitted for security)
@@ -956,6 +1129,12 @@ def handle_system_health_get() -> Tuple[Any, int]:
     return {"status": "healthy", "timestamp": datetime.datetime.now().isoformat()}, 200
 
 
+def handle_chatgpt_health_get() -> Tuple[Any, int]:
+    """ChatGPT integration health check"""
+    from .chatgpt_integration import handle_health_check
+    return handle_health_check()
+
+
 def handle_system_status_get() -> Tuple[Any, int]:
     """System status check"""
     # Return system status information
@@ -1073,3 +1252,204 @@ def handle_upload_media_post(*args, **kwargs) -> Tuple[Any, int]:
         details={"operation": "upload_media_post"}
     )
     return error.to_dict(), 501
+
+
+def handle_conversations_sessions_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Get conversation sessions list"""
+    from openapi_server.models.error import Error
+    error = Error(
+        code="not_implemented",
+        message="Conversation sessions list not yet implemented",
+        details={"operation": "conversations_sessions_get"}
+    )
+    return error.to_dict(), 501
+
+
+def handle_conversations_sessions_session_id_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Get specific conversation session by ID"""
+    from openapi_server.models.error import Error
+    error = Error(
+        code="not_implemented",
+        message="Conversation session get not yet implemented",
+        details={"operation": "conversations_sessions_session_id_get"}
+    )
+    return error.to_dict(), 501
+
+
+# Concurrent Editing Session Handlers
+def handle_animal_editing_start_post(*args, **kwargs) -> Tuple[Any, int]:
+    """Start editing session for animal configuration"""
+    try:
+        from flask import request
+        from .utils.jwt_utils import verify_jwt_token
+        from .utils.concurrent_editing import start_animal_config_editing
+        from openapi_server.models.error import Error
+
+        # Extract animal_id from args/kwargs
+        animal_id = None
+        if args:
+            animal_id = args[0] if len(args) > 0 else None
+        if not animal_id and 'animal_id' in kwargs:
+            animal_id = kwargs['animal_id']
+
+        if not animal_id:
+            error = Error(
+                code="missing_parameter",
+                message="Animal ID is required",
+                details={"parameter": "animal_id"}
+            )
+            return error.to_dict(), 400
+
+        # Check authentication
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            error = Error(
+                code="unauthorized",
+                message="Authentication required",
+                details={"error": "Missing Authorization header"}
+            )
+            return error.to_dict(), 401
+
+        # Verify token
+        is_valid, payload = verify_jwt_token(auth_header)
+        if not is_valid or not payload:
+            error = Error(
+                code="unauthorized",
+                message="Invalid or expired token",
+                details={"error": "Token validation failed"}
+            )
+            return error.to_dict(), 401
+
+        # Extract user information
+        user_id = payload.get('user_id') or payload.get('userId') or payload.get('email', 'unknown')
+        user_email = payload.get('email', user_id)
+
+        # Start editing session
+        result = start_animal_config_editing(animal_id, user_id, user_email)
+
+        if 'error' in result:
+            return result, 500
+
+        return result, 200
+
+    except Exception as e:
+        return handle_exception_for_controllers(e)
+
+
+def handle_animal_editing_end_post(*args, **kwargs) -> Tuple[Any, int]:
+    """End editing session for animal configuration"""
+    try:
+        from flask import request
+        from .utils.jwt_utils import verify_jwt_token
+        from .utils.concurrent_editing import end_animal_config_editing
+        from openapi_server.models.error import Error
+
+        # Extract parameters
+        body = None
+        if args:
+            body = args[0] if len(args) > 0 else None
+        if not body and 'body' in kwargs:
+            body = kwargs['body']
+
+        if not body:
+            error = Error(
+                code="missing_body",
+                message="Request body is required",
+                details={"required_field": "sessionId"}
+            )
+            return error.to_dict(), 400
+
+        # Convert model to dict if needed
+        if hasattr(body, 'to_dict'):
+            body = body.to_dict()
+        elif not isinstance(body, dict):
+            body = dict(body) if body else {}
+
+        session_id = body.get('sessionId')
+        if not session_id:
+            error = Error(
+                code="missing_parameter",
+                message="Session ID is required",
+                details={"parameter": "sessionId"}
+            )
+            return error.to_dict(), 400
+
+        # Check authentication
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            error = Error(
+                code="unauthorized",
+                message="Authentication required",
+                details={"error": "Missing Authorization header"}
+            )
+            return error.to_dict(), 401
+
+        # Verify token
+        is_valid, payload = verify_jwt_token(auth_header)
+        if not is_valid or not payload:
+            error = Error(
+                code="unauthorized",
+                message="Invalid or expired token",
+                details={"error": "Token validation failed"}
+            )
+            return error.to_dict(), 401
+
+        # End editing session
+        success = end_animal_config_editing(session_id)
+
+        if success:
+            return {'message': 'Editing session ended successfully', 'sessionId': session_id}, 200
+        else:
+            return {'error': 'Session not found or already ended', 'sessionId': session_id}, 404
+
+    except Exception as e:
+        return handle_exception_for_controllers(e)
+
+
+def handle_animal_editing_active_get(*args, **kwargs) -> Tuple[Any, int]:
+    """Get active editors for animal configuration"""
+    try:
+        from flask import request
+        from .utils.jwt_utils import verify_jwt_token
+        from .utils.concurrent_editing import get_animal_config_editors
+        from openapi_server.models.error import Error
+
+        # Extract animal_id from args/kwargs
+        animal_id = None
+        if args:
+            animal_id = args[0] if len(args) > 0 else None
+        if not animal_id and 'animal_id' in kwargs:
+            animal_id = kwargs['animal_id']
+
+        if not animal_id:
+            error = Error(
+                code="missing_parameter",
+                message="Animal ID is required",
+                details={"parameter": "animal_id"}
+            )
+            return error.to_dict(), 400
+
+        # Optional authentication - public endpoint for awareness
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            is_valid, payload = verify_jwt_token(auth_header)
+            # Continue even if auth fails for this informational endpoint
+
+        # Get active editors
+        editors = get_animal_config_editors(animal_id)
+
+        return {'animalId': animal_id, 'activeEditors': editors}, 200
+
+    except Exception as e:
+        return handle_exception_for_controllers(e)
+
+
+# Alias functions for forwarding compatibility (fixes validation)
+def handle_create_family(*args, **kwargs) -> Tuple[Any, int]:
+    """Alias for handle_family_details_post for forwarding compatibility"""
+    return handle_family_details_post(*args, **kwargs)
+
+
+def handle_delete_family(*args, **kwargs) -> Tuple[Any, int]:
+    """Alias for handle_family_details_delete for forwarding compatibility"""
+    return handle_family_details_delete(*args, **kwargs)

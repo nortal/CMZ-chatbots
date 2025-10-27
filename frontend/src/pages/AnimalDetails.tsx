@@ -379,24 +379,18 @@ const AnimalDetails: React.FC = () => {
                   )}
                 </div>
               </div>
-              {isEditing ? (
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={cancelEditing}
-                    className="text-gray-400 hover:text-gray-600 p-2 rounded"
-                    title="Cancel editing"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              ) : (
-                <button 
-                  onClick={() => setSelectedAnimal(null)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  ×
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  if (isEditing) {
+                    cancelEditing();
+                  }
+                  setSelectedAnimal(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+                title="Close modal"
+              >
+                ×
+              </button>
             </div>
           </div>
           

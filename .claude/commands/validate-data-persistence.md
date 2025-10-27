@@ -243,7 +243,7 @@ def compare_ui_database_data(ui_data, db_data):
 ### Diagnostic Procedures
 ```bash
 # Service Health Check
-curl -f http://localhost:3000 && curl -f http://localhost:8080/health
+curl -f http://localhost:3000 && curl -f http://localhost:8080/system_health
 
 # Database Connectivity
 aws dynamodb list-tables --region us-west-2

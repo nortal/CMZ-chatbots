@@ -16,12 +16,74 @@ This is a Python Flask-based API server for the Cougar Mountain Zoo digital amba
 
 **Key Business Domains:**
 - **Animals**: Chatbot personalities, configurations, and animal details
-- **Families**: Parent-student group management for zoo educational programs  
+- **Families**: Parent-student group management for zoo educational programs
 - **Users & Auth**: User management with role-based access control
 - **Conversations**: Chat session tracking and analytics
 - **Knowledge Base**: Educational content and media management
 
-## ⚠️ OpenAPI Generation - NOW SAFE BY DEFAULT
+## 🚨 CRITICAL: Teams Reporting
+
+**ALWAYS DELEGATE TO TEAMS REPORTING AGENT - NEVER SEND DIRECTLY**
+
+All Microsoft Teams notifications MUST be delegated to a sub-agent using the Task tool. Never send Teams messages manually or construct adaptive cards directly.
+
+**Why:** Ensures proper adaptive card formatting, error isolation, consistent results, parallel execution efficiency.
+
+**Documentation:**
+- `.claude/commands/teams-report.md` - Complete delegation guide with templates and examples
+- `TEAMS-REPORTING-ADVICE.md` - Best practices, troubleshooting, usage patterns
+- `TEAMS-WEBHOOK-ADVICE.md` - Technical webhook requirements, adaptive card structure
+- `.claude/AGENT-DELEGATION-TEMPLATES.md` - Complete delegation template with all report types
+
+**Report Types:** test-results, validation, deployment, code-review, quality-gate, bug-report, custom
+
+**Script:** `scripts/send_teams_report.py` (requires TEAMS_WEBHOOK_URL environment variable)
+
+## 🚨 CRITICAL: OpenAPI Generation - Routing Regression Prevention
+
+**CONSTITUTION RULE: Always validate operationId completeness after ANY OpenAPI regeneration**
+
+### The Hidden Regression Pattern (Discovered 2025-10-22)
+OpenAPI regeneration can **silently break Flask routing** by removing `operationId` fields from endpoints, causing:
+- ✅ Implementation code remains intact (431 lines of conversation logic)
+- ✅ Controllers exist and import properly
+- ❌ Flask/Connexion **cannot route requests** → 404 errors
+- ❌ Entire features appear "unimplemented" when they're just unreachable
+- ❌ Frontend shows connection errors, users can't access functionality
+
+### Mandatory Post-Regeneration Validation Protocol
+
+**NEVER assume OpenAPI regeneration is complete without this check:**
+
+```bash
+# 1. ALWAYS run this validation after ANY generate-api operation:
+grep -c "operationId:" backend/api/openapi_spec.yaml
+# Expected: Should match number of endpoints (typically 40-60)
+
+# 2. Check conversation endpoints specifically (most critical):
+grep -A2 -B2 "operationId.*convo" backend/api/openapi_spec.yaml
+# Must see: convo_turn_post, convo_turn_stream_get, convo_history_get, convo_history_delete
+
+# 3. Test routing validation:
+python -c "
+from openapi_server.controllers import conversation_controller
+print('✅ Available:', [f for f in dir(conversation_controller) if 'convo' in f])
+"
+
+# 4. If ANY operationIds are missing, ADD THEM IMMEDIATELY before continuing
+```
+
+### Why This Regression is Devastating
+- **Silent Failure**: No error during generation, routes just disappear
+- **False "Not Implemented"**: Full features appear broken when they're just unreachable
+- **Production Impact**: 24 animal ambassadors completely inaccessible to users
+- **Hard to Debug**: 404s look like missing implementation, not routing config
+
+### Prevention Strategy
+1. **Pre-Commit Hook**: Add operationId validation to git hooks
+2. **Documentation**: Update this section after every regeneration incident
+3. **Testing**: Playwright tests detect routing failures as 404s
+4. **Systematic Fix**: When found, fix ALL endpoints at once, not just the one that broke
 
 **As of 2025-09-17, `make generate-api` automatically includes validation:**
 ```bash
@@ -479,6 +541,25 @@ For orchestrating all validation commands and generating consolidated reports:
 - `.claude/commands/comprehensive-validation.md` - Run all validate*.md commands with parallel execution and reporting
 - `COMPREHENSIVE-VALIDATION-ADVICE.md` - Optimization strategies, CI/CD integration, and performance tuning
 
+## Contract Validation (UI-API-OpenAPI Alignment)
+For systematic validation of three-way contract alignment to prevent runtime failures:
+- `.claude/commands/validate-contracts.md` - Validate UI code, API implementation, and OpenAPI spec alignment using `/validate-contracts`
+- `VALIDATE-CONTRACTS-ADVICE.md` - Best practices, edge cases, and troubleshooting for contract mismatches
+- **Key Detections**: Field name mismatches, parameter location errors, required field omissions, type mismatches, response structure differences
+- **Integration**: Run before deployment, in CI/CD pipeline, after OpenAPI spec changes
+
+## Interface Verification Agent
+Intelligent three-way contract drift detection (OpenAPI ↔ API ↔ Frontend) with root cause classification and evidence-based attribution.
+
+**When to Use:** Test orchestrator Phase 0 (before all testing), contract drift analysis, classify FRONTEND_BUG vs API_BUG vs SPEC_BUG, block testing if critical issues found
+
+**Documentation:**
+- `.claude/commands/verify-interface.md` - Complete 5-phase methodology with classification decision tree and code examples
+- `VERIFY-INTERFACE-ADVICE.md` - Classification patterns (FRONTEND_BUG, API_BUG, SPEC_BUG, MULTIPLE, AMBIGUOUS), integration guide
+- `.claude/AGENT-DELEGATION-TEMPLATES.md` - Complete delegation template
+
+**Critical Focus:** Read-only analysis (no fixes), intelligent classification with evidence (exact file:line references), self-validating, 100% endpoint coverage, <5% AMBIGUOUS classifications, BLOCKS further testing if CRITICAL issues found
+
 ### Backend Health Testing Overview
 The backend health validation system ensures users receive appropriate error messages based on actual system status:
 
@@ -534,6 +615,24 @@ For automated resolution of issues identified in PR reviews:
 - **Key Features**: Parses review-mr output, applies categorized fixes, validates corrections, marks comments resolved
 - **Integration**: Use after `/review-mr` to automatically fix identified issues before merge
 
+## Comprehensive Code Review System
+For systematic multi-phase code review with OpenAI integration:
+- `.claude/commands/comprehensive-code-review.md` - Hybrid review using native tools, Sequential MCP, and OpenAI API
+- `COMPREHENSIVE-CODE-REVIEW-ADVICE.md` - Implementation guidance, cost optimization, and best practices
+- **Analysis Focus**: Style, security, logical correctness, DRY/SOLID principles, code duplication detection
+- **Key Features**: Module-by-module analysis, security scanning, embeddings-based duplication detection, Teams reporting
+- **Usage**: `/comprehensive-code-review [--focus area] [--module path]`
+
+## Code Review Issue Resolution
+For systematic application of code review findings with safety checkpoints:
+- `.claude/commands/fix-code-review-issues.md` - Automated fix application with testing and rollback
+- `FIX-CODE-REVIEW-ISSUES-ADVICE.md` - Safety principles, fix patterns, and troubleshooting
+- **Workflow**: Checkpoint commit → Apply fix groups → Test → Keep or revert → Document
+- **Safety Features**: CRITICAL checkpoint before changes, test after each group, auto-revert on regression, stop on unfixable issues
+- **Fix Groups**: Dead code removal, data handling improvements, auth refactoring, code organization
+- **Integration**: Use after `/comprehensive-code-review` to systematically address findings
+- **Usage**: `/fix-code-review-issues [--groups 1,2,3,4] [--skip-baseline] [--quick]`
+
 ## Infrastructure Hardening (Updated 2025-01-14)
 For systematic resolution of recurring development workflow issues:
 - `.claude/commands/systematic-cmz-infrastructure-hardening.md` - Permanent infrastructure improvements with TDD validation
@@ -562,3 +661,115 @@ For systematic resolution of recurring development workflow issues:
 - **Automated Environment**: No more manual service startup or port conflicts
 - **Quality Gates**: Proactive issue detection and automated fixes
 - **Git Workflow**: Enforced branch targeting and naming conventions with pre-commit hooks
+
+## Teams Reporting Agent
+For all Microsoft Teams channel notifications and reporting:
+- `.claude/commands/teams-report.md` - Specialized agent for Teams reporting with proper adaptive card formatting
+- `TEAMS-REPORTING-ADVICE.md` - Best practices, troubleshooting, and usage patterns
+- `TEAMS-WEBHOOK-ADVICE.md` - Technical webhook requirements and adaptive card structure
+- **Usage**: `/teams-report <report-type> [--data file] [--title "Custom"]`
+- **Report Types**: test-results, validation, deployment, code-review, quality-gate, bug-report, custom
+- **Integration**: Works with all validation and quality check commands for automated reporting
+- **Critical**: ALWAYS use this agent for Teams notifications - never send messages manually
+
+## Test Generation Agent
+Comprehensive test coverage generation with authenticity verification and DynamoDB persistence checks.
+
+**When to Use:** Missing test coverage, need DynamoDB persistence verification, test authenticity concerns
+
+**Documentation:**
+- `.claude/commands/generate-tests.md` - Complete methodology with coverage analysis and authenticity checking
+- `TEST-GENERATION-ADVICE.md` - Best practices, anti-patterns, troubleshooting
+- `.claude/AGENT-DELEGATION-TEMPLATES.md` - Complete delegation template
+
+**Key Focus:** 90%+ coverage, zero false positives, 100% DynamoDB verification, authenticity validation
+
+## Backend Comprehensive Testing Agent
+Systematic REST API testing with OpenAPI validation, comprehensive edge cases, and DynamoDB verification.
+
+**When to Use:** Backend endpoint testing, OpenAPI spec validation, edge case testing (Unicode, security, boundaries), DynamoDB persistence verification
+
+**Documentation:**
+- `.claude/commands/backend-testing.md` - Complete 6-phase methodology with edge cases and error classification
+- `BACKEND-TESTING-ADVICE.md` - OpenAPI validation patterns, cleanup protocols, troubleshooting
+- `.claude/AGENT-DELEGATION-TEMPLATES.md` - Complete delegation template
+
+**Key Focus:** 25+ edge cases per field, 100% OpenAPI validation, 100% DynamoDB verification, 100% cleanup, intelligent error classification (delegates "not implemented" to root-cause-analyst)
+
+## Test Orchestrator Agent
+Comprehensive test coordination with intelligent error classification and OpenAPI artifact detection.
+
+**When to Use:** Coordinate all test types (unit, integration, E2E, validation), classify "not implemented" errors, delegate to specialized verifiers
+
+**Documentation:**
+- `.claude/commands/orchestrate-tests.md` - Complete 5-phase methodology with error classification protocol
+- `TEST-ORCHESTRATION-ADVICE.md` - ENDPOINT-WORK-ADVICE.md integration, OpenAPI artifact patterns, performance optimization
+- `.claude/AGENT-DELEGATION-TEMPLATES.md` - Complete delegation template
+
+**Critical Focus:** MUST read ENDPOINT-WORK-ADVICE.md before declaring "not implemented" as regression, distinguishes true bugs from OpenAPI artifacts, parallel delegation to backend/frontend/persistence verifiers
+
+## Frontend Comprehensive Testing Agent
+Systematic UI component testing across all user roles with 25+ edge cases, OpenAPI validation, and DynamoDB persistence verification.
+
+**When to Use:** UI component testing, multi-role validation (admin, zookeeper, parent, student, visitor), edge case testing (Unicode, security, boundaries), OpenAPI spec validation
+
+**Documentation:**
+- `.claude/commands/frontend-comprehensive-testing.md` - Complete 6-phase methodology with role-based testing and stopping conditions
+- `FRONTEND-COMPREHENSIVE-TESTING-ADVICE.md` - Edge case patterns, OpenAPI validation bugs, integration guide
+- `.claude/AGENT-DELEGATION-TEMPLATES.md` - Complete delegation template
+
+**Critical Focus:** STOPS immediately if backend unhealthy or "not implemented" encountered, 25+ edge cases per text field, reports OpenAPI validation bugs (CRITICAL/HIGH/MEDIUM severity), ≥98% component pass rate, ≥95% cross-browser compatibility
+
+## Feature Documentation Agent
+Hierarchical feature documentation generation from requirements, code, and OpenAPI specifications with interactive clarification.
+
+**When to Use:** Generate System→Feature→Component→Field documentation tree, document testing agents need component inventory, create field-level specs with 25+ edge cases
+
+**Documentation:**
+- `.claude/commands/document-features.md` - Complete 6-phase methodology with interactive clarification process
+- `FEATURE-DOCUMENTATION-ADVICE.md` - Documentation hierarchy patterns, field templates, agent integration
+- `.claude/AGENT-DELEGATION-TEMPLATES.md` - Complete delegation template
+
+**Key Focus:** Multi-source analysis (requirements, OpenAPI, frontend, backend), generates documentation-index.json for programmatic access, interactive user clarification for ambiguous requirements, field-level specs drive testing agent edge cases, ≥20 edge cases per field, 100% component coverage within 1 week
+
+## Agent Delegation System
+
+**Comprehensive Delegation Guide**: `.claude/AGENT-DELEGATION-TEMPLATES.md`
+
+This guide provides complete delegation templates for ALL available agents including:
+
+**Testing & Quality**: quality-engineer, test-coverage-verifier, persistence-verifier, test-generation, backend-testing
+**Backend Development**: backend-architect, python-expert, backend-feature-verifier
+**Frontend Development**: frontend-architect, frontend-feature-verifier
+**System Design**: system-architect, devops-architect
+**Code Quality**: refactoring-expert, security-engineer, performance-engineer
+**Problem Solving**: root-cause-analyst, requirements-analyst
+**Documentation**: technical-writer, learning-guide, socratic-mentor
+**Custom CMZ**: teams-reporting, test-generation
+
+Each template includes:
+- When to use the agent
+- Complete prompt structure
+- Expected deliverables
+- Success criteria
+- Multi-agent workflow examples
+
+**Quick Reference:**
+```python
+# See AGENT-DELEGATION-TEMPLATES.md for complete patterns
+
+# Testing: Generate comprehensive tests
+Task(subagent_type="general-purpose", description="Generate tests", ...)
+
+# Quality: Verify test coverage
+Task(subagent_type="test-coverage-verifier", description="Verify coverage", ...)
+
+# Backend: Design architecture
+Task(subagent_type="backend-architect", description="Design backend", ...)
+
+# Security: Conduct audit
+Task(subagent_type="security-engineer", description="Security audit", ...)
+
+# Reporting: Send to Teams
+Task(subagent_type="general-purpose", description="Send Teams report", ...)
+```

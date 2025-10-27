@@ -232,7 +232,7 @@ make status
 
 # Check service health
 curl http://localhost:3000  # Frontend
-curl http://localhost:8080/health  # Backend
+curl http://localhost:8080/system_health  # Backend
 aws dynamodb list-tables  # Database connectivity
 ```
 

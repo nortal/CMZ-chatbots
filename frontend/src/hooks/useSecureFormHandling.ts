@@ -169,6 +169,8 @@ export function validateSecureAnimalConfigData(formData: any): any {
         ? formData.topP
         : parseFloat(formData.topP || '1.0'),
       toolsEnabled: Array.isArray(formData.toolsEnabled) ? formData.toolsEnabled : ['facts', 'media_lookup'],
+      // CRITICAL FIX: Add systemPrompt field validation
+      systemPrompt: (formData.systemPrompt || '').toString().trim(),
       // Structure guardrails properly for backend
       guardrails: {
         safe_mode: Boolean(formData.ageAppropriate),

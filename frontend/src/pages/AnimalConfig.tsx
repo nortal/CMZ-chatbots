@@ -6,6 +6,13 @@ import { Animal as BackendAnimal } from '../services/api';
 import { utils } from '../services/api';
 import { useSecureFormHandling } from '../hooks/useSecureFormHandling';
 import { ValidationError } from '../utils/inputValidation';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '../components/ui/dialog';
 
 interface KnowledgeEntry {
   id: string;
@@ -88,8 +95,11 @@ const AnimalConfig: React.FC = () => {
   // Handle configuration save with secure error handling
   const handleSaveConfig = async (configData: any) => {
     try {
+      console.log('🟠 DEBUG: handleSaveConfig called with:', configData);
+
       // Separate Animal fields from AnimalConfig fields
       const { name, species, status, ...configFields } = configData;
+      console.log('🟠 DEBUG: configFields after separation:', configFields);
 
       // Update Animal fields (name, species, status) if they have changed
       const animalUpdates: any = {};
@@ -97,15 +107,19 @@ const AnimalConfig: React.FC = () => {
       if (species !== selectedAnimal?.species) animalUpdates.species = species;
       if (status !== undefined && status !== selectedAnimal?.status) animalUpdates.status = status;
 
+      console.log('🟠 DEBUG: animalUpdates:', animalUpdates);
+
       // Update both entities in parallel
       const promises = [];
 
       // Only update Animal if there are changes
       if (Object.keys(animalUpdates).length > 0) {
+        console.log('🟠 DEBUG: Adding animal updates to promises');
         promises.push(updateAnimal(animalUpdates));
       }
 
       // Update AnimalConfig with remaining fields
+      console.log('🟠 DEBUG: Adding config updates to promises');
       promises.push(updateConfig(configFields));
 
       // Wait for both updates to complete
@@ -299,26 +313,20 @@ const AnimalConfig: React.FC = () => {
     };
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
-          <div className="p-6 border-b">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Brain className="w-6 h-6 text-green-600 mr-3" />
-                <h2 className="text-xl font-semibold">Configure {animalConfig?.name || selectedAnimal?.name || 'Animal'}</h2>
-                {configLoading && <span className="ml-2 text-sm text-gray-500">Loading...</span>}
-              </div>
-              <button 
-                onClick={() => {
-                  setSelectedAnimal(null);
-                  setSelectedAnimalId(null);
-                }}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
-              >
-                ×
-              </button>
-            </div>
-          </div>
+      <Dialog open={!!selectedAnimal} onOpenChange={(open) => {
+        if (!open) {
+          setSelectedAnimal(null);
+          setSelectedAnimalId(null);
+        }
+      }}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="flex items-center text-xl font-semibold">
+              <Brain className="w-6 h-6 text-green-600 mr-3" />
+              <span>Configure {animalConfig?.name || selectedAnimal?.name || 'Animal'}</span>
+              {configLoading && <span className="ml-2 text-sm text-gray-500">Loading...</span>}
+            </DialogTitle>
+          </DialogHeader>
           
           {/* Tab Navigation */}
           <div className="border-b">
@@ -780,7 +788,7 @@ const AnimalConfig: React.FC = () => {
             )}
           </div>
 
-          <div className="p-6 border-t bg-gray-50 flex justify-between">
+          <DialogFooter className="p-6 pt-4 border-t bg-gray-50 flex justify-between sm:justify-between">
             <button
               onClick={() => {
                 setSelectedAnimal(null);
@@ -803,11 +811,18 @@ const AnimalConfig: React.FC = () => {
                 Test Chatbot
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   try {
+                    console.log('🔴 DEBUG: Save button clicked');
+                    console.log('🔴 DEBUG: formData:', formData);
+                    console.log('🔴 DEBUG: selectedAnimalId:', selectedAnimalId);
+
                     // Use our managed form data instead of DOM extraction
-                    submitForm(formData);
+                    console.log('🔴 DEBUG: About to call submitForm');
+                    const result = await submitForm(formData);
+                    console.log('🔴 DEBUG: submitForm result:', result);
                   } catch (error) {
+                    console.error('🔴 DEBUG: Save button error:', error);
                     if (error instanceof ValidationError) {
                       console.debug('Form validation error:', error.message);
                     }
@@ -820,9 +835,9 @@ const AnimalConfig: React.FC = () => {
                 {configSaving || isSubmitting ? 'Saving...' : 'Save Configuration'}
               </button>
             </div>
-          </div>
-        </div>
-      </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   };
 

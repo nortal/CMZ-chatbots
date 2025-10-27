@@ -43,3 +43,14 @@ def handle_system_health_get(*args, **kwargs) -> Tuple[Any, int]:
     """
     return not_implemented_error("system_health_get")
 
+
+# Auto-generated handler functions (2025-10-12: Fixed to forward to handlers.py)
+
+def handle_chatgpt_health_get(*args, **kwargs) -> Tuple[Any, int]:
+    """
+    Forwarding handler for chatgpt_health_get
+    Routes to implementation in handlers.py
+    """
+    from .handlers import handle_chatgpt_health_get as real_handler
+    return real_handler(*args, **kwargs)
+

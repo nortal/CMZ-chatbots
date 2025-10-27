@@ -2,9 +2,10 @@
 from typing import Tuple, Any, List
 from ...domain.user_service import UserService
 from ...domain.common.exceptions import (
-    NotFoundError, ConflictError, ValidationError, 
+    NotFoundError, ConflictError, ValidationError,
     BusinessRuleError, InvalidStateError
 )
+from ...domain.common.serializers import serialize_user_details
 from .serializers import FlaskUserSerializer, FlaskUserDetailsSerializer
 
 
@@ -205,9 +206,8 @@ class FlaskUserHandler:
         try:
             # Execute business logic
             user_details = self._user_service.get_user_details_by_user_id(user_id)
-            
+
             # Convert domain entity to dict response (matching existing pattern)
-            from ...domain.common.serializers import serialize_user_details
             response = serialize_user_details(user_details)
             
             return response, 200

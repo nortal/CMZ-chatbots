@@ -252,6 +252,7 @@ def serialize_animal(animal: Animal, include_api_id: bool = True) -> Dict[str, A
         "animalId": animal.animal_id,
         "name": animal.name,
         "species": animal.species,
+        "description": animal.description,
         "status": animal.status,
         "personality": personality_value,  # Dict for DB, string for API
         "configuration": animal.configuration or {},
@@ -298,6 +299,7 @@ def deserialize_animal(data: Dict[str, Any]) -> Animal:
         animal_id=animal_id,
         name=data.get("name", ""),
         species=data.get("species"),
+        description=data.get("description"),
         status=data.get("status", "active"),
         personality=personality,
         configuration=data.get("configuration", {}),

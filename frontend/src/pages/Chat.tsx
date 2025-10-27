@@ -5,6 +5,8 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Card } from "../components/ui/card";
+import { chatService } from "../services/ChatService";
+import { ChatMessage, ConnectionStatus, ChatResponse, ChatError } from "../types/chat";
 
 // Message Loading Component
 function MessageLoading() {
@@ -91,79 +93,16 @@ const Spinner = ({ size = 20, color = "#8f8f8f" }: SpinnerProps) => {
   );
 };
 
-// Types
-interface Message {
-  id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: Date;
-  status: 'sending' | 'sent' | 'received' | 'error';
-  isStreaming?: boolean;
-  animalId?: string;
-  sessionId?: string;
-}
-
-type ConnectionStatus = 'connected' | 'connecting' | 'disconnected' | 'error';
+// Using imported types from chat service
+// ChatMessage, ConnectionStatus imported from "../types/chat"
 
 interface ChatInterfaceProps {
   animalId?: string;
   className?: string;
 }
 
-// Chat API service
-const chatApi = {
-  sendMessage: async (message: string, animalId?: string, sessionId?: string) => {
-    const token = localStorage.getItem('authToken');
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-
-    const response = await fetch(`${apiUrl}/convo_turn`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        message,
-        animalId,
-        sessionId
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to send message');
-    }
-
-    return response.json();
-  },
-
-  streamMessage: (message: string, animalId?: string, sessionId?: string, onChunk: (chunk: string) => void, onError: (error: Error) => void) => {
-    const token = localStorage.getItem('authToken');
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-
-    const eventSource = new EventSource(
-      `${apiUrl}/convo_turn/stream?message=${encodeURIComponent(message)}&animalId=${animalId || ''}&sessionId=${sessionId || ''}&token=${token}`
-    );
-
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.content) {
-          onChunk(data.content);
-        }
-      } catch (error) {
-        console.error('Error parsing SSE data:', error);
-      }
-    };
-
-    eventSource.onerror = (error) => {
-      console.error('SSE error:', error);
-      onError(new Error('Connection lost'));
-      eventSource.close();
-    };
-
-    return eventSource;
-  }
-};
+// Using ChatService for POST polling instead of SSE
+// chatService imported from "../services/ChatService"
 
 // Main Chat Interface Component
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -171,14 +110,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   className = ""
 }) => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connected');
-  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
-  const [sessionId] = useState<string>(() => `session_${Date.now()}`);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
 
   // Auto-scroll to latest message
   const scrollToBottom = () => {
@@ -189,14 +126,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  // Check connection on mount
+  // Initialize session and check connection on mount
   useEffect(() => {
+    // Restore session from ChatService
+    const existingSession = chatService.getSessionId();
+    if (existingSession) {
+      setSessionId(existingSession);
+    }
+
+    // Check backend connection
     checkConnection();
 
+    // Cleanup function for component unmount
     return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
+      // ChatService handles request cancellation via AbortController
+      // No additional cleanup needed since we removed EventSource
+      console.log('Chat component unmounting - requests will be auto-cancelled');
     };
   }, []);
 
@@ -204,121 +149,102 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setConnectionStatus('connecting');
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await fetch(`${apiUrl}/health`);
-
-      if (response.ok) {
-        setConnectionStatus('connected');
-      } else {
-        setConnectionStatus('error');
-      }
+      const status = await chatService.checkConnection();
+      setConnectionStatus(status);
     } catch (error) {
+      console.error('Connection check failed:', error);
       setConnectionStatus('disconnected');
     }
   };
 
-  const handleStreamingResponse = (userMessageId: string, userMessage: string) => {
-    setIsTyping(true);
+  const handleChatResponse = async (userMessage: string): Promise<void> => {
+    setIsLoading(true);
 
-    const assistantMessageId = Date.now().toString() + '_assistant';
-    setStreamingMessageId(assistantMessageId);
+    try {
+      // Send message via ChatService POST request
+      const response: ChatResponse = await chatService.sendMessage(
+        userMessage,
+        animalId,
+        sessionId || undefined
+      );
 
-    // Add initial empty message
-    const assistantMessage: Message = {
-      id: assistantMessageId,
-      content: "",
-      isUser: false,
-      timestamp: new Date(),
-      status: 'received',
-      isStreaming: true,
-      animalId,
-      sessionId
-    };
+      // Update session ID if changed
+      if (response.sessionId !== sessionId) {
+        setSessionId(response.sessionId);
+      }
 
-    setMessages(prev => [...prev, assistantMessage]);
+      // Create assistant message from response
+      const assistantMessage: ChatMessage = {
+        id: response.turnId || `${Date.now()}_assistant`,
+        content: response.reply,
+        isUser: false,
+        timestamp: new Date(response.timestamp),
+        status: 'received',
+        animalId: response.metadata.animalId,
+        sessionId: response.sessionId
+      };
 
-    let accumulatedContent = "";
+      // Add assistant message to conversation
+      setMessages(prev => [...prev, assistantMessage]);
 
-    // Start SSE streaming
-    eventSourceRef.current = chatApi.streamMessage(
-      userMessage,
-      animalId,
-      sessionId,
-      (chunk) => {
-        accumulatedContent += chunk;
+    } catch (error) {
+      console.error('Chat response error:', error);
 
-        setMessages(prev => prev.map(msg =>
-          msg.id === assistantMessageId
-            ? { ...msg, content: accumulatedContent }
-            : msg
-        ));
-      },
-      (error) => {
-        console.error('Streaming error:', error);
-        setIsTyping(false);
+      // Create error message
+      const errorMessage: ChatMessage = {
+        id: `${Date.now()}_error`,
+        content: 'Sorry, I encountered an error. Please try again.',
+        isUser: false,
+        timestamp: new Date(),
+        status: 'error',
+        animalId,
+        sessionId: sessionId || undefined,
+        error: error as ChatError
+      };
 
-        // Mark message as complete with error
-        setMessages(prev => prev.map(msg =>
-          msg.id === assistantMessageId
-            ? { ...msg, isStreaming: false, status: 'error' }
-            : msg
-        ));
+      setMessages(prev => [...prev, errorMessage]);
 
-        setStreamingMessageId(null);
+      // Update connection status if it's a connection error
+      if (error instanceof Error && error.message.includes('fetch')) {
         setConnectionStatus('error');
       }
-    );
-
-    // Handle streaming completion
-    if (eventSourceRef.current) {
-      eventSourceRef.current.addEventListener('end', () => {
-        setIsTyping(false);
-        setMessages(prev => prev.map(msg =>
-          msg.id === assistantMessageId
-            ? { ...msg, isStreaming: false }
-            : msg
-        ));
-        setStreamingMessageId(null);
-
-        if (eventSourceRef.current) {
-          eventSourceRef.current.close();
-          eventSourceRef.current = null;
-        }
-      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!input.trim() || connectionStatus !== 'connected') return;
+    if (!input.trim() || connectionStatus !== 'connected' || isLoading) return;
 
     const messageId = Date.now().toString();
-    const userMessage: Message = {
+    const messageContent = input.trim();
+
+    const userMessage: ChatMessage = {
       id: messageId,
-      content: input.trim(),
+      content: messageContent,
       isUser: true,
       timestamp: new Date(),
       status: 'sending',
       animalId,
-      sessionId
+      sessionId: sessionId || undefined
     };
 
+    // Add user message and clear input
     setMessages(prev => [...prev, userMessage]);
     setInput("");
 
-    // Update message status to sent
-    setTimeout(() => {
-      setMessages(prev => prev.map(msg =>
-        msg.id === messageId ? { ...msg, status: 'sent' } : msg
-      ));
+    // Update message status to sent and get response
+    setMessages(prev => prev.map(msg =>
+      msg.id === messageId ? { ...msg, status: 'sent' } : msg
+    ));
 
-      // Start streaming response
-      handleStreamingResponse(messageId, userMessage.content);
-    }, 300);
+    // Get AI response via POST request
+    await handleChatResponse(messageContent);
   };
 
-  const getStatusIcon = (status: Message['status']) => {
+  const getStatusIcon = (status: ChatMessage['status']) => {
     switch (status) {
       case 'sending':
         return <Clock className="w-3 h-3 text-muted-foreground" />;
@@ -363,6 +289,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </span>
           </div>
           <button
+            onClick={() => {
+              // Clean up current session and start fresh
+              chatService.resetSession();
+              setSessionId(null);
+              setMessages([]);
+            }}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Start new conversation"
+          >
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+          <button
             onClick={() => navigate(-1)}
             className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
             title="Close chat"
@@ -403,13 +343,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                       message.isUser
                         ? 'bg-primary text-primary-foreground ml-auto'
                         : 'bg-muted'
-                    } ${message.isStreaming ? 'animate-pulse' : ''}`}
+                    }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">
                       {message.content}
-                      {message.isStreaming && (
-                        <span className="inline-block w-2 h-4 bg-current ml-1 animate-pulse" />
-                      )}
                     </p>
                   </div>
 
@@ -430,8 +367,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             ))
           )}
 
-          {/* Typing indicator */}
-          {isTyping && !streamingMessageId && (
+          {/* Loading indicator */}
+          {isLoading && (
             <div className="flex gap-3 justify-start">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <Bot className="w-4 h-4 text-primary" />
@@ -454,11 +391,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
             className="flex-1"
-            disabled={connectionStatus !== 'connected' || isTyping}
+            disabled={connectionStatus !== 'connected' || isLoading}
           />
           <Button
             type="submit"
-            disabled={!input.trim() || connectionStatus !== 'connected' || isTyping}
+            disabled={!input.trim() || connectionStatus !== 'connected' || isLoading}
             size="icon"
           >
             <Send className="w-4 h-4" />

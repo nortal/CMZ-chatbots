@@ -1,0 +1,19 @@
+{
+  "total_endpoints": 100,
+  "aligned": 0,
+  "partial": 1,
+  "misaligned": 32,
+  "handler_issues": {
+    "missing_required": 382,
+    "no_type_validation": 340,
+    "response_mismatch": 68,
+    "proper_error_usage": 47
+  },
+  "critical_mismatches": [
+    "POST /auth - field_mismatch",
+    "POST /user - field_mismatch",
+    "PATCH /user/{userId} - field_mismatch",
+    "POST /user_details - field_mismatch",
+    "PATCH /user_details/{userId} - field_mismatch"
+  ]
+}

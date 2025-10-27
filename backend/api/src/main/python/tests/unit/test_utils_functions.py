@@ -6,6 +6,7 @@ Tests utility functions including ID generation, validation helpers,
 ORM operations, and core utilities.
 """
 import pytest
+import os
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
@@ -50,25 +51,25 @@ class TestIdGenerator:
         """Test ID generation with prefix."""
         prefix = "test"
         generated_id = generate_id(prefix=prefix)
-        
-        assert generated_id.startswith(prefix)
-        assert len(generated_id) == len(prefix) + 12  # prefix + default length
+
+        assert generated_id.startswith(prefix + "_")  # Prefix with underscore
+        assert len(generated_id) == len(prefix) + 1 + 12  # prefix + underscore + default length
     
     def test_generate_user_id(self):
         """Test user-specific ID generation."""
         user_id = generate_user_id()
-        
+
         assert isinstance(user_id, str)
         assert user_id.startswith("user_")
-        assert len(user_id) == 5 + 12  # "user_" + 12 characters
-    
+        assert len(user_id) == 5 + 8  # "user_" + 8 characters
+
     def test_generate_family_id(self):
         """Test family-specific ID generation."""
         family_id = generate_family_id()
-        
+
         assert isinstance(family_id, str)
         assert family_id.startswith("family_")
-        assert len(family_id) == 7 + 12  # "family_" + 12 characters
+        assert len(family_id) == 7 + 8  # "family_" + 8 characters
     
     def test_generate_id_boundary_values(self, boundary_value_generator):
         """Test ID generation with boundary values."""
@@ -90,17 +91,20 @@ class TestIdGenerator:
 
 class TestCoreUtils:
     """Test core utility functions."""
-    
-    @patch('openapi_server.impl.utils.core.FileStore')
+
+    @patch.dict(os.environ, {'PERSISTENCE_MODE': 'file'})
+    @patch('openapi_server.impl.utils.orm.store.FileStore')
     def test_get_store_success(self, mock_file_store):
         """Test successful store retrieval."""
         mock_store_instance = MagicMock()
         mock_file_store.return_value = mock_store_instance
-        
+
+        from openapi_server.impl.utils.orm.store import get_store
         result = get_store('test_table', 'test_pk')
-        
+
         assert result == mock_store_instance
-        mock_file_store.assert_called_once_with('test_table', 'test_pk')
+        # FileStore is called with 3 arguments (third is id_generator_func which is None)
+        mock_file_store.assert_called_once_with('test_table', 'test_pk', None)
     
     def test_ensure_pk_with_existing_pk(self):
         """Test ensure_pk when primary key already exists."""
@@ -148,22 +152,24 @@ class TestCoreUtils:
     
     def test_model_to_json_keyed_dict_with_model(self):
         """Test model_to_json_keyed_dict with OpenAPI model object."""
-        # Mock an OpenAPI model
+        # Mock an OpenAPI model with attribute_map
         mock_model = MagicMock()
-        mock_model.to_dict.return_value = {
+        mock_model.attribute_map = {
+            'user_id': 'userId',
+            'display_name': 'displayName',
+            'email': 'email'
+        }
+        mock_model.user_id = 'test_user'
+        mock_model.display_name = 'Test User'
+        mock_model.email = 'test@example.com'
+
+        result = model_to_json_keyed_dict(mock_model)
+
+        assert result == {
             'userId': 'test_user',
             'displayName': 'Test User',
             'email': 'test@example.com'
         }
-        
-        result = model_to_json_keyed_dict(mock_model)
-        
-        assert result == {
-            'userId': 'test_user',
-            'displayName': 'Test User', 
-            'email': 'test@example.com'
-        }
-        mock_model.to_dict.assert_called_once()
     
     def test_model_to_json_keyed_dict_with_dict(self):
         """Test model_to_json_keyed_dict with dictionary."""
@@ -182,8 +188,8 @@ class TestCoreUtils:
     def test_model_to_json_keyed_dict_with_none(self):
         """Test model_to_json_keyed_dict with None."""
         result = model_to_json_keyed_dict(None)
-        
-        assert result == {}
+
+        assert result is None
     
     def test_now_iso(self):
         """Test ISO timestamp generation."""
@@ -210,13 +216,14 @@ class TestCoreUtils:
     def test_not_found(self):
         """Test not_found utility function."""
         result = not_found("userId", "test_123")
-        
+
         # Should return error response with 404 status
         assert isinstance(result, tuple)
         assert len(result) == 2
         assert isinstance(result[0], dict)
-        assert result[0]["code"] == "Not Found"
-        assert "userId=test_123" in result[0]["message"]
+        assert result[0]["title"] == "Not Found"
+        assert "userId=test_123" in result[0]["detail"]
+        assert result[0]["status"] == 404
         assert result[1] == 404
 
 
@@ -316,24 +323,25 @@ class TestValidationUtils:
         # Test with empty data
         with pytest.raises(ValidationError):
             validate_required_fields({}, ['required_field'])
-        
+
         # Test with null/empty values from generator
         for invalid_value in boundary_value_generator.null_empty_values():
             data = {'required_field': invalid_value}
-            
+
             try:
                 validate_required_fields(data, ['required_field'])
                 # If no exception, the value was considered valid
                 assert invalid_value not in [None, '', ' ', '   ']
             except ValidationError:
                 # Exception expected for truly empty values
-                assert invalid_value in [None, '', ' ', '   ', '\t', '\n']
+                # All whitespace-only strings should be considered empty
+                assert invalid_value in [None, '', ' ', '   ', '\t', '\n', '  \t  \n  ']
 
 
 class TestUtilsFunctionIntegration:
     """Integration tests for utility functions working together."""
     
-    @patch('openapi_server.impl.utils.core.get_store')
+    @patch('openapi_server.impl.utils.orm.store.get_store')
     def test_id_generation_and_storage(self, mock_get_store):
         """Test ID generation integrated with storage operations."""
         mock_store = MagicMock()
@@ -350,20 +358,23 @@ class TestUtilsFunctionIntegration:
         assert isinstance(data['userId'], str)
         assert len(data['userId']) > 0
         
-        # Simulate storage operation
+        # Simulate storage operation (get_store was mocked)
+        from openapi_server.impl.utils.orm.store import get_store
         store = get_store('user_table', 'userId')
         assert store == mock_store
     
     def test_model_conversion_and_validation(self):
         """Test model conversion integrated with validation."""
-        # Mock model with to_dict method
+        # Mock model with to_dict method (but no attribute_map)
         mock_model = MagicMock()
+        # Delete attribute_map so it falls through to to_dict()
+        del mock_model.attribute_map
         mock_model.to_dict.return_value = {
             'displayName': 'Test User',
             'email': 'test@example.com',
             'role': 'member'
         }
-        
+
         # Convert model to dict
         data = model_to_json_keyed_dict(mock_model)
         

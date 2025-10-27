@@ -140,14 +140,39 @@ def register_error_handlers(app):
         """Handle 500 Internal Server Error with consistent schema."""
         error_obj = Error(
             code="internal_error",
-            message="An internal server error occurred",
+            message="Internal server error",
             details={"error_id": "unknown"}
         )
-        
+
         logger.error(f"Internal server error: {str(error)}")
         return jsonify(error_obj.to_dict()), 500
 
     # ValidationError handler removed - duplicate handler exists in register_custom_error_handlers()
+
+    @app.errorhandler(BadRequestProblem)
+    def handle_bad_request_problem(error):
+        """Handle Connexion BadRequestProblem errors."""
+        code = "validation_error"
+        message = "Request validation failed"
+        details = {}
+
+        if hasattr(error, 'detail'):
+            details["validation_detail"] = error.detail
+
+            # PR003946-87: Detect password policy validation errors
+            detail_str = str(error.detail).lower()
+            if "'password'" in detail_str and "too short" in detail_str:
+                code = "invalid_password"
+                message = "Password does not meet security requirements"
+                details = {
+                    "field": "password",
+                    "validation_detail": error.detail,
+                    "policy_violations": ["Password must be at least 6 characters long"]
+                }
+
+        error_obj = Error(code=code, message=message, details=details)
+        logger.warning(f"BadRequestProblem: {getattr(error, 'detail', str(error))}")
+        return jsonify(error_obj.to_dict()), 400
 
     @app.errorhandler(Exception)
     def handle_generic_exception(error):
@@ -157,8 +182,8 @@ def register_error_handlers(app):
             return error
             
         error_obj = Error(
-            code="internal_error", 
-            message="An unexpected error occurred",
+            code="internal_error",
+            message="Internal server error",
             details={"error_type": type(error).__name__}
         )
         

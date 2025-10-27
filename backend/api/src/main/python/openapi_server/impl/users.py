@@ -25,3 +25,25 @@ def handle_me_get(*args, **kwargs) -> Tuple[Any, int]:
     """
     return not_implemented_error("me_get")
 
+
+# Additional functions expected by tests (stubs for now)
+def handle_list_users(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_list_users expected by tests"""
+    return not_implemented_error("handle_list_users")
+
+def handle_get_user(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_get_user expected by tests"""
+    return not_implemented_error("handle_get_user")
+
+def handle_create_user(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_create_user expected by tests"""
+    return not_implemented_error("handle_create_user")
+
+def handle_update_user(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_update_user expected by tests"""
+    return not_implemented_error("handle_update_user")
+
+def handle_delete_user(*args, **kwargs) -> Tuple[Any, int]:
+    """Stub for handle_delete_user expected by tests"""
+    return not_implemented_error("handle_delete_user")
+

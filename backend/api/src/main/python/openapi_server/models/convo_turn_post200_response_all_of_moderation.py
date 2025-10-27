@@ -44,7 +44,7 @@ class ConvoTurnPost200ResponseAllOfModeration(Model):
 
         :param dikt: A dict.
         :type: dict
-        :return: The _convo_turn_post_200_response_allOf_moderation of this ConvoTurnPost200ResponseAllOfModeration.  # noqa: E501
+        :return: The convo_turn_post_200_response_allOf_moderation of this ConvoTurnPost200ResponseAllOfModeration.  # noqa: E501
         :rtype: ConvoTurnPost200ResponseAllOfModeration
         """
         return util.deserialize_model(dikt, cls)

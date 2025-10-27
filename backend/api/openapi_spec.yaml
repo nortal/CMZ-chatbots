@@ -16,6 +16,12 @@ tags:
 - name: Users
 - name: Conversation
 - name: Animals
+- name: Guardrails
+  description: Dynamic guardrails management for ChatGPT safety
+- name: Context
+  description: User context and personalization management
+- name: Privacy
+  description: Parent privacy controls and COPPA compliance
 - name: Knowledge
 - name: Analytics
 - name: Admin
@@ -25,6 +31,8 @@ tags:
   description: Backlog endpoints (not in v1)
 - name: Family
   description: Manage parent-student family groups
+- name: Assistant Management
+  description: Animal assistant creation, testing, and knowledge base management
 paths:
   /:
     get:
@@ -241,28 +249,27 @@ paths:
                 $ref: '#/components/schemas/PagedUsers'
               example:
                 items:
-                  - userId: 92f3dd74-ed...
-                    email: user1@cmz.org
-                    displayName: User One
-                    role: admin
-                    userType: parent
-                    familyId: family_1
-                    created: *id002
-                    modified: *id003
-                    softDelete: false
-                  - userId: 7f2f7e55-40b...
-                    email: user2@cmz.org
-                    displayName: User Two
-                    role: user
-                    userType: student
-                    familyId: family_1
-                    created: *id002
-                    modified: *id003
-                    softDelete: false
+                - userId: 92f3dd74-ed...
+                  email: user1@cmz.org
+                  displayName: User One
+                  role: admin
+                  userType: parent
+                  familyId: family_1
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
+                - userId: 7f2f7e55-40b...
+                  email: user2@cmz.org
+                  displayName: User Two
+                  role: user
+                  userType: student
+                  familyId: family_1
+                  created: *id002
+                  modified: *id003
+                  softDelete: false
                 page: 1
                 pageSize: 50
                 total: 2
-
     post:
       tags:
       - Admin
@@ -297,7 +304,6 @@ paths:
                 familyId: null
                 created: *id002
                 modified: *id003
-
   /user/{userId}:
     get:
       tags:
@@ -306,11 +312,11 @@ paths:
       operationId: getUser
       security: []
       parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: User details
@@ -330,7 +336,6 @@ paths:
                 softDelete: false
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       tags:
       - Admin
@@ -338,11 +343,11 @@ paths:
       operationId: updateUser
       security: []
       parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -372,21 +377,20 @@ paths:
                 modified: *id003
     delete:
       tags:
-        - Admin
+      - Admin
       summary: Delete user
       operationId: deleteUser
       parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: User deleted successfully
         '404':
           description: User not found
-
   /user_details:
     get:
       tags:
@@ -404,19 +408,18 @@ paths:
                 items:
                   $ref: '#/components/schemas/UserDetails'
               example:
-                - userId: 92f3dd74-ed...
-                  email: user2@cmz.org
-                  displayName: User Two
-                  role: user
-                  userType: student
-                  familyId: family_1
-                  created: *id002
-                  modified: *id003
-                  usage:
-                    totalSessions: 5
-                    totalTurns: 42
-                    lastActive: '2025-08-11T12:00:00Z'
-
+              - userId: 92f3dd74-ed...
+                email: user2@cmz.org
+                displayName: User Two
+                role: user
+                userType: student
+                familyId: family_1
+                created: *id002
+                modified: *id003
+                usage:
+                  totalSessions: 5
+                  totalTurns: 42
+                  lastActive: '2025-08-11T12:00:00Z'
     post:
       tags:
       - Admin
@@ -450,7 +453,6 @@ paths:
                   totalSessions: 0
                   totalTurns: 0
                   lastActive: null
-
   /user_details/{userId}:
     get:
       tags:
@@ -459,11 +461,11 @@ paths:
       operationId: getUserDetails
       security: []
       parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: User details
@@ -487,7 +489,6 @@ paths:
                   lastActive: '2025-08-11T12:00:00Z'
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       tags:
       - Admin
@@ -495,11 +496,11 @@ paths:
       operationId: updateUserDetails
       security: []
       parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -507,7 +508,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UserDetailsInput'
             example:
-              userId: "userId_2"
+              userId: userId_2
               usage:
                 totalSessions: 6
                 totalTurns: 50
@@ -527,7 +528,6 @@ paths:
                   totalSessions: 6
                   totalTurns: 50
                   lastActive: '2025-08-12T09:00:00Z'
-
     delete:
       tags:
       - Admin
@@ -535,20 +535,20 @@ paths:
       operationId: deleteUserDetails
       security: []
       parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: UserDetails deleted
-
   /convo_turn:
     post:
       tags:
       - Conversation
       summary: Send conversation turn with enhanced validation and rate limiting
+      operationId: convo_turn_post
       security: []
       requestBody:
         required: true
@@ -584,7 +584,8 @@ paths:
                     minimum: 1
                     maximum: 20
                     default: 5
-                    description: Number of previous conversation turns to include as context
+                    description: Number of previous conversation turns to include
+                      as context
                   moderationLevel:
                     type: string
                     enum:
@@ -656,7 +657,10 @@ paths:
                           type: integer
                           description: Total API calls used today
               example:
-                reply: Hi there! I'm Pokey the porcupine! Did you know that porcupines have about 30,000 quills? Each quill has tiny barbs that make them stick when we use them for defense. What would you like to learn about porcupines today?
+                reply: Hi there! I'm Pokey the porcupine! Did you know that porcupines
+                  have about 30,000 quills? Each quill has tiny barbs that make them
+                  stick when we use them for defense. What would you like to learn
+                  about porcupines today?
                 turn:
                   convoTurnId: turn_001
                   timestamp: '2025-08-11T09:00:00Z'
@@ -699,11 +703,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /convo_turn/stream:
+    get:
+      tags:
+      - Conversation
+      summary: Stream conversation turn with Server-Sent Events
+      description: Real-time streaming chat response using OpenAI Assistants API
+      operationId: convo_turn_stream_get
+      security: []
+      parameters:
+      - in: query
+        name: message
+        required: true
+        schema:
+          type: string
+        description: User's chat message
+      - in: query
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      - in: query
+        name: sessionId
+        required: false
+        schema:
+          type: string
+        description: Conversation session ID (created if not provided)
+      - in: query
+        name: token
+        required: false
+        schema:
+          type: string
+        description: JWT authentication token
+      responses:
+        '200':
+          description: Server-Sent Events stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: SSE formatted events (metadata, message, complete, error)
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Animal not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /convo_history:
     get:
       tags:
       - Conversation
       summary: Get conversation history with enhanced filtering and pagination
+      operationId: convo_history_get
       security: []
       parameters:
       - in: query
@@ -711,21 +775,21 @@ paths:
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Filter conversations by animal identifier
       - in: query
         name: userId
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Filter conversations by user identifier
       - in: query
         name: sessionId
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Get specific conversation session
       - in: query
         name: startDate
@@ -785,7 +849,8 @@ paths:
                     tokensPrompt: 12
                     latencyMs: 45
                 - role: assistant
-                  content: Hello! I'm Pokey the porcupine. What would you like to know?
+                  content: Hello! I'm Pokey the porcupine. What would you like to
+                    know?
                   timestamp: '2025-08-11T09:00:05Z'
                   metadata:
                     tokensCompletion: 28
@@ -798,6 +863,7 @@ paths:
       tags:
       - Conversation
       summary: Delete conversation history with enhanced GDPR compliance
+      operationId: convo_history_delete
       security: []
       parameters:
       - in: query
@@ -806,21 +872,21 @@ paths:
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
       - in: query
         name: userId
         description: Delete all conversations for specific user (GDPR right to erasure)
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
       - in: query
         name: animalId
         description: Delete all conversations with specific animal
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
       - in: query
         name: olderThan
         description: Delete conversations older than specified date (ISO8601)
@@ -842,7 +908,7 @@ paths:
         schema:
           type: string
           maxLength: 500
-          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+          pattern: ^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=/\\|{}~`*%$^_<>]+$
       responses:
         '204':
           description: Conversation history deleted successfully
@@ -883,14 +949,14 @@ paths:
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Filter sessions by user identifier
       - in: query
         name: animalId
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Filter sessions by animal identifier
       - in: query
         name: startDate
@@ -1001,7 +1067,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Session identifier
       responses:
         '200':
@@ -1033,7 +1099,7 @@ paths:
               properties:
                 sessionId:
                   type: string
-                  pattern: '^[a-zA-Z0-9_-]+$'
+                  pattern: ^[a-zA-Z0-9_-]+$
                   description: Conversation session to summarize
                 summaryType:
                   type: string
@@ -1054,7 +1120,8 @@ paths:
                 includeMetrics:
                   type: boolean
                   default: false
-                  description: Include conversation metrics (turn count, duration, etc.)
+                  description: Include conversation metrics (turn count, duration,
+                    etc.)
                 includeTopics:
                   type: boolean
                   default: true
@@ -1116,7 +1183,10 @@ paths:
                     properties:
                       overall:
                         type: string
-                        enum: [positive, neutral, negative]
+                        enum:
+                        - positive
+                        - neutral
+                        - negative
                       confidence:
                         type: number
                         minimum: 0
@@ -1138,7 +1208,9 @@ paths:
               example:
                 sessionId: sess_123
                 summaryType: detailed
-                summary: User engaged enthusiastically about porcupine quills and defense mechanisms. Showed strong interest in animal behavior and asked several follow-up questions about nocturnal habits.
+                summary: User engaged enthusiastically about porcupine quills and
+                  defense mechanisms. Showed strong interest in animal behavior and
+                  asked several follow-up questions about nocturnal habits.
                 topics:
                 - porcupine_behavior
                 - animal_defense
@@ -1182,8 +1254,12 @@ paths:
         description: Filter animals by status
         schema:
           type: string
-          enum: [active, inactive, hidden, breeding, retired]
-          default: null
+          enum:
+          - active
+          - inactive
+          - hidden
+          - breeding
+          - retired
       responses:
         '200':
           description: List of animals
@@ -1194,20 +1270,20 @@ paths:
                 items:
                   $ref: '#/components/schemas/Animal'
               example:
-                - animalId: animal_1
-                  name: Pokey
-                  species: Coendou prehensilis
-                  status: active
-                  created: *id002
-                  modified: *id003
-                  softDelete: false
-                - animalId: animal_2
-                  name: Animal 2
-                  species: Speciesus exampleus
-                  status: hidden
-                  created: *id002
-                  modified: *id003
-                  softDelete: false
+              - animalId: animal_1
+                name: Pokey
+                species: Coendou prehensilis
+                status: active
+                created: *id002
+                modified: *id003
+                softDelete: false
+              - animalId: animal_2
+                name: Animal 2
+                species: Speciesus exampleus
+                status: hidden
+                created: *id002
+                modified: *id003
+                softDelete: false
         '400':
           $ref: '#/components/responses/BadRequest'
   /animal:
@@ -1430,6 +1506,629 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/ValidationError'
+  /guardrails:
+    get:
+      tags:
+      - Guardrails
+      summary: List all guardrails
+      operationId: listGuardrails
+      security: []
+      parameters:
+      - in: query
+        name: category
+        required: false
+        schema:
+          type: string
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+        description: Filter by category
+      - in: query
+        name: isActive
+        required: false
+        schema:
+          type: boolean
+        description: Filter by active status
+      - in: query
+        name: isGlobal
+        required: false
+        schema:
+          type: boolean
+        description: Filter by global status
+      responses:
+        '200':
+          description: List of guardrails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Guardrail'
+    post:
+      tags:
+      - Guardrails
+      summary: Create new guardrail
+      operationId: createGuardrail
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardrailInput'
+      responses:
+        '201':
+          description: Guardrail created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardrail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /guardrails/{guardrailId}:
+    get:
+      tags:
+      - Guardrails
+      summary: Get specific guardrail
+      operationId: getGuardrail
+      security: []
+      parameters:
+      - in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Guardrail details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardrail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Guardrails
+      summary: Update guardrail
+      operationId: updateGuardrail
+      security: []
+      parameters:
+      - in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardrailUpdate'
+      responses:
+        '200':
+          description: Guardrail updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardrail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Guardrails
+      summary: Delete guardrail (soft delete)
+      operationId: deleteGuardrail
+      security: []
+      parameters:
+      - in: path
+        name: guardrailId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Guardrail deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /guardrails/templates:
+    get:
+      tags:
+      - Guardrails
+      summary: Get pre-built guardrail templates
+      operationId: getGuardrailTemplates
+      security: []
+      responses:
+        '200':
+          description: List of guardrail templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GuardrailTemplate'
+  /guardrails/apply-template:
+    post:
+      tags:
+      - Guardrails
+      summary: Apply template to animal
+      operationId: applyGuardrailTemplate
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - templateId
+              - animalId
+              properties:
+                templateId:
+                  type: string
+                  description: ID of the template to apply
+                animalId:
+                  type: string
+                  description: ID of the animal to apply template to
+      responses:
+        '200':
+          description: Template applied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guardrailsApplied:
+                    type: integer
+                    description: Number of guardrails applied
+                  animalId:
+                    type: string
+                    description: Animal ID that received the guardrails
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal/{animalId}/guardrails/effective:
+    get:
+      tags:
+      - Guardrails
+      summary: Get effective guardrails for an animal
+      operationId: getAnimalEffectiveGuardrails
+      security: []
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of effective guardrails ordered by priority
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Guardrail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal/{animalId}/system-prompt:
+    get:
+      tags:
+      - Guardrails
+      summary: Get system prompt with guardrails
+      operationId: getAnimalSystemPrompt
+      security: []
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: System prompt including guardrails
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  prompt:
+                    type: string
+                    description: Complete system prompt with guardrails
+                  guardrailCount:
+                    type: integer
+                    description: Number of guardrails included
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/guardrails/validate:
+    post:
+      tags:
+      - Guardrails
+      summary: Validate content against safety guardrails
+      description: Validates user input and AI responses against configured safety
+        rules with real-time content moderation
+      operationId: validateContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - content
+              - context
+              properties:
+                content:
+                  type: string
+                  description: Text content to validate
+                  maxLength: 10000
+                context:
+                  type: object
+                  required:
+                  - userId
+                  - conversationId
+                  - animalId
+                  properties:
+                    userId:
+                      type: string
+                      description: User identifier
+                    conversationId:
+                      type: string
+                      description: Conversation session identifier
+                    animalId:
+                      type: string
+                      description: Animal character identifier
+                    ageGroup:
+                      type: string
+                      enum:
+                      - elementary
+                      - middle
+                      - high
+                      - adult
+                      description: User age group for appropriate filtering
+      responses:
+        '200':
+          description: Content validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedValidationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/context/{userId}:
+    get:
+      tags:
+      - Context
+      summary: Get user conversation context
+      description: Retrieves personalized context for enhancing conversation responses
+        including user preferences and summarized history
+      operationId: getUserContext
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User identifier
+        schema:
+          type: string
+      - name: includeHistory
+        in: query
+        description: Include detailed conversation history
+        schema:
+          type: boolean
+          default: false
+      - name: contextDepth
+        in: query
+        description: Amount of context to include
+        schema:
+          type: string
+          enum:
+          - minimal
+          - standard
+          - comprehensive
+          default: standard
+      responses:
+        '200':
+          description: User context retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - userId
+                - preferences
+                - conversationHistory
+                properties:
+                  userId:
+                    type: string
+                    description: User identifier
+                  preferences:
+                    type: object
+                    properties:
+                      interests:
+                        type: array
+                        items:
+                          type: string
+                        description: User interests and hobbies
+                        example:
+                        - cats
+                        - conservation
+                        - marine biology
+                      learningLevel:
+                        type: string
+                        enum:
+                        - elementary
+                        - middle
+                        - high
+                        - adult
+                        description: Educational level for content appropriateness
+                      favoriteAnimals:
+                        type: array
+                        items:
+                          type: string
+                        description: Preferred animal types
+                        example:
+                        - lions
+                        - dolphins
+                        - penguins
+                  conversationHistory:
+                    type: object
+                    properties:
+                      totalConversations:
+                        type: number
+                        description: Count of total conversations
+                      lastActive:
+                        type: string
+                        format: date-time
+                        description: Last conversation timestamp
+                      engagementScore:
+                        type: number
+                        minimum: 0
+                        maximum: 100
+                        description: User engagement quality score
+                  contextSummary:
+                    type: object
+                    properties:
+                      recentSummary:
+                        type: string
+                        description: Summary of last 5 conversations
+                      keyQuotes:
+                        type: array
+                        items:
+                          type: string
+                        description: Memorable user statements
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Context
+      summary: Update user conversation context
+      description: Updates user preferences and context based on conversation interactions
+      operationId: updateUserContext
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User identifier
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conversationData:
+                  type: object
+                  required:
+                  - conversationId
+                  - animalId
+                  - timestamp
+                  properties:
+                    conversationId:
+                      type: string
+                    animalId:
+                      type: string
+                    timestamp:
+                      type: string
+                      format: date-time
+                    duration:
+                      type: number
+                      description: Conversation length in minutes
+                extractedPreferences:
+                  type: object
+                  properties:
+                    newInterests:
+                      type: array
+                      items:
+                        type: string
+                    preferenceChanges:
+                      type: object
+                      additionalProperties:
+                        type: string
+      responses:
+        '200':
+          description: Context updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  updatedAt:
+                    type: string
+                    format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /animal/{animalId}/documents:
+    post:
+      tags:
+      - Animal
+      summary: Upload document to animal's knowledge base
+      description: Upload PDF, DOCX, or TXT file to the animal's OpenAI Assistant
+        Vector Store
+      operationId: uploadAnimalDocument
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Document file (PDF, DOCX, TXT, MD)
+                title:
+                  type: string
+                  description: Document title
+                description:
+                  type: string
+                  description: Document description
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Document tags
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documentId:
+                    type: string
+                    description: Unique document identifier
+                  fileId:
+                    type: string
+                    description: OpenAI file ID
+                  vectorStoreId:
+                    type: string
+                    description: Vector Store ID
+                  fileName:
+                    type: string
+                    description: Original filename
+                  fileSize:
+                    type: integer
+                    description: File size in bytes
+                  status:
+                    type: string
+                    enum:
+                    - processing
+                    - completed
+                    - failed
+                    description: Processing status
+                  uploadedAt:
+                    type: string
+                    format: date-time
+                    description: Upload timestamp
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+      - Animal
+      summary: List documents in animal's knowledge base
+      operationId: listAnimalDocuments
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      responses:
+        '200':
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        documentId:
+                          type: string
+                        fileId:
+                          type: string
+                        fileName:
+                          type: string
+                        status:
+                          type: string
+                        uploadedAt:
+                          type: string
+                          format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /animal/{animalId}/documents/{documentId}:
+    delete:
+      tags:
+      - Animal
+      summary: Delete document from knowledge base
+      operationId: deleteAnimalDocument
+      parameters:
+      - in: path
+        name: animalId
+        required: true
+        schema:
+          type: string
+        description: Animal identifier
+      - in: path
+        name: documentId
+        required: true
+        schema:
+          type: string
+        description: Document identifier (OpenAI file ID)
+      responses:
+        '204':
+          description: Document deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
   /knowledge_article:
     post:
       tags:
@@ -1531,11 +2230,12 @@ paths:
                   type: string
                   minLength: 1
                   maxLength: 200
-                  pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
-                  description: Human-readable title for the media with natural language support
+                  pattern: ^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=/\\|{}~`*%$^_<>]+$
+                  description: Human-readable title for the media with natural language
+                    support
                 animalId:
                   type: string
-                  pattern: '^[a-zA-Z0-9_-]+$'
+                  pattern: ^[a-zA-Z0-9_-]+$
                   description: Associated animal identifier
                 description:
                   type: string
@@ -1545,7 +2245,7 @@ paths:
                   type: array
                   items:
                     type: string
-                    pattern: '^[a-zA-Z0-9_-]+$'
+                    pattern: ^[a-zA-Z0-9_-]+$
                   maxItems: 10
                   description: Optional metadata tags
       responses:
@@ -1591,21 +2291,24 @@ paths:
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Specific media identifier to retrieve
       - in: query
         name: animalId
         required: false
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Filter media by animal identifier
       - in: query
         name: kind
         required: false
         schema:
           type: string
-          enum: [image, audio, video]
+          enum:
+          - image
+          - audio
+          - video
         description: Filter media by type
       - in: query
         name: limit
@@ -1667,7 +2370,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
         description: Media identifier to delete
       - in: query
         name: permanent
@@ -1823,6 +2526,113 @@ paths:
                   usd: 77.3
                 - service: Storage
                   usd: 12.1
+  /api/v1/analytics/safety/metrics:
+    get:
+      tags:
+      - Analytics
+      summary: Safety analytics metrics
+      operationId: safety_metrics_get
+      security: []
+      parameters:
+      - in: query
+        name: time_range
+        schema:
+          type: string
+          enum: ['1h', '24h', '7d', '30d']
+          default: '24h'
+        description: Time range for metrics
+      - in: query
+        name: animalId
+        schema:
+          type: string
+        description: Filter by specific animal ID
+      responses:
+        '200':
+          description: Safety metrics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalValidations:
+                    type: integer
+                    description: Total content validations
+                  totalFlagged:
+                    type: integer
+                    description: Total flagged content
+                  totalBlocked:
+                    type: integer
+                    description: Total blocked content
+                  totalEscalations:
+                    type: integer
+                    description: Total escalations
+                  flaggedContentRate:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    description: Rate of flagged content
+                  blockedContentRate:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    description: Rate of blocked content
+                  escalationRate:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    description: Rate of escalations
+                  avgProcessingTimeMs:
+                    type: number
+                    description: Average processing time
+                  avgRiskScore:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    description: Average risk score
+                  uniqueUsers:
+                    type: integer
+                    description: Unique users in timeframe
+                  uniqueConversations:
+                    type: integer
+                    description: Unique conversations in timeframe
+                  metadata:
+                    type: object
+                    properties:
+                      timeRange:
+                        type: string
+                      startTime:
+                        type: string
+                        format: date-time
+                      endTime:
+                        type: string
+                        format: date-time
+                      animalId:
+                        type: string
+                        nullable: true
+                      totalEvents:
+                        type: integer
+                      generatedAt:
+                        type: string
+                        format: date-time
+              example:
+                totalValidations: 1250
+                totalFlagged: 45
+                totalBlocked: 8
+                totalEscalations: 2
+                flaggedContentRate: 0.036
+                blockedContentRate: 0.0064
+                escalationRate: 0.0016
+                avgProcessingTimeMs: 185
+                avgRiskScore: 0.15
+                uniqueUsers: 324
+                uniqueConversations: 892
+                metadata:
+                  timeRange: "24h"
+                  startTime: "2025-10-23T19:00:00Z"
+                  endTime: "2025-10-24T19:00:00Z"
+                  animalId: null
+                  totalEvents: 1250
+                  generatedAt: "2025-10-24T19:00:00Z"
   /system_health:
     get:
       tags:
@@ -1838,18 +2648,55 @@ paths:
                 $ref: '#/components/schemas/SystemHealth'
               example:
                 status: ok
-                timestamp: "2025-09-14T19:47:00Z"
-                apiVersionUuid: "01293541-4175-4109-a6c2-c5da286aa4e9"
+                timestamp: '2025-09-14T19:47:00Z'
+                apiVersionUuid: 01293541-4175-4109-a6c2-c5da286aa4e9
                 frontendCompatibility:
-                  version: "1.0"
-                  minVersion: "1.0"
-                  maxVersion: "1.1"
-                gitCommitHash: "f4de03049a1d23244f15ed0c9deb069baa7fcab5"
+                  version: '1.0'
+                  minVersion: '1.0'
+                  maxVersion: '1.1'
+                gitCommitHash: f4de03049a1d23244f15ed0c9deb069baa7fcab5
                 checks:
                 - name: db
                   status: ok
                 - name: ai
                   status: ok
+  /chatgpt/health:
+    get:
+      tags:
+      - System
+      summary: ChatGPT integration health check
+      operationId: chatgptHealthGet
+      security: []
+      responses:
+        '200':
+          description: ChatGPT integration health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - healthy
+                    - no_api_key
+                    - error
+                    description: Overall health status of ChatGPT integration
+                  api_key_configured:
+                    type: boolean
+                    description: Whether OPENAI_API_KEY is configured
+                  model:
+                    type: string
+                    description: ChatGPT model being used
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: Health check timestamp
+              example:
+                status: healthy
+                api_key_configured: true
+                model: gpt-3.5-turbo
+                timestamp: '2025-09-14T19:47:00Z'
   /feature_flags:
     get:
       tags:
@@ -1994,7 +2841,6 @@ paths:
       responses:
         '204':
           description: Family deleted
-
   /family_list:
     get:
       tags:
@@ -2011,13 +2857,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Family'
-
-  # Test endpoints for stress testing regression prevention
   /test/stress/body:
     post:
       operationId: testStressBody
       tags:
-        - test
+      - test
       summary: Test endpoint for body parameter validation
       requestBody:
         required: true
@@ -2029,7 +2873,7 @@ paths:
                 data:
                   type: string
               required:
-                - data
+              - data
       responses:
         '201':
           description: Created
@@ -2042,7 +2886,911 @@ paths:
                     type: string
                   data:
                     type: string
-
+  /api/v1/privacy/audit:
+    get:
+      tags:
+      - Privacy
+      summary: Get privacy audit log for user data access
+      operationId: privacy_audit_get
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: userId
+        required: false
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+        description: Filter audit log by user ID
+      - in: query
+        name: parentId
+        required: false
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+        description: Filter audit log by parent ID
+      - in: query
+        name: startDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter from this date (ISO8601)
+      - in: query
+        name: endDate
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter until this date (ISO8601)
+      - in: query
+        name: actionType
+        required: false
+        schema:
+          type: string
+          enum:
+          - DATA_ACCESS
+          - DATA_EXPORT
+          - DATA_DELETE
+          - CONTEXT_VIEW
+          - CONVERSATION_VIEW
+        description: Filter by action type
+      responses:
+        '200':
+          description: Privacy audit log entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditEntries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PrivacyAuditLog'
+                  totalCount:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/privacy/children/{parentId}:
+    get:
+      tags:
+      - Privacy
+      summary: Get summary of children's data for parent dashboard
+      operationId: privacy_children_get
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: parentId
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+        description: Parent user ID
+      responses:
+        '200':
+          description: Children data summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  children:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChildSummary'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/privacy/export/{userId}:
+    post:
+      tags:
+      - Privacy
+      summary: Export user data for GDPR/COPPA compliance
+      operationId: privacy_export_post
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+        description: User ID to export data for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exportFormat:
+                  type: string
+                  enum:
+                  - JSON
+                  - CSV
+                  - PDF
+                  default: JSON
+                  description: Export format
+                includeConversations:
+                  type: boolean
+                  default: true
+                  description: Include conversation history
+                includeContext:
+                  type: boolean
+                  default: true
+                  description: Include user context and preferences
+                includeAnalytics:
+                  type: boolean
+                  default: false
+                  description: Include analytics data
+                dateRange:
+                  type: object
+                  properties:
+                    startDate:
+                      type: string
+                      format: date-time
+                    endDate:
+                      type: string
+                      format: date-time
+                  description: Optional date range filter
+      responses:
+        '200':
+          description: Data export file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exportId:
+                    type: string
+                    description: Export job identifier
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: Download URL for export file
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: URL expiration time
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/privacy/delete/{userId}:
+    delete:
+      tags:
+      - Privacy
+      summary: Delete user data with GDPR/COPPA compliance
+      operationId: privacy_delete_user
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+        description: User ID to delete data for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - confirmDeletion
+              properties:
+                confirmDeletion:
+                  type: boolean
+                  description: Must be true to confirm deletion
+                deleteScope:
+                  type: string
+                  enum:
+                  - ALL_DATA
+                  - CONVERSATIONS_ONLY
+                  - CONTEXT_ONLY
+                  - ANALYTICS_ONLY
+                  default: ALL_DATA
+                  description: Scope of data deletion
+                retainAnalytics:
+                  type: boolean
+                  default: false
+                  description: Retain anonymized analytics data
+                reason:
+                  type: string
+                  maxLength: 500
+                  description: Reason for deletion (audit purposes)
+      responses:
+        '200':
+          description: Deletion completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deletionId:
+                    type: string
+                    description: Deletion job identifier
+                  itemsDeleted:
+                    type: object
+                    properties:
+                      conversations:
+                        type: integer
+                      contextEntries:
+                        type: integer
+                      analyticsRecords:
+                        type: integer
+                  auditLogEntry:
+                    type: string
+                    description: Audit log entry ID
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/context/{userId}/summary:
+    get:
+      tags:
+      - Context
+      summary: Get summarized user context
+      operationId: context_summary_get
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+        description: User ID
+      - in: query
+        name: maxTokens
+        required: false
+        schema:
+          type: integer
+          minimum: 100
+          maximum: 4000
+          default: 1000
+        description: Maximum tokens in summary
+      responses:
+        '200':
+          description: User context summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextSummaryArchive'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+      - Context
+      summary: Trigger context summarization
+      operationId: context_summary_post
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+        description: User ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forceSummarization:
+                  type: boolean
+                  default: false
+                  description: Force summarization even if not triggered by conversation
+                    count
+                targetTokens:
+                  type: integer
+                  minimum: 100
+                  maximum: 2000
+                  default: 800
+                  description: Target token count for summary
+                preserveRecent:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  default: 3
+                  description: Number of recent conversations to preserve unsummarized
+      responses:
+        '200':
+          description: Summarization completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summaryId:
+                    type: string
+                  tokensReduced:
+                    type: integer
+                  qualityScore:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /assistant:
+    post:
+      operationId: assistant_create_post
+      summary: Create new animal assistant
+      tags:
+      - Assistant Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssistantRequest'
+      responses:
+        '201':
+          description: Assistant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '400':
+          description: Invalid request data
+        '409':
+          description: Assistant already exists for animal
+    get:
+      operationId: assistant_list_get
+      summary: List all assistants
+      tags:
+      - Assistant Management
+      parameters:
+      - name: animalId
+        in: query
+        description: Filter by animal ID
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Filter by assistant status
+        schema:
+          type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - ERROR
+      responses:
+        '200':
+          description: List of assistants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantListResponse'
+  /assistant/{assistantId}:
+    get:
+      operationId: assistant_get
+      summary: Get assistant by ID
+      tags:
+      - Assistant Management
+      parameters:
+      - name: assistantId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Assistant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '404':
+          description: Assistant not found
+    put:
+      operationId: assistant_update_put
+      summary: Update assistant configuration
+      tags:
+      - Assistant Management
+      parameters:
+      - name: assistantId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssistantRequest'
+      responses:
+        '200':
+          description: Assistant updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '404':
+          description: Assistant not found
+    delete:
+      operationId: assistant_delete
+      summary: Delete assistant
+      tags:
+      - Assistant Management
+      parameters:
+      - name: assistantId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Assistant deleted successfully
+        '404':
+          description: Assistant not found
+  /personality:
+    post:
+      operationId: personality_create_post
+      summary: Create new personality
+      tags:
+      - Personality Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePersonalityRequest'
+      responses:
+        '201':
+          description: Personality created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityResponse'
+    get:
+      operationId: personality_list_get
+      summary: List all personalities
+      tags:
+      - Personality Management
+      parameters:
+      - name: animalType
+        in: query
+        description: Filter by animal type
+        schema:
+          type: string
+      - name: isTemplate
+        in: query
+        description: Filter by template status
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List of personalities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityListResponse'
+  /personality/{personalityId}:
+    get:
+      operationId: personality_get
+      summary: Get personality by ID
+      tags:
+      - Personality Management
+      parameters:
+      - name: personalityId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Personality details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityResponse'
+    put:
+      operationId: personality_update_put
+      summary: Update personality
+      tags:
+      - Personality Management
+      parameters:
+      - name: personalityId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonalityRequest'
+      responses:
+        '200':
+          description: Personality updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityResponse'
+    delete:
+      operationId: personality_delete
+      summary: Delete personality
+      tags:
+      - Personality Management
+      parameters:
+      - name: personalityId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Personality deleted successfully
+        '409':
+          description: Personality in use by assistants
+  /guardrail:
+    post:
+      operationId: guardrail_create_post
+      summary: Create new guardrail
+      tags:
+      - Guardrail Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGuardrailRequest'
+      responses:
+        '201':
+          description: Guardrail created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailResponse'
+    get:
+      operationId: guardrail_list_get
+      summary: List all guardrails
+      tags:
+      - Guardrail Management
+      parameters:
+      - name: category
+        in: query
+        description: Filter by guardrail category
+        schema:
+          type: string
+      - name: isDefault
+        in: query
+        description: Filter by default status
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List of guardrails
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailListResponse'
+  /guardrail/{guardrailId}:
+    get:
+      operationId: guardrail_get
+      summary: Get guardrail by ID
+      tags:
+      - Guardrail Management
+      parameters:
+      - name: guardrailId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Guardrail details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailResponse'
+    put:
+      operationId: guardrail_update_put
+      summary: Update guardrail
+      tags:
+      - Guardrail Management
+      parameters:
+      - name: guardrailId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGuardrailRequest'
+      responses:
+        '200':
+          description: Guardrail updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardrailResponse'
+    delete:
+      operationId: guardrail_delete
+      summary: Delete guardrail
+      tags:
+      - Guardrail Management
+      parameters:
+      - name: guardrailId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Guardrail deleted successfully
+        '409':
+          description: Guardrail in use by assistants
+  /assistant/{assistantId}/knowledge:
+    post:
+      operationId: knowledge_upload_post
+      summary: Upload knowledge base file
+      tags:
+      - Knowledge Base
+      parameters:
+      - name: assistantId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Educational document file
+                description:
+                  type: string
+                  description: Optional file description
+              required:
+              - file
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeFileResponse'
+        '400':
+          description: Invalid file or size limit exceeded
+        '413':
+          description: File too large
+    get:
+      operationId: knowledge_list_get
+      summary: List knowledge base files
+      tags:
+      - Knowledge Base
+      parameters:
+      - name: assistantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Filter by processing status
+        schema:
+          type: string
+          enum:
+          - UPLOADED
+          - PROCESSING
+          - COMPLETED
+          - FAILED
+      responses:
+        '200':
+          description: List of knowledge base files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeFileListResponse'
+  /assistant/{assistantId}/knowledge/{fileId}:
+    get:
+      operationId: knowledge_file_get
+      summary: Get knowledge file details
+      tags:
+      - Knowledge Base
+      parameters:
+      - name: assistantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Knowledge file details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeFileResponse'
+    delete:
+      operationId: knowledge_file_delete
+      summary: Delete knowledge base file
+      tags:
+      - Knowledge Base
+      parameters:
+      - name: assistantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: File deleted successfully
+        '404':
+          description: File not found
+  /sandbox:
+    post:
+      operationId: sandbox_create_post
+      summary: Create sandbox assistant for testing
+      tags:
+      - Sandbox Testing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSandboxRequest'
+      responses:
+        '201':
+          description: Sandbox assistant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxResponse'
+    get:
+      operationId: sandbox_list_get
+      summary: List user's sandbox assistants
+      tags:
+      - Sandbox Testing
+      responses:
+        '200':
+          description: List of sandbox assistants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxListResponse'
+  /sandbox/{sandboxId}:
+    get:
+      operationId: sandbox_get
+      summary: Get sandbox assistant details
+      tags:
+      - Sandbox Testing
+      parameters:
+      - name: sandboxId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Sandbox assistant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxResponse'
+        '404':
+          description: Sandbox not found or expired
+    delete:
+      operationId: sandbox_delete
+      summary: Delete sandbox assistant
+      tags:
+      - Sandbox Testing
+      parameters:
+      - name: sandboxId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Sandbox deleted successfully
+  /sandbox/{sandboxId}/promote:
+    post:
+      operationId: sandbox_promote_post
+      summary: Promote sandbox to live assistant
+      tags:
+      - Sandbox Testing
+      parameters:
+      - name: sandboxId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoteSandboxRequest'
+      responses:
+        '200':
+          description: Sandbox promoted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+        '404':
+          description: Sandbox not found or expired
+        '409':
+          description: Target animal already has assistant
+  /sandbox/{sandboxId}/chat:
+    post:
+      operationId: sandbox_chat_post
+      summary: Test conversation with sandbox assistant
+      tags:
+      - Sandbox Testing
+      parameters:
+      - name: sandboxId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Chat response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '404':
+          description: Sandbox not found or expired
 components:
   securitySchemes:
     bearerAuth:
@@ -2105,6 +3853,17 @@ components:
               value:
                 code: validation_error
                 message: Request validation failed
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            tooManyRequests:
+              value:
+                code: too_many_requests
+                message: Rate limit exceeded. Please try again later.
   schemas:
     ActorRef:
       type: object
@@ -2193,8 +3952,8 @@ components:
           type: boolean
           description: If true, create account if not found
       required:
+      - username
       - password
-      # Note: Either username OR email must be provided, handled in implementation
     AuthResponse:
       type: object
       required:
@@ -2223,22 +3982,22 @@ components:
         properties:
           userId:
             type: string
-            pattern: '^[a-zA-Z0-9_-]+$'
+            pattern: ^[a-zA-Z0-9_-]+$
             description: Unique user identifier
           email:
             type: string
             format: email
-            pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
             description: RFC 5322 compliant email address
           displayName:
             type: string
             minLength: 1
             maxLength: 100
-            pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
+            pattern: ^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=/\\|{}~`*%$^_<>]+$
             description: Display name with natural language character validation
           phoneNumber:
             type: string
-            pattern: '^\+[1-9]\d{1,14}$'
+            pattern: ^\+[1-9]\d{1,14}$
             description: E.164 international phone number format
             nullable: true
           age:
@@ -2270,49 +4029,47 @@ components:
       - $ref: '#/components/schemas/AuditFields'
     UserInput:
       allOf:
-        - $ref: '#/components/schemas/User'
-        - type: object
-          required:
-          - email
-          - role
-          properties:
-            userId:
-              type: string
-              readOnly: true
-            email:
-              type: string
-              format: email
-            role:
-              type: string
-              enum:
-              - visitor
-              - user
-              - member
-              - editor
-              - admin
-              - parent
-              - student
+      - $ref: '#/components/schemas/User'
+      - type: object
+        required:
+        - email
+        - role
+        properties:
+          userId:
+            type: string
+            readOnly: true
+          email:
+            type: string
+            format: email
+          role:
+            type: string
+            enum:
+            - visitor
+            - user
+            - member
+            - editor
+            - admin
+            - parent
+            - student
     UserDetails:
       allOf:
-        - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            usage:
-              $ref: '#/components/schemas/UsageSummary'
-            userDetailsId:
-              type: string
-              description: Unique identifier for the user details
-
+      - $ref: '#/components/schemas/User'
+      - type: object
+        properties:
+          usage:
+            $ref: '#/components/schemas/UsageSummary'
+          userDetailsId:
+            type: string
+            description: Unique identifier for the user details
     UserDetailsInput:
       type: object
       required:
-        - userId
+      - userId
       properties:
         userId:
           type: string
         usage:
           $ref: '#/components/schemas/UsageSummary'
-
     PagedUsers:
       type: object
       properties:
@@ -2424,6 +4181,9 @@ components:
             type: string
           species:
             type: string
+          description:
+            type: string
+            maxLength: 500
           status:
             type: string
             enum:
@@ -2461,6 +4221,9 @@ components:
           type: string
           minLength: 1
           maxLength: 100
+        description:
+          type: string
+          maxLength: 500
         status:
           type: string
           enum:
@@ -2524,7 +4287,7 @@ components:
       properties:
         voice:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: ^[a-zA-Z0-9_-]+$
           minLength: 1
           maxLength: 50
           enum:
@@ -2543,8 +4306,15 @@ components:
           type: string
           minLength: 5
           maxLength: 1000
-          pattern: '^[a-zA-Z0-9\s\.,!?\-():\[\]''"";@#&+=/\\|{}~`*%$^_<>]+$'
-          description: Animal personality description supporting natural language with punctuation
+          pattern: ^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=/\\|{}~`*%$^_<>]+$
+          description: Animal personality description supporting natural language
+            with punctuation
+        systemPrompt:
+          type: string
+          minLength: 5
+          maxLength: 2000
+          pattern: ^[a-zA-Z0-9\s\.,!?\-():\[\]'"";@#&+=/\\|{}~`*%$^_<>]+$
+          description: System prompt that defines the AI behavior for this animal
         aiModel:
           type: string
           enum:
@@ -2595,15 +4365,31 @@ components:
         guardrails:
           type: object
           properties:
-            safe_mode:
-              type: boolean
-            content_filter:
-              type: boolean
-            response_length_limit:
-              type: integer
-              minimum: 50
-              maximum: 2000
-          additionalProperties: false
+            selected:
+              type: array
+              items:
+                type: string
+              description: List of guardrail IDs to apply to this animal
+            custom:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - ALWAYS
+                    - NEVER
+                    - ENCOURAGE
+                    - DISCOURAGE
+                  rule:
+                    type: string
+                    minLength: 1
+                    maxLength: 500
+                required:
+                - type
+                - rule
+              description: Custom guardrails specific to this animal
     KnowledgeCreate:
       type: object
       required:
@@ -2648,7 +4434,7 @@ components:
         properties:
           mediaId:
             type: string
-            pattern: '^[a-zA-Z0-9_-]+$'
+            pattern: ^[a-zA-Z0-9_-]+$
             description: Unique identifier for the media item
           title:
             type: string
@@ -2668,7 +4454,7 @@ components:
             description: Type of media content
           animalId:
             type: string
-            pattern: '^[a-zA-Z0-9_-]+$'
+            pattern: ^[a-zA-Z0-9_-]+$
             nullable: true
             description: Associated animal identifier
           description:
@@ -2680,14 +4466,14 @@ components:
             type: array
             items:
               type: string
-              pattern: '^[a-zA-Z0-9_-]+$'
+              pattern: ^[a-zA-Z0-9_-]+$
             maxItems: 10
             nullable: true
             description: Optional metadata tags for categorization
           fileSize:
             type: integer
             minimum: 1
-            maximum: 104857600  # 100MB limit
+            maximum: 104857600
             nullable: true
             description: File size in bytes (max 100MB)
           mimeType:
@@ -2704,7 +4490,8 @@ components:
             - video/webm
             - video/quicktime
             nullable: true
-            description: MIME type of the media file (validated against supported types)
+            description: MIME type of the media file (validated against supported
+              types)
           duration:
             type: number
             minimum: 0
@@ -2814,7 +4601,7 @@ components:
           type: string
           minLength: 1
           maxLength: 100
-          example: "Smith Family"
+          example: Smith Family
           description: Name of the family group
         parents:
           type: array
@@ -2822,7 +4609,7 @@ components:
           items:
             type: string
             example: user_parent_001
-            pattern: '^[a-zA-Z0-9_-]+$'
+            pattern: ^[a-zA-Z0-9_-]+$
             description: User ID of a parent
         students:
           type: array
@@ -2831,7 +4618,7 @@ components:
           items:
             type: string
             example: student_001
-            pattern: '^[a-zA-Z0-9_-]+$'
+            pattern: ^[a-zA-Z0-9_-]+$
             description: User ID of a student
         address:
           type: object
@@ -2840,30 +4627,35 @@ components:
             street:
               type: string
               maxLength: 200
-              example: "123 Main St"
+              example: 123 Main St
             city:
               type: string
               maxLength: 100
-              example: "Seattle"
+              example: Seattle
             state:
               type: string
               minLength: 2
               maxLength: 2
-              pattern: '^[A-Z]{2}$'
-              example: "WA"
+              pattern: ^[A-Z]{2}$
+              example: WA
             zipCode:
               type: string
-              pattern: '^\d{5}(-\d{4})?$'
-              example: "98101"
+              pattern: ^\d{5}(-\d{4})?$
+              example: '98101'
         preferredPrograms:
           type: array
           items:
             type: string
-          example: ["Junior Zookeeper", "Conservation Club"]
+          example:
+          - Junior Zookeeper
+          - Conservation Club
           description: Educational programs the family is interested in
         status:
           type: string
-          enum: [active, inactive, pending]
+          enum:
+          - active
+          - inactive
+          - pending
           default: active
           description: Family enrollment status
         memberSince:
@@ -2915,17 +4707,20 @@ components:
               type: string
               minLength: 2
               maxLength: 2
-              pattern: '^[A-Z]{2}$'
+              pattern: ^[A-Z]{2}$
             zipCode:
               type: string
-              pattern: '^\d{5}(-\d{4})?$'
+              pattern: ^\d{5}(-\d{4})?$
         preferredPrograms:
           type: array
           items:
             type: string
         status:
           type: string
-          enum: [active, inactive, pending]
+          enum:
+          - active
+          - inactive
+          - pending
           default: active
     UsageSummary:
       type: object
@@ -3010,3 +4805,1205 @@ components:
       properties:
         flags:
           $ref: '#/components/schemas/FeatureFlags'
+    Guardrail:
+      allOf:
+      - type: object
+        required:
+        - guardrailId
+        - name
+        - type
+        - rule
+        properties:
+          guardrailId:
+            type: string
+            pattern: ^gr_[a-zA-Z0-9]+$
+            description: Unique identifier for the guardrail
+            readOnly: true
+          name:
+            type: string
+            minLength: 1
+            maxLength: 200
+            description: Human-readable name for the guardrail
+          type:
+            type: string
+            enum:
+            - ALWAYS
+            - NEVER
+            - ENCOURAGE
+            - DISCOURAGE
+            description: Type of guardrail rule
+          rule:
+            type: string
+            minLength: 1
+            maxLength: 500
+            description: The actual rule text
+          description:
+            type: string
+            maxLength: 1000
+            nullable: true
+            description: Optional detailed description
+          category:
+            type: string
+            enum:
+            - content_safety
+            - educational
+            - personality
+            - technical
+            default: content_safety
+            description: Guardrail category for organization
+          priority:
+            type: integer
+            minimum: 0
+            maximum: 100
+            default: 50
+            description: Priority level (higher = more important)
+          isActive:
+            type: boolean
+            default: true
+            description: Whether the guardrail is currently active
+          isGlobal:
+            type: boolean
+            default: false
+            description: Whether the guardrail applies to all animals by default
+          keywords:
+            type: array
+            items:
+              type: string
+              pattern: ^[a-zA-Z0-9_-]+$
+            maxItems: 20
+            nullable: true
+            description: Keywords for search and filtering
+          examples:
+            type: object
+            nullable: true
+            properties:
+              good:
+                type: array
+                items:
+                  type: string
+                description: Examples of good behavior
+              bad:
+                type: array
+                items:
+                  type: string
+                description: Examples of behavior to avoid
+      - $ref: '#/components/schemas/AuditFields'
+    GuardrailInput:
+      type: object
+      required:
+      - name
+      - type
+      - rule
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Human-readable name for the guardrail
+        type:
+          type: string
+          enum:
+          - ALWAYS
+          - NEVER
+          - ENCOURAGE
+          - DISCOURAGE
+          description: Type of guardrail rule
+        rule:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: The actual rule text
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+          description: Optional detailed description
+        category:
+          type: string
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+          default: content_safety
+          description: Guardrail category for organization
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 100
+          default: 50
+          description: Priority level (higher = more important)
+        isActive:
+          type: boolean
+          default: true
+          description: Whether the guardrail is currently active
+        isGlobal:
+          type: boolean
+          default: false
+          description: Whether the guardrail applies to all animals by default
+        keywords:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-zA-Z0-9_-]+$
+          maxItems: 20
+          nullable: true
+          description: Keywords for search and filtering
+        examples:
+          type: object
+          nullable: true
+          properties:
+            good:
+              type: array
+              items:
+                type: string
+              description: Examples of good behavior
+            bad:
+              type: array
+              items:
+                type: string
+              description: Examples of behavior to avoid
+    GuardrailUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Human-readable name for the guardrail
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+          description: Optional detailed description
+        category:
+          type: string
+          enum:
+          - content_safety
+          - educational
+          - personality
+          - technical
+          description: Guardrail category for organization
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Priority level (higher = more important)
+        isActive:
+          type: boolean
+          description: Whether the guardrail is currently active
+        keywords:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-zA-Z0-9_-]+$
+          maxItems: 20
+          nullable: true
+          description: Keywords for search and filtering
+        examples:
+          type: object
+          nullable: true
+          properties:
+            good:
+              type: array
+              items:
+                type: string
+              description: Examples of good behavior
+            bad:
+              type: array
+              items:
+                type: string
+              description: Examples of behavior to avoid
+    GuardrailTemplate:
+      type: object
+      required:
+      - id
+      - name
+      - rules
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+          description: Template identifier
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Template name
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+          description: Template description
+        rules:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+            - type
+            - rule
+            properties:
+              type:
+                type: string
+                enum:
+                - ALWAYS
+                - NEVER
+                - ENCOURAGE
+                - DISCOURAGE
+              rule:
+                type: string
+                minLength: 1
+                maxLength: 500
+              priority:
+                type: integer
+                minimum: 0
+                maximum: 100
+                default: 50
+          description: Rules included in this template
+    PrivacyAuditLog:
+      type: object
+      required:
+      - auditId
+      - userId
+      - actionType
+      - timestamp
+      properties:
+        auditId:
+          type: string
+          description: Unique audit log entry identifier
+        userId:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+          description: User ID that data action was performed on
+        parentId:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+          nullable: true
+          description: Parent ID if action was performed by parent
+        actionType:
+          type: string
+          enum:
+          - DATA_ACCESS
+          - DATA_EXPORT
+          - DATA_DELETE
+          - CONTEXT_VIEW
+          - CONVERSATION_VIEW
+          description: Type of privacy action performed
+        actionDetails:
+          type: object
+          description: Additional details about the action performed
+        timestamp:
+          type: string
+          format: date-time
+          description: When the action was performed
+        ipAddress:
+          type: string
+          description: IP address from which action was performed
+        userAgent:
+          type: string
+          description: User agent of the client
+    ChildSummary:
+      type: object
+      required:
+      - userId
+      - displayName
+      - conversationCount
+      - lastActivity
+      properties:
+        userId:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+          description: Child user identifier
+        displayName:
+          type: string
+          description: Child's display name
+        age:
+          type: integer
+          minimum: 3
+          maximum: 18
+          nullable: true
+          description: Child's age (if provided)
+        conversationCount:
+          type: integer
+          minimum: 0
+          description: Total number of conversations
+        lastActivity:
+          type: string
+          format: date-time
+          description: Last conversation activity
+        dataSize:
+          type: object
+          properties:
+            conversations:
+              type: integer
+              description: Number of conversation records
+            contextEntries:
+              type: integer
+              description: Number of context entries
+            totalSizeKB:
+              type: number
+              description: Approximate total data size in KB
+          description: Summary of data volume for this child
+        privacyFlags:
+          type: object
+          properties:
+            hasPersonalInfo:
+              type: boolean
+              description: Whether child has shared personal information
+            needsReview:
+              type: boolean
+              description: Whether conversations need parent review
+          description: Privacy-related flags for parent attention
+    ContextSummaryArchive:
+      type: object
+      required:
+      - userId
+      - summaryId
+      - summary
+      - createdAt
+      properties:
+        userId:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]+$
+          description: User this summary belongs to
+        summaryId:
+          type: string
+          description: Unique summary identifier
+        summary:
+          type: string
+          description: Compressed user context summary
+        originalTokens:
+          type: integer
+          minimum: 0
+          description: Token count before summarization
+        compressedTokens:
+          type: integer
+          minimum: 0
+          description: Token count after summarization
+        compressionRatio:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Compression ratio (compressed/original)
+        qualityScore:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Summary quality score from validation
+        conversationsCovered:
+          type: array
+          items:
+            type: string
+          description: List of conversation IDs included in this summary
+        createdAt:
+          type: string
+          format: date-time
+          description: When this summary was created
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When this summary should be replaced
+    DetailedValidationResponse:
+      type: object
+      required:
+      - valid
+      - result
+      - riskScore
+      - requiresEscalation
+      - validationId
+      - timestamp
+      - processingTimeMs
+      - triggeredRules
+      - summary
+      properties:
+        valid:
+          type: boolean
+          description: Whether content passes safety validation
+          example: true
+        result:
+          type: string
+          enum:
+          - approved
+          - flagged
+          - blocked
+          - escalated
+          description: Validation outcome
+          example: approved
+        riskScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Calculated risk score (0=safe, 100=high risk)
+          example: 15.3
+        requiresEscalation:
+          type: boolean
+          description: Whether validation requires human review
+          example: false
+        userMessage:
+          type: string
+          maxLength: 200
+          description: User-facing message about validation result
+          example: Content looks great! Keep exploring and learning.
+        safeAlternative:
+          type: string
+          maxLength: 1000
+          description: Safe alternative content if available
+          example: Let's talk about how animals play and have fun instead!
+        validationId:
+          type: string
+          format: uuid
+          description: Unique identifier for this validation event
+          example: val_abc123_20250114
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp when validation occurred
+          example: '2025-01-14T14:30:00.000Z'
+        processingTimeMs:
+          type: integer
+          minimum: 0
+          maximum: 60000
+          description: Processing time in milliseconds
+          example: 234
+        triggeredRules:
+          $ref: '#/components/schemas/TriggeredRulesSummary'
+        summary:
+          $ref: '#/components/schemas/ValidationSummary'
+    TriggeredRulesSummary:
+      type: object
+      required:
+      - totalTriggered
+      - highestSeverity
+      - customGuardrails
+      properties:
+        totalTriggered:
+          type: integer
+          minimum: 0
+          maximum: 1000
+          description: Total number of rules triggered
+          example: 2
+        highestSeverity:
+          type: string
+          enum:
+          - none
+          - low
+          - medium
+          - high
+          - critical
+          description: Highest severity level among triggered rules
+          example: high
+        openaiModeration:
+          $ref: '#/components/schemas/OpenAIModerationResult'
+        customGuardrails:
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggeredRule'
+          description: Custom CMZ guardrails rules that were triggered
+          example: []
+    TriggeredRule:
+      type: object
+      required:
+      - ruleId
+      - ruleText
+      - ruleType
+      - category
+      - severity
+      - confidenceScore
+      - detectedAt
+      properties:
+        ruleId:
+          type: string
+          maxLength: 50
+          pattern: ^rule_[a-z_]+_[0-9]+$
+          description: Unique identifier for the guardrail rule
+          example: rule_violence_001
+        ruleText:
+          type: string
+          maxLength: 500
+          description: Full text of the guardrail rule
+          example: Never discuss violence or harm to animals
+        ruleType:
+          type: string
+          enum:
+          - ALWAYS
+          - NEVER
+          - ENCOURAGE
+          - DISCOURAGE
+          description: Type of guardrail rule
+          example: NEVER
+        category:
+          type: string
+          enum:
+          - safety
+          - educational
+          - age-appropriate
+          - behavioral
+          - content-quality
+          - privacy
+          description: Category classification for the rule
+          example: safety
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+          description: Severity level of rule violation
+          example: high
+        confidenceScore:
+          type: number
+          format: float
+          minimum: 50.0
+          maximum: 100.0
+          description: Confidence score (0-100) that rule was violated
+          example: 89.3
+        triggerContext:
+          type: string
+          maxLength: 500
+          description: Specific content excerpt that triggered the rule
+          example: 'Matched keywords: fight, harm'
+        userMessage:
+          type: string
+          maxLength: 200
+          description: User-friendly message explaining why content was flagged
+          example: We don't discuss animals being hurt. Let's learn about how we keep
+            animals safe!
+        detectedAt:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp when rule was triggered
+          example: '2025-01-14T14:35:00.123Z'
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Rule priority (0-100, higher = more important)
+          example: 90
+          default: 50
+    OpenAIModerationResult:
+      type: object
+      required:
+      - flagged
+      - model
+      - categories
+      properties:
+        flagged:
+          type: boolean
+          description: Whether OpenAI flagged the content
+          example: false
+        model:
+          type: string
+          description: OpenAI moderation model used
+          example: text-moderation-latest
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenAIModerationCategory'
+          description: Triggered OpenAI moderation categories
+          example: []
+    OpenAIModerationCategory:
+      type: object
+      required:
+      - category
+      - severity
+      - confidenceScore
+      - rawScore
+      - detectedAt
+      properties:
+        category:
+          type: string
+          enum:
+          - hate
+          - hate/threatening
+          - harassment
+          - harassment/threatening
+          - self-harm
+          - self-harm/intent
+          - self-harm/instructions
+          - sexual
+          - sexual/minors
+          - violence
+          - violence/graphic
+          description: OpenAI moderation category
+          example: violence
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+          description: Severity classification for this category
+          example: high
+        confidenceScore:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 100.0
+          description: Confidence score (0-100) for this detection
+          example: 78.5
+        rawScore:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Raw OpenAI confidence score (0.0-1.0)
+          example: 0.785
+        detectedAt:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp when category was detected
+          example: '2025-01-14T14:40:00.089Z'
+    ValidationSummary:
+      type: object
+      required:
+      - requiresEscalation
+      - blockingViolations
+      - warningViolations
+      - ageGroupApproved
+      properties:
+        requiresEscalation:
+          type: boolean
+          description: Whether this validation requires human review
+          example: false
+        blockingViolations:
+          type: integer
+          minimum: 0
+          maximum: 1000
+          description: Number of violations that block content
+          example: 1
+        warningViolations:
+          type: integer
+          minimum: 0
+          maximum: 1000
+          description: Number of violations that generate warnings
+          example: 1
+        ageGroupApproved:
+          type: string
+          enum:
+          - elementary
+          - middle
+          - high
+          - adult
+          - none
+          description: Minimum age group for which content is appropriate
+          example: middle
+    CreateAssistantRequest:
+      type: object
+      required:
+      - animalId
+      - personalityId
+      - guardrailId
+      properties:
+        animalId:
+          type: string
+          description: ID of the animal for this assistant
+        personalityId:
+          type: string
+          description: ID of the personality configuration
+        guardrailId:
+          type: string
+          description: ID of the guardrail configuration
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+          description: Optional array of knowledge base file IDs
+    UpdateAssistantRequest:
+      type: object
+      properties:
+        personalityId:
+          type: string
+          description: ID of the personality configuration
+        guardrailId:
+          type: string
+          description: ID of the guardrail configuration
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+          description: Array of knowledge base file IDs
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
+          description: Assistant status
+    AssistantResponse:
+      type: object
+      properties:
+        assistantId:
+          type: string
+        animalId:
+          type: string
+        personalityId:
+          type: string
+        guardrailId:
+          type: string
+        mergedPrompt:
+          type: string
+          description: Combined personality and guardrail prompt
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - ERROR
+        lastPromptMerge:
+          type: object
+          properties:
+            at:
+              type: string
+              format: date-time
+        responseTimeP95:
+          type: number
+          description: 95th percentile response time in milliseconds
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+    AssistantListResponse:
+      type: object
+      properties:
+        assistants:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssistantResponse'
+        total:
+          type: integer
+          description: Total number of assistants
+    CreatePersonalityRequest:
+      type: object
+      required:
+      - name
+      - personalityText
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Human-readable personality name
+        description:
+          type: string
+          maxLength: 500
+          description: Purpose and usage description
+        personalityText:
+          type: string
+          minLength: 100
+          maxLength: 5000
+          description: Core personality prompt text
+        animalType:
+          type: string
+          enum:
+          - MAMMAL
+          - BIRD
+          - REPTILE
+          - AMPHIBIAN
+          - FISH
+          - INVERTEBRATE
+          description: Suggested animal category
+        tone:
+          type: string
+          enum:
+          - PLAYFUL
+          - EDUCATIONAL
+          - CALM
+          - ENERGETIC
+          - WISE
+          - FUNNY
+          description: Communication style
+        ageTarget:
+          type: string
+          enum:
+          - PRESCHOOL
+          - ELEMENTARY
+          - FAMILY
+          - ALL_AGES
+          description: Target age group
+        isTemplate:
+          type: boolean
+          description: Whether this is a starter template
+    UpdatePersonalityRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        personalityText:
+          type: string
+          minLength: 100
+          maxLength: 5000
+        animalType:
+          type: string
+          enum:
+          - MAMMAL
+          - BIRD
+          - REPTILE
+          - AMPHIBIAN
+          - FISH
+          - INVERTEBRATE
+        tone:
+          type: string
+          enum:
+          - PLAYFUL
+          - EDUCATIONAL
+          - CALM
+          - ENERGETIC
+          - WISE
+          - FUNNY
+        ageTarget:
+          type: string
+          enum:
+          - PRESCHOOL
+          - ELEMENTARY
+          - FAMILY
+          - ALL_AGES
+    PersonalityResponse:
+      type: object
+      properties:
+        personalityId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        personalityText:
+          type: string
+        animalType:
+          type: string
+        tone:
+          type: string
+        ageTarget:
+          type: string
+        usageCount:
+          type: integer
+          description: Number of assistants using this personality
+        isTemplate:
+          type: boolean
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+    PersonalityListResponse:
+      type: object
+      properties:
+        personalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonalityResponse'
+        total:
+          type: integer
+    CreateGuardrailRequest:
+      type: object
+      required:
+      - name
+      - guardrailText
+      - category
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Human-readable guardrail name
+        description:
+          type: string
+          maxLength: 500
+          description: Purpose and scope description
+        guardrailText:
+          type: string
+          minLength: 50
+          maxLength: 2000
+          description: Safety rules as text prompts
+        category:
+          type: string
+          enum:
+          - SAFETY
+          - EDUCATION
+          - TONE
+          - CONTENT
+          description: Guardrail category
+        severity:
+          type: string
+          enum:
+          - STRICT
+          - MODERATE
+          - GUIDANCE
+          description: Enforcement level
+        ageAppropriate:
+          type: array
+          items:
+            type: string
+            enum:
+            - PRESCHOOL
+            - ELEMENTARY
+            - FAMILY
+            - ALL_AGES
+          description: Target age groups
+        isDefault:
+          type: boolean
+          description: Whether this is default for category
+    UpdateGuardrailRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        guardrailText:
+          type: string
+          minLength: 50
+          maxLength: 2000
+        category:
+          type: string
+          enum:
+          - SAFETY
+          - EDUCATION
+          - TONE
+          - CONTENT
+        severity:
+          type: string
+          enum:
+          - STRICT
+          - MODERATE
+          - GUIDANCE
+        ageAppropriate:
+          type: array
+          items:
+            type: string
+            enum:
+            - PRESCHOOL
+            - ELEMENTARY
+            - FAMILY
+            - ALL_AGES
+        isDefault:
+          type: boolean
+    GuardrailResponse:
+      type: object
+      properties:
+        guardrailId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        guardrailText:
+          type: string
+        category:
+          type: string
+        severity:
+          type: string
+        ageAppropriate:
+          type: array
+          items:
+            type: string
+        usageCount:
+          type: integer
+          description: Number of assistants using this guardrail
+        isDefault:
+          type: boolean
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+    GuardrailListResponse:
+      type: object
+      properties:
+        guardrails:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardrailResponse'
+        total:
+          type: integer
+    KnowledgeFileResponse:
+      type: object
+      properties:
+        fileId:
+          type: string
+        assistantId:
+          type: string
+        originalName:
+          type: string
+        fileSize:
+          type: integer
+          description: File size in bytes
+        mimeType:
+          type: string
+        processingStatus:
+          type: string
+          enum:
+          - UPLOADED
+          - PROCESSING
+          - COMPLETED
+          - FAILED
+        processingError:
+          type: string
+          nullable: true
+          description: Error message if processing failed
+        extractedTextLength:
+          type: integer
+          description: Length of extracted text in characters
+        contentValidation:
+          type: object
+          properties:
+            safe:
+              type: boolean
+            educational:
+              type: boolean
+            ageAppropriate:
+              type: boolean
+        processingStarted:
+          type: string
+          format: date-time
+          nullable: true
+        processingCompleted:
+          type: string
+          format: date-time
+          nullable: true
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+        modified:
+          $ref: '#/components/schemas/AuditInfo'
+    KnowledgeFileListResponse:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/KnowledgeFileResponse'
+        total:
+          type: integer
+        totalSize:
+          type: integer
+          description: Total size of all files in bytes
+    CreateSandboxRequest:
+      type: object
+      required:
+      - personalityId
+      - guardrailId
+      properties:
+        animalId:
+          type: string
+          description: Optional animal ID for context
+        personalityId:
+          type: string
+          description: ID of personality to test
+        guardrailId:
+          type: string
+          description: ID of guardrail to test
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+          description: Limited knowledge base files for testing
+    PromoteSandboxRequest:
+      type: object
+      required:
+      - animalId
+      properties:
+        animalId:
+          type: string
+          description: Animal ID to create/update assistant for
+    SandboxResponse:
+      type: object
+      properties:
+        sandboxId:
+          type: string
+        createdBy:
+          type: string
+        animalId:
+          type: string
+          nullable: true
+        personalityId:
+          type: string
+        guardrailId:
+          type: string
+        mergedPrompt:
+          type: string
+        knowledgeBaseFileIds:
+          type: array
+          items:
+            type: string
+        expiresAt:
+          type: string
+          format: date-time
+          description: Expiration time (30 minutes from creation)
+        conversationCount:
+          type: integer
+          description: Number of test conversations
+        lastConversationAt:
+          type: string
+          format: date-time
+          nullable: true
+        isPromoted:
+          type: boolean
+        promotedAt:
+          type: string
+          format: date-time
+          nullable: true
+        created:
+          $ref: '#/components/schemas/AuditInfo'
+    SandboxListResponse:
+      type: object
+      properties:
+        sandboxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SandboxResponse'
+        total:
+          type: integer
+    ChatRequest:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: User's chat message
+        conversationId:
+          type: string
+          description: Optional conversation ID for context
+    ChatResponse:
+      type: object
+      properties:
+        response:
+          type: string
+          description: Assistant's response
+        conversationId:
+          type: string
+          description: Conversation ID for follow-up messages
+        responseTime:
+          type: number
+          description: Response time in milliseconds
+        promptTokens:
+          type: integer
+          description: Tokens used in prompt
+        completionTokens:
+          type: integer
+          description: Tokens used in completion
+    AuditInfo:
+      type: object
+      properties:
+        at:
+          type: string
+          format: date-time
+        by:
+          type: string
+          description: User ID who performed the action

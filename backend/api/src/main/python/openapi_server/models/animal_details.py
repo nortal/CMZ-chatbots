@@ -14,7 +14,7 @@ class AnimalDetails(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, animal_id=None, name=None, species=None, status=None, created=None, modified=None, deleted=None, soft_delete=False, animal_detail_id=None, description=None, habitat=None, image_url=None):  # noqa: E501
+    def __init__(self, animal_id=None, name=None, species=None, description=None, status=None, created=None, modified=None, deleted=None, soft_delete=False, animal_detail_id=None, habitat=None, image_url=None):  # noqa: E501
         """AnimalDetails - a model defined in OpenAPI
 
         :param animal_id: The animal_id of this AnimalDetails.  # noqa: E501
@@ -23,6 +23,8 @@ class AnimalDetails(Model):
         :type name: str
         :param species: The species of this AnimalDetails.  # noqa: E501
         :type species: str
+        :param description: The description of this AnimalDetails.  # noqa: E501
+        :type description: str
         :param status: The status of this AnimalDetails.  # noqa: E501
         :type status: str
         :param created: The created of this AnimalDetails.  # noqa: E501
@@ -35,8 +37,6 @@ class AnimalDetails(Model):
         :type soft_delete: bool
         :param animal_detail_id: The animal_detail_id of this AnimalDetails.  # noqa: E501
         :type animal_detail_id: str
-        :param description: The description of this AnimalDetails.  # noqa: E501
-        :type description: str
         :param habitat: The habitat of this AnimalDetails.  # noqa: E501
         :type habitat: str
         :param image_url: The image_url of this AnimalDetails.  # noqa: E501
@@ -46,13 +46,13 @@ class AnimalDetails(Model):
             'animal_id': str,
             'name': str,
             'species': str,
+            'description': str,
             'status': str,
             'created': AuditStamp,
             'modified': AuditStamp,
             'deleted': AuditStamp,
             'soft_delete': bool,
             'animal_detail_id': str,
-            'description': str,
             'habitat': str,
             'image_url': str
         }
@@ -61,13 +61,13 @@ class AnimalDetails(Model):
             'animal_id': 'animalId',
             'name': 'name',
             'species': 'species',
+            'description': 'description',
             'status': 'status',
             'created': 'created',
             'modified': 'modified',
             'deleted': 'deleted',
             'soft_delete': 'softDelete',
             'animal_detail_id': 'animalDetailId',
-            'description': 'description',
             'habitat': 'habitat',
             'image_url': 'imageUrl'
         }
@@ -75,13 +75,13 @@ class AnimalDetails(Model):
         self._animal_id = animal_id
         self._name = name
         self._species = species
+        self._description = description
         self._status = status
         self._created = created
         self._modified = modified
         self._deleted = deleted
         self._soft_delete = soft_delete
         self._animal_detail_id = animal_detail_id
-        self._description = description
         self._habitat = habitat
         self._image_url = image_url
 
@@ -164,6 +164,27 @@ class AnimalDetails(Model):
             raise ValueError("Invalid value for `species`, must not be `None`")  # noqa: E501
 
         self._species = species
+
+    @property
+    def description(self) -> str:
+        """Gets the description of this AnimalDetails.
+
+
+        :return: The description of this AnimalDetails.
+        :rtype: str
+        """
+        return self._description
+
+    @description.setter
+    def description(self, description: str):
+        """Sets the description of this AnimalDetails.
+
+
+        :param description: The description of this AnimalDetails.
+        :type description: str
+        """
+
+        self._description = description
 
     @property
     def status(self) -> str:
@@ -296,27 +317,6 @@ class AnimalDetails(Model):
         """
 
         self._animal_detail_id = animal_detail_id
-
-    @property
-    def description(self) -> str:
-        """Gets the description of this AnimalDetails.
-
-
-        :return: The description of this AnimalDetails.
-        :rtype: str
-        """
-        return self._description
-
-    @description.setter
-    def description(self, description: str):
-        """Sets the description of this AnimalDetails.
-
-
-        :param description: The description of this AnimalDetails.
-        :type description: str
-        """
-
-        self._description = description
 
     @property
     def habitat(self) -> str:

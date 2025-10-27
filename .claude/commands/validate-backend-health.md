@@ -48,14 +48,14 @@ Before starting, read the files:
    # Verify all required services are running
    curl -f http://localhost:3000 || exit 1  # Frontend
    curl -f http://localhost:8080 || exit 1  # Backend API
-   curl -f http://localhost:8080/health || exit 1  # Health endpoint
+   curl -f http://localhost:8080/system_health || exit 1  # Health endpoint
    aws dynamodb list-tables --region us-west-2 || exit 1  # DynamoDB
    ```
 
 3. **Health Endpoint Validation**
    ```bash
    # Test health endpoint directly
-   curl -X GET http://localhost:8080/health \
+   curl -X GET http://localhost:8080/system_health \
      -H "Content-Type: application/json" \
      -w "\nStatus: %{http_code}\nTime: %{time_total}s\n" \
      > baseline-health-check.json
@@ -150,7 +150,7 @@ assert(
 make stop-api || docker stop cmz-api-container || pkill -f "python.*openapi_server"
 
 # Verify backend is actually down
-curl -f http://localhost:8080/health && exit 1 || echo "✅ Backend confirmed down"
+curl -f http://localhost:8080/system_health && exit 1 || echo "✅ Backend confirmed down"
 
 # Wait for service to be fully stopped
 sleep 3
@@ -197,7 +197,7 @@ make run-api &
 sleep 10
 
 # Verify backend is healthy again
-curl -f http://localhost:8080/health || exit 1
+curl -f http://localhost:8080/system_health || exit 1
 echo "✅ Backend confirmed healthy after restart"
 ```
 
@@ -229,7 +229,7 @@ await mcp__playwright__browser_take_screenshot({
 **DynamoDB Connectivity Testing**
 ```bash
 # Test DynamoDB health endpoint specifically
-curl -X GET http://localhost:8080/health \
+curl -X GET http://localhost:8080/system_health \
   -H "Content-Type: application/json" | \
   jq '.services.dynamodb' > dynamodb-health.json
 
@@ -264,7 +264,7 @@ grep -q "200" auth-health-test.json && echo "✅ Auth service healthy"
 echo "Simulating partial service degradation..."
 
 # Test health endpoint with degraded services
-curl -X GET http://localhost:8080/health \
+curl -X GET http://localhost:8080/system_health \
   -H "Content-Type: application/json" > degraded-health-check.json
 
 # Verify degraded status handling
@@ -304,7 +304,7 @@ if (warningMessage.includes("Some features may be limited")) {
 ```bash
 # Test health endpoint response times
 for i in {1..10}; do
-  curl -X GET http://localhost:8080/health \
+  curl -X GET http://localhost:8080/system_health \
     -H "Content-Type: application/json" \
     -w "%{time_total}\n" \
     -o /dev/null -s

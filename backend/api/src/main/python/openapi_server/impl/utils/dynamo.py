@@ -55,8 +55,39 @@ def from_ddb(item: Dict[str, Any]) -> Dict[str, Any]:
     """
     Convert DynamoDB item to Python dict
     """
-    # For now, just return as-is since boto3 handles most conversions
-    return item
+    # If item is already in Python format (not DynamoDB format), return as-is
+    if not any(isinstance(v, dict) and len(v) == 1 and list(v.keys())[0] in ['S', 'N', 'B', 'M', 'L', 'SS', 'NS', 'BS', 'BOOL', 'NULL'] for v in item.values()):
+        return item
+
+    # Convert DynamoDB types to Python types
+    def convert_ddb_value(value):
+        if isinstance(value, dict):
+            if 'S' in value:
+                return value['S']
+            elif 'N' in value:
+                return float(value['N']) if '.' in value['N'] else int(value['N'])
+            elif 'B' in value:
+                return value['B']
+            elif 'M' in value:
+                return {k: convert_ddb_value(v) for k, v in value['M'].items()}
+            elif 'L' in value:
+                return [convert_ddb_value(v) for v in value['L']]
+            elif 'SS' in value:
+                return value['SS']
+            elif 'NS' in value:
+                return [float(n) if '.' in n else int(n) for n in value['NS']]
+            elif 'BS' in value:
+                return value['BS']
+            elif 'BOOL' in value:
+                return value['BOOL']
+            elif 'NULL' in value:
+                return None
+            else:
+                # Recursively convert nested objects
+                return {k: convert_ddb_value(v) for k, v in value.items()}
+        return value
+
+    return {k: convert_ddb_value(v) for k, v in item.items()}
 
 
 def now_iso() -> str:

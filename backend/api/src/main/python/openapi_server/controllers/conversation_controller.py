@@ -47,7 +47,7 @@ def conversations_sessions_get(user_id=None, animal_id=None, start_date=None, en
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "conversation_controller".replace("_controller", "")
-        impl_function_name = "handle_conversations_sessions_get"
+        impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
@@ -122,7 +122,7 @@ def conversations_sessions_session_id_get(session_id):  # noqa: E501
         # Dynamic import of implementation module based on controller name
         # Auto-detect implementation module from operationId
         impl_module_name = "conversation_controller".replace("_controller", "")
-        impl_function_name = "handle_conversations_sessions_session_id_get"
+        impl_function_name = "handle_"
 
         # Try common implementation patterns
         try:
@@ -429,6 +429,87 @@ def convo_turn_post(body):  # noqa: E501
                 code="internal_error",
                 message=f"Internal server error in convo_turn_post: {str(e)}",
                 details={"controller": "ConversationController", "operation": "convo_turn_post"}
+            )
+            return error_obj, 500
+
+
+def convo_turn_stream_get(message, animalId, sessionId, token):  # noqa: E501
+    """Stream conversation turn with Server-Sent Events
+
+    Real-time streaming chat response using OpenAI Assistants API # noqa: E501
+
+    :param message: User&#39;s chat message
+    :type message: str
+    :param animal_id: Animal identifier
+    :type animal_id: str
+    :param session_id: Conversation session ID (created if not provided)
+    :type session_id: str
+    :param token: JWT authentication token
+    :type token: str
+
+    :rtype: Union[str, Tuple[str, int], Tuple[str, int, Dict[str, str]]
+    """
+    # Auto-generated parameter handling
+
+    # CMZ Auto-Generated Implementation Connection
+    # This template automatically connects controllers to impl modules
+    try:
+        # Dynamic import of implementation module based on controller name
+        # Auto-detect implementation module from operationId
+        impl_module_name = "conversation_controller".replace("_controller", "")
+        impl_function_name = "handle_"
+
+        # Try common implementation patterns
+        try:
+            # Pattern 1: Direct module import
+            impl_module = __import__(f"openapi_server.impl.{impl_module_name}", fromlist=[impl_function_name])
+            impl_function = getattr(impl_module, impl_function_name)
+        except (ImportError, AttributeError):
+            # Pattern 2: Generic handler with hexagonal architecture routing
+            from openapi_server.impl import handlers
+            # Use the generic handle_ function that routes based on caller name
+            impl_function = handlers.handle_
+            if not impl_function:
+                # Pattern 3: Default error for missing implementation
+                raise NotImplementedError(
+                    f"Implementation function 'handle_' not found in handlers module. "
+                    f"Please ensure the following: "
+                    f"1. The handlers.py file exists in the impl directory "
+                    f"2. The handle_ function is defined in handlers.py "
+                    f"3. The function signature matches the controller parameters"
+                )
+
+        # Call implementation function with processed parameters
+        result = impl_function(message, animalId, sessionId, token)
+
+        # Handle different return types
+        if isinstance(result, tuple):
+            return result  # Already formatted (data, status_code)
+        else:
+            return result, 200
+
+    except NotImplementedError as e:
+        # Development mode: return clear error instead of placeholder
+        from openapi_server.models.error import Error
+        error_obj = Error(
+            code="not_implemented",
+            message=f"Controller convo_turn_stream_get implementation not found: {str(e)}",
+            details={"controller": "ConversationController", "operation": "convo_turn_stream_get"}
+        )
+        return error_obj, 501
+
+    except Exception as e:
+        # Use centralized error handler if available
+        try:
+            from openapi_server.impl.error_handler import handle_exception_for_controllers
+            return handle_exception_for_controllers(e)
+        except ImportError:
+            # Fallback error response
+            from openapi_server.models.error import Error
+            error_obj = Error(
+                code="internal_error",
+                message=f"Internal server error in convo_turn_stream_get: {str(e)}",
+                details={"controller": "ConversationController", "operation": "convo_turn_stream_get"}
             )
             return error_obj, 500
 

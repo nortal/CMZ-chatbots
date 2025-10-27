@@ -1,0 +1,32 @@
+{
+  "file": "backend/api/src/main/python/openapi_server/impl/utils/dynamo.py",
+  "language": "python",
+  "summary": "The code file contains some security vulnerabilities and lacks input validation. It also has opportunities for refactoring to reduce code duplication.",
+  "issues": [
+    {
+      "severity": "MEDIUM",
+      "category": "security",
+      "line": 14,
+      "description": "AWS_REGION is hardcoded in the code",
+      "recommendation": "Use environment variables for AWS_REGION",
+      "example": "AWS_REGION = os.getenv('AWS_REGION', 'us-west-2')"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "security",
+      "line": 105,
+      "description": "UUID generated without proper randomness",
+      "recommendation": "Use a cryptographically secure random number generator for UUID generation",
+      "example": "item[pk_field] = f\"{prefix}_{uuid.uuid4()}\""
+    }
+  ],
+  "strengths": [
+    "Well-documented functions",
+    "Good error handling"
+  ],
+  "metrics": {
+    "lines_of_code": 104,
+    "complexity_estimate": "medium",
+    "test_coverage": "unknown"
+  }
+}

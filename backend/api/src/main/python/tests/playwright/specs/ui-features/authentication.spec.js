@@ -1,5 +1,20 @@
-// Authentication feature tests
-// PR003946-96: Integrated playwright testing
+/**
+ * Authentication feature tests
+ * PR003946-96: Integrated playwright testing
+ *
+ * IMPORTANT: This test uses Playwright MCP browser automation.
+ * Static code analysis would not catch the bugs tested here.
+ * Always use real browser testing for frontend validation.
+ *
+ * Playwright MCP Tools Used:
+ * - mcp__playwright__browser_navigate: Navigate to login page
+ * - mcp__playwright__browser_type: Enter credentials
+ * - mcp__playwright__browser_click: Click login button
+ * - mcp__playwright__browser_snapshot: Capture accessibility tree
+ * - mcp__playwright__browser_console_messages: Check for JS errors
+ *
+ * See: FRONTEND-AGENT-PLAYWRIGHT-ADVICE.md for best practices
+ */
 
 const { test, expect } = require('@playwright/test');
 const LoginPage = require('../../page-objects/login-page');

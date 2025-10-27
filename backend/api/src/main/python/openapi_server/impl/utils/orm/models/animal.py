@@ -31,6 +31,7 @@ class AnimalModel(Model):
     # Core fields
     name = UnicodeAttribute(null=True)
     species = UnicodeAttribute(null=True)
+    description = UnicodeAttribute(null=True)
     status = UnicodeAttribute(null=True, default="active")
 
     # JSON fields for complex data
@@ -89,6 +90,7 @@ class AnimalModel(Model):
             "animalId": self.animalId,
             "name": self.name,
             "species": self.species,
+            "description": self.description,
             "status": self.status or "active",
             "personality": personality_value,
             "configuration": config_value,

@@ -1,7 +1,7 @@
 import { NavigationItem, UserRole } from '../types/roles';
 
 export const navigationConfig: NavigationItem[] = [
-  // Dashboard - Available to all authenticated users (optional for public users)
+  // Dashboard - Simplified for MVP
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -10,7 +10,7 @@ export const navigationConfig: NavigationItem[] = [
     roles: ['admin', 'zookeeper', 'educator', 'member', 'visitor', 'parent', 'student']
   },
 
-  // Animal Management - Core zoo operations
+  // Animal Management - Core zoo operations with Guardrails
   {
     id: 'animals',
     label: 'Animal Management',
@@ -29,11 +29,64 @@ export const navigationConfig: NavigationItem[] = [
         label: 'Animal Details',
         path: '/animals/details',
         roles: ['admin', 'zookeeper', 'educator']
+      },
+      {
+        id: 'animal-guardrails',
+        label: 'Guardrails',
+        path: '/animals/guardrails',
+        roles: ['admin']
       }
     ]
   },
 
-  // Family & Education Management
+  // Animal Assistant Management - New feature from Phase 2
+  {
+    id: 'assistants',
+    label: 'Assistant Management',
+    path: '/assistants',
+    icon: 'Bot', // Represents AI assistants
+    roles: ['admin', 'zookeeper'],
+    children: [
+      {
+        id: 'assistant-overview',
+        label: 'Active Assistants',
+        path: '/assistants/overview',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'assistant-create',
+        label: 'Create Assistant',
+        path: '/assistants/create',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'personality-templates',
+        label: 'Personality Templates',
+        path: '/assistants/personalities',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'guardrail-templates',
+        label: 'Guardrail Templates',
+        path: '/assistants/guardrails',
+        roles: ['admin']
+      },
+      {
+        id: 'sandbox-testing',
+        label: 'Test Configurations',
+        path: '/sandbox-testing',
+        roles: ['admin', 'zookeeper']
+      },
+      {
+        id: 'knowledge-base',
+        label: 'Knowledge Base',
+        path: '/assistants/knowledge',
+        roles: ['admin', 'zookeeper']
+      }
+    ]
+  },
+
+  // Family Management - Simplified (removed billing and programs)
   {
     id: 'families',
     label: 'Family Groups',
@@ -46,23 +99,11 @@ export const navigationConfig: NavigationItem[] = [
         label: 'Manage Families',
         path: '/families/manage',
         roles: ['admin', 'educator']
-      },
-      {
-        id: 'family-billing',
-        label: 'Billing Information', 
-        path: '/families/billing',
-        roles: ['admin']
-      },
-      {
-        id: 'educational-programs',
-        label: 'Educational Programs',
-        path: '/families/programs',
-        roles: ['admin', 'educator']
       }
     ]
   },
 
-  // Conversations & Chat Management - Available to all users with role-specific children
+  // Conversations - Simplified
   {
     id: 'conversations',
     label: 'Conversations',
@@ -87,47 +128,6 @@ export const navigationConfig: NavigationItem[] = [
         label: 'Chat History',
         path: '/conversations/history',
         roles: ['admin', 'zookeeper', 'educator']
-      },
-      {
-        id: 'conversation-analytics',
-        label: 'Chat Analytics',
-        path: '/conversations/analytics',
-        roles: ['admin', 'zookeeper']
-      },
-      {
-        id: 'chat-search',
-        label: 'Search Conversations',
-        path: '/conversations/search',
-        roles: ['admin']
-      }
-    ]
-  },
-
-  // Knowledge Base Management
-  {
-    id: 'knowledge',
-    label: 'Knowledge Base',
-    path: '/knowledge',
-    icon: 'Book',
-    roles: ['admin', 'zookeeper', 'educator'],
-    children: [
-      {
-        id: 'knowledge-content',
-        label: 'Manage Content',
-        path: '/knowledge/content',
-        roles: ['admin', 'zookeeper', 'educator']
-      },
-      {
-        id: 'knowledge-prompts',
-        label: 'System Prompts',
-        path: '/knowledge/prompts',
-        roles: ['admin', 'zookeeper']
-      },
-      {
-        id: 'knowledge-guardrails',
-        label: 'Guardrails',
-        path: '/knowledge/guardrails',
-        roles: ['admin']
       }
     ]
   },
@@ -151,46 +151,11 @@ export const navigationConfig: NavigationItem[] = [
         label: 'Roles & Permissions',
         path: '/users/roles',
         roles: ['admin']
-      },
-      {
-        id: 'user-search',
-        label: 'Search Users',
-        path: '/users/search',
-        roles: ['admin']
       }
     ]
   },
 
-  // Analytics & Reporting
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    path: '/analytics',
-    icon: 'BarChart3',
-    roles: ['admin', 'zookeeper'],
-    children: [
-      {
-        id: 'usage-analytics',
-        label: 'Usage Reports',
-        path: '/analytics/usage',
-        roles: ['admin', 'zookeeper']
-      },
-      {
-        id: 'performance-metrics',
-        label: 'Performance Metrics',
-        path: '/analytics/performance',
-        roles: ['admin']
-      },
-      {
-        id: 'visitor-insights',
-        label: 'Visitor Insights',
-        path: '/analytics/visitors',
-        roles: ['admin', 'zookeeper']
-      }
-    ]
-  },
-
-  // System Administration
+  // System - AI Provider Settings and Safety Management
   {
     id: 'system',
     label: 'System',
@@ -199,33 +164,21 @@ export const navigationConfig: NavigationItem[] = [
     roles: ['admin'],
     children: [
       {
-        id: 'system-health',
-        label: 'System Health',
-        path: '/system/health',
+        id: 'ai-provider',
+        label: 'AI Provider Settings',
+        path: '/system/ai-provider',
         roles: ['admin']
       },
       {
-        id: 'system-logs',
-        label: 'System Logs',
-        path: '/system/logs',
-        roles: ['admin']
-      },
-      {
-        id: 'system-config',
-        label: 'Configuration',
-        path: '/system/config',
-        roles: ['admin']
-      },
-      {
-        id: 'system-backup',
-        label: 'Backup & Recovery',
-        path: '/system/backup',
+        id: 'safety-management',
+        label: 'Safety Management',
+        path: '/system/safety',
         roles: ['admin']
       }
     ]
   },
 
-  // Public/Visitor Portal
+  // Public/Visitor Portal - Simplified
   {
     id: 'portal',
     label: 'Visitor Portal',
@@ -244,12 +197,6 @@ export const navigationConfig: NavigationItem[] = [
         label: 'My Conversations',
         path: '/portal/conversations',
         roles: ['member']
-      },
-      {
-        id: 'zoo-information',
-        label: 'Zoo Information',
-        path: '/portal/info',
-        roles: ['member', 'visitor']
       }
     ]
   }

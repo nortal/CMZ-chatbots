@@ -1,10 +1,29 @@
 /**
  * Chat/Conversation End-to-End Tests
  *
+ * IMPORTANT: This test uses Playwright MCP browser automation.
+ * Static code analysis would not catch the bugs tested here.
+ * Always use real browser testing for frontend validation.
+ *
+ * Playwright MCP Tools Used:
+ * - mcp__playwright__browser_navigate: Navigate to chat interface
+ * - mcp__playwright__browser_type: Type chat messages
+ * - mcp__playwright__browser_click: Send messages
+ * - mcp__playwright__browser_wait_for: Wait for chat responses
+ * - mcp__playwright__browser_snapshot: Capture conversation state
+ * - mcp__playwright__browser_network_requests: Monitor API calls
+ * - mcp__playwright__browser_console_messages: Check for SSE errors
+ *
  * Tests the complete chat conversation flow:
  * 1. Frontend: UI chat interface interactions
  * 2. Backend: API endpoints (POST /convo_turn, GET /convo_history)
  * 3. Persistence: DynamoDB conversation storage validation
+ *
+ * NOTE: Chat streaming via /convo_turn/stream endpoint is currently
+ * NOT IMPLEMENTED causing 404 errors. This test validates the fallback
+ * POST /convo_turn endpoint until SSE streaming is added.
+ *
+ * See: FRONTEND-AGENT-PLAYWRIGHT-ADVICE.md for best practices
  */
 
 const { test, expect } = require('@playwright/test');

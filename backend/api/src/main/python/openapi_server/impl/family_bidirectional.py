@@ -1,5 +1,7 @@
 """
 Family management with bidirectional user references and role-based access control
+
+Security: Uses sanitized structured logging to prevent log injection vulnerabilities
 """
 import uuid
 import logging
@@ -11,6 +13,7 @@ from pynamodb.exceptions import DoesNotExist
 from ..models.error import Error
 from .utils.orm.models.family_bidirectional import FamilyModelBidirectional
 from .utils.orm.models.user_bidirectional import UserModelBidirectional
+from .utils.logging_utils import sanitize_log_extra
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +161,11 @@ class FamilyUserRelationshipManager:
 
             # Check permissions
             if not requesting_user.can_view_family(family_id):
-                logger.warning(f"User {requesting_user_id} denied access to family {family_id}")
+                # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
+                logger.warning("User denied access to family", extra=sanitize_log_extra({
+                    "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " "),
+                    "family_id": str(family_id).replace("\n", " ").replace("\r", " ")
+                }))
                 return None
 
             family_dict = family.to_dict()
@@ -229,6 +236,14 @@ def create_family_bidirectional(body: Dict[str, Any], requesting_user_id: str) -
         # For testing, allow anonymous creation
         if requesting_user_id == 'anonymous':
             logger.warning("Creating family with anonymous user - testing mode")
+            requesting_user_display_name = 'system'
+        else:
+            # Get requesting user for audit trail
+            try:
+                requesting_user = UserModelBidirectional.get(requesting_user_id)
+                requesting_user_display_name = requesting_user.displayName or 'unknown'
+            except DoesNotExist:
+                requesting_user_display_name = 'unknown'
 
         # Generate family ID
         family_id = f"family_{uuid.uuid4().hex[:8]}"
@@ -289,14 +304,14 @@ def create_family_bidirectional(body: Dict[str, Any], requesting_user_id: str) -
                 'at': now,
                 'by': {
                     'userId': requesting_user_id,
-                    'displayName': requesting_user.displayName
+                    'displayName': requesting_user_display_name
                 }
             },
             modified={
                 'at': now,
                 'by': {
                     'userId': requesting_user_id,
-                    'displayName': requesting_user.displayName
+                    'displayName': requesting_user_display_name
                 }
             }
         )
@@ -502,10 +517,17 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
             user_family_ids = requesting_user.familyIds if hasattr(requesting_user, 'familyIds') else []
         except DoesNotExist:
             # If user doesn't exist, treat as anonymous with no families
-            logger.warning(f"User {requesting_user_id} not found, returning empty family list")
+            # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
+            logger.warning("User not found, returning empty family list", extra=sanitize_log_extra({
+                "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " ")
+            }))
             return [], 200
         except Exception as e:
-            logger.error(f"Error fetching user {requesting_user_id}: {str(e)}")
+            # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
+            logger.error("Error fetching user", extra=sanitize_log_extra({
+                "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " "),
+                "error": str(e).replace("\n", " ").replace("\r", " ")
+            }))
             return [], 200
 
         # Admin sees all families
@@ -529,7 +551,11 @@ def list_families_for_user(requesting_user_id: str) -> Tuple[Any, int]:
                     if not family.softDelete:
                         families.append(family)
                 except DoesNotExist:
-                    logger.warning(f"Family {family_id} not found for user {requesting_user_id}")
+                    # Defense in depth: CodeQL-recognized sanitization + comprehensive sanitization
+                    logger.warning("Family not found for user", extra=sanitize_log_extra({
+                        "family_id": str(family_id).replace("\n", " ").replace("\r", " "),
+                        "user_id": str(requesting_user_id).replace("\n", " ").replace("\r", " ")
+                    }))
                     continue
                 except Exception as e:
                     logger.error(f"Error fetching family {family_id}: {str(e)}")
