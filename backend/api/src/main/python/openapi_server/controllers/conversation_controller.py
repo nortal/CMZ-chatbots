@@ -10,7 +10,7 @@ from openapi_server.models.convo_turn_post_request import ConvoTurnPostRequest  
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.summarize_convo_post200_response import SummarizeConvoPost200Response  # noqa: E501
 from openapi_server.models.summarize_convo_post_request import SummarizeConvoPostRequest  # noqa: E501
-# from openapi_server import util  # Not used
+from openapi_server import util
 
 
 def conversations_sessions_get(user_id=None, animal_id=None, start_date=None, end_date=None, limit=None, last_evaluated_key=None, sort_by=None, sort_order=None):  # noqa: E501
@@ -480,7 +480,7 @@ def convo_turn_stream_get(message, animalId, sessionId, token):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(message, animal_id, session_id, token)
+        result = impl_function(message, animalId, sessionId, token)
 
         # Handle different return types
         if isinstance(result, tuple):

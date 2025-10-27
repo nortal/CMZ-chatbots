@@ -10,7 +10,7 @@ from openapi_server.models.privacy_delete_user200_response import PrivacyDeleteU
 from openapi_server.models.privacy_delete_user_request import PrivacyDeleteUserRequest  # noqa: E501
 from openapi_server.models.privacy_export_post200_response import PrivacyExportPost200Response  # noqa: E501
 from openapi_server.models.privacy_export_post_request import PrivacyExportPostRequest  # noqa: E501
-# from openapi_server import util  # Not used
+from openapi_server import util
 
 
 def privacy_audit_get(userId, parentId, startDate, endDate, actionType):  # noqa: E501
@@ -32,8 +32,8 @@ def privacy_audit_get(userId, parentId, startDate, endDate, actionType):  # noqa
     :rtype: Union[PrivacyAuditGet200Response, Tuple[PrivacyAuditGet200Response, int], Tuple[PrivacyAuditGet200Response, int, Dict[str, str]]
     """
     # Auto-generated parameter handling
-    start_date = util.deserialize_datetime(start_date)
-    end_date = util.deserialize_datetime(end_date)
+    start_date = util.deserialize_datetime(startDate)
+    end_date = util.deserialize_datetime(endDate)
 
     # CMZ Auto-Generated Implementation Connection
     # This template automatically connects controllers to impl modules
@@ -64,7 +64,7 @@ def privacy_audit_get(userId, parentId, startDate, endDate, actionType):  # noqa
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(user_id, parent_id, start_date, end_date, action_type)
+        result = impl_function(userId, parentId, startDate, endDate, actionType)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -139,7 +139,7 @@ def privacy_children_get(parentId):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(parent_id)
+        result = impl_function(parentId)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -218,7 +218,7 @@ def privacy_delete_user(userId, body):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(user_id, body)
+        result = impl_function(userId, body)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -297,7 +297,7 @@ def privacy_export_post(userId, body):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(user_id, body)
+        result = impl_function(userId, body)
 
         # Handle different return types
         if isinstance(result, tuple):

@@ -7,7 +7,7 @@ from openapi_server.models.billing_summary import BillingSummary  # noqa: E501
 from openapi_server.models.paged_logs import PagedLogs  # noqa: E501
 from openapi_server.models.performance_metrics import PerformanceMetrics  # noqa: E501
 from openapi_server.models.safety_metrics_get200_response import SafetyMetricsGet200Response  # noqa: E501
-# from openapi_server import util  # Not used
+from openapi_server import util
 
 
 def billing_get(period=None):  # noqa: E501

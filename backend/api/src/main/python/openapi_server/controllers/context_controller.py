@@ -56,7 +56,7 @@ def context_summary_get(userId, maxTokens):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(user_id, max_tokens)
+        result = impl_function(userId, maxTokens)
 
         # Handle different return types
         if isinstance(result, tuple):
@@ -135,7 +135,7 @@ def context_summary_post(userId, body):  # noqa: E501
                 )
 
         # Call implementation function with processed parameters
-        result = impl_function(user_id, body)
+        result = impl_function(userId, body)
 
         # Handle different return types
         if isinstance(result, tuple):
