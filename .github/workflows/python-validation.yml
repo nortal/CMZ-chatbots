@@ -47,7 +47,7 @@ jobs:
       working-directory: backend/api/src/main/python
       run: |
         echo "🏗️ Validating hexagonal architecture forwarding..."
-        python ../../../scripts/validate_handler_forwarding_comprehensive.py
+        python ../../../../../scripts/validate_handler_forwarding_comprehensive.py
 
     - name: Run unit tests
       working-directory: backend/api/src/main/python
