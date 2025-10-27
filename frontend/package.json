@@ -43,7 +43,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
-    "@vitejs/plugin-react": "^4.1.0",
+    "@vitejs/plugin-react": "^5.1.0",
     "autoprefixer": "^10.4.16",
     "openapi-typescript": "^6.7.0",
     "postcss": "^8.4.31",
