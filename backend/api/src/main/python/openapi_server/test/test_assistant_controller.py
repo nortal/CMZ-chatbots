@@ -21,7 +21,6 @@ class TestAssistantManagementController(BaseTestCase):
     def setUp(self):
         """Set up test client"""
         super().setUp()
-        self.app = create_app()
         self.test_client = self.app.test_client()
 
     def test_create_assistant_contract(self):

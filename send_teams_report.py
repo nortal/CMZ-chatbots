@@ -7,11 +7,25 @@ import requests
 import json
 from datetime import datetime
 import subprocess
+import shlex
 
 def run_command(cmd):
     """Run shell command and return output"""
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+        # For security, use shell=False when possible
+        # Only use shell=True for commands that require shell features (pipes, redirects, etc.)
+        needs_shell = any(char in cmd for char in ['|', '>', '<', '&&', '||', ';', '`', '$'])
+
+        if needs_shell:
+            # Commands with shell features - validate and restrict
+            if any(dangerous in cmd.lower() for dangerous in ['rm -rf', 'format', 'del /s', 'dd if=']):
+                return "Error: Dangerous command blocked"
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+        else:
+            # Simple commands can run without shell
+            cmd_parts = shlex.split(cmd) if isinstance(cmd, str) else cmd
+            result = subprocess.run(cmd_parts, shell=False, capture_output=True, text=True, timeout=30)
+
         return result.stdout.strip() if result.returncode == 0 else result.stderr.strip()
     except Exception as e:
         return f"Error: {str(e)}"
